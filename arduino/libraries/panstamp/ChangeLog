@@ -1,0 +1,22 @@
+************************************************
+
+Arduino CC1101 driver, SWAP stack, application library and sample code
+for the panStamp. PanStamp is a low-power wireless board programmable
+from the Arduino IDE.
+
+Web sites:
+http://www.panstamp.com
+http://panstamp.blogspot.com 
+
+************************************************
+
+================================================
+	v0.0.2 (Mar/21/2011)
+================================================
+- Corrections on the transmission of the security nonce
+
+================================================
+	v0.0.1 (Mar/18/2011)
+================================================
+- First version
+
