@@ -105,6 +105,15 @@ class ENDPOINT
      * Send SWAP information message
      */
     void sendSwapInfo(void);
+
+    /**
+     * sendPriorSwapInfo
+     * 
+     * Send SWAP information message before applying teh new value
+     *
+     * 'newVal'  New value
+     */
+    void sendPriorSwapInfo(byte *newVal);
 };
 
 /**

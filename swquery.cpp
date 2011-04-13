@@ -32,17 +32,16 @@
  * Class constructor
  * 
  * 'dAddr'	Destination address
- * 'secNonce'	Security nonce
  * 'eAddr'	Endpoint address
  * 'eId'	Endpoint id
  */
-SWQUERY::SWQUERY(byte dAddr, byte secNonce, byte eAddr, byte eId)
+SWQUERY::SWQUERY(byte dAddr, byte eAddr, byte eId)
 {
   destAddr = dAddr;
   srcAddr = panstamp.cc1101.devAddress;
   hop = 0;
   security = panstamp.security & 0x0F;
-  nonce = secNonce;
+  nonce = 0;
   function = SWAPFUNCT_QRY;
   epAddr = eAddr;
   epId = eId;

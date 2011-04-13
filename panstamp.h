@@ -43,8 +43,9 @@
 #define EEPROM_SETUP_FLAG        0x00
 #define EEPROM_CARRIER_FREQ      0x01
 #define EEPROM_FREQ_CHANNEL      0x02
-#define EEPROM_NETWORK_ID        0x03
-#define EEPROM_DEVICE_ADDR       0x05
+#define EEPROM_SECU_OPTION       0x03
+#define EEPROM_NETWORK_ID        0x04
+#define EEPROM_DEVICE_ADDR       0x06
 
 /**
  * EEPROM setup flag values

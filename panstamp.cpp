@@ -41,13 +41,12 @@ extern ENDPOINT* epTable[];
  */
 void isrGDO0event(void)
 {
-  byte i;
   CCPACKET ccPacket;
   SWPACKET swPacket;
   
   // Disable interrupt
   disableIRQ_GDO0();
-  
+
   if (panstamp.cc1101.receiveData(&ccPacket) > 0)
   {
     if (ccPacket.crc_ok)
@@ -135,6 +134,9 @@ void PANSTAMP::init()
     // Set RF channel
     cc1101.setChannel(bVal);
 
+    // Read security option byte from EEPROM
+    security = EEPROM.read(EEPROM_SECU_OPTION);
+
     // Read network id from EEPROM
     arrV[0] = EEPROM.read(EEPROM_NETWORK_ID);
     arrV[1] = EEPROM.read(EEPROM_NETWORK_ID + 1);
@@ -147,6 +149,11 @@ void PANSTAMP::init()
     cc1101.setDevAddress(bVal);
   }
 
+// Read device address from EEPROM
+bVal = EEPROM.read(EEPROM_DEVICE_ADDR);
+// Set device address
+cc1101.setDevAddress(bVal);
+
   delayMicroseconds(50);  
 
   // Enter RX state
@@ -156,7 +163,11 @@ void PANSTAMP::init()
   enableIRQ_GDO0();
 
   // Send SWAP product info
-  epTable[SWAP_PRODUCT_ID]->sendSwapInfo();
+  //epTable[SWAP_PRODUCT_ID]->sendSwapInfo();
+
+  // Default values
+  nonce = 0xFF;
+  security = 0;
 }
 
 /**

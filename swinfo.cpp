@@ -41,7 +41,7 @@ SWINFO::SWINFO(byte eId, byte *val, byte len)
   srcAddr = panstamp.cc1101.devAddress;
   hop = 0;
   security = panstamp.security & 0x0F;
-  nonce = panstamp.nonce++;
+  nonce = ++panstamp.nonce;
   function = SWAPFUNCT_INF;
   epAddr = panstamp.cc1101.devAddress;
   epId = eId;

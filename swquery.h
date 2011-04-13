@@ -39,10 +39,9 @@ class SWQUERY : public SWPACKET
      * Class constructor
      * 
      * 'destAddr'	Destination address
-     * 'secNonce'	Security nonce
      * 'epAddr'	Endpoint address
      * 'epId'	Endpoint id
      */
-    SWQUERY(byte destAddr, byte secNonce, byte epAddr, byte epId);
+    SWQUERY(byte destAddr, byte epAddr, byte epId);
 };
 #endif

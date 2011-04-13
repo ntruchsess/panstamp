@@ -39,8 +39,7 @@ void ENDPOINT::getData(void)
   // Update endpoint value
   if (updateValue != NULL)
     updateValue(id);
-
-  // Send SWAP information message
+  // Send SWAP information message about the new value
   sendSwapInfo();
 }
 
@@ -73,3 +72,16 @@ void ENDPOINT::sendSwapInfo(void)
   packet.send();
 }
 
+/**
+ * sendPriorSwapInfo
+ * 
+ * Send SWAP information message before applying teh new value
+ *
+ * 'newVal'  New value
+ */
+void ENDPOINT::sendPriorSwapInfo(byte *newVal) 
+{
+  SWINFO packet = SWINFO(id, newVal, length);
+
+  packet.send();
+}
