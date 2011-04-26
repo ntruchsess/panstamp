@@ -1,5 +1,5 @@
 /**
- * endpoint.cpp
+ * register.cpp
  *
  * Copyright (c) 2011 Daniel Berenguer <dberenguer@usapiens.com>
  * 
@@ -21,22 +21,22 @@
  * USA
  * 
  * Author: Daniel Berenguer
- * Creation date: 03/03/2011
+ * Creation date: 04/24/2011
  */
 
-#include "endpoint.h"
+#include "register.h"
 #include "swinfo.h"
 
-byte epIndex = 0;
+byte regIndex = 0;
 
 /**
  * getData
  * 
- * Update and get endpoint value
+ * Update and get register value
  */
-void ENDPOINT::getData(void) 
+void REGISTER::getData(void) 
 {
-  // Update endpoint value
+  // Update register value
   if (updateValue != NULL)
     updateValue(id);
   // Send SWAP information message about the new value
@@ -46,13 +46,13 @@ void ENDPOINT::getData(void)
 /**
  * setData
  * 
- * Set endpoint value
+ * Set register value
  * 
- * 'data'	New endpoint value
+ * 'data'	New register value
  */
-void ENDPOINT::setData(byte *data) 
+void REGISTER::setData(byte *data) 
 {
-  // Update endpoint value
+  // Update register value
   if (setValue != NULL)
     setValue(data);
 
@@ -65,7 +65,7 @@ void ENDPOINT::setData(byte *data)
  * 
  * Send SWAP information message
  */
-void ENDPOINT::sendSwapInfo(void) 
+void REGISTER::sendSwapInfo(void) 
 {
   SWINFO packet = SWINFO(id, value, length);
 
@@ -79,7 +79,7 @@ void ENDPOINT::sendSwapInfo(void)
  *
  * 'newVal'  New value
  */
-void ENDPOINT::sendPriorSwapInfo(byte *newVal) 
+void REGISTER::sendPriorSwapInfo(byte *newVal) 
 {
   SWINFO packet = SWINFO(id, newVal, length);
 

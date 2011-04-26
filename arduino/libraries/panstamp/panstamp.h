@@ -30,7 +30,7 @@
 #include "WProgram.h"
 #include "EEPROM.h"
 #include "cc1101.h"
-#include "endpoint.h"
+#include "register.h"
 #include "swpacket.h"
 #include <avr/wdt.h>
 #include <avr/interrupt.h>

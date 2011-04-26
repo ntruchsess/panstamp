@@ -1,5 +1,5 @@
 /**
- * endpoint.h
+ * register.h
  *
  * Copyright (c) 2011 Daniel Berenguer <dberenguer@usapiens.com>
  * 
@@ -21,47 +21,47 @@
  * USA
  * 
  * Author: Daniel Berenguer
- * Creation date: 03/03/2011
+ * Creation date: 04/24/2011
  */
 
-#ifndef _ENDPOINT_H
-#define _ENDPOINT_H
+#ifndef _REGISTER_H
+#define _REGISTER_H
 
 #include "WProgram.h"
 
-extern byte epIndex;
+extern byte regIndex;
 
 /**
- * Class: ENDPOINT
+ * Class: REGISTER
  * 
  * Description:
- * Endpoint class
+ * Register class
  */
-class ENDPOINT
+class REGISTER
 {
   private:
     /**
-     * Pointer to the endpoint "updater" function
+     * Pointer to the register "updater" function
      *
-     *  'eId'  Endpoint ID     
+     *  'eId'  Register ID     
      */
     const void (*updateValue)(byte eId);
 
     /**
-     * Pointer to the endpoint "setter" function
+     * Pointer to the register "setter" function
      *
-     *  'v'  New endpoint value
+     *  'v'  New register value
      */
     const void (*setValue)(byte *v);
 
   public:
     /**
-     * Endpoint id
+     * Register id
      */
     const byte id;
     
     /**
-     * Endpoint value
+     * Register value
      */
     byte *value;
     
@@ -71,21 +71,21 @@ class ENDPOINT
     const byte length;
 
     /**
-     * ENDPOINT
+     * REGISTER
      * 
      * Constructor
      * 
-     * 'val'	    Pointer to the endpoint value
-     * 'len'	    Length of the endpoint value
+     * 'val'	    Pointer to the register value
+     * 'len'	    Length of the register value
      * 'getValH'    Pointer to the getter function
      * 'setValH'    Pointer to the setter function
      */
-    ENDPOINT(byte *val, const byte len, const void (*updateValH)(byte eId), const void (*setValH)(byte *v)):id(epIndex++), value(val), length(len), updateValue(updateValH), setValue(setValH) {};
+    REGISTER(byte *val, const byte len, const void (*updateValH)(byte eId), const void (*setValH)(byte *v)):id(regIndex++), value(val), length(len), updateValue(updateValH), setValue(setValH) {};
 
     /**
      * getData
      * 
-     * Update and get endpoint value
+     * Update and get register value
      * 
      */
     void getData();
@@ -93,9 +93,9 @@ class ENDPOINT
     /**
      * setData
      * 
-     * Set endpoint value
+     * Set register value
      * 
-     * 'data'	New endpoint value
+     * 'data'	New register value
      */
     void setData(byte *data);
 
@@ -117,14 +117,14 @@ class ENDPOINT
 };
 
 /**
- * Array of endpoints
+ * Array of registers
  */
-extern ENDPOINT* endpoint[];
+extern REGISTER* regTable[];
 
 /**
  * Extern global functions
  */
-extern void setupEndpoints(void);
+extern void setupRegisters(void);
 
 #endif
 

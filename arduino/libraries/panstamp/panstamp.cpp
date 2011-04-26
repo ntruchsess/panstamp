@@ -30,9 +30,9 @@
 #define disableIRQ_GDO0()   detachInterrupt(0);
 
 /**
- * Array of endpoints
+ * Array of registers
  */
-extern ENDPOINT* epTable[];
+extern REGISTER* regTable[];
 
 /**
  * isrGDO0event
@@ -57,10 +57,10 @@ void isrGDO0event(void)
       switch(swPacket.function)
       {
         case SWAPFUNCT_CMD:
-          epTable[swPacket.epId]->setData(swPacket.value.data);
+          regTable[swPacket.epId]->setData(swPacket.value.data);
           break;
         case SWAPFUNCT_QRY:
-          epTable[swPacket.epId]->getData();
+          regTable[swPacket.epId]->getData();
           break;
         case SWAPFUNCT_INF:
           break;
