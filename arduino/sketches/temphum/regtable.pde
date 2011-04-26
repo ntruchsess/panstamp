@@ -1,5 +1,5 @@
 /**
- * eptable.pde
+ * regtable.pde
  *
  * Copyright (c) 2011 Daniel Berenguer <dberenguer@usapiens.com>
  * 
@@ -27,63 +27,63 @@
 #include <EEPROM.h>
 #include "product.h"
 #include "panstamp.h"
-#include "eptable.h"
+#include "regtable.h"
 
 /**
- * Endpoint setup
+ * Register setup
  */
 // Product code
 static byte dtProductCode[8] = {SWAP_MANUFACT_ID >> 24, SWAP_MANUFACT_ID >> 16 , SWAP_MANUFACT_ID >> 8, SWAP_MANUFACT_ID,
                        SWAP_PRODUCT_ID >> 24, SWAP_PRODUCT_ID >> 16 , SWAP_PRODUCT_ID >> 8, SWAP_PRODUCT_ID};
-ENDPOINT epProductCode(dtProductCode, sizeof(dtProductCode), NULL, NULL);
+REGISTER regProductCode(dtProductCode, sizeof(dtProductCode), NULL, NULL);
 // Hardware version
 static byte dtHwVersion[4] = {HARDWARE_VERSION >> 24, HARDWARE_VERSION >> 16 , HARDWARE_VERSION >> 8, HARDWARE_VERSION};
-ENDPOINT epHwVersion(dtHwVersion, sizeof(dtHwVersion), NULL, NULL);
+REGISTER regHwVersion(dtHwVersion, sizeof(dtHwVersion), NULL, NULL);
 // Firmware version
 static byte dtFwVersion[4] = {FIRMWARE_VERSION >> 24, FIRMWARE_VERSION >> 16 , FIRMWARE_VERSION >> 8, FIRMWARE_VERSION};
-ENDPOINT epFwVersion(dtFwVersion, sizeof(dtFwVersion), NULL, NULL);
+REGISTER regFwVersion(dtFwVersion, sizeof(dtFwVersion), NULL, NULL);
 // System state
 static byte dtSysState[1] = {SYSTATE_RUNNING};
-ENDPOINT epSysState(dtSysState, sizeof(dtSysState), NULL, &setSysState);
+REGISTER regSysState(dtSysState, sizeof(dtSysState), NULL, &setSysState);
 // Carrier frequency
-ENDPOINT epCarrierFreq((byte*)(&panstamp.cc1101.carrierFreq), sizeof(panstamp.cc1101.carrierFreq), NULL, &setCarrierFreq);
+REGISTER regCarrierFreq((byte*)(&panstamp.cc1101.carrierFreq), sizeof(panstamp.cc1101.carrierFreq), NULL, &setCarrierFreq);
 // Frequency channel
-ENDPOINT epFreqChannel(&panstamp.cc1101.channel, sizeof(panstamp.cc1101.channel), NULL, &setFreqChannel);
+REGISTER regFreqChannel(&panstamp.cc1101.channel, sizeof(panstamp.cc1101.channel), NULL, &setFreqChannel);
 // Security option
-ENDPOINT epSecuOption(&panstamp.security, sizeof(panstamp.security), NULL, &setSecuOption);
+REGISTER regSecuOption(&panstamp.security, sizeof(panstamp.security), NULL, &setSecuOption);
 // Security nonce
-ENDPOINT epSecuNonce(&panstamp.nonce, sizeof(panstamp.nonce), NULL, NULL);
+REGISTER regSecuNonce(&panstamp.nonce, sizeof(panstamp.nonce), NULL, NULL);
 // Network Id
-ENDPOINT epNetworkId(&panstamp.cc1101.syncWord[0], sizeof(panstamp.cc1101.syncWord), NULL, &setNetworkId);
+REGISTER regNetworkId(&panstamp.cc1101.syncWord[0], sizeof(panstamp.cc1101.syncWord), NULL, &setNetworkId);
 // Device address
-ENDPOINT epDevAddress(&panstamp.cc1101.devAddress, sizeof(panstamp.cc1101.devAddress), NULL, &setDevAddress);
+REGISTER regDevAddress(&panstamp.cc1101.devAddress, sizeof(panstamp.cc1101.devAddress), NULL, &setDevAddress);
 /*
- * Add here your custom endpoints
+ * Add here your custom registers
  */
 // Voltage supply
 static byte dtVoltSupply[2];
-ENDPOINT epVoltSupply(dtVoltSupply, sizeof(dtVoltSupply), &updtVoltSupply, NULL);
+REGISTER regVoltSupply(dtVoltSupply, sizeof(dtVoltSupply), &updtVoltSupply, NULL);
 // Temperature and humidity from the DHT11 sensor
 static byte dtTempHum[2];
-ENDPOINT epTempHum(dtTempHum, sizeof(dtTempHum), &updtTempHum, NULL);
+REGISTER regTempHum(dtTempHum, sizeof(dtTempHum), &updtTempHum, NULL);
 
 /**
- * Initialize table of endpoints
+ * Initialize table of registers
  */
-ENDPOINT *epTable[] = {
-        &epProductCode,
-	&epHwVersion,
-	&epFwVersion,
-        &epSysState,
-	&epCarrierFreq,
-	&epFreqChannel,
-	&epSecuOption,
-	&epSecuNonce,
-	&epNetworkId,
-	&epDevAddress,
-  // Add here your custom endpoints
-  	&epVoltSupply,
-        &epTempHum
+REGISTER *regTable[] = {
+        &regProductCode,
+        &regHwVersion,
+	&regFwVersion,
+        &regSysState,
+	&regCarrierFreq,
+	&regFreqChannel,
+	&regSecuOption,
+	&regSecuNonce,
+	&regNetworkId,
+	&regDevAddress,
+  // Add here your custom registers
+  	&regVoltSupply,
+        &regTempHum
 }; 
 
 /**
@@ -103,11 +103,11 @@ const void setSysState(byte *state)
   {
     case SYSTATE_RESTART:
       // Send info message before restarting the mote
-      epSysState.sendPriorSwapInfo(state);
+      regSysState.sendPriorSwapInfo(state);
       panstamp.reset();
       break;
     default:
-      epSysState.value[0] = state[0];
+      regSysState.value[0] = state[0];
       break;
   }
 }
@@ -122,11 +122,11 @@ const void setSysState(byte *state)
 const void setCarrierFreq(byte *freq)
 {
   // Send info message before entering the new carrier frequency
-  epCarrierFreq.sendPriorSwapInfo(freq);
-  // Update endpoint value
+  regCarrierFreq.sendPriorSwapInfo(freq);
+  // Update register value
   panstamp.cc1101.setCarrierFreq((CARRIER_FREQ)freq[0]);
   // Save in EEPROM
-  EEPROM.write(EEPROM_CARRIER_FREQ, epCarrierFreq.value[0]);
+  EEPROM.write(EEPROM_CARRIER_FREQ, regCarrierFreq.value[0]);
 }
 
 /**
@@ -139,11 +139,11 @@ const void setCarrierFreq(byte *freq)
 const void setFreqChannel(byte *channel)
 {
   // Send info message before entering the new frequency channel
-  epFreqChannel.sendPriorSwapInfo(channel);
-  // Update endpoint value
+  regFreqChannel.sendPriorSwapInfo(channel);
+  // Update register value
   panstamp.cc1101.setChannel(channel[0]);
   // Save in EEPROM
-  EEPROM.write(EEPROM_FREQ_CHANNEL, epFreqChannel.value[0]);
+  EEPROM.write(EEPROM_FREQ_CHANNEL, regFreqChannel.value[0]);
 }
 
 /**
@@ -156,11 +156,11 @@ const void setFreqChannel(byte *channel)
 const void setSecuOption(byte *secu)
 {
   // Send info message before applying the new security option
-  epSecuOption.sendPriorSwapInfo(secu);
-  // Update endpoint value
+  regSecuOption.sendPriorSwapInfo(secu);
+  // Update register value
   panstamp.security = secu[0] & 0x0F;
   // Save in EEPROM
-  EEPROM.write(EEPROM_SECU_OPTION, epSecuOption.value[0]);
+  EEPROM.write(EEPROM_SECU_OPTION, regSecuOption.value[0]);
 }
 
 /**
@@ -175,11 +175,11 @@ const void setDevAddress(byte *addr)
   if (addr[0] > 0)
   {
     // Send info before taking the new address
-    epDevAddress.sendPriorSwapInfo(addr);
-    // Update endpoint value
+    regDevAddress.sendPriorSwapInfo(addr);
+    // Update register value
     panstamp.cc1101.setDevAddress(addr[0]);
     // Save in EEPROM
-    EEPROM.write(EEPROM_DEVICE_ADDR, epDevAddress.value[0]);
+    EEPROM.write(EEPROM_DEVICE_ADDR, regDevAddress.value[0]);
     // Restart device
     panstamp.reset();
   }
@@ -195,20 +195,20 @@ const void setDevAddress(byte *addr)
 const void setNetworkId(byte *id)
 {
   // Send info before taking the new network ID
-  epNetworkId.sendPriorSwapInfo(id);
-  // Update endpoint value
+  regNetworkId.sendPriorSwapInfo(id);
+  // Update register value
   panstamp.cc1101.setSyncWord(id);
   // Save in EEPROM
-  EEPROM.write(EEPROM_NETWORK_ID, epNetworkId.value[0]);
-  EEPROM.write(EEPROM_NETWORK_ID + 1, epNetworkId.value[1]);
+  EEPROM.write(EEPROM_NETWORK_ID, regNetworkId.value[0]);
+  EEPROM.write(EEPROM_NETWORK_ID + 1, regNetworkId.value[1]);
 }
 
 /**
  * updtVoltSupply
  *
- * Measure voltage supply and update endpoint
+ * Measure voltage supply and update register
  *
- * 'eId'  Endpoint ID
+ * 'eId'  Register ID
  */
 const void updtVoltSupply(byte eId)
 {
@@ -224,21 +224,21 @@ const void updtVoltSupply(byte eId)
   result = 1126400L / result; // Back-calculate AVcc in mV
 
   /**
-   * endpoint[eId]->member can be replaced by epVoltSupply.member in this case since
-   * no other endpoint is going to use "updtVoltSupply" as "updater" function
+   * register[eId]->member can be replaced by regVoltSupply.member in this case since
+   * no other register is going to use "updtVoltSupply" as "updater" function
    */
 
-  // Update endpoint value
-  epTable[eId]->value[0] = (result >> 8) & 0xFF;
-  epTable[eId]->value[1] = result & 0xFF;
+  // Update register value
+  regTable[eId]->value[0] = (result >> 8) & 0xFF;
+  regTable[eId]->value[1] = result & 0xFF;
 }
 
 /**
  * updtTempHum
  *
- * Measure humidity and temperature and update endpoint
+ * Measure humidity and temperature and update register
  *
- * 'eId'  Endpoint ID
+ * 'eId'  Register ID
  */
 const void updtTempHum(byte eId)
 {
@@ -247,7 +247,7 @@ const void updtTempHum(byte eId)
   if ((result = dht11_ReadTempHum()) < 0)
     return;
     
-  // Update endpoint value
-  epTempHum.value[0] = (result >> 8) & 0xFF;
-  epTempHum.value[1] = result & 0xFF;
+  // Update register value
+  regTempHum.value[0] = (result >> 8) & 0xFF;
+  regTempHum.value[1] = result & 0xFF;
 }

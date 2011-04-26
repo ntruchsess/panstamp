@@ -1,5 +1,5 @@
 /**
- * eptable.h
+ * regtable.h
  *
  * Copyright (c) 2011 Daniel Berenguer <dberenguer@usapiens.com>
  * 
@@ -28,26 +28,26 @@
 #define _EPTABLE_H
 
 #include "WProgram.h"
-#include "endpoint.h"
+#include "register.h"
 
 /**
- * Endpoint indexes
+ * Register indexes
  */
 
-enum EPINDEX
+enum REGINDEX
 {
-  EPI_PRODUCTCODE = 0,
-  EPI_HWVERSION,
-  EPI_FWVERSION,
-  EPI_SYSSTATE,
-  EPI_CARRIERFREQ,
-  EPI_FREQCHANNEL,
-  EPI_SECUOPTION,
-  EPI_SECUNONCE,
-  EPI_NETWORKID,
-  EPI_DEVADDRESS,
-  EPI_VOLTSUPPLY,
-  EPI_HUMIDTEMP
+  REGI_PRODUCTCODE = 0,
+  REGI_HWVERSION,
+  REGI_FWVERSION,
+  REGI_SYSSTATE,
+  REGI_CARRIERFREQ,
+  REGI_FREQCHANNEL,
+  REGI_SECUOPTION,
+  REGI_SECUNONCE,
+  REGI_NETWORKID,
+  REGI_DEVADDRESS,
+  REGI_VOLTSUPPLY,
+  REGI_HUMIDTEMP
 };
 
 /**
@@ -61,9 +61,9 @@ enum SYSTATE
 };
 
 /**
- * Array of endpoints
+ * Array of registers
  */
-extern ENDPOINT* epTable[];
+extern REGISTER* regTable[];
 
 #endif
 

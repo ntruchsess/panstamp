@@ -24,7 +24,7 @@
  * Creation date: 03/31/2011
  */
  
-#include "eptable.h"
+#include "regtable.h"
 #include "panstamp.h"
 
 /**
@@ -51,15 +51,14 @@ void setup()
  */
 void loop()
 {
-  epTable[EPI_PRODUCTCODE]->getData();
+  regTable[REGI_PRODUCTCODE]->getData();
   delay(10);
-  epTable[EPI_VOLTSUPPLY]->getData();
+  regTable[REGI_VOLTSUPPLY]->getData();
   delay(10);
-  epTable[EPI_HUMIDTEMP]->getData();
+  regTable[REGI_HUMIDTEMP]->getData();
   
   delay(100); // Wait a bit for remote commands
   
   panstamp.sleepFor(WDTO_8S);
-
 }
 
