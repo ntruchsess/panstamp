@@ -589,7 +589,7 @@ public class SWAPdmtView extends FrameView
     SwapMote mote = swapDmt.getMote(index);
     try
     {
-      mote.cmdEndpoint(epId, swapVal);
+      mote.cmdRegister(epId, swapVal);
     }
     catch (CcException ex)
     {

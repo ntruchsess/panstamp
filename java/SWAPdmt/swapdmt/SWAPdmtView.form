@@ -223,7 +223,6 @@
                   <action class="swapdmt.SWAPdmtView" id="showNetworkBox" methodName="showNetworkBox"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="networkMenuItem.text"/>
-                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="name" type="java.lang.String" value="networkMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
@@ -233,7 +232,6 @@
                   <action class="swapdmt.SWAPdmtView" id="showAddressBox" methodName="showAddressBox"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="addrMenuItem.text"/>
-                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="name" type="java.lang.String" value="addrMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
