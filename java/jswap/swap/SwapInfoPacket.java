@@ -21,7 +21,7 @@
  * USA
  * 
  * Author: Daniel Berenguer
- * Creation date: #cdate#
+ * Creation date: 04/01/2011
  */
 package swap;
 
@@ -36,15 +36,15 @@ public class SwapInfoPacket extends SwapPacket
 {
   /**
    * SwapInfoPacket
-   * 
+   *
    * Class constructor
-   * 
-   * 'endpoint'	Endpoint to inform about
+   *
+   * 'register'	SWAP register to inform about
    */
-  public SwapInfoPacket(SwapEndpoint endpoint) 
+  public SwapInfoPacket(SwapRegister register)
   {
     super(BROADCAST_ADDR, 0, SwapEndpoint.device.getNonce(), SwapPacket.FINFO,
-            endpoint.getAddress(), endpoint.getEpID(), endpoint.getValue());
+            register.getAddress(), register.getId(), register.getValue());
   }
 
   /**

@@ -21,7 +21,7 @@
  * USA
  * 
  * Author: Daniel Berenguer
- * Creation date: #cdate#
+ * Creation date: 04/01/2011
  */
 package swap;
 
@@ -43,15 +43,15 @@ public class SwapEndpoint
   public static SwapGateway device;
 
   /**
-   * Wireless node
+   * Swap register where the endpoint belongs to
    */
-  private SwapMote mote;
+  private SwapRegister register;
 
   /**
-   * Endpoint identifier
+   * Mask to be applied on the associated register
    */
-  private int epID;
-
+  private long mask  = 0;
+  
   /**
    * Endpoint value
    */
@@ -93,15 +93,13 @@ public class SwapEndpoint
    *
    * Class constructor
    *
-   * 'node'	Wireless mote
-   * 'id'	Endpoint id
+   * 'register'	Parent register
    * 'type'	Type of endpoint
    * 'dir'	Direction
    */
-  public SwapEndpoint(SwapMote mote, int id, Type type, Direction dir)
+  public SwapEndpoint(SwapRegister register, Type type, Direction dir)
   {
-    this.mote = mote;
-    this.epID = id;
+    this.register = register;
     this.type = type;
     this.direction = dir;
   }
@@ -113,7 +111,7 @@ public class SwapEndpoint
    */
   public void sendSwapInfo() throws CcException
   {
-    SwapInfoPacket packet = new SwapInfoPacket(this);
+    SwapInfoPacket packet = new SwapInfoPacket(register);
     packet.send();
   }
 
@@ -125,7 +123,7 @@ public class SwapEndpoint
    */
   public void sendSwapQuery() throws CcException
   {
-    mote.qryEndpoint(this.epID);
+    register.getMote().qryRegister(register.getId());
   }
 
   /**
@@ -139,7 +137,16 @@ public class SwapEndpoint
    */
   public SwapInfoPacket sendSwapCmd(SwapValue val) throws CcException
   {
-    return mote.cmdEndpoint(epID, val);
+    SwapValue newVal;
+    if (mask == 0)
+      newVal = val;
+    else
+    {
+      long shift = Long.numberOfTrailingZeros(mask);
+      long lVal = (register.getValue().toLong() & ~mask) | ((val.toLong() << shift) & mask);
+      newVal = new SwapValue(lVal);
+    }
+    return register.getMote().cmdRegister(register.getId(), newVal);
   }
 
   /**
@@ -149,7 +156,7 @@ public class SwapEndpoint
    */
   public int getAddress()
   {
-    return mote.getAddress();
+    return register.getMote().getAddress();
   }
 
   /**
@@ -159,17 +166,17 @@ public class SwapEndpoint
    */
   public int getNonce()
   {
-    return mote.getNonce();
+    return register.getMote().getNonce();
   }
 
   /**
-   * getEpID
+   * getRegisterId
    *
-   * Return endpoint ID
+   * Return register ID
    */
-  public final int getEpID()
+  public int getRegisterId()
   {
-    return epID;
+    return register.getId();
   }
 
   /**
@@ -192,6 +199,39 @@ public class SwapEndpoint
     value = val;
   }
 
+  /**
+   * setRegisterValue
+   *
+   * Set register value
+   *
+   * 'regVal'	New register value
+   *
+   * Return true if the endpoint value changed
+   */
+  public boolean setRegisterValue(SwapValue regVal)
+  {
+    register.setValue(regVal);
+    if (mask == 0)
+    {
+      if (regVal != value)
+      {
+        value = regVal;
+        return true;
+      }
+    }
+    else
+    {
+      int shift = Long.numberOfTrailingZeros(mask);
+      Long lVal = (regVal.toLong() & mask) >> shift;
+      if (lVal != value.toLong())
+      {
+        value = new SwapValue(lVal);
+        return true;
+      }
+    }
+    return false;
+  }
+  
   /**
    * getType
    *
@@ -250,5 +290,25 @@ public class SwapEndpoint
   public void setOffset(float value)
   {
     offset = value;
+  }
+
+  /**
+   * getMask
+   * 
+   * Return mask
+   */
+  public final long getMask() 
+  {
+    return mask;
+  }
+  
+  /**
+   * setMask
+   * 
+   * Set mask
+   */
+  public void setMask(long value) 
+  {
+    mask = value;
   }
 }

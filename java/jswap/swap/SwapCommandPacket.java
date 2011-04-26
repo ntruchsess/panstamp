@@ -21,7 +21,7 @@
  * USA
  * 
  * Author: Daniel Berenguer
- * Creation date: #cdate#
+ * Creation date: 04/01/2011
  */
 package swap;
 
@@ -45,7 +45,7 @@ public class SwapCommandPacket extends SwapPacket
   public SwapCommandPacket(SwapEndpoint endpoint, SwapValue val)
   {
     super(endpoint.getAddress(), 0, endpoint.getNonce(), SwapPacket.FCOMMAND,
-            endpoint.getAddress(), endpoint.getEpID(), val);
+            endpoint.getAddress(), endpoint.getRegisterId(), val);
   }
 
   /**

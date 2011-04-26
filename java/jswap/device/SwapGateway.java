@@ -21,7 +21,7 @@
  * USA
  * 
  * Author: Daniel Berenguer
- * Creation date: #cdate#
+ * Creation date: 04/01/2011
  */
 package device;
 
@@ -43,6 +43,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import java.util.ArrayList;
 import java.io.File;
+import swap.SwapRegister;
 
 /**
  * Class: Device
@@ -185,41 +186,62 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
    */
   public void swapPacketReceived(SwapPacket packet) 
   {
-    switch (packet.function)
+    try
     {
-      case SwapPacket.FINFO:
-        // Expected ack?
-        checkAck(packet);
-        // Check type of data
-        switch (packet.epID)
-        {
-          case SwapDefs.ID_PRODUCT_CODE:
-            // Add new mote to alMotes
-            // Create temporary mote
-            try
-            {
+      switch (packet.function)
+      {
+        case SwapPacket.FINFO:
+          // Expected ack?
+          checkAck(packet);
+          // Check type of data
+          switch (packet.regId)
+          {
+            case SwapDefs.ID_PRODUCT_CODE:
+              // Add new mote to alMotes
               SwapMote swapMote = new SwapMote(packet.value.toArray(), packet.srcAddress);
               swapMote.setNonce(packet.nonce);
               addMote(swapMote);
               createEndpoints(swapMote);
-            }
-            catch (XmlException ex)
-            {
-              ex.print();
-            }
-            break;
-          case SwapDefs.ID_DEVICE_ADDR:
-            // Update mote address in alMotes
-            updateMoteAddress(packet.srcAddress, packet.value.toInteger());
-            break;
-          default:
-            // Update endpoint in alEndpoints
-            updateEndpoint(packet);
-            break;
-        }
-        break;
-      default:
-        break;
+              break;
+            case SwapDefs.ID_DEVICE_ADDR:
+              // Update mote address in alMotes
+              updateMoteAddress(packet.srcAddress, packet.value.toInteger());
+              break;
+            default:
+              // Update endpoint in alEndpoints
+              updateEndpoint(packet);
+              break;
+          }
+          break;
+        case SwapPacket.FQUERY:
+          // Query sent to this gateway?
+          if (packet.destAddress == this.getAddress())
+          {
+            // Recover endpoint from array list
+            SwapEndpoint endpoint = getEndpointFromAddress(packet.regAddress, packet.regId);
+            // Send info packet
+            endpoint.sendSwapInfo();
+          }
+          break;
+        case SwapPacket.FCOMMAND:
+          // Command sent to an endpoint belonging to this gateway?
+          if (packet.destAddress == this.getAddress() && packet.destAddress == packet.regAddress)
+          {
+            // Recover endpoint from array list
+            SwapEndpoint endpoint = getEndpointFromAddress(packet.regAddress, packet.regId);
+            // Set new value
+            endpoint.setValue(packet.value);
+            // Send info packet
+            endpoint.sendSwapInfo();
+          }
+          break;
+        default:
+          break;
+      }
+    }
+    catch (CcException ex)
+    {
+      ex.print();
     }
   }
 
@@ -392,9 +414,9 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
     
     if (expectedAck != null && packet.function == SwapPacket.FINFO)
     {
-      if (packet.epAddress == expectedAck.epAddress)
+      if (packet.regAddress == expectedAck.regAddress)
       {
-        if (packet.epID == expectedAck.epID)
+        if (packet.regId == expectedAck.regId)
           packetAcked = expectedAck.value.isEqual(packet.value);
       }
     }
@@ -612,27 +634,26 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
   {
     int i;
     SwapEndpoint tmpEndpoint;
-    boolean exists = false;
 
     for(i=0 ; i<alEndpoints.size() ; i++)
     {
       tmpEndpoint = (SwapEndpoint)alEndpoints.get(i);
-      if (tmpEndpoint.getAddress() == info.epAddress)
+      if (tmpEndpoint.getAddress() == info.regAddress)
       {
-        if (tmpEndpoint.getEpID() == info.epID)
+        if (tmpEndpoint.getRegisterId() == info.regId)
         {
-          exists = true;
           // value changed?
           if (!tmpEndpoint.getValue().isEqual(info.value))
           {
             // Update value
-            tmpEndpoint.setValue(info.value);
-            // Update endpoint in the array list
-            alEndpoints.set(i, tmpEndpoint);
-            // Notify changes
-            eventHandler.endpointValueChanged(tmpEndpoint);
+            if (tmpEndpoint.setRegisterValue(info.value))
+            {
+              // Update endpoint in the array list
+              alEndpoints.set(i, tmpEndpoint);
+              // Notify changes
+              eventHandler.endpointValueChanged(tmpEndpoint);
+            }
           }
-          break;
         }
       }
     }
@@ -666,7 +687,7 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
     for(i=0 ; i<alEndpoints.size() ; i++)
     {
       tmpEndpoint = (SwapEndpoint)alEndpoints.get(i);
-      if (tmpEndpoint.getAddress() == addr && tmpEndpoint.getEpID() == id)
+      if (tmpEndpoint.getAddress() == addr && tmpEndpoint.getRegisterId() == id)
         return tmpEndpoint;
     }
     return null;
@@ -691,39 +712,50 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
    */
   public void createEndpoints(SwapMote mote) throws XmlException
   {
-    Element elRoot, elEndpoint, elem;
+    Element elRoot, elRegister, elEndpoint, elem;
 
     XmlParser parser = new XmlParser(Settings.getDeviceDir() + File.separator + Long.toHexString(mote.getManufactId()) +
                                       File.separator + Long.toHexString(mote.getProductId()) + ".xml");
 
-    if ((elRoot = parser.enterNodeName(null, "resources")) != null)
+    if ((elRoot = parser.enterNodeName(null, "registers")) != null)
     {
-      NodeList epList;
-      if ((epList = elRoot.getElementsByTagName("endpoint")) != null)
+      NodeList regList;
+      if ((regList = elRoot.getElementsByTagName("reg")) != null)
       {
         int i, id;
-        String strVal, type, dir;
-        float factor = 1, offset = 0;
-        for(i=0 ; i<epList.getLength() ; i++)
+        for(i=0 ; i<regList.getLength() ; i++)
         {
-          elEndpoint = (Element) epList.item(i);
-          strVal = elEndpoint.getAttribute("id");
-          id = Integer.parseInt(strVal);
-          type = elEndpoint.getAttribute("type");
-          dir = elEndpoint.getAttribute("dir");
-          if ((elem = parser.enterNodeName(elEndpoint, "factor")) != null)
-            factor = Float.parseFloat(parser.getNodeValue(elem));
-          if ((elem = parser.enterNodeName(elEndpoint, "offset")) != null)
-            offset = Float.parseFloat(parser.getNodeValue(elem));
+          elRegister = (Element) regList.item(i);
+          id = Integer.parseInt(elRegister.getAttribute("id"));
+          SwapRegister register = new SwapRegister(mote, id);
+          
+          NodeList epList;
+          if ((epList = elRegister.getElementsByTagName("endpoint")) != null)
+          {
+            int j;
+            String type, dir;
+            for(j=0 ; j<epList.getLength() ; j++)
+            {
+              elEndpoint = (Element) epList.item(j);
+              type = elEndpoint.getAttribute("type");
+              dir = elEndpoint.getAttribute("dir");
 
-          // Create new endpoint
-          SwapEndpoint endpoint = new SwapEndpoint(mote, id, SwapEndpoint.Type.valueOf(type), SwapEndpoint.Direction.valueOf(dir));
-          endpoint.setFactor(factor);
-          endpoint.setOffset(offset);
-          // Add endpoint to the array list
-          alEndpoints.add(endpoint);
-          // Notify changes
-          eventHandler.newEndpointDetected(endpoint);
+              // Create endpoint
+              SwapEndpoint endpoint = new SwapEndpoint(register, SwapEndpoint.Type.valueOf(type), SwapEndpoint.Direction.valueOf(dir));
+              
+              if ((elem = parser.enterNodeName(elEndpoint, "mask")) != null)
+                endpoint.setMask(Long.parseLong(parser.getNodeValue(elem), 16));
+              if ((elem = parser.enterNodeName(elEndpoint, "factor")) != null)
+                endpoint.setFactor(Float.parseFloat(parser.getNodeValue(elem)));
+              if ((elem = parser.enterNodeName(elEndpoint, "offset")) != null)
+                endpoint.setOffset(Float.parseFloat(parser.getNodeValue(elem)));
+
+              // Add endpoint to the array list
+              alEndpoints.add(endpoint);
+              // Notify changes
+              eventHandler.newEndpointDetected(endpoint);
+            }
+          }
         }
       }
     }

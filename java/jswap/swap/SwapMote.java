@@ -21,7 +21,7 @@
  * USA
  * 
  * Author: Daniel Berenguer
- * Creation date: #cdate#
+ * Creation date: 04/01/2011
  */
 package swap;
 
@@ -175,7 +175,7 @@ public class SwapMote
   public SwapInfoPacket cmdAddress(int address) throws CcException
   {
     SwapValue val = new SwapValue(address, 1);
-    return cmdEndpoint(SwapDefs.ID_DEVICE_ADDR, val);
+    return cmdRegister(SwapDefs.ID_DEVICE_ADDR, val);
   }
 
   /**
@@ -220,7 +220,7 @@ public class SwapMote
   public SwapInfoPacket cmdCarrierFreq(int carFreq) throws CcException
   {
     SwapValue val = new SwapValue(carFreq, 1);
-    return cmdEndpoint(SwapDefs.ID_CARRIER_FREQ, val);
+    return cmdRegister(SwapDefs.ID_CARRIER_FREQ, val);
   }
 
   /**
@@ -235,7 +235,7 @@ public class SwapMote
   public SwapInfoPacket cmdFreqChannel(int freqChannel) throws CcException
   {
     SwapValue val = new SwapValue(freqChannel, 1);
-    return cmdEndpoint(SwapDefs.ID_FREQ_CHANNEL, val);
+    return cmdRegister(SwapDefs.ID_FREQ_CHANNEL, val);
   }
 
   /**
@@ -250,7 +250,7 @@ public class SwapMote
   public SwapInfoPacket cmdNetworkId(int netId) throws CcException
   {
     SwapValue val = new SwapValue(netId, 2);
-    return cmdEndpoint(SwapDefs.ID_NETWORK_ID, val);
+    return cmdRegister(SwapDefs.ID_NETWORK_ID, val);
   }
 
   /**
@@ -265,7 +265,7 @@ public class SwapMote
   public SwapInfoPacket cmdSecurity(int secu) throws CcException
   {
     SwapValue val = new SwapValue(secu, 1);
-    return cmdEndpoint(SwapDefs.ID_SECU_OPTION, val);
+    return cmdRegister(SwapDefs.ID_SECU_OPTION, val);
   }
 
   /**
@@ -276,20 +276,20 @@ public class SwapMote
   public SwapInfoPacket cmdRestart() throws CcException
   {
     SwapValue val = new SwapValue(SwapDefs.SYSTATE_RESTART, 1);
-    return cmdEndpoint(SwapDefs.ID_SYSTEM_STATE, val);
+    return cmdRegister(SwapDefs.ID_SYSTEM_STATE, val);
   }
   
   /**
-   * cmdEndpoint
+   * cmdRegister
    *
-   * Send command to endpoint
+   * Send command to register
    *
-   * 'id'	Endpoint ID
+   * 'id'   Register ID
    * 'val'	New endpoint value
    *
    * Return expected response to be received from the targeted endpoint
    */
-  public SwapInfoPacket cmdEndpoint(int id, SwapValue val) throws CcException
+  public SwapInfoPacket cmdRegister(int id, SwapValue val) throws CcException
   {
     SwapInfoPacket infPacket = new SwapInfoPacket(this.getAddress(), id, val);
     SwapCommandPacket cmdPacket = new SwapCommandPacket(this.nonce, this.getAddress(), id, val);
@@ -304,13 +304,13 @@ public class SwapMote
   }
 
   /**
-   * qryEndpoint
+   * qryRegister
    *
-   * Send query to endpoint
+   * Send query to register
    *
-   * 'id'	Endpoint ID
+   * 'id'	Register ID
    */
-  public void qryEndpoint(int id) throws CcException
+  public void qryRegister(int id) throws CcException
   {
     SwapQueryPacket qryPacket = new SwapQueryPacket(this.getAddress(), id);
 

@@ -21,7 +21,7 @@
  * USA
  * 
  * Author: Daniel Berenguer
- * Creation date: #cdate#
+ * Creation date: 04/01/2011
  */
 package swap;
 
@@ -80,17 +80,17 @@ public class SwapPacket extends CcPacket
   public int function;
 
   /**
-   * Endpoint address
+   * Register address
    */
-  public int epAddress;
+  public int regAddress;
 
   /**
-   * Endpoint identifier
+   * Register identifier
    */
-  public int epID;
+  public int regId;
 
   /**
-   * Endpoint value
+   * Register value
    */
   public SwapValue value;
 
@@ -119,8 +119,8 @@ public class SwapPacket extends CcPacket
     security = packet.data[2] & 0x0F;
     nonce = packet.data[3];
     function = packet.data[4];
-    epAddress = packet.data[5];
-    epID = packet.data[6];
+    regAddress = packet.data[5];
+    regId = packet.data[6];
     
     int i;
     int[] val = new int[packet.data.length-7];
@@ -134,7 +134,7 @@ public class SwapPacket extends CcPacket
    * 
    * Class constructor
    */
-  public SwapPacket(int destAddr, int hop, int nonce, int function, int epAddr, int epId, SwapValue val)
+  public SwapPacket(int destAddr, int hop, int nonce, int function, int regAddr, int regId, SwapValue val)
   {
     int i;
     // Class members
@@ -144,8 +144,8 @@ public class SwapPacket extends CcPacket
     this.security = SwapEndpoint.device.getSecurity();
     this.nonce = nonce;
     this.function = function;
-    this.epAddress = epAddr;
-    this.epID = epId;
+    this.regAddress = regAddr;
+    this.regId = regId;
     this.value = val;
 
     // Superclass members
@@ -161,8 +161,8 @@ public class SwapPacket extends CcPacket
     data[2] |= this.security & 0x0F;
     data[3] = this.nonce;
     data[4] = this.function;
-    data[5] = this.epAddress;
-    data[6] = this.epID;
+    data[5] = this.regAddress;
+    data[6] = this.regId;
 
     if (val != null)
     {

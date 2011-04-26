@@ -21,7 +21,7 @@
  * USA
  * 
  * Author: Daniel Berenguer
- * Creation date: #cdate#
+ * Creation date: 04/01/2011
  */
 package swap;
 
@@ -50,8 +50,8 @@ public class SwapQueryPacket extends SwapPacket
     this.security = SwapEndpoint.device.getSecurity();
     this.nonce = 0;
     this.function = SwapPacket.FQUERY;
-    this.epAddress = endpoint.mote.getAddress();
-    this.epID = endpoint.epID;
+    this.regAddress = endpoint.mote.getAddress();
+    this.regId = endpoint.regId;
   }
   */
   /**
