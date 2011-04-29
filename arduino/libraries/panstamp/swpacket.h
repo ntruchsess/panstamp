@@ -104,17 +104,17 @@ class SWPACKET : public CCPACKET
     byte function;
 
     /**
-     * Endpoint address
+     * Register address
      */
-    byte epAddr;
+    byte regAddr;
 
     /**
-     * Endpoint id
+     * Register id
      */
-    byte epId;
+    byte regId;
 
     /**
-     * Endpoint value
+     * Register value
      */
     SWDATA value;
 

@@ -32,10 +32,10 @@
  * Class constructor
  * 
  * 'dAddr'	Destination address
- * 'eAddr'	Endpoint address
- * 'eId'	Endpoint id
+ * 'rAddr'	Register address
+ * 'rId'	  Register id
  */
-SWQUERY::SWQUERY(byte dAddr, byte eAddr, byte eId)
+SWQUERY::SWQUERY(byte dAddr, byte rAddr, byte rId)
 {
   destAddr = dAddr;
   srcAddr = panstamp.cc1101.devAddress;
@@ -43,8 +43,8 @@ SWQUERY::SWQUERY(byte dAddr, byte eAddr, byte eId)
   security = panstamp.security & 0x0F;
   nonce = 0;
   function = SWAPFUNCT_QRY;
-  epAddr = eAddr;
-  epId = eId;
+  regAddr = rAddr;
+  regId = rId;
   value.data = NULL;
   value.length = 0;
 }

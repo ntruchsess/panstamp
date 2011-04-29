@@ -42,8 +42,8 @@ SWPACKET::SWPACKET(CCPACKET packet)
   security = packet.data[2] & 0x0F;
   nonce = packet.data[3];
   function = packet.data[4];
-  epAddr = packet.data[5];
-  epId = packet.data[6];
+  regAddr = packet.data[5];
+  regId = packet.data[6];
   value.data = packet.data + 7;
   value.length = packet.length - SWAP_DATA_HEAD_LEN - 1;
 }
@@ -79,8 +79,8 @@ boolean SWPACKET::send(void)
   packet.data[2] |= security & 0x0F;
   packet.data[3] = nonce;
   packet.data[4] = function;
-  packet.data[5] = epAddr;
-  packet.data[6] = epId;
+  packet.data[5] = regAddr;
+  packet.data[6] = regId;
   
   for(i=0 ; i<value.length ; i++)
     packet.data[i+7] = value.data[i];

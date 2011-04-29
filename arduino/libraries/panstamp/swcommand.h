@@ -41,11 +41,11 @@ class SWCOMMAND : public SWPACKET
      * 
      * 'destAddr'	Destination address
      * 'secNonce'	Security nonce
-     * 'epAddr'	Endpoint address
-     * 'eId'	Endpoint id
-     * '*val'	New value
-     * 'len'	Buffer length
+     * 'rAddr'	  Register address
+     * 'rId'	    Register id
+     * '*val'	    New value
+     * 'len'	    Buffer length
      */
-    SWCOMMAND(byte destAddr, byte secNonce, byte epAddr, byte eId, byte *val, byte len);
+    SWCOMMAND(byte destAddr, byte secNonce, byte rAddr, byte rId, byte *val, byte len);
 };
 #endif

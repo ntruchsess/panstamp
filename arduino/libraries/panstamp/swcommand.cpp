@@ -31,14 +31,14 @@
  * 
  * Class constructor
  * 
- * 'dAddr'	Destination address
+ * 'dAddr'	  Destination address
  * 'secNonce'	Security nonce
- * 'eAddr'	Endpoint address
- * 'eId'	Endpoint id
- * '*val'	New value
- * 'len'	Buffer length
+ * 'rAddr'	  Register address
+ * 'rId'	    Register id
+ * '*val'	    New value
+ * 'len'	    Buffer length
  */
-SWCOMMAND::SWCOMMAND(byte dAddr, byte secNonce, byte eAddr, byte eId, byte *val, byte len)
+SWCOMMAND::SWCOMMAND(byte dAddr, byte secNonce, byte rAddr, byte rId, byte *val, byte len)
 {
   destAddr = dAddr;
   srcAddr = panstamp.cc1101.devAddress;
@@ -46,8 +46,8 @@ SWCOMMAND::SWCOMMAND(byte dAddr, byte secNonce, byte eAddr, byte eId, byte *val,
   security = panstamp.security & 0x0F;
   nonce = secNonce;
   function = SWAPFUNCT_CMD;
-  epAddr = eAddr;
-  epId = eId;
+  regAddr = rAddr;
+  regId = rId;
   value.data = val;
   value.length = len;
 }

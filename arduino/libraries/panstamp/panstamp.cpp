@@ -57,10 +57,10 @@ void isrGDO0event(void)
       switch(swPacket.function)
       {
         case SWAPFUNCT_CMD:
-          regTable[swPacket.epId]->setData(swPacket.value.data);
+          regTable[swPacket.regId]->setData(swPacket.value.data);
           break;
         case SWAPFUNCT_QRY:
-          regTable[swPacket.epId]->getData();
+          regTable[swPacket.regId]->getData();
           break;
         case SWAPFUNCT_INF:
           break;

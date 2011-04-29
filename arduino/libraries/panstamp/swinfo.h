@@ -39,10 +39,10 @@ class SWINFO : public SWPACKET
      * 
      * Class constructor
      * 
-     * 'eId'	Endpoint id
+     * 'rId'	Register id
      * '*val'	New value
      * 'len'	Buffer length
      */
-    SWINFO(byte eId, byte *val, byte len);
+    SWINFO(byte rId, byte *val, byte len);
 };
 #endif

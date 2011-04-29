@@ -31,11 +31,11 @@
  * 
  * Class constructor
  * 
- * 'eId'	Endpoint id
+ * 'rId'	Register id
  * '*val'	New value
  * 'len'	Buffer length
  */
-SWINFO::SWINFO(byte eId, byte *val, byte len) 
+SWINFO::SWINFO(byte rId, byte *val, byte len) 
 {
   destAddr = SWAP_BCAST_ADDR;
   srcAddr = panstamp.cc1101.devAddress;
@@ -43,8 +43,8 @@ SWINFO::SWINFO(byte eId, byte *val, byte len)
   security = panstamp.security & 0x0F;
   nonce = ++panstamp.nonce;
   function = SWAPFUNCT_INF;
-  epAddr = panstamp.cc1101.devAddress;
-  epId = eId;
+  regAddr = panstamp.cc1101.devAddress;
+  regId = rId;
   value.length = len;
   value.data = val;
 }
