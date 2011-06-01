@@ -30,9 +30,9 @@
 #define disableIRQ_GDO0()   detachInterrupt(0);
 
 /**
- * Array of registers
+ * Register getter from the global array regTable
  */
-extern REGISTER* regTable[];
+extern REGISTER * getRegister(byte regId);
 
 /**
  * isrGDO0event
@@ -43,6 +43,7 @@ void isrGDO0event(void)
 {
   CCPACKET ccPacket;
   SWPACKET swPacket;
+  REGISTER *ptrReg;
   
   // Disable interrupt
   disableIRQ_GDO0();
@@ -57,10 +58,15 @@ void isrGDO0event(void)
       switch(swPacket.function)
       {
         case SWAPFUNCT_CMD:
-          regTable[swPacket.regId]->setData(swPacket.value.data);
+          if (swPacket.destAddr != 0)   // Broadcasted commands are not allowed
+          {
+            if ((ptrReg = getRegister(swPacket.regId)) != NULL)
+              ptrReg->setData(swPacket.value.data);
+          }
           break;
         case SWAPFUNCT_QRY:
-          regTable[swPacket.regId]->getData();
+          if ((ptrReg = getRegister(swPacket.regId)) != NULL)
+            ptrReg->getData();
           break;
         case SWAPFUNCT_INF:
           break;
@@ -123,12 +129,7 @@ void PANSTAMP::init()
   bVal = EEPROM.read(EEPROM_SETUP_FLAG);
 //Serial.println(bVal, HEX);
   if (bVal == EEFLAG_STORED)
-  {
-    // Read Carrier Frequency from EEPROM
-    bVal = EEPROM.read(EEPROM_CARRIER_FREQ);
-    // Set carrier frequency
-    cc1101.setCarrierFreq((CARRIER_FREQ)bVal);
-    
+  { 
     // Read RF channel from EEPROM
     bVal = EEPROM.read(EEPROM_FREQ_CHANNEL);
     // Set RF channel
@@ -148,6 +149,17 @@ void PANSTAMP::init()
     // Set device address
     cc1101.setDevAddress(bVal);
   }
+  else  // Save current settings in EEPROM
+  {
+    security = 0;
+
+    EEPROM.write(EEPROM_SETUP_FLAG, EEFLAG_STORED);
+    EEPROM.write(EEPROM_FREQ_CHANNEL, cc1101.channel);
+    EEPROM.write(EEPROM_SECU_OPTION, security);
+    EEPROM.write(EEPROM_NETWORK_ID, cc1101.syncWord[0]);
+    EEPROM.write(EEPROM_NETWORK_ID+1, cc1101.syncWord[1]);
+    EEPROM.write(EEPROM_DEVICE_ADDR, cc1101.devAddress);
+  }
 
 // Read device address from EEPROM
 bVal = EEPROM.read(EEPROM_DEVICE_ADDR);
@@ -162,12 +174,8 @@ cc1101.setDevAddress(bVal);
   // Attach callback function for GDO0 (INT0)
   enableIRQ_GDO0();
 
-  // Send SWAP product info
-  //epTable[SWAP_PRODUCT_ID]->sendSwapInfo();
-
   // Default values
   nonce = 0xFF;
-  security = 0;
 }
 
 /**

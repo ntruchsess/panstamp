@@ -40,12 +40,14 @@
 /**
   * EEPROM addresses
   */
-#define EEPROM_SETUP_FLAG        0x00
-#define EEPROM_CARRIER_FREQ      0x01
-#define EEPROM_FREQ_CHANNEL      0x02
-#define EEPROM_SECU_OPTION       0x03
-#define EEPROM_NETWORK_ID        0x04
-#define EEPROM_DEVICE_ADDR       0x06
+enum EEPROM_ADDR
+{
+  EEPROM_SETUP_FLAG = 0,
+  EEPROM_FREQ_CHANNEL,
+  EEPROM_SECU_OPTION,
+  EEPROM_NETWORK_ID,
+  EEPROM_DEVICE_ADDR = 5
+};
 
 /**
  * EEPROM setup flag values

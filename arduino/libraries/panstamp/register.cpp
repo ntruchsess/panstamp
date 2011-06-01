@@ -54,7 +54,7 @@ void REGISTER::setData(byte *data)
 {
   // Update register value
   if (setValue != NULL)
-    setValue(data);
+    setValue(id, data);
 
   // Send SWAP information message
   sendSwapInfo();
@@ -85,3 +85,4 @@ void REGISTER::sendPriorSwapInfo(byte *newVal)
 
   packet.send();
 }
+

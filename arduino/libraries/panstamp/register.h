@@ -43,16 +43,17 @@ class REGISTER
     /**
      * Pointer to the register "updater" function
      *
-     *  'eId'  Register ID     
+     *  'rId'  Register ID 
      */
-    const void (*updateValue)(byte eId);
+    const void (*updateValue)(byte rId);
 
     /**
      * Pointer to the register "setter" function
      *
+     *  'rId'  Register ID
      *  'v'  New register value
      */
-    const void (*setValue)(byte *v);
+    const void (*setValue)(byte rId, byte *v);
 
   public:
     /**
@@ -80,7 +81,7 @@ class REGISTER
      * 'getValH'    Pointer to the getter function
      * 'setValH'    Pointer to the setter function
      */
-    REGISTER(byte *val, const byte len, const void (*updateValH)(byte eId), const void (*setValH)(byte *v)):id(regIndex++), value(val), length(len), updateValue(updateValH), setValue(setValH) {};
+    REGISTER(byte *val, const byte len, const void (*updateValH)(byte rId), const void (*setValH)(byte rId, byte *v)):id(regIndex++), value(val), length(len), updateValue(updateValH), setValue(setValH) {};
 
     /**
      * getData
