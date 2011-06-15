@@ -743,13 +743,10 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
               // Create endpoint
               SwapEndpoint endpoint = new SwapEndpoint(register, SwapEndpoint.Type.valueOf(type), SwapEndpoint.Direction.valueOf(dir));
               
-              if ((elem = parser.enterNodeName(elEndpoint, "mask")) != null)
-                endpoint.setMask(Long.parseLong(parser.getNodeValue(elem), 16));
-              if ((elem = parser.enterNodeName(elEndpoint, "factor")) != null)
-                endpoint.setFactor(Float.parseFloat(parser.getNodeValue(elem)));
-              if ((elem = parser.enterNodeName(elEndpoint, "offset")) != null)
-                endpoint.setOffset(Float.parseFloat(parser.getNodeValue(elem)));
-
+              if ((elem = parser.enterNodeName(elEndpoint, "position")) != null)
+                endpoint.setPosition(Byte.parseByte(parser.getNodeValue(elem), 16));
+              if ((elem = parser.enterNodeName(elEndpoint, "size")) != null)
+                endpoint.setSize(Byte.parseByte(parser.getNodeValue(elem), 16));
               // Add endpoint to the array list
               alEndpoints.add(endpoint);
               // Notify changes

@@ -46,11 +46,6 @@ public class SwapEndpoint
    * Swap register where the endpoint belongs to
    */
   private SwapRegister register;
-
-  /**
-   * Mask to be applied on the associated register
-   */
-  private long mask  = 0;
   
   /**
    * Endpoint value
@@ -79,14 +74,14 @@ public class SwapEndpoint
   private Direction direction;
 
   /**
-   * Factor operator
+   * Position (in bytes) of the endpoint within the parent register
    */
-  private float factor = 1;
+  private byte position = 0;
 
   /**
-   * Offset operator
+   * Size (in bytes) of the endpoint value
    */
-  private float offset = 0;
+  private byte size = 1;
 
   /**
    * SwapEndpoint
@@ -137,15 +132,24 @@ public class SwapEndpoint
    */
   public SwapInfoPacket sendSwapCmd(SwapValue val) throws CcException
   {
-    SwapValue newVal;
-    if (mask == 0)
-      newVal = val;
-    else
+    SwapValue currVal, newVal;
+
+    currVal = register.getValue();
+    int arrVal[] = new int[size];
+    int i, j = 0;
+    for(i=0 ; i<currVal.getLength() ; i++)
     {
-      long shift = Long.numberOfTrailingZeros(mask);
-      long lVal = (register.getValue().toLong() & ~mask) | ((val.toLong() << shift) & mask);
-      newVal = new SwapValue(lVal);
+      if ((i >= position) && (i < (position + size)))
+      {
+        arrVal[i] = val.toArray()[j];
+        j++;
+      }
+      else
+        arrVal[i] = currVal.toArray()[i];
     }
+
+    newVal = new SwapValue(arrVal);
+ 
     return register.getMote().cmdRegister(register.getId(), newVal);
   }
 
@@ -211,25 +215,19 @@ public class SwapEndpoint
   public boolean setRegisterValue(SwapValue regVal)
   {
     register.setValue(regVal);
-    if (mask == 0)
-    {
-      if (regVal != value)
-      {
-        value = regVal;
-        return true;
-      }
-    }
-    else
-    {
-      int shift = Long.numberOfTrailingZeros(mask);
-      Long lVal = (regVal.toLong() & mask) >> shift;
-      if (lVal != value.toLong())
-      {
-        value = new SwapValue(lVal);
-        return true;
-      }
-    }
-    return false;
+
+    int arrVal[] = new int[size];
+    int i;
+    for(i=0 ; i<size ; i++)
+      arrVal[i] = regVal.toArray()[position + i];
+
+    SwapValue swVal = new SwapValue(arrVal);
+
+    if (value.isEqual(swVal))
+      return false;
+
+    value = swVal;
+    return true;
   }
   
   /**
@@ -253,62 +251,42 @@ public class SwapEndpoint
   }
 
   /**
-   * getFactor
+   * getPosition
    *
-   * Return factor operator
+   * Return position of the endpoint (in bytes) within the register
    */
-  public final float getFactor()
+  public final byte getPosition()
   {
-    return factor;
+    return position;
   }
 
   /**
-   * setFactor
+   * setPosition
    *
-   * Set factor operator
+   * Set position of the endpoint
    */
-  public void setFactor(float value)
+  public void setPosition(byte value)
   {
-    factor = value;
+    position = value;
   }
 
   /**
-   * getOffset
+   * getSize
    *
-   * Return offset operator
+   * Return size of the endpoint value
    */
-  public final float getOffset()
+  public final byte getSize()
   {
-    return offset;
+    return size;
   }
 
   /**
-   * setOffset
+   * setSize
    *
-   * Set offset operator
+   * Set size of the endpoint value
    */
-  public void setOffset(float value)
+  public void setSize(byte value)
   {
-    offset = value;
-  }
-
-  /**
-   * getMask
-   * 
-   * Return mask
-   */
-  public final long getMask() 
-  {
-    return mask;
-  }
-  
-  /**
-   * setMask
-   * 
-   * Set mask
-   */
-  public void setMask(long value) 
-  {
-    mask = value;
+    size = value;
   }
 }

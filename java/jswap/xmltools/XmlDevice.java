@@ -26,9 +26,6 @@
 package xmltools;
 
 import org.w3c.dom.Element;
-import java.io.IOException;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 
 /**
  * Class: XmlDevice
