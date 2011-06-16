@@ -71,15 +71,15 @@ REGISTER regTempHum(dtTempHum, sizeof(dtTempHum), &updtTempHum, NULL);
 REGISTER *regTable[] = {
         &regProductCode,
         &regHwVersion,
-	&regFwVersion,
+        &regFwVersion,
         &regSysState,
-	&regFreqChannel,
-	&regSecuOption,
-	&regSecuNonce,
-	&regNetworkId,
-	&regDevAddress,
-  // Add here your custom registers
-  	&regVoltSupply,
+        &regFreqChannel,
+        &regSecuOption,
+        &regSecuNonce,
+        &regNetworkId,
+        &regDevAddress,
+        // Add here your custom registers
+        &regVoltSupply,
         &regTempHum
 }; 
 
