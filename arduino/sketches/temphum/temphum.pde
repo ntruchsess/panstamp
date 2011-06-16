@@ -51,11 +51,11 @@ void setup()
  */
 void loop()
 {
-  regTable[REGI_PRODUCTCODE]->getData();
+  getRegister(REGI_PRODUCTCODE)->getData();
   delay(10);
-  regTable[REGI_VOLTSUPPLY]->getData();
+  getRegister(REGI_VOLTSUPPLY)->getData();
   delay(10);
-  regTable[REGI_HUMIDTEMP]->getData();
+  getRegister(REGI_HUMIDTEMP)->getData();
   
   delay(100); // Wait a bit for remote commands
   

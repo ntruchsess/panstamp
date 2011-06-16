@@ -45,8 +45,6 @@ REGISTER regFwVersion(dtFwVersion, sizeof(dtFwVersion), NULL, NULL);
 // System state
 static byte dtSysState[1] = {SYSTATE_RUNNING};
 REGISTER regSysState(dtSysState, sizeof(dtSysState), NULL, &setSysState);
-// Carrier frequency
-REGISTER regCarrierFreq((byte*)(&panstamp.cc1101.carrierFreq), sizeof(panstamp.cc1101.carrierFreq), NULL, &setCarrierFreq);
 // Frequency channel
 REGISTER regFreqChannel(&panstamp.cc1101.channel, sizeof(panstamp.cc1101.channel), NULL, &setFreqChannel);
 // Security option
@@ -75,7 +73,6 @@ REGISTER *regTable[] = {
         &regHwVersion,
 	&regFwVersion,
         &regSysState,
-	&regCarrierFreq,
 	&regFreqChannel,
 	&regSecuOption,
 	&regSecuNonce,
@@ -87,17 +84,32 @@ REGISTER *regTable[] = {
 }; 
 
 /**
+ * getRegister
+ *
+ * Return pointer to register with ID = regId
+ *
+ * 'regId'  Register ID
+ */
+REGISTER * getRegister(byte regId)
+{
+  if (regId >= sizeof(regTable))
+    return NULL;
+
+  return regTable[regId]; 
+}
+
+/**
  * "Update/Set" handling functions
  */
-
 /**
  * setSysState
  *
  * Set system state
  *
+ * 'id'     Register ID
  * 'state'  New system state
  */
-const void setSysState(byte *state)
+const void setSysState(byte id, byte *state)
 { 
   switch(state[0])
   {
@@ -107,26 +119,8 @@ const void setSysState(byte *state)
       panstamp.reset();
       break;
     default:
-      regSysState.value[0] = state[0];
       break;
   }
-}
-
-/**
- * setCarrierFreq
- *
- * Set carrier frequency
- *
- * 'freq'  New carrier frequency
- */
-const void setCarrierFreq(byte *freq)
-{
-  // Send info message before entering the new carrier frequency
-  regCarrierFreq.sendPriorSwapInfo(freq);
-  // Update register value
-  panstamp.cc1101.setCarrierFreq((CARRIER_FREQ)freq[0]);
-  // Save in EEPROM
-  EEPROM.write(EEPROM_CARRIER_FREQ, regCarrierFreq.value[0]);
 }
 
 /**
@@ -134,9 +128,10 @@ const void setCarrierFreq(byte *freq)
  *
  * Set frequency channel
  *
+ * 'id'       Register ID
  * 'channel'  New channel
  */
-const void setFreqChannel(byte *channel)
+const void setFreqChannel(byte id, byte *channel)
 {
   // Send info message before entering the new frequency channel
   regFreqChannel.sendPriorSwapInfo(channel);
@@ -151,9 +146,10 @@ const void setFreqChannel(byte *channel)
  *
  * Set security option
  *
+ * 'id'    Register ID
  * 'secu'  New security option
  */
-const void setSecuOption(byte *secu)
+const void setSecuOption(byte id, byte *secu)
 {
   // Send info message before applying the new security option
   regSecuOption.sendPriorSwapInfo(secu);
@@ -168,9 +164,10 @@ const void setSecuOption(byte *secu)
  *
  * Set device address
  *
+ * 'id'    Register ID
  * 'addr'  New device address
  */
-const void setDevAddress(byte *addr)
+const void setDevAddress(byte id, byte *addr)
 {
   if (addr[0] > 0)
   {
@@ -190,14 +187,15 @@ const void setDevAddress(byte *addr)
  *
  * Set network id
  *
- * 'id'  New network id
+ * 'rId' Register ID
+ * 'nId'  New network id
  */
-const void setNetworkId(byte *id)
+const void setNetworkId(byte rId, byte *nId)
 {
   // Send info before taking the new network ID
-  regNetworkId.sendPriorSwapInfo(id);
+  regNetworkId.sendPriorSwapInfo(nId);
   // Update register value
-  panstamp.cc1101.setSyncWord(id);
+  panstamp.cc1101.setSyncWord(nId);
   // Save in EEPROM
   EEPROM.write(EEPROM_NETWORK_ID, regNetworkId.value[0]);
   EEPROM.write(EEPROM_NETWORK_ID + 1, regNetworkId.value[1]);

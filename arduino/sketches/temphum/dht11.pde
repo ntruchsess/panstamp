@@ -1,5 +1,5 @@
 /**
- * dht11.cpp
+ * dht11.pde
  *
  * Copyright (c) 2011 Daniel Berenguer <dberenguer@usapiens.com>
  * 

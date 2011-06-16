@@ -24,8 +24,8 @@
  * Creation date: 03/31/2011
  */
 
-#ifndef _EPTABLE_H
-#define _EPTABLE_H
+#ifndef _REGTABLE_H
+#define _REGTABLE_H
 
 #include "WProgram.h"
 #include "register.h"
@@ -40,7 +40,6 @@ enum REGINDEX
   REGI_HWVERSION,
   REGI_FWVERSION,
   REGI_SYSSTATE,
-  REGI_CARRIERFREQ,
   REGI_FREQCHANNEL,
   REGI_SECUOPTION,
   REGI_SECUNONCE,
@@ -61,9 +60,13 @@ enum SYSTATE
 };
 
 /**
- * Array of registers
+ * getRegister
+ *
+ * Return pointer to register with ID = regId
+ *
+ * 'regId'  Register ID
  */
-extern REGISTER* regTable[];
+REGISTER * getRegister(byte regId);
 
 #endif
 
