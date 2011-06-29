@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<device>
+  <manufacturer>panStamp</manufacturer>
+  <product>Chronos</product>
+  <pwrdownmode>true</pwrdownmode>
+  <registers>
+    <reg id="12">
+      <endpoint type="analog" dir="input">
+        <description>temperature</description>
+        <position>0</position>
+        <size>2</size>
+      </endpoint>
+      <endpoint type="analog" dir="input">
+        <description>pressure</description>
+        <position>2</position>
+        <size>4</size>
+      </endpoint>
+      <endpoint type="analog" dir="input">
+        <description>altitude</description>
+        <position>6</position>
+        <size>2</size>
+      </endpoint>
+    </reg>
+  </registers>
+</device>
