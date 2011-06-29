@@ -34,18 +34,10 @@ package swapdmt;
 public class NetworkPanel extends javax.swing.JPanel
 {
   /** Creates new form NetworkPanel */
-    public NetworkPanel(int carrierFreq, int freqChannel, int networkId, int security)
+    public NetworkPanel(int freqChannel, int networkId, int security)
     {
         initComponents();
 
-        /*
-        NumberFormat f = NumberFormat.getInstance();
-        f.setMaximumIntegerDigits(3);
-        jTextNetId = new JFormattedTextField(f);
-        readXml();
-        */
-
-        jComboCarrierFreq.setSelectedIndex(carrierFreq);
         jComboFreqChannel.setSelectedIndex(freqChannel);
         jTextNetId.setText(Integer.toString(networkId, 16));
         jComboSecurity.setSelectedIndex(security);
@@ -60,11 +52,9 @@ public class NetworkPanel extends javax.swing.JPanel
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    jLabel1 = new javax.swing.JLabel();
     jLabel2 = new javax.swing.JLabel();
     jLabel3 = new javax.swing.JLabel();
     jLabel4 = new javax.swing.JLabel();
-    jComboCarrierFreq = new javax.swing.JComboBox();
     jComboFreqChannel = new javax.swing.JComboBox();
     jComboSecurity = new javax.swing.JComboBox();
     jTextNetId = new javax.swing.JFormattedTextField();
@@ -72,9 +62,6 @@ public class NetworkPanel extends javax.swing.JPanel
     setName("Form"); // NOI18N
 
     org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(swapdmt.SWAPdmtApp.class).getContext().getResourceMap(NetworkPanel.class);
-    jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
-    jLabel1.setName("jLabel1"); // NOI18N
-
     jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
     jLabel2.setName("jLabel2"); // NOI18N
 
@@ -83,9 +70,6 @@ public class NetworkPanel extends javax.swing.JPanel
 
     jLabel4.setText(resourceMap.getString("jLabel4.text")); // NOI18N
     jLabel4.setName("jLabel4"); // NOI18N
-
-    jComboCarrierFreq.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "868 MHz", "915 MHz" }));
-    jComboCarrierFreq.setName("jComboCarrierFreq"); // NOI18N
 
     jComboFreqChannel.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" }));
     jComboFreqChannel.setName("jComboFreqChannel"); // NOI18N
@@ -103,7 +87,6 @@ public class NetworkPanel extends javax.swing.JPanel
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jLabel1)
           .addComponent(jLabel2)
           .addComponent(jLabel4)
           .addComponent(jLabel3))
@@ -111,18 +94,13 @@ public class NetworkPanel extends javax.swing.JPanel
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
           .addComponent(jTextNetId)
           .addComponent(jComboSecurity, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jComboFreqChannel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jComboCarrierFreq, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        .addContainerGap())
+          .addComponent(jComboFreqChannel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jLabel1)
-          .addComponent(jComboCarrierFreq, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel2)
           .addComponent(jComboFreqChannel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -140,25 +118,13 @@ public class NetworkPanel extends javax.swing.JPanel
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JComboBox jComboCarrierFreq;
   private javax.swing.JComboBox jComboFreqChannel;
   private javax.swing.JComboBox jComboSecurity;
-  private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JFormattedTextField jTextNetId;
   // End of variables declaration//GEN-END:variables
-
-  /**
-   * getCarrierFreq
-   *
-   * Return selected carrier frequency
-   */
-  public int getCarrierFreq()
-  {
-    return jComboCarrierFreq.getSelectedIndex();
-  }
 
   /**
    * getFreqChannel
@@ -198,61 +164,4 @@ public class NetworkPanel extends javax.swing.JPanel
   {
     return jComboSecurity.getSelectedIndex();
   }
-
-  /**
-   * readXml
-   *
-   * Set network parameters from config file
-   */
-  /*
-  private void readXml()
-  {
-    Element elRoot, elem;
-    try
-    {
-      XmlParser parser = new XmlParser(configFile);
-      if ((elRoot = parser.enterNodeName(null, "network")) != null)
-      {
-        if ((elem = parser.enterNodeName(elRoot, "carrierfreq")) != null)
-          jComboCarrierFreq.getModel().setSelectedItem(parser.getNodeValue(elem));
-        if ((elem = parser.enterNodeName(elRoot, "frecchannel")) != null)
-          jComboFreqChannel.setSelectedIndex(Integer.parseInt(parser.getNodeValue(elem)));
-        if ((elem = parser.enterNodeName(elRoot, "networkid")) != null)
-          jTextNetId.setText(parser.getNodeValue(elem));
-        if ((elem = parser.enterNodeName(elRoot, "security")) != null)
-          jComboSecurity.setSelectedIndex(Integer.parseInt(parser.getNodeValue(elem)));
-      }
-    }
-    catch (XmlException ex)
-    {
-      ex.print();
-    }
-  }
-  */
-
-  /**
-   * writeXml
-   *
-   * Write network config file
-   */
-  /*
-  private void writeXml()
-  {
-    try
-    {
-      BufferedWriter out = new BufferedWriter(new FileWriter(configFile));
-      out.write("<?xml version=\"1.0\"?>\n");
-      out.write("<network>\n");
-      out.write("\t<carrierfreq>" + getCarrierFreq() + "</carrierfreq>\n");
-      out.write("\t<frecchannel>" + getFreqChannel() + "</frecchannel>\n");
-      out.write("\t<networkid>" + getNetworkId() + "</networkid>\n");
-      out.write("\t<security>" + getSecurity() + "</security>\n");
-      out.write("</network>\n");
-    }
-    catch (IOException ex)
-    {
-      //throw new PortAlertException("Unable to create " + phpConstants);
-    }
-  }
-  */
 }

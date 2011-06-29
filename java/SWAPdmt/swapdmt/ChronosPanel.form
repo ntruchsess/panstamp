@@ -1,0 +1,714 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <Properties>
+    <Property name="name" type="java.lang.String" value="Form" noResource="true"/>
+  </Properties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="2"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                  <Component id="jTabbedPanePages" alignment="0" min="0" pref="0" max="32767" attributes="1"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Group type="102" alignment="0" attributes="1">
+                                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                      <Component id="jComboTimeHour" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="1">
+                                      <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                      <Component id="jComboAlarmHour" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                                      <Component id="jComboTimeMin" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                                      <Component id="jComboAlarmMin" min="-2" max="-2" attributes="1"/>
+                                  </Group>
+                              </Group>
+                          </Group>
+                          <Component id="jCheckBoxMetrics" alignment="1" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" alignment="1" groupAlignment="0" max="-2" attributes="0">
+                              <Group type="102" alignment="0" attributes="1">
+                                  <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="jComboDay" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Component id="jLabel8" alignment="1" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="jComboMonth" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="jComboYear" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Group type="103" alignment="0" groupAlignment="1" attributes="0">
+                                      <Component id="jLabel10" alignment="1" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jComboPeriod" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                          </Group>
+                          <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                              <Component id="jTextAltitude" alignment="0" max="32767" attributes="1"/>
+                              <Component id="jTextTemperature" alignment="0" pref="76" max="32767" attributes="1"/>
+                          </Group>
+                      </Group>
+                  </Group>
+              </Group>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jComboTimeMin" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jComboDay" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jComboMonth" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jComboYear" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jComboTimeHour" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jComboAlarmHour" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jComboAlarmMin" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jTextTemperature" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="jLabel10" alignment="1" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jTextAltitude" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jCheckBoxMetrics" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jComboPeriod" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Component id="jTabbedPanePages" min="-2" pref="214" max="-2" attributes="0"/>
+              <EmptySpace pref="30" max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel1.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel1" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="jComboTimeHour">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="24">
+            <StringItem index="0" value="00"/>
+            <StringItem index="1" value="01"/>
+            <StringItem index="2" value="02"/>
+            <StringItem index="3" value="03"/>
+            <StringItem index="4" value="04"/>
+            <StringItem index="5" value="05"/>
+            <StringItem index="6" value="06"/>
+            <StringItem index="7" value="07"/>
+            <StringItem index="8" value="08"/>
+            <StringItem index="9" value="09"/>
+            <StringItem index="10" value="10"/>
+            <StringItem index="11" value="11"/>
+            <StringItem index="12" value="12"/>
+            <StringItem index="13" value="13"/>
+            <StringItem index="14" value="14"/>
+            <StringItem index="15" value="15"/>
+            <StringItem index="16" value="16"/>
+            <StringItem index="17" value="17"/>
+            <StringItem index="18" value="18"/>
+            <StringItem index="19" value="19"/>
+            <StringItem index="20" value="20"/>
+            <StringItem index="21" value="21"/>
+            <StringItem index="22" value="22"/>
+            <StringItem index="23" value="23"/>
+          </StringArray>
+        </Property>
+        <Property name="name" type="java.lang.String" value="jComboTimeHour" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel2">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel2.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel2" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="jComboTimeMin">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="60">
+            <StringItem index="0" value="00"/>
+            <StringItem index="1" value="01"/>
+            <StringItem index="2" value="02"/>
+            <StringItem index="3" value="03"/>
+            <StringItem index="4" value="04"/>
+            <StringItem index="5" value="05"/>
+            <StringItem index="6" value="06"/>
+            <StringItem index="7" value="07"/>
+            <StringItem index="8" value="08"/>
+            <StringItem index="9" value="09"/>
+            <StringItem index="10" value="10"/>
+            <StringItem index="11" value="11"/>
+            <StringItem index="12" value="12"/>
+            <StringItem index="13" value="13"/>
+            <StringItem index="14" value="14"/>
+            <StringItem index="15" value="15"/>
+            <StringItem index="16" value="16"/>
+            <StringItem index="17" value="17"/>
+            <StringItem index="18" value="18"/>
+            <StringItem index="19" value="19"/>
+            <StringItem index="20" value="20"/>
+            <StringItem index="21" value="21"/>
+            <StringItem index="22" value="22"/>
+            <StringItem index="23" value="23"/>
+            <StringItem index="24" value="24"/>
+            <StringItem index="25" value="25"/>
+            <StringItem index="26" value="26"/>
+            <StringItem index="27" value="27"/>
+            <StringItem index="28" value="28"/>
+            <StringItem index="29" value="29"/>
+            <StringItem index="30" value="30"/>
+            <StringItem index="31" value="31"/>
+            <StringItem index="32" value="32"/>
+            <StringItem index="33" value="33"/>
+            <StringItem index="34" value="34"/>
+            <StringItem index="35" value="35"/>
+            <StringItem index="36" value="36"/>
+            <StringItem index="37" value="37"/>
+            <StringItem index="38" value="38"/>
+            <StringItem index="39" value="39"/>
+            <StringItem index="40" value="40"/>
+            <StringItem index="41" value="41"/>
+            <StringItem index="42" value="42"/>
+            <StringItem index="43" value="43"/>
+            <StringItem index="44" value="44"/>
+            <StringItem index="45" value="45"/>
+            <StringItem index="46" value="46"/>
+            <StringItem index="47" value="47"/>
+            <StringItem index="48" value="48"/>
+            <StringItem index="49" value="49"/>
+            <StringItem index="50" value="50"/>
+            <StringItem index="51" value="51"/>
+            <StringItem index="52" value="52"/>
+            <StringItem index="53" value="53"/>
+            <StringItem index="54" value="54"/>
+            <StringItem index="55" value="55"/>
+            <StringItem index="56" value="56"/>
+            <StringItem index="57" value="57"/>
+            <StringItem index="58" value="58"/>
+            <StringItem index="59" value="59"/>
+          </StringArray>
+        </Property>
+        <Property name="name" type="java.lang.String" value="jComboTimeMin" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel3">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel3.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel3" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel4">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel4.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel4" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="jComboAlarmHour">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="24">
+            <StringItem index="0" value="00"/>
+            <StringItem index="1" value="01"/>
+            <StringItem index="2" value="02"/>
+            <StringItem index="3" value="03"/>
+            <StringItem index="4" value="04"/>
+            <StringItem index="5" value="05"/>
+            <StringItem index="6" value="06"/>
+            <StringItem index="7" value="07"/>
+            <StringItem index="8" value="08"/>
+            <StringItem index="9" value="09"/>
+            <StringItem index="10" value="10"/>
+            <StringItem index="11" value="11"/>
+            <StringItem index="12" value="12"/>
+            <StringItem index="13" value="13"/>
+            <StringItem index="14" value="14"/>
+            <StringItem index="15" value="15"/>
+            <StringItem index="16" value="16"/>
+            <StringItem index="17" value="17"/>
+            <StringItem index="18" value="18"/>
+            <StringItem index="19" value="19"/>
+            <StringItem index="20" value="20"/>
+            <StringItem index="21" value="21"/>
+            <StringItem index="22" value="22"/>
+            <StringItem index="23" value="23"/>
+          </StringArray>
+        </Property>
+        <Property name="name" type="java.lang.String" value="jComboAlarmHour" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel5">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel5.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel5" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="jComboAlarmMin">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="59">
+            <StringItem index="0" value="00"/>
+            <StringItem index="1" value="01"/>
+            <StringItem index="2" value="02"/>
+            <StringItem index="3" value="03"/>
+            <StringItem index="4" value="04"/>
+            <StringItem index="5" value="05"/>
+            <StringItem index="6" value="06"/>
+            <StringItem index="7" value="07"/>
+            <StringItem index="8" value="08"/>
+            <StringItem index="9" value="09"/>
+            <StringItem index="10" value="10"/>
+            <StringItem index="11" value="11"/>
+            <StringItem index="12" value="12"/>
+            <StringItem index="13" value="13"/>
+            <StringItem index="14" value="14"/>
+            <StringItem index="15" value="15"/>
+            <StringItem index="16" value="16"/>
+            <StringItem index="17" value="17"/>
+            <StringItem index="18" value="18"/>
+            <StringItem index="19" value="19"/>
+            <StringItem index="20" value="20"/>
+            <StringItem index="21" value="21"/>
+            <StringItem index="22" value="22"/>
+            <StringItem index="23" value="23"/>
+            <StringItem index="24" value="24"/>
+            <StringItem index="25" value="25"/>
+            <StringItem index="26" value="26"/>
+            <StringItem index="27" value="27"/>
+            <StringItem index="28" value="28"/>
+            <StringItem index="29" value="29"/>
+            <StringItem index="30" value="30"/>
+            <StringItem index="31" value="31"/>
+            <StringItem index="32" value="32"/>
+            <StringItem index="33" value="34"/>
+            <StringItem index="34" value="35"/>
+            <StringItem index="35" value="36"/>
+            <StringItem index="36" value="37"/>
+            <StringItem index="37" value="38"/>
+            <StringItem index="38" value="39"/>
+            <StringItem index="39" value="40"/>
+            <StringItem index="40" value="41"/>
+            <StringItem index="41" value="42"/>
+            <StringItem index="42" value="43"/>
+            <StringItem index="43" value="44"/>
+            <StringItem index="44" value="45"/>
+            <StringItem index="45" value="46"/>
+            <StringItem index="46" value="47"/>
+            <StringItem index="47" value="48"/>
+            <StringItem index="48" value="49"/>
+            <StringItem index="49" value="50"/>
+            <StringItem index="50" value="51"/>
+            <StringItem index="51" value="52"/>
+            <StringItem index="52" value="53"/>
+            <StringItem index="53" value="54"/>
+            <StringItem index="54" value="55"/>
+            <StringItem index="55" value="56"/>
+            <StringItem index="56" value="57"/>
+            <StringItem index="57" value="58"/>
+            <StringItem index="58" value="59"/>
+          </StringArray>
+        </Property>
+        <Property name="name" type="java.lang.String" value="jComboAlarmMin" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel7">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel7.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel7" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="jTextTemperature">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jTextTemperature.text"/>
+        <Property name="name" type="java.lang.String" value="jTextTemperature" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel8">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel8.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel8" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="jTextAltitude">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jTextAltitude.text"/>
+        <Property name="name" type="java.lang.String" value="jTextAltitude" noResource="true"/>
+      </Properties>
+    </Component>
+    <Container class="javax.swing.JTabbedPane" name="jTabbedPanePages">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="jTabbedPanePages" noResource="true"/>
+      </Properties>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="jPanelPage0">
+          <Properties>
+            <Property name="name" type="java.lang.String" value="jPanelPage0" noResource="true"/>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Page 0">
+                <Property name="tabTitle" type="java.lang.String" resourceKey="jPanelPage0.TabConstraints.tabTitle"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="503" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="171" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanelPage1">
+          <Properties>
+            <Property name="name" type="java.lang.String" value="jPanelPage1" noResource="true"/>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Page 1">
+                <Property name="tabTitle" type="java.lang.String" resourceKey="jPanelPage1.TabConstraints.tabTitle"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="503" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="171" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanelPage2">
+          <Properties>
+            <Property name="name" type="java.lang.String" value="jPanelPage2" noResource="true"/>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Page 2">
+                <Property name="tabTitle" type="java.lang.String" resourceKey="jPanelPage2.TabConstraints.tabTitle"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="503" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="171" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanelPage3">
+          <Properties>
+            <Property name="name" type="java.lang.String" value="jPanelPage3" noResource="true"/>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Page 3">
+                <Property name="tabTitle" type="java.lang.String" resourceKey="jPanelPage3.TabConstraints.tabTitle"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="503" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="171" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanelPage4">
+          <Properties>
+            <Property name="name" type="java.lang.String" value="jPanelPage4" noResource="true"/>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Page 4">
+                <Property name="tabTitle" type="java.lang.String" resourceKey="jPanelPage4.TabConstraints.tabTitle"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="503" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="171" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+        </Container>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JLabel" name="jLabel9">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel9.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel9" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="jComboDay">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="31">
+            <StringItem index="0" value="01"/>
+            <StringItem index="1" value="02"/>
+            <StringItem index="2" value="03"/>
+            <StringItem index="3" value="04"/>
+            <StringItem index="4" value="05"/>
+            <StringItem index="5" value="06"/>
+            <StringItem index="6" value="07"/>
+            <StringItem index="7" value="08"/>
+            <StringItem index="8" value="09"/>
+            <StringItem index="9" value="10"/>
+            <StringItem index="10" value="11"/>
+            <StringItem index="11" value="12"/>
+            <StringItem index="12" value="13"/>
+            <StringItem index="13" value="14"/>
+            <StringItem index="14" value="15"/>
+            <StringItem index="15" value="16"/>
+            <StringItem index="16" value="17"/>
+            <StringItem index="17" value="18"/>
+            <StringItem index="18" value="19"/>
+            <StringItem index="19" value="20"/>
+            <StringItem index="20" value="21"/>
+            <StringItem index="21" value="22"/>
+            <StringItem index="22" value="23"/>
+            <StringItem index="23" value="24"/>
+            <StringItem index="24" value="25"/>
+            <StringItem index="25" value="26"/>
+            <StringItem index="26" value="27"/>
+            <StringItem index="27" value="28"/>
+            <StringItem index="28" value="29"/>
+            <StringItem index="29" value="30"/>
+            <StringItem index="30" value="31"/>
+          </StringArray>
+        </Property>
+        <Property name="name" type="java.lang.String" value="jComboDay" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel6">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel6.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel6" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="jComboMonth">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="12">
+            <StringItem index="0" value="January"/>
+            <StringItem index="1" value="February"/>
+            <StringItem index="2" value="March"/>
+            <StringItem index="3" value="April"/>
+            <StringItem index="4" value="May"/>
+            <StringItem index="5" value="June"/>
+            <StringItem index="6" value="July"/>
+            <StringItem index="7" value="August"/>
+            <StringItem index="8" value="September"/>
+            <StringItem index="9" value="October"/>
+            <StringItem index="10" value="November"/>
+            <StringItem index="11" value="December"/>
+          </StringArray>
+        </Property>
+        <Property name="name" type="java.lang.String" value="jComboMonth" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="jComboYear">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="15">
+            <StringItem index="0" value="2011"/>
+            <StringItem index="1" value="2012"/>
+            <StringItem index="2" value="2013"/>
+            <StringItem index="3" value="2014"/>
+            <StringItem index="4" value="2015"/>
+            <StringItem index="5" value="2016"/>
+            <StringItem index="6" value="2017"/>
+            <StringItem index="7" value="2018"/>
+            <StringItem index="8" value="2019"/>
+            <StringItem index="9" value="2020"/>
+            <StringItem index="10" value="2021"/>
+            <StringItem index="11" value="2022"/>
+            <StringItem index="12" value="2023"/>
+            <StringItem index="13" value="2024"/>
+            <StringItem index="14" value="2025"/>
+          </StringArray>
+        </Property>
+        <Property name="name" type="java.lang.String" value="jComboYear" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="jCheckBoxMetrics">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" resourceKey="jCheckBoxMetrics.text"/>
+        <Property name="name" type="java.lang.String" value="jCheckBoxMetrics" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="jComboPeriod">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="61">
+            <StringItem index="0" value="00"/>
+            <StringItem index="1" value="01"/>
+            <StringItem index="2" value="02"/>
+            <StringItem index="3" value="03"/>
+            <StringItem index="4" value="04"/>
+            <StringItem index="5" value="05"/>
+            <StringItem index="6" value="06"/>
+            <StringItem index="7" value="07"/>
+            <StringItem index="8" value="08"/>
+            <StringItem index="9" value="09"/>
+            <StringItem index="10" value="10"/>
+            <StringItem index="11" value="11"/>
+            <StringItem index="12" value="12"/>
+            <StringItem index="13" value="13"/>
+            <StringItem index="14" value="14"/>
+            <StringItem index="15" value="15"/>
+            <StringItem index="16" value="16"/>
+            <StringItem index="17" value="17"/>
+            <StringItem index="18" value="18"/>
+            <StringItem index="19" value="19"/>
+            <StringItem index="20" value="20"/>
+            <StringItem index="21" value="21"/>
+            <StringItem index="22" value="22"/>
+            <StringItem index="23" value="23"/>
+            <StringItem index="24" value="24"/>
+            <StringItem index="25" value="25"/>
+            <StringItem index="26" value="26"/>
+            <StringItem index="27" value="27"/>
+            <StringItem index="28" value="28"/>
+            <StringItem index="29" value="29"/>
+            <StringItem index="30" value="30"/>
+            <StringItem index="31" value="31"/>
+            <StringItem index="32" value="32"/>
+            <StringItem index="33" value="33"/>
+            <StringItem index="34" value="34"/>
+            <StringItem index="35" value="35"/>
+            <StringItem index="36" value="36"/>
+            <StringItem index="37" value="37"/>
+            <StringItem index="38" value="38"/>
+            <StringItem index="39" value="39"/>
+            <StringItem index="40" value="40"/>
+            <StringItem index="41" value="41"/>
+            <StringItem index="42" value="42"/>
+            <StringItem index="43" value="43"/>
+            <StringItem index="44" value="44"/>
+            <StringItem index="45" value="45"/>
+            <StringItem index="46" value="46"/>
+            <StringItem index="47" value="47"/>
+            <StringItem index="48" value="48"/>
+            <StringItem index="49" value="49"/>
+            <StringItem index="50" value="50"/>
+            <StringItem index="51" value="51"/>
+            <StringItem index="52" value="52"/>
+            <StringItem index="53" value="53"/>
+            <StringItem index="54" value="54"/>
+            <StringItem index="55" value="55"/>
+            <StringItem index="56" value="56"/>
+            <StringItem index="57" value="57"/>
+            <StringItem index="58" value="58"/>
+            <StringItem index="59" value="59"/>
+            <StringItem index="60" value="60"/>
+          </StringArray>
+        </Property>
+        <Property name="name" type="java.lang.String" value="jComboPeriod" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel10">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel10.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel10" noResource="true"/>
+      </Properties>
+    </Component>
+  </SubComponents>
+</Form>

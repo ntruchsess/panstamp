@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <NonVisualComponents>
+    <Component class="javax.swing.ButtonGroup" name="butGroupEndpType0">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="butGroupEndpDir0">
+    </Component>
+  </NonVisualComponents>
+  <Properties>
+    <Property name="name" type="java.lang.String" value="Form" noResource="true"/>
+  </Properties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="2"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Group type="102" alignment="0" attributes="1">
+                      <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jTextDevAddr" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="jLabel11" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel40" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="jTextRegId" alignment="1" pref="47" max="32767" attributes="1"/>
+                          <Component id="jTextRegAddr" alignment="1" pref="47" max="32767" attributes="1"/>
+                          <Component id="jTextLabel" alignment="1" max="32767" attributes="1"/>
+                      </Group>
+                  </Group>
+                  <Component id="jLabel12" alignment="0" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="jRadioButtonInput" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="jRadioButtonBinary" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="jCheckBoxHasDec" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+                      <Component id="jLabel13" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="jTextPosition" min="-2" pref="47" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jLabel14" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jRadioButtonOutput" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="jRadioButtonAnalog" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" alignment="0" groupAlignment="1" attributes="0">
+                      <Group type="102" alignment="1" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jTextSize" min="-2" pref="43" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jLabel15" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jTextDelta" min="-2" pref="52" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="jCheckBoxShowSign" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+                          <Component id="jCheckBoxCombined" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+              </Group>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jTextDevAddr" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jRadioButtonBinary" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jRadioButtonAnalog" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jTextRegAddr" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jRadioButtonInput" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jRadioButtonOutput" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jLabel12" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jTextRegId" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jCheckBoxHasDec" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jCheckBoxShowSign" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jCheckBoxCombined" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jTextSize" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel14" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jTextPosition" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jTextLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel40" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel13" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel15" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jTextDelta" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JLabel" name="jLabel10">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel10.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel10" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel11">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel11.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel11" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel12">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel12.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel12" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel40">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel40.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel40" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="jTextLabel">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="jTextLabel" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="jTextRegId">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="jTextRegId" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="jTextRegAddr">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="jTextRegAddr" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="jTextDevAddr">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="jTextDevAddr" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JRadioButton" name="jRadioButtonBinary">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jRadioButtonBinary.text"/>
+        <Property name="name" type="java.lang.String" value="jRadioButtonBinary" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JRadioButton" name="jRadioButtonInput">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" resourceKey="jRadioButtonInput.text"/>
+        <Property name="name" type="java.lang.String" value="jRadioButtonInput" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="jCheckBoxHasDec">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jCheckBoxHasDec.text"/>
+        <Property name="name" type="java.lang.String" value="jCheckBoxHasDec" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="jTextPosition">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jTextPosition.text"/>
+        <Property name="name" type="java.lang.String" value="jTextPosition" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel13">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel13.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel13" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel14">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel14.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel14" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="jTextSize">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jTextSize.text"/>
+        <Property name="name" type="java.lang.String" value="jTextSize" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="jCheckBoxShowSign">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jCheckBoxShowSign.text"/>
+        <Property name="name" type="java.lang.String" value="jCheckBoxShowSign" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JRadioButton" name="jRadioButtonOutput">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jRadioButtonOutput.text"/>
+        <Property name="name" type="java.lang.String" value="jRadioButtonOutput" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JRadioButton" name="jRadioButtonAnalog">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" resourceKey="jRadioButtonAnalog.text"/>
+        <Property name="name" type="java.lang.String" value="jRadioButtonAnalog" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="jCheckBoxCombined">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jCheckBoxCombined.text"/>
+        <Property name="name" type="java.lang.String" value="jCheckBoxCombined" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="jTextDelta">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jTextDelta.text"/>
+        <Property name="name" type="java.lang.String" value="jTextDelta" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel15">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel15.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel15" noResource="true"/>
+      </Properties>
+    </Component>
+  </SubComponents>
+</Form>

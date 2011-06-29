@@ -28,17 +28,12 @@ package swapdmt;
 
 import device.DeviceEventHandler;
 import device.SwapGateway;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import swap.SwapEndpoint;
 import swap.SwapMote;
 import ccexception.CcException;
-import device.Settings;
-import xmltools.XmlParser;
+import swap.SwapDefs;
 import xmltools.XmlException;
 
-import org.w3c.dom.Element;
-import xmltools.XmlNetwork;
 
 /**
  * SWAPdmt class
@@ -63,9 +58,9 @@ public class SWAPdmt implements DeviceEventHandler
   private SwapGateway swapGateway;
 
   /**
-   * SWAP address of the serial gateway
+   * True if the there is connection to the serial gateway
    */
-  private int address;
+  private boolean isConnected = false;
   
   /**
    * Class constructor
@@ -95,12 +90,40 @@ public class SWAPdmt implements DeviceEventHandler
     try
     {
       swapGateway.connect();
-      address = swapGateway.getAddress();
+      isConnected = true;
     }
     catch (CcException ex)
     {
       ex.print();
     }
+  }
+
+  /**
+   * disconnect
+   *
+   * Disconnect SWAP comms
+   */
+  public void disconnect()
+  {
+    try
+    {
+      swapGateway.disconnect();
+      isConnected = false;
+    }
+    catch (CcException ex)
+    {
+      ex.print();
+    }
+  }
+
+  /**
+   * isConnected
+   *
+   * SWAP connection successfully running
+   */
+  public boolean isConnected()
+  {
+    return isConnected;
   }
 
   /**
@@ -110,7 +133,6 @@ public class SWAPdmt implements DeviceEventHandler
    */
   public void updateMoteList()
   {
-    //view.addMoteToList(mote);
     view.clearMoteList();
 
     SwapMote swapMote;
@@ -148,6 +170,22 @@ public class SWAPdmt implements DeviceEventHandler
   }
 
   /**
+   * moteStateChanged
+   * 
+   * System state changed on the mote passed as argument
+   * 
+   * 'mote'	Wireless mote
+   */
+  public void moteStateChanged(SwapMote mote)
+  {
+     // Get mote address
+    int devAddr = mote.getAddress();
+    // State = SYNC mode?
+    if (mote.getState() == SwapDefs.SYSTATE_SYNC)
+      view.syncReceived(devAddr);
+  }
+
+  /**
    * newEndpointDetected
    *
    * New endpoint detected in the wireless network
@@ -156,6 +194,7 @@ public class SWAPdmt implements DeviceEventHandler
    */
   public void newEndpointDetected(SwapEndpoint endpoint)
   {
+
   }
 
   /**
@@ -168,7 +207,7 @@ public class SWAPdmt implements DeviceEventHandler
   public void endpointValueChanged(SwapEndpoint endpoint)
   {
   }
-  
+
   /**
    * getMote
    *
@@ -182,6 +221,18 @@ public class SWAPdmt implements DeviceEventHandler
   }
 
   /**
+   * getMoteFromAddress
+   *
+   * Get SWAP mote given its device address
+   *
+   * 'index'  Index of the mote
+   */
+  public SwapMote getMoteFromAddress(int devAddr)
+  {
+    return swapGateway.getMoteFromAddress(devAddr);
+  }
+
+  /**
    * removeMote
    *
    * Remove SWAP mote from list
@@ -191,6 +242,34 @@ public class SWAPdmt implements DeviceEventHandler
   public void removeMote(int index)
   {
     swapGateway.removeMote(index);
+  }
+
+  /**
+   * getMoteManufacturer
+   *
+   * Return the manufacturer string of the mote with the address passed as argument
+   *
+   * 'devAddr'  Device address of the mote
+   */
+  public String getMoteManufacturer(int devAddr)
+  {
+    SwapMote mote = this.swapGateway.getMoteFromAddress(devAddr);
+
+    return mote.getManufacturer();
+  }
+
+  /**
+   * getMoteProduct
+   *
+   * Return the product string of the mote with the address passed as argument
+   *
+   * 'devAddr'  Device address of the mote
+   */
+  public String getMoteProduct(int devAddr)
+  {
+    SwapMote mote = this.swapGateway.getMoteFromAddress(devAddr);
+
+    return mote.getProduct();
   }
 
   /**
@@ -218,7 +297,6 @@ public class SWAPdmt implements DeviceEventHandler
    *
    * Configure network parameters in all motes available
    *
-   * 'carFreq'      Carrier frequency
    * 'freqChannel'  Frequency channel
    * 'netId'        Network id
    * 'secu'         Security option
@@ -226,14 +304,12 @@ public class SWAPdmt implements DeviceEventHandler
    * Return true if the functions completes successfully
    * Return false otherwise
    */
-  public boolean setNetworkParams(int carFreq, int freqChannel, int netId, int secu)
+  public boolean setNetworkParams(int freqChannel, int netId, int secu)
   {
     boolean res = true;
 
     try
     {
-      if (!swapGateway.setCarrierFreq(carFreq))
-        res = false;
       if (!swapGateway.setFreqChannel(freqChannel))
         res = false;
       if (!swapGateway.setNetId(netId))
@@ -266,16 +342,6 @@ public class SWAPdmt implements DeviceEventHandler
   public int getNetworkId()
   {
     return swapGateway.getNetId();
-  }
-
-  /**
-   * getCarrierFreq
-   *
-   * Get the carrier frequency programmed into the serial gateway
-   */
-  public int getCarrierFreq()
-  {
-    return swapGateway.getCarrierFreq();
   }
 
   /**

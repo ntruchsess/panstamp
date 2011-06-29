@@ -1,4 +1,4 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.7">
   <NonVisualComponents>
@@ -26,8 +26,8 @@
                                       <Component id="jLabelManufact" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="jLabelProduct" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="jLabelAddress" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="jLabelProductDescr" alignment="0" pref="218" max="32767" attributes="1"/>
-                                      <Component id="jLabelManufactDescr" alignment="0" pref="218" max="32767" attributes="1"/>
+                                      <Component id="jLabelProductDescr" alignment="0" pref="305" max="32767" attributes="1"/>
+                                      <Component id="jLabelManufactDescr" alignment="0" pref="305" max="32767" attributes="1"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -39,7 +39,9 @@
                           <Component id="jButtonSetAddress" min="-2" pref="97" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jButtonSetEndpoint" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
+                          <Component id="jLabelStatus" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="519" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -71,6 +73,7 @@
                       <Component id="jButtonConnect" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButtonSetAddress" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButtonSetEndpoint" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabelStatus" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
               </Group>
@@ -167,6 +170,12 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonConnectPressed"/>
           </Events>
         </Component>
+        <Component class="javax.swing.JLabel" name="jLabelStatus">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jLabelStatus.text"/>
+            <Property name="name" type="java.lang.String" value="jLabelStatus" noResource="true"/>
+          </Properties>
+        </Component>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JMenuBar" name="menuBar">
@@ -233,6 +242,15 @@
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="addrMenuItem.text"/>
                 <Property name="name" type="java.lang.String" value="addrMenuItem" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="chronosMenuItem">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="swapdmt.SWAPdmtView" id="showChronosBox" methodName="showChronosBox"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="chronosMenuItem.text"/>
+                <Property name="name" type="java.lang.String" value="chronosMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
           </SubComponents>
