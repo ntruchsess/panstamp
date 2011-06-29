@@ -87,8 +87,18 @@ public class CcModem implements Gateway
   {
     packetHandler = parent;
     commPort = new TtyPort(this, port, speed);
-    commPort.connect();
     CcPacket.setModem(this);
+  }
+
+
+  /**
+   * connect
+   *
+   * Connect serial modem
+   */
+  public void connect() throws CcException
+  {
+    commPort.connect();
   }
 
   /**
@@ -143,11 +153,15 @@ public class CcModem implements Gateway
   private String runAtCommand(String cmd) throws CcException
   {
     atResponseReceived = false;
-    System.out.println("command: " + cmd);
     commPort.send(cmd);
 
-    if (!waitForResponse(2000))
-      return "-1";
+    atResponse = "(";
+    while (atResponse.startsWith("("))
+    {
+      if (!waitForResponse(2000))
+        return "-1";
+    }
+
     return atResponse;
   }
 
@@ -159,7 +173,9 @@ public class CcModem implements Gateway
    * 'packet'	CC1101 packet to be sent
    */
   public void sendCcPacket(CcPacket packet) throws CcException
-  { 
+  {
+    if (serMode == SerialMode.COMMAND)
+      goToDataMode();
     commPort.send(packet.toString() + "\r");
   }
 

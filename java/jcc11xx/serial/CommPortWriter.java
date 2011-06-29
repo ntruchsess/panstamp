@@ -103,7 +103,7 @@ public class CommPortWriter extends Thread
    */
   public synchronized void send(String msg) throws CcException
   {
-    //System.out.println("Send: " + msg);
+    System.out.println("Send: " + msg);
     this.message = msg;
     sendDataFlag = true;
     notify();
