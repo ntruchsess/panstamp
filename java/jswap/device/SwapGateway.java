@@ -90,11 +90,6 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
   private int freqChannel;
 
   /**
-   * Carrier frequency
-   */
-  private int carrierFreq;
-
-  /**
    * Vector of SWAP motes
    */
   private ArrayList alMotes;
@@ -137,8 +132,6 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
 
     this.eventHandler = parent;
 
-    // Read general settings from XML file
-    Settings.read();
     // Generate serial parameters from XML file
     serial = new XmlSerial(Settings.getSerialFile());
     // Generate network settings from XML file
@@ -160,10 +153,10 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
   {
     // SwapComm object
     swapComm = new SwapComm(this, serial.getPort(), serial.getSpeed());
-
+    // Start SWAP comms
+    swapComm.connect();
+    
     int val;
-    if ((val = swapComm.getCarrierFreq()) >= 0)
-      carrierFreq = val;
     if ((val = swapComm.getFreqChannel()) >= 0)
       freqChannel = val;
     if ((val = swapComm.getNetworkId()) >= 0)
@@ -171,12 +164,21 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
     if ((val = swapComm.getAddress()) > 0)
       setAddress(val);
 
-    // Start SWAP comms
-    swapComm.connect();
     // Discover wireless motes
+    alMotes.clear();
     discoverMotes();
   }
 
+  /**
+   * disconnect
+   *
+   * Stop SWAP comms and disconnect serial port
+   */
+  public void disconnect() throws CcException
+  {
+    swapComm.disconnect();
+  }
+  
   /**
    * swapPacketReceived
    * 
@@ -206,6 +208,9 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
             case SwapDefs.ID_DEVICE_ADDR:
               // Update mote address in alMotes
               updateMoteAddress(packet.srcAddress, packet.value.toInteger());
+              break;
+            case SwapDefs.ID_SYSTEM_STATE:
+              newMoteState(packet);
               break;
             default:
               // Update endpoint in alEndpoints
@@ -280,6 +285,7 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
     if (!exists)
     {
       alMotes.add(mote);
+
       eventHandler.newMoteDetected(mote);
     }
   }
@@ -359,6 +365,7 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
       {
         tmpMote.setAddress(newAddr);
         alMotes.set(i, tmpMote);
+
         eventHandler.newMoteDetected(tmpMote);
         break;
       }
@@ -431,56 +438,6 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
   public final int getSecurity()
   {
     return network.getSecurity();
-  }
-
-  /**
-   * getCarrierFreq
-   *
-   * Return carrier frequency
-   */
-  public final int getCarrierFreq()
-  {
-    return carrierFreq;
-  }
-
-  /**
-   * setCarrierFreq
-   *
-   * Set carrier frequency
-   */
-  public boolean setCarrierFreq(int value) throws CcException
-  {
-    SwapMote tmpMote;
-    SwapInfoPacket ack;
-    boolean res = true;
-    int i = 0, tries = 0;
-
-    while(i < alMotes.size())
-    {
-      tmpMote = (SwapMote) alMotes.get(i);
-      ack = tmpMote.cmdCarrierFreq(value);
-      if (tmpMote.getPwrDownMode())
-        i++;
-      else
-      {
-        tries++;
-        if (waitForAck(ack, MAX_WAITTIME_ACK))
-        {
-          i++;
-          tries = 0;
-        }
-        else if (tries == MAX_CONFIG_TRIES)
-        {
-          i++;
-          tries = 0;
-          res = false;
-        }
-      }
-    }
-    if (swapComm.setCarrierFreq(value))
-      carrierFreq = value;
-
-    return res;
   }
 
   /**
@@ -660,6 +617,35 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
   }
 
   /**
+   * newMoteState
+   *
+   * New mote state received
+   *
+   * 'info'	SWAP packet containing information about the state
+   */
+  private void newMoteState(SwapPacket info)
+  {
+    if (info.regId != SwapDefs.ID_SYSTEM_STATE)
+      return;
+    
+    SwapMote mote = getMoteFromAddress(info.srcAddress);
+
+    if (mote != null)
+    {
+      if (info.value.getLength() != 1)
+        return;
+
+      int state = info.value.toInteger();
+
+      if (mote.getState() != state)
+      {
+        mote.setState(state);
+        eventHandler.moteStateChanged(mote);
+      }
+    }
+  }
+
+  /**
    * getEndpointFromIndex
    *
    * Get endpoint given its index in the array list
@@ -744,9 +730,9 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
               SwapEndpoint endpoint = new SwapEndpoint(register, SwapEndpoint.Type.valueOf(type), SwapEndpoint.Direction.valueOf(dir));
               
               if ((elem = parser.enterNodeName(elEndpoint, "position")) != null)
-                endpoint.setPosition(Byte.parseByte(parser.getNodeValue(elem), 16));
+                endpoint.setPosition(Byte.parseByte(parser.getNodeValue(elem)));
               if ((elem = parser.enterNodeName(elEndpoint, "size")) != null)
-                endpoint.setSize(Byte.parseByte(parser.getNodeValue(elem), 16));
+                endpoint.setSize(Byte.parseByte(parser.getNodeValue(elem)));
               // Add endpoint to the array list
               alEndpoints.add(endpoint);
               // Notify changes

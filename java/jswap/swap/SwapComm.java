@@ -50,6 +50,16 @@ public class SwapComm implements CcPacketHandler
   private SwapPacketHandler packetHandler;
 
   /**
+   * Serial port
+   */
+  private String serPort;
+
+  /**
+   * Serial speed
+   */
+  private int serSpeed;
+
+  /**
    * Data rate
    */
   private final static int dataRate = 0;
@@ -71,7 +81,9 @@ public class SwapComm implements CcPacketHandler
   public SwapComm(SwapPacketHandler parent, String port, int speed) throws CcException
   {
     packetHandler = parent;
-    modem = new CcModem(this, port, speed);
+    serPort = port;
+    serSpeed = speed;
+    modem = new CcModem(this, serPort, serSpeed);
   }
 
   /**
@@ -81,7 +93,18 @@ public class SwapComm implements CcPacketHandler
    */
   public void connect() throws CcException
   {
+    modem.connect();
     modem.goToDataMode();
+  }
+
+  /**
+   * disconnect
+   *
+   * Stop SWAP comms
+   */
+  public void disconnect() throws CcException
+  {
+    modem.close();
   }
 
   /**

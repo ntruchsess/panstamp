@@ -62,6 +62,11 @@ public class SwapMote
   private int nonce = 0;
 
   /**
+   * System state
+   */
+  private int state = SwapDefs.SYSTATE_RUNNING;
+
+  /**
    * Mote definition
    */
   private XmlDevice definition;
@@ -81,6 +86,9 @@ public class SwapMote
    */
   public SwapMote(int[] productCode, int address) throws XmlException
   {
+    // Read general settings from XML file
+    Settings.read();
+    
     int i;
     for(i=0 ; i<4 ; i++)
       manufactId |= productCode[i] << 8*(3-i);
@@ -209,21 +217,6 @@ public class SwapMote
   }
 
   /**
-   * cmdCarrierFreq
-   *
-   * Send command to mote in order to change its carrier frequency
-   *
-   * 'carFreq'	New carrier frequency
-   *
-   * Return expected response to be received from the targeted endpoint
-   */
-  public SwapInfoPacket cmdCarrierFreq(int carFreq) throws CcException
-  {
-    SwapValue val = new SwapValue(carFreq, 1);
-    return cmdRegister(SwapDefs.ID_CARRIER_FREQ, val);
-  }
-
-  /**
    * cmdFreqChannel
    *
    * Send command to mote in order to change its frequency channel
@@ -293,11 +286,12 @@ public class SwapMote
   {
     SwapInfoPacket infPacket = new SwapInfoPacket(this.getAddress(), id, val);
     SwapCommandPacket cmdPacket = new SwapCommandPacket(this.nonce, this.getAddress(), id, val);
-
+/*
     // The mote may be sleeping at this moment
     if (this.getPwrDownMode())
       pendingPacket = cmdPacket; // Place the message for later transmission
     else
+ */
       cmdPacket.send();
 
     return infPacket;
@@ -333,5 +327,25 @@ public class SwapMote
       pendingPacket.send();
       pendingPacket = null;
     }
+  }
+  
+  /**
+   * getState
+   *
+   * Return system state
+   */
+  public final int getState()
+  {
+    return state;
+  }
+
+  /**
+   * setState
+   *
+   * Set new system state
+   */
+  public void setState(int value)
+  {
+    state = value;
   }
 }

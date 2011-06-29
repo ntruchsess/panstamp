@@ -248,5 +248,26 @@ public class SwapValue
 
     return true;
   }
+
+  /**
+   * parseSwapValue
+   *
+   * Parse SwapValue from string
+   *
+   * 'str'	String to be parsed
+   *
+   * Returns:
+   *   SwapValue
+   */
+  public static SwapValue parseSwapValue(String str)
+  {
+    int i, len = str.length()/2;
+    int[] arr = new int[len];
+
+    for(i=0 ; i<len ; i++)
+      arr[i] = Integer.parseInt(str.substring(i*2, 2));
+
+    return new SwapValue(arr);
+  }
 }
 

@@ -54,7 +54,16 @@ public interface DeviceEventHandler
    * 'mote'	Wireless mote
    */
   public void moteAddressChanged(SwapMote mote);
-  
+
+  /**
+   * moteStateChanged
+   *
+   * System state changed on the mote passed as argument
+   *
+   * 'mote'	Wireless mote
+   */
+  public void moteStateChanged(SwapMote mote);
+
   /**
    * newEndpointDetected
    * 

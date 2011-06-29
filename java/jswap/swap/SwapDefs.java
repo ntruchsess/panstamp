@@ -61,23 +61,25 @@ public class SwapDefs
   /**
    * Function codes
    */
+
   /**
-   * Basic SWAP endpoint ID's
+   * Basic SWAP register ID's
    */
   public static final int ID_PRODUCT_CODE = 0;
   public static final int ID_HW_VERSION = 1;
   public static final int ID_FW_VERSION = 2;
   public static final int ID_SYSTEM_STATE = 3;
-  public static final int ID_CARRIER_FREQ = 4;
-  public static final int ID_FREQ_CHANNEL = 5;
-  public static final int ID_SECU_OPTION = 6;
-  public static final int ID_SECU_NONCE = 7;
-  public static final int ID_NETWORK_ID = 8;
-  public static final int ID_DEVICE_ADDR = 9;
+  public static final int ID_FREQ_CHANNEL = 4;
+  public static final int ID_SECU_OPTION = 5;
+  public static final int ID_SECU_NONCE = 6;
+  public static final int ID_NETWORK_ID = 7;
+  public static final int ID_DEVICE_ADDR = 8;
 
   /**
-   * System states
+   * Basic System states
    */
   public static final int SYSTATE_RESTART = 0;
   public static final int SYSTATE_RUNNING = 1;
+  public static final int SYSTATE_SYNC = 2;
+  public static final int SYSTATE_STOP = 3;
 }
