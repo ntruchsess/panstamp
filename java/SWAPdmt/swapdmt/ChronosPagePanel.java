@@ -269,7 +269,7 @@ public class ChronosPagePanel extends javax.swing.JPanel {
   public SwapValue getPage()
   {
     int[] arr = new int[11];
-    String buf = jTextLabel.getText();
+    String buf = jTextLabel.getText().toUpperCase();
     int i;
 
     // Endpoint label
