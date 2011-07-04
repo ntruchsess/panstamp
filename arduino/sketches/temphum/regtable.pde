@@ -43,8 +43,7 @@ REGISTER regHwVersion(dtHwVersion, sizeof(dtHwVersion), NULL, NULL);
 static byte dtFwVersion[4] = {FIRMWARE_VERSION >> 24, FIRMWARE_VERSION >> 16 , FIRMWARE_VERSION >> 8, FIRMWARE_VERSION};
 REGISTER regFwVersion(dtFwVersion, sizeof(dtFwVersion), NULL, NULL);
 // System state
-static byte dtSysState[1] = {SYSTATE_RUNNING};
-REGISTER regSysState(dtSysState, sizeof(dtSysState), NULL, &setSysState);
+REGISTER regSysState(&panstamp.systemState, sizeof(panstamp.systemState), NULL, &setSysState);
 // Frequency channel
 REGISTER regFreqChannel(&panstamp.cc1101.channel, sizeof(panstamp.cc1101.channel), NULL, &setFreqChannel);
 // Security option
@@ -55,6 +54,7 @@ REGISTER regSecuNonce(&panstamp.nonce, sizeof(panstamp.nonce), NULL, NULL);
 REGISTER regNetworkId(&panstamp.cc1101.syncWord[0], sizeof(panstamp.cc1101.syncWord), NULL, &setNetworkId);
 // Device address
 REGISTER regDevAddress(&panstamp.cc1101.devAddress, sizeof(panstamp.cc1101.devAddress), NULL, &setDevAddress);
+
 /*
  * Add here your custom registers
  */
@@ -84,20 +84,10 @@ REGISTER *regTable[] = {
 }; 
 
 /**
- * getRegister
- *
- * Return pointer to register with ID = regId
- *
- * 'regId'  Register ID
+ * Size of regTable
  */
-REGISTER * getRegister(byte regId)
-{
-  if (regId >= sizeof(regTable))
-    return NULL;
-
-  return regTable[regId]; 
-}
-
+ byte regTableSize = sizeof(regTable);
+ 
 /**
  * "Update/Set" handling functions
  */
@@ -115,8 +105,11 @@ const void setSysState(byte id, byte *state)
   {
     case SYSTATE_RESTART:
       // Send info message before restarting the mote
-      regSysState.sendPriorSwapInfo(state);
+//    regSysState.sendPriorSwapInfo(state);
       panstamp.reset();
+      break;
+    case SYSTATE_SYNC:
+      panstamp.systemState = SYSTATE_SYNC;
       break;
     default:
       break;
@@ -133,12 +126,15 @@ const void setSysState(byte id, byte *state)
  */
 const void setFreqChannel(byte id, byte *channel)
 {
-  // Send info message before entering the new frequency channel
-  regFreqChannel.sendPriorSwapInfo(channel);
-  // Update register value
-  panstamp.cc1101.setChannel(channel[0]);
-  // Save in EEPROM
-  EEPROM.write(EEPROM_FREQ_CHANNEL, regFreqChannel.value[0]);
+  if (channel[0] != regFreqChannel.value[0])
+  {
+    // Send info message before entering the new frequency channel
+    regFreqChannel.sendPriorSwapInfo(channel);
+    // Update register value
+    panstamp.cc1101.setChannel(channel[0], true);
+    // Restart device
+    panstamp.reset();
+  }
 }
 
 /**
@@ -151,12 +147,13 @@ const void setFreqChannel(byte id, byte *channel)
  */
 const void setSecuOption(byte id, byte *secu)
 {
-  // Send info message before applying the new security option
-  regSecuOption.sendPriorSwapInfo(secu);
-  // Update register value
-  panstamp.security = secu[0] & 0x0F;
-  // Save in EEPROM
-  EEPROM.write(EEPROM_SECU_OPTION, regSecuOption.value[0]);
+  if (secu[0] != regSecuOption.value[0])
+  {
+    // Send info message before applying the new security option
+    regSecuOption.sendPriorSwapInfo(secu);
+    // Update register value
+    panstamp.setSecurity(secu[0] & 0x0F, true);
+  }
 }
 
 /**
@@ -169,14 +166,12 @@ const void setSecuOption(byte id, byte *secu)
  */
 const void setDevAddress(byte id, byte *addr)
 {
-  if (addr[0] > 0)
+  if ((addr[0] > 0) && (addr[0] != regDevAddress.value[0]))
   {
     // Send info before taking the new address
-    regDevAddress.sendPriorSwapInfo(addr);
+    regDevAddress.sendPriorSwapInfo(addr);    
     // Update register value
-    panstamp.cc1101.setDevAddress(addr[0]);
-    // Save in EEPROM
-    EEPROM.write(EEPROM_DEVICE_ADDR, regDevAddress.value[0]);
+    panstamp.cc1101.setDevAddress(addr[0], true);
     // Restart device
     panstamp.reset();
   }
@@ -192,13 +187,15 @@ const void setDevAddress(byte id, byte *addr)
  */
 const void setNetworkId(byte rId, byte *nId)
 {
-  // Send info before taking the new network ID
-  regNetworkId.sendPriorSwapInfo(nId);
-  // Update register value
-  panstamp.cc1101.setSyncWord(nId);
-  // Save in EEPROM
-  EEPROM.write(EEPROM_NETWORK_ID, regNetworkId.value[0]);
-  EEPROM.write(EEPROM_NETWORK_ID + 1, regNetworkId.value[1]);
+  if ((nId[0] != regNetworkId.value[0]) || (nId[1] != regNetworkId.value[1]))
+  {
+    // Send info before taking the new network ID
+    regNetworkId.sendPriorSwapInfo(nId);
+    // Update register value
+    panstamp.cc1101.setSyncWord(nId, true);
+    // Restart device
+    panstamp.reset();
+  }
 }
 
 /**

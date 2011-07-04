@@ -34,14 +34,10 @@
  */
 void setup()
 { 
-/*
-  Serial.begin(9600);
-  Serial.flush();
-
-  Serial.println("Let's go sensor!");
-*/
   // Init panStamp
   panstamp.init();
+  
+  getRegister(REGI_PRODUCTCODE)->getData();
 }
 
 /**
@@ -51,13 +47,7 @@ void setup()
  */
 void loop()
 {
-  getRegister(REGI_PRODUCTCODE)->getData();
-  delay(10);
-  getRegister(REGI_VOLTSUPPLY)->getData();
-  delay(10);
   getRegister(REGI_HUMIDTEMP)->getData();
-  
-  delay(100); // Wait a bit for remote commands
   
   panstamp.sleepFor(WDTO_8S);
 }

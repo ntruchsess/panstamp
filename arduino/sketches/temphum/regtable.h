@@ -33,8 +33,7 @@
 /**
  * Register indexes
  */
-
-enum REGINDEX
+enum CUSTOM_REGINDEX
 {
   REGI_PRODUCTCODE = 0,
   REGI_HWVERSION,
@@ -48,25 +47,6 @@ enum REGINDEX
   REGI_VOLTSUPPLY,
   REGI_HUMIDTEMP
 };
-
-/**
- * System states
- */
-enum SYSTATE
-{
-  SYSTATE_RESTART = 0,
-  SYSTATE_RUNNING,
-  SYSTATE_SYNC
-};
-
-/**
- * getRegister
- *
- * Return pointer to register with ID = regId
- *
- * 'regId'  Register ID
- */
-REGISTER * getRegister(byte regId);
 
 #endif
 
