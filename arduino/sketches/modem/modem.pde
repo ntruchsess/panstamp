@@ -29,6 +29,7 @@
 #include "TimerOne.h"
 #include "EEPROM.h"
 
+
 #define enableIRQ()    attachInterrupt(0, isrINT0event, FALLING);
 #define disableIRQ()   detachInterrupt(0);
 
@@ -188,7 +189,7 @@ void handleSerialCmd(char* command)
         {
           if (i < CFREQ_LAST)
           {
-            cc1101.setCarrierFreq((CARRIER_FREQ)i);
+            cc1101.setCarrierFreq(i, true);
             Serial.println("OK");
           }
           else
@@ -202,7 +203,7 @@ void handleSerialCmd(char* command)
       {
         if (atQuery == ATQUERY_COMMAND)
         {
-          cc1101.setChannel(i);
+          cc1101.setChannel(i, true);
           Serial.println("OK");
         }
         else
@@ -219,7 +220,7 @@ void handleSerialCmd(char* command)
             arrV[0] |= charToHex(strSerial[6]);
             arrV[1] = charToHex(strSerial[7]) << 4;
             arrV[1] |= charToHex(strSerial[8]);
-            cc1101.setSyncWord(arrV);
+            cc1101.setSyncWord(arrV, true);
             Serial.println("OK");
           }
           else
@@ -236,7 +237,7 @@ void handleSerialCmd(char* command)
       {
         if (atQuery == ATQUERY_COMMAND)
         {
-          cc1101.setDevAddress(i);
+          cc1101.setDevAddress(i, true);
           Serial.println("OK");
         }
         else
@@ -270,6 +271,9 @@ void setup()
    
   // Setup CC1101
   cc1101.init();
+
+  // Disable address check from the CC1101 IC
+  cc1101.disableAddressCheck();
 
   delayMicroseconds(50);  
 
@@ -308,7 +312,7 @@ void loop()
     else
     {
       strSerial[len] = ch; 
-      len++;    
+      len++;
     }
   }
 }
