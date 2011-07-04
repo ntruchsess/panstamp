@@ -43,15 +43,15 @@ class REGISTER
     /**
      * Pointer to the register "updater" function
      *
-     *  'rId'  Register ID 
+     *  'rId'  Register ID     
      */
     const void (*updateValue)(byte rId);
 
     /**
      * Pointer to the register "setter" function
      *
-     *  'rId'  Register ID
-     *  'v'  New register value
+     *  'rId'  Register ID     
+     *  'v'    New register value
      */
     const void (*setValue)(byte rId, byte *v);
 

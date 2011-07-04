@@ -38,16 +38,9 @@
 #include <avr/power.h>
 
 /**
-  * EEPROM addresses
-  */
-enum EEPROM_ADDR
-{
-  EEPROM_SETUP_FLAG = 0,
-  EEPROM_FREQ_CHANNEL,
-  EEPROM_SECU_OPTION,
-  EEPROM_NETWORK_ID,
-  EEPROM_DEVICE_ADDR = 5
-};
+ * Macros
+ */
+#define setSwapInfoCallBack(ptrFunc)   infoReceived = ptrFunc
 
 /**
  * System states

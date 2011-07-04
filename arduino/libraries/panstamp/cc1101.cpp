@@ -223,7 +223,7 @@ void CC1101::setDefaultRegs(void)
 /**
  * init
  * 
- * Initialize CC1101
+ * Initializa CC1101
  */
 void CC1101::init(void) 
 {

@@ -379,7 +379,7 @@ class CC1101
     /**
      * init
      * 
-     * Initialize CC1101
+     * Initializa CC1101
      */
     void init(void);
 
@@ -435,7 +435,7 @@ class CC1101
      * 
      * Put CC1101 into power-down state
      */
-    void setPowerDownState(void);
+    void setPowerDownState();
     
     /**
      * sendData
@@ -455,10 +455,9 @@ class CC1101
      * 
      * Read data packet from RX FIFO
      * 
-     * 'packet'	Container for the packet received
-     *
      * Return:
-     * 	Amount of bytes received
+     * 	Amount fo bytes received
+     * 'packet'	Container for the packet received
      */
     byte receiveData(CCPACKET *packet);
 

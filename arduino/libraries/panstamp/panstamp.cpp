@@ -31,9 +31,9 @@
 #define disableIRQ_GDO0()       detachInterrupt(0);
 
 /**
- * Register getter from the global array regTable
+ * Array of registers
  */
-extern REGISTER * getRegister(byte regId);
+extern REGISTER* regTable[];
 extern byte regTableSize;
 
 /**
@@ -70,7 +70,7 @@ void isrGDO0event(void)
 {
   CCPACKET ccPacket;
   SWPACKET swPacket;
-  REGISTER *ptrReg;
+  REGISTER *reg;
   
   // Disable interrupt
   disableIRQ_GDO0();
@@ -85,15 +85,20 @@ void isrGDO0event(void)
       switch(swPacket.function)
       {
         case SWAPFUNCT_CMD:
-          if (swPacket.destAddr != 0)   // Broadcasted commands are not allowed
-          {
-            if ((ptrReg = getRegister(swPacket.regId)) != NULL)
-              ptrReg->setData(swPacket.value.data);
-          }
+          // Valid register?
+          if ((reg = getRegister(swPacket.regId)) == NULL)
+            break;
+          // Filter incorrect data lengths
+          if (swPacket.value.length == reg->length)
+            reg->setData(swPacket.value.data);
+          else
+            reg->sendSwapInfo();
           break;
         case SWAPFUNCT_QRY:
-          if ((ptrReg = getRegister(swPacket.regId)) != NULL)
-            ptrReg->getData();
+          // Valid register?
+          if ((reg = getRegister(swPacket.regId)) == NULL)
+            break;
+          reg->getData();
           break;
         case SWAPFUNCT_INF:
           // User callback function declared?
@@ -155,46 +160,8 @@ void PANSTAMP::init()
   // Setup CC1101
   cc1101.init();
 
-//EEPROM.write(EEPROM_SETUP_FLAG, 0xFF);
-  bVal = EEPROM.read(EEPROM_SETUP_FLAG);
-//Serial.println(bVal, HEX);
-  if (bVal == EEFLAG_STORED)
-  { 
-    // Read RF channel from EEPROM
-    bVal = EEPROM.read(EEPROM_FREQ_CHANNEL);
-    // Set RF channel
-    cc1101.setChannel(bVal);
-
-    // Read security option byte from EEPROM
-    security = EEPROM.read(EEPROM_SECU_OPTION);
-
-    // Read network id from EEPROM
-    arrV[0] = EEPROM.read(EEPROM_NETWORK_ID);
-    arrV[1] = EEPROM.read(EEPROM_NETWORK_ID + 1);
-    // Set Sync word
-    cc1101.setSyncWord(arrV);
-    
-    // Read device address from EEPROM
-    bVal = EEPROM.read(EEPROM_DEVICE_ADDR);
-    // Set device address
-    cc1101.setDevAddress(bVal);
-  }
-  else  // Save current settings in EEPROM
-  {
-    security = 0;
-
-    EEPROM.write(EEPROM_SETUP_FLAG, EEFLAG_STORED);
-    EEPROM.write(EEPROM_FREQ_CHANNEL, cc1101.channel);
-    EEPROM.write(EEPROM_SECU_OPTION, security);
-    EEPROM.write(EEPROM_NETWORK_ID, cc1101.syncWord[0]);
-    EEPROM.write(EEPROM_NETWORK_ID+1, cc1101.syncWord[1]);
-    EEPROM.write(EEPROM_DEVICE_ADDR, cc1101.devAddress);
-  }
-
-// Read device address from EEPROM
-bVal = EEPROM.read(EEPROM_DEVICE_ADDR);
-// Set device address
-cc1101.setDevAddress(bVal);
+  // Read security option byte from EEPROM
+  security = EEPROM.read(EEPROM_SECU_OPTION);
 
   delayMicroseconds(50);  
 
@@ -206,6 +173,7 @@ cc1101.setDevAddress(bVal);
 
   // Default values
   nonce = 0xFF;
+  systemState = SYSTATE_RUNNING;
 }
 
 /**
