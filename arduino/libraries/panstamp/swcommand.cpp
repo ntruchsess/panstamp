@@ -25,6 +25,7 @@
  */
 
 #include "swcommand.h"
+#include "panstamp.h"
 
 /**
  * SWCOMMAND

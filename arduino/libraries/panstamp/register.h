@@ -76,8 +76,8 @@ class REGISTER
      * 
      * Constructor
      * 
-     * 'val'	    Pointer to the register value
-     * 'len'	    Length of the register value
+     * 'val'	      Pointer to the register value
+     * 'len'	      Length of the register value
      * 'getValH'    Pointer to the getter function
      * 'setValH'    Pointer to the setter function
      */
@@ -110,7 +110,7 @@ class REGISTER
     /**
      * sendPriorSwapInfo
      * 
-     * Send SWAP information message before applying teh new value
+     * Send SWAP information message before applying the new value
      *
      * 'newVal'  New value
      */

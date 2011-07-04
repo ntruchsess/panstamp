@@ -50,10 +50,15 @@ enum EEPROM_ADDR
 };
 
 /**
- * EEPROM setup flag values
+ * System states
  */
-#define EEFLAG_EMPTY             0xFF
-#define EEFLAG_STORED            0x00
+enum SYSTATE
+{
+  SYSTATE_RESTART = 0,
+  SYSTATE_RUNNING,
+  SYSTATE_SYNC,
+  SYSTATE_STOP
+};
 
 /**
  * Class: PANSTAMP
@@ -87,6 +92,23 @@ class PANSTAMP
      */
     byte nonce;
     
+    /**
+     * System state
+     */
+    byte systemState;
+
+    /**
+     * SWAP info packet received. Callaback function
+     */
+    void (*infoReceived)(SWPACKET *info);
+
+    /**
+     * PANSTAMP
+     *
+     * Class constructor
+     */
+    PANSTAMP(void);
+
     /**
      * init
      * 
@@ -131,9 +153,31 @@ class PANSTAMP
      * 	Temperature in milli-degrees Celsius
      */
     long getInternalTemp(void);
+
+    /**
+     * setSecurity
+     * 
+     * Set security option
+     * 
+     * 'secu'	New option
+     * 'save' If TRUE, save parameter in EEPROM
+     */
+    void setSecurity(byte secu, bool save);
 };
 
+/**
+ * Global PANSTAMP object
+ */
 extern PANSTAMP panstamp;
+
+/**
+ * getRegister
+ *
+ * Return pointer to register with ID = regId
+ *
+ * 'regId'  Register ID
+ */
+REGISTER * getRegister(byte regId);
 
 #endif
 

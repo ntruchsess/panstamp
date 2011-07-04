@@ -30,6 +30,21 @@
 #include "ccpacket.h"
 
 /**
+ * Carrier frequencies
+ */
+enum CFREQ
+{
+  CFREQ_868 = 0,
+  CFREQ_915,
+  CFREQ_LAST
+};
+
+/**
+ * Frequency channels
+ */
+#define NUMBER_OF_FCHANNELS      10
+
+/**
  * Type of transfers
  */
 #define WRITE_BURST              0x40
@@ -45,7 +60,6 @@
 /**
  * PATABLE & FIFO's
  */
-
 #define CC1101_PATABLE           0x3E        // PATABLE address
 #define CC1101_TXFIFO            0x3F        // TX FIFO address
 #define CC1101_RXFIFO            0x3F        // RX FIFO address
@@ -251,18 +265,6 @@
 #define readConfigReg(regAddr)    readReg(regAddr, CC1101_CONFIG_REGISTER)
 // Read CC1101 Status register
 #define readStatusReg(regAddr)    readReg(regAddr, CC1101_STATUS_REGISTER)
-// Disable address check
-#define disableAddrChk()          writeReg(CC1101_PKTCTRL1, 0x04)
-
-/**
- * Carrier frequence
- */
-enum CARRIER_FREQ
-{
-  CFREQ_868 = 0,
-  CFREQ_915,
-  CFREQ_LAST
-}; 
 
 /**
  * Class: CC1101
@@ -339,12 +341,18 @@ class CC1101
      */
     void setDefaultRegs(void);
 
+    /**
+     * setRegsFromEeprom
+     * 
+     * Set registers from EEPROM
+     */
+    void setRegsFromEeprom(void);
 
   public:
     /**
      * Carrier frequency
      */
-    CARRIER_FREQ carrierFreq;
+    byte carrierFreq;
 
     /**
      * Frequency channel
@@ -381,8 +389,9 @@ class CC1101
      * Set synchronization word
      * 
      * 'sync'	Synchronization word
+     * 'save' If TRUE, save parameter in EEPROM
      */
-    void setSyncWord(byte *sync);
+    void setSyncWord(byte *sync, bool save);
 
     /**
      * setDevAddress
@@ -390,17 +399,19 @@ class CC1101
      * Set device address
      * 
      * 'addr'	Device address
+     * 'save' If TRUE, save parameter in EEPROM
      */
-    void setDevAddress(byte addr);
+    void setDevAddress(byte addr, bool save);
 
     /**
      * setCarrierFreq
      * 
      * Set carrier frequency
      * 
-     * 'value'	New carrier frequency
+     * 'freq'	New carrier frequency
+     * 'save' If TRUE, save parameter in EEPROM
      */
-    void setCarrierFreq(CARRIER_FREQ freq);
+    void setCarrierFreq(byte freq, bool save);
     
     /**
      * setChannel
@@ -408,8 +419,9 @@ class CC1101
      * Set frequency channel
      * 
      * 'chnl'	Frequency channel
+     * 'save' If TRUE, save parameter in EEPROM
      */
-    void setChannel(byte chnl);
+    void setChannel(byte chnl, bool save);
 
     /**
      * setRxState
@@ -449,6 +461,13 @@ class CC1101
      * 	Amount of bytes received
      */
     byte receiveData(CCPACKET *packet);
+
+    /**
+     * disableAddressCheck
+     * 
+     * Disable address check on the CC1101 IC
+     */
+    void disableAddressCheck();
 };
 
 #endif

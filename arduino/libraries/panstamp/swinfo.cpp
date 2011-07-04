@@ -25,6 +25,7 @@
  */
 
 #include "swinfo.h"
+#include "panstamp.h"
 
 /**
  * SWINFO

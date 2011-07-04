@@ -25,6 +25,7 @@ setRxState KEYWORD2
 setPowerDownState KEYWORD2
 sendData KEYWORD2
 receiveData KEYWORD2
+disableAddressCheck KEYWORD2
 sleepFor	KEYWORD2
 getData	KEYWORD2
 setData KEYWORD2

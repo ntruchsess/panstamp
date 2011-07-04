@@ -11,10 +11,10 @@ http://panstamp.blogspot.com
 ************************************************
 
 ================================================
-	v0.0.4 (Jun/01/2011)
+	v0.0.4 (Jul/04/2011)
 ================================================
-- Acess to global registers has been optimized
-- SWAP is now register-centered, not endpoint-centered
+- New disableAddressCheck method in CC1101 class
+- Corrections on some EEPROM procedures
 
 ================================================
 	v0.0.3 (Apr/26/2011)

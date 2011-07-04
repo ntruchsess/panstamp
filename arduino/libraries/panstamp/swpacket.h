@@ -29,7 +29,7 @@
 
 #include "WProgram.h"
 #include "ccpacket.h"
-#include "panstamp.h"
+//#include "panstamp.h"
 
 /**
  * SWAP definitions

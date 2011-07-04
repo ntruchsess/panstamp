@@ -25,6 +25,7 @@
  */
 
 #include "swquery.h"
+#include "panstamp.h"
 
 /**
  * SWQUERY

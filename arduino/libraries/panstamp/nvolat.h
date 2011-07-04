@@ -1,6 +1,5 @@
 /**
- * makedefs.h
- *
+ * nvolat.h
  * Copyright (c) 2011 Daniel Berenguer <dberenguer@usapiens.com>
  * 
  * This file is part of the panStamp project.
@@ -8,7 +7,7 @@
  * panStamp  is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
- * any later version.
+ * (at your option) any later version.
  * 
  * panLoader is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,12 +20,22 @@
  * USA
  * 
  * Author: Daniel Berenguer
- * Creation date: 03/03/2011
+ * Creation date: 07/03/2011
  */
 
-#ifndef _MAKEDEFS_H
-#define _MAKEDEFS_H
+#ifndef _NVOLAT_H
+#define _NVOLAT_H
 
+#include "WProgram.h"
+#include <EEPROM.h>
+
+/**
+ * EEPROM addresses
+ */
+#define EEPROM_CARRIER_FREQ      0x00   // 1-byte register
+#define EEPROM_FREQ_CHANNEL      0x01   // 1-byte register
+#define EEPROM_SECU_OPTION       0x02   // 1-byte register
+#define EEPROM_SYNC_WORD         0x03   // 2-byte register
+#define EEPROM_DEVICE_ADDR       0x05   // 1-byte register
 
 #endif
-

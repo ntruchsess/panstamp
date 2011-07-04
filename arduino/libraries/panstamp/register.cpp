@@ -75,7 +75,7 @@ void REGISTER::sendSwapInfo(void)
 /**
  * sendPriorSwapInfo
  * 
- * Send SWAP information message before applying teh new value
+ * Send SWAP information message before applying the new value
  *
  * 'newVal'  New value
  */

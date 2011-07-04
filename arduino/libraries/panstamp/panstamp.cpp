@@ -25,14 +25,41 @@
  */
 
 #include "panstamp.h"
+#include "nvolat.h"
 
-#define enableIRQ_GDO0()    attachInterrupt(0, isrGDO0event, FALLING);
-#define disableIRQ_GDO0()   detachInterrupt(0);
+#define enableIRQ_GDO0()        attachInterrupt(0, isrGDO0event, FALLING);
+#define disableIRQ_GDO0()       detachInterrupt(0);
 
 /**
  * Register getter from the global array regTable
  */
 extern REGISTER * getRegister(byte regId);
+extern byte regTableSize;
+
+/**
+ * PANSTAMP
+ *
+ * Class constructor
+ */
+PANSTAMP::PANSTAMP(void)
+{
+  infoReceived = NULL;
+}
+
+/**
+ * getRegister
+ *
+ * Return pointer to register with ID = regId
+ *
+ * 'regId'  Register ID
+ */
+REGISTER * getRegister(byte regId)
+{
+  if (regId >= regTableSize)
+    return NULL;
+
+  return regTable[regId]; 
+}
 
 /**
  * isrGDO0event
@@ -69,6 +96,9 @@ void isrGDO0event(void)
             ptrReg->getData();
           break;
         case SWAPFUNCT_INF:
+          // User callback function declared?
+          if (panstamp.infoReceived != NULL)
+            panstamp.infoReceived(&swPacket);
           break;
         default:
           break;
@@ -185,6 +215,11 @@ cc1101.setDevAddress(bVal);
  */
 void PANSTAMP::reset() 
 {
+  // Tell the network that our panStamp is restarting
+  byte state[] = {SYSTATE_RESTART};
+  getRegister(3)->sendPriorSwapInfo(state);
+
+  // Reset panStamp
   wdt_disable();  
   wdt_enable(WDTO_15MS);
   while (1) {}
@@ -266,5 +301,27 @@ long PANSTAMP::getInternalTemp(void)
   return result;
 }
 
+/**
+ * setSecurity
+ * 
+ * Set security option
+ * 
+ * 'secu'	New option
+ * 'save' If TRUE, save parameter in EEPROM
+ */
+void PANSTAMP::setSecurity(byte secu, bool save)
+{
+  if (security != secu)
+  {
+    security = secu;
+    // Save in EEPROM
+    if (save)
+      EEPROM.write(EEPROM_SECU_OPTION, secu);
+  }
+}
+
+/**
+ * Pre-instantiate PANSTAMP object
+ */
 PANSTAMP panstamp;
 

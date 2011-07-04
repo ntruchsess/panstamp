@@ -24,6 +24,7 @@
 
 #include "WProgram.h"
 #include "cc1101.h"
+#include "nvolat.h"
 
  /**
   * PATABLE
@@ -173,18 +174,18 @@ void CC1101::setDefaultRegs(void)
   writeReg(CC1101_PKTCTRL0,  CC1101_DEFVAL_PKTCTRL0);
 
   // Set default synchronization word
-  setSyncWord(defSyncWrd);
+  setSyncWord(defSyncWrd, false);
 
   // Set default device address
-  setDevAddress(CC1101_DEFVAL_ADDR);
+  setDevAddress(CC1101_DEFVAL_ADDR, false);
   // Set default frequency channel
-  setChannel(CC1101_DEFVAL_CHANNR);
+  setChannel(CC1101_DEFVAL_CHANNR, false);
   
   writeReg(CC1101_FSCTRL1,  CC1101_DEFVAL_FSCTRL1);
   writeReg(CC1101_FSCTRL0,  CC1101_DEFVAL_FSCTRL0);
 
   // Set default carrier frequency = 868 MHz
-  setCarrierFreq(CFREQ_868);
+  setCarrierFreq(CFREQ_868, false);
 
   writeReg(CC1101_MDMCFG4,  CC1101_DEFVAL_MDMCFG4);
   writeReg(CC1101_MDMCFG3,  CC1101_DEFVAL_MDMCFG3);
@@ -234,7 +235,8 @@ void CC1101::init(void)
 
   reset();                              // Reset CC1101
   setDefaultRegs();                     // Configure CC1101 registers
-  
+  setRegsFromEeprom();                  // Take user settings from EEPROM
+
   // Configure PATABLE
   writeBurstReg(CC1101_PATABLE, (byte*)paTable, 8);
 }
@@ -245,12 +247,22 @@ void CC1101::init(void)
  * Set synchronization word
  * 
  * 'sync'	Synchronization word
+ * 'save' If TRUE, save parameter in EEPROM
  */
-void CC1101::setSyncWord(byte *sync) 
+void CC1101::setSyncWord(byte *sync, bool save) 
 {
-  writeReg(CC1101_SYNC1, sync[0]);
-  writeReg(CC1101_SYNC0, sync[1]);
-  memcpy(syncWord, sync, sizeof(syncWord));
+  if ((syncWord[0] != sync[0]) || (syncWord[1] != sync[1]))
+  {
+    writeReg(CC1101_SYNC1, sync[0]);
+    writeReg(CC1101_SYNC0, sync[1]);
+    memcpy(syncWord, sync, sizeof(syncWord));
+    // Save in EEPROM
+    if (save)
+    {
+      EEPROM.write(EEPROM_SYNC_WORD, sync[0]);
+      EEPROM.write(EEPROM_SYNC_WORD + 1, sync[1]);
+    }
+  }
 }
 
 /**
@@ -259,11 +271,18 @@ void CC1101::setSyncWord(byte *sync)
  * Set device address
  * 
  * 'addr'	Device address
+ * 'save' If TRUE, save parameter in EEPROM
  */
-void CC1101::setDevAddress(byte addr) 
+void CC1101::setDevAddress(byte addr, bool save) 
 {
-  writeReg(CC1101_ADDR, addr);
-  devAddress = addr;
+  if (devAddress != addr)
+  {
+    writeReg(CC1101_ADDR, addr);
+    devAddress = addr;
+    // Save in EEPROM
+    if (save)
+      EEPROM.write(EEPROM_DEVICE_ADDR, addr);  
+  }
 }
 
 /**
@@ -272,11 +291,18 @@ void CC1101::setDevAddress(byte addr)
  * Set frequency channel
  * 
  * 'chnl'	Frequency channel
+ * 'save' If TRUE, save parameter in EEPROM
  */
-void CC1101::setChannel(byte chnl) 
+void CC1101::setChannel(byte chnl, bool save) 
 {
-  writeReg(CC1101_CHANNR,  chnl);
-  channel = chnl;
+  if (channel != chnl)
+  {
+    writeReg(CC1101_CHANNR,  chnl);
+    channel = chnl;
+    // Save in EEPROM
+    if (save)
+      EEPROM.write(EEPROM_FREQ_CHANNEL, chnl);
+  }
 }
 
 /**
@@ -285,24 +311,70 @@ void CC1101::setChannel(byte chnl)
  * Set carrier frequency
  * 
  * 'freq'	New carrier frequency
+ * 'save' If TRUE, save parameter in EEPROM
  */
-void CC1101::setCarrierFreq(CARRIER_FREQ freq) 
-{ 
-  switch(freq)
+void CC1101::setCarrierFreq(byte freq, bool save) 
+{
+  if (carrierFreq != freq)
   {
-    case CFREQ_915:
-      writeReg(CC1101_FREQ2,  CC1101_DEFVAL_FREQ2_915);
-      writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_915);
-      writeReg(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_915);
-      break;
-    default:  // CFFREQ_868
-      writeReg(CC1101_FREQ2,  CC1101_DEFVAL_FREQ2_868);
-      writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_868);
-      writeReg(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_868);
-      break;
+    switch(freq)
+    {
+      case CFREQ_915:
+        writeReg(CC1101_FREQ2,  CC1101_DEFVAL_FREQ2_915);
+        writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_915);
+        writeReg(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_915);
+        break;
+      case CFREQ_868:
+        writeReg(CC1101_FREQ2,  CC1101_DEFVAL_FREQ2_868);
+        writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_868);
+        writeReg(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_868);
+        break;
+      default:
+        return;
+    }
+    
+    carrierFreq = freq;
+    
+    // Save in EEPROM
+    if (save)
+      EEPROM.write(EEPROM_CARRIER_FREQ, freq);
   }
-  
-  carrierFreq = freq;
+}
+
+/**
+ * setRegsFromEeprom
+ * 
+ * Set registers from EEPROM
+ */
+void CC1101::setRegsFromEeprom(void)
+{
+  byte bVal;
+  byte arrV[2];
+
+  // Read Carrier Frequency from EEPROM
+  bVal = EEPROM.read(EEPROM_CARRIER_FREQ);
+  // Set carrier frequency
+  if (bVal < CFREQ_LAST)
+    setCarrierFreq(bVal, false);
+    
+  // Read RF channel from EEPROM
+  bVal = EEPROM.read(EEPROM_FREQ_CHANNEL);
+  // Set RF channel
+  if (bVal < NUMBER_OF_FCHANNELS )
+    setChannel(bVal, false);
+
+  // Read Sync word from EEPROM
+  arrV[0] = EEPROM.read(EEPROM_SYNC_WORD);
+  arrV[1] = EEPROM.read(EEPROM_SYNC_WORD + 1);
+  // Set Sync word
+  if (((arrV[0] != 0x00) && (arrV[0] != 0xFF)) || ((arrV[1] != 0x00) && (arrV[1] != 0xFF)))
+    setSyncWord(arrV, false);
+    
+  // Read device address from EEPROM
+  bVal = EEPROM.read(EEPROM_DEVICE_ADDR);
+  // Set device address
+  if (bVal > 0)
+    setDevAddress(bVal, false);
 }
 
 /**
@@ -416,5 +488,15 @@ byte CC1101::receiveData(CCPACKET * packet)
     packet->length = 0;
 
   return packet->length;
+}
+
+/**
+ * disableAddressCheck
+ * 
+ * Disable address check on the CC1101 IC
+ */
+void CC1101::disableAddressCheck()
+{
+  writeReg(CC1101_PKTCTRL1, 0x04);
 }
 
