@@ -92,7 +92,10 @@ REGISTER *regTable[] = {             \
         &regNetworkId,               \
         &regDevAddress,
 
-#define DECLARE_REGISTERS_END()   };
+#define DECLARE_REGISTERS_END()      \
+};                                   \
+/* Size of regTable */               \
+byte regTableSize = sizeof(regTable);
 
 /**
  * Macro for the declaration of getter/setter functions related to all common registers
