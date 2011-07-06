@@ -11,6 +11,13 @@ http://panstamp.blogspot.com
 ************************************************
 
 ================================================
+	v0.0.5 (Jul/06/2011)
+================================================
+- New common register added: security password
+- Solved bug on Carrier Frequency selection at startup
+- Creation of block definitions for most of the code appearing in regtable.pde
+
+================================================
 	v0.0.4 (Jul/04/2011)
 ================================================
 - New disableAddressCheck method in CC1101 class

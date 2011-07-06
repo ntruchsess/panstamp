@@ -185,6 +185,7 @@ void CC1101::setDefaultRegs(void)
   writeReg(CC1101_FSCTRL0,  CC1101_DEFVAL_FSCTRL0);
 
   // Set default carrier frequency = 868 MHz
+  carrierFreq = CFREQ_LAST;
   setCarrierFreq(CFREQ_868, false);
 
   writeReg(CC1101_MDMCFG4,  CC1101_DEFVAL_MDMCFG4);
