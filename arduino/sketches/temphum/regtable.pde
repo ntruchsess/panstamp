@@ -30,33 +30,17 @@
 #include "regtable.h"
 
 /**
- * Register setup
+ * Declaration of common callback functions
  */
-// Product code
-static byte dtProductCode[8] = {SWAP_MANUFACT_ID >> 24, SWAP_MANUFACT_ID >> 16 , SWAP_MANUFACT_ID >> 8, SWAP_MANUFACT_ID,
-                       SWAP_PRODUCT_ID >> 24, SWAP_PRODUCT_ID >> 16 , SWAP_PRODUCT_ID >> 8, SWAP_PRODUCT_ID};
-REGISTER regProductCode(dtProductCode, sizeof(dtProductCode), NULL, NULL);
-// Hardware version
-static byte dtHwVersion[4] = {HARDWARE_VERSION >> 24, HARDWARE_VERSION >> 16 , HARDWARE_VERSION >> 8, HARDWARE_VERSION};
-REGISTER regHwVersion(dtHwVersion, sizeof(dtHwVersion), NULL, NULL);
-// Firmware version
-static byte dtFwVersion[4] = {FIRMWARE_VERSION >> 24, FIRMWARE_VERSION >> 16 , FIRMWARE_VERSION >> 8, FIRMWARE_VERSION};
-REGISTER regFwVersion(dtFwVersion, sizeof(dtFwVersion), NULL, NULL);
-// System state
-REGISTER regSysState(&panstamp.systemState, sizeof(panstamp.systemState), NULL, &setSysState);
-// Frequency channel
-REGISTER regFreqChannel(&panstamp.cc1101.channel, sizeof(panstamp.cc1101.channel), NULL, &setFreqChannel);
-// Security option
-REGISTER regSecuOption(&panstamp.security, sizeof(panstamp.security), NULL, &setSecuOption);
-// Security nonce
-REGISTER regSecuNonce(&panstamp.nonce, sizeof(panstamp.nonce), NULL, NULL);
-// Network Id
-REGISTER regNetworkId(&panstamp.cc1101.syncWord[0], sizeof(panstamp.cc1101.syncWord), NULL, &setNetworkId);
-// Device address
-REGISTER regDevAddress(&panstamp.cc1101.devAddress, sizeof(panstamp.cc1101.devAddress), NULL, &setDevAddress);
+DECLARE_COMMON_CALLBACKS()
+
+/**
+ * Definition of common registers
+ */
+DEFINE_COMMON_REGISTERS();
 
 /*
- * Add here your custom registers
+ * Definition of custom registers
  */
 // Voltage supply
 static byte dtVoltSupply[2];
@@ -68,20 +52,10 @@ REGISTER regTempHum(dtTempHum, sizeof(dtTempHum), &updtTempHum, NULL);
 /**
  * Initialize table of registers
  */
-REGISTER *regTable[] = {
-        &regProductCode,
-        &regHwVersion,
-        &regFwVersion,
-        &regSysState,
-        &regFreqChannel,
-        &regSecuOption,
-        &regSecuNonce,
-        &regNetworkId,
-        &regDevAddress,
-        // Add here your custom registers
-        &regVoltSupply,
-        &regTempHum
-}; 
+DECLARE_REGISTERS_START()
+  &regVoltSupply,
+  &regTempHum
+DECLARE_REGISTERS_END()
 
 /**
  * Size of regTable
@@ -89,115 +63,14 @@ REGISTER *regTable[] = {
  byte regTableSize = sizeof(regTable);
  
 /**
- * "Update/Set" handling functions
+ * Definition of common getter/setter callback functions
  */
-/**
- * setSysState
- *
- * Set system state
- *
- * 'id'     Register ID
- * 'state'  New system state
- */
-const void setSysState(byte id, byte *state)
-{ 
-  switch(state[0])
-  {
-    case SYSTATE_RESTART:
-      // Send info message before restarting the mote
-//    regSysState.sendPriorSwapInfo(state);
-      panstamp.reset();
-      break;
-    case SYSTATE_SYNC:
-      panstamp.systemState = SYSTATE_SYNC;
-      break;
-    default:
-      break;
-  }
-}
+DEFINE_COMMON_CALLBACKS()
 
 /**
- * setFreqChannel
- *
- * Set frequency channel
- *
- * 'id'       Register ID
- * 'channel'  New channel
+ * Definition of custom getter/setter callback functions
  */
-const void setFreqChannel(byte id, byte *channel)
-{
-  if (channel[0] != regFreqChannel.value[0])
-  {
-    // Send info message before entering the new frequency channel
-    regFreqChannel.sendPriorSwapInfo(channel);
-    // Update register value
-    panstamp.cc1101.setChannel(channel[0], true);
-    // Restart device
-    panstamp.reset();
-  }
-}
-
-/**
- * setSecuOption
- *
- * Set security option
- *
- * 'id'    Register ID
- * 'secu'  New security option
- */
-const void setSecuOption(byte id, byte *secu)
-{
-  if (secu[0] != regSecuOption.value[0])
-  {
-    // Send info message before applying the new security option
-    regSecuOption.sendPriorSwapInfo(secu);
-    // Update register value
-    panstamp.setSecurity(secu[0] & 0x0F, true);
-  }
-}
-
-/**
- * setDevAddress
- *
- * Set device address
- *
- * 'id'    Register ID
- * 'addr'  New device address
- */
-const void setDevAddress(byte id, byte *addr)
-{
-  if ((addr[0] > 0) && (addr[0] != regDevAddress.value[0]))
-  {
-    // Send info before taking the new address
-    regDevAddress.sendPriorSwapInfo(addr);    
-    // Update register value
-    panstamp.cc1101.setDevAddress(addr[0], true);
-    // Restart device
-    panstamp.reset();
-  }
-}
-
-/**
- * setNetworkId
- *
- * Set network id
- *
- * 'rId' Register ID
- * 'nId'  New network id
- */
-const void setNetworkId(byte rId, byte *nId)
-{
-  if ((nId[0] != regNetworkId.value[0]) || (nId[1] != regNetworkId.value[1]))
-  {
-    // Send info before taking the new network ID
-    regNetworkId.sendPriorSwapInfo(nId);
-    // Update register value
-    panstamp.cc1101.setSyncWord(nId, true);
-    // Restart device
-    panstamp.reset();
-  }
-}
-
+ 
 /**
  * updtVoltSupply
  *

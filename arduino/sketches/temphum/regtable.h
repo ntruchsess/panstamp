@@ -29,24 +29,15 @@
 
 #include "WProgram.h"
 #include "register.h"
+#include "commonregs.h"
 
 /**
  * Register indexes
  */
-enum CUSTOM_REGINDEX
-{
-  REGI_PRODUCTCODE = 0,
-  REGI_HWVERSION,
-  REGI_FWVERSION,
-  REGI_SYSSTATE,
-  REGI_FREQCHANNEL,
-  REGI_SECUOPTION,
-  REGI_SECUNONCE,
-  REGI_NETWORKID,
-  REGI_DEVADDRESS,
+DEFINE_COMMON_REGINDEX_START()
   REGI_VOLTSUPPLY,
   REGI_HUMIDTEMP
-};
+DEFINE_COMMON_REGINDEX_END()
 
 #endif
 
