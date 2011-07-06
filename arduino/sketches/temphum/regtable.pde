@@ -58,11 +58,6 @@ DECLARE_REGISTERS_START()
 DECLARE_REGISTERS_END()
 
 /**
- * Size of regTable
- */
- byte regTableSize = sizeof(regTable);
- 
-/**
  * Definition of common getter/setter callback functions
  */
 DEFINE_COMMON_CALLBACKS()
