@@ -43,11 +43,6 @@ import xmltools.XmlException;
 public class SWAPdmt implements DeviceEventHandler
 {
   /**
-   * Configuration file for wireless parameters
-   */
-  private final static String configWirelessFile = "wireless.xml";
-
-  /**
    * Main GUI window
    */
   private SWAPdmtView view;
@@ -273,30 +268,11 @@ public class SWAPdmt implements DeviceEventHandler
   }
 
   /**
-   * setDevAddress
-   *
-   * Set device address of the serial gateway
-   *
-   * 'address'    SWAP address of the serial gateway
-   */
-  public boolean setDevAddress(int address)
-  {
-    try
-    {
-      return swapGateway.setDevAddress(address);
-    }
-    catch (CcException ex)
-    {
-      ex.print();
-    }
-    return false;
-  }
-
-  /**
    * setNetworkParams
    *
-   * Configure network parameters in all motes available
+   * Configure network parameters in serial gateway
    *
+   * 'address'      SWAP address of the serial gateway
    * 'freqChannel'  Frequency channel
    * 'netId'        Network id
    * 'secu'         Security option
@@ -304,24 +280,30 @@ public class SWAPdmt implements DeviceEventHandler
    * Return true if the functions completes successfully
    * Return false otherwise
    */
-  public boolean setNetworkParams(int freqChannel, int netId, int secu)
+  public boolean setNetworkParams(int address, int freqChannel, int netId, int secu) throws CcException
   {
-    boolean res = true;
+    if (address != getGatewayAddress())
+    {
+      if (!swapGateway.setAddress(address))
+        return false;
+    }
 
-    try
+    if (freqChannel != getFreqChannel())
     {
       if (!swapGateway.setFreqChannel(freqChannel))
-        res = false;
-      if (!swapGateway.setNetId(netId))
-        res = false;
-      if (!swapGateway.setSecurity(secu))
-        res = false;
+        return false;
     }
-    catch (CcException ex)
+
+    if (netId != getNetworkId())
     {
-      ex.print();
+      if (!swapGateway.setNetworkId(netId))
+        return false;
     }
-    return res;
+
+    if (secu != this.getSecurityOpt())
+      swapGateway.setSecurity(secu);
+
+    return true;
   }
 
   /**
@@ -329,7 +311,7 @@ public class SWAPdmt implements DeviceEventHandler
    *
    * Get gateway (device) address
    */
-  public int getGatewayAddress()
+  public int getGatewayAddress() throws CcException
   {
     return swapGateway.getAddress();
   }
@@ -339,9 +321,9 @@ public class SWAPdmt implements DeviceEventHandler
    *
    * Get the network ID programmed into the serial gateway
    */
-  public int getNetworkId()
+  public int getNetworkId() throws CcException
   {
-    return swapGateway.getNetId();
+    return swapGateway.getNetworkId();
   }
 
   /**
@@ -349,7 +331,7 @@ public class SWAPdmt implements DeviceEventHandler
    *
    * Get the frequency channel programmed into the serial gateway
    */
-  public int getFreqChannel()
+  public int getFreqChannel() throws CcException
   {
     return swapGateway.getFreqChannel();
   }

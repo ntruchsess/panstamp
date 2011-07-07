@@ -71,6 +71,9 @@ public class SWAPdmtView extends FrameView
     // Add model to jListSwapMotes
     swapMotes = new DefaultListModel();
     jListSwapMotes.setModel(swapMotes);
+
+    // Disable menus
+    setEnableMenus(false);
   }
 
   /**
@@ -104,62 +107,149 @@ public class SWAPdmtView extends FrameView
   }
 
   /**
-   * showGatewayBox
+   * showGnetBox
    *
-   * Show "Gateway" box
+   * Display "gateway network" box
    */
   @Action
-  public void showAddressBox()
-  {
-    // Get current gateway address
-    int addr = swapDmt.getGatewayAddress();
-
-    String answer = JOptionPane.showInputDialog(null, "Enter new address (1-255)", "Gateway address", addr);
-    if (answer == null)   // CANCEL button pressed
-      return;
-    addr = Integer.parseInt(answer);
-    if (addr < 1 || addr > 255)
-    {
-      JOptionPane.showMessageDialog(null,  "Please enter a valid address", "Warning", JOptionPane.WARNING_MESSAGE);
-      return;
-    }
-    else
-      swapDmt.setDevAddress(addr);
-  }
-
-  /**
-   * showNetworkBox
-   *
-   * Display "network" box
-   */
-  @Action
-  public void showNetworkBox()
+  public void showGnetBox()
   {
     int answer;
     
-    answer = JOptionPane.showConfirmDialog(null, "There is a risks of loosing contact with some of your wireless devices\n Are you sure you want to continue?",
-                                  "Attention!!", JOptionPane.OK_CANCEL_OPTION);
-    if (answer == JOptionPane.CANCEL_OPTION)
-      return;
+    // Get current network settings
+    try
+    {
+      int address = swapDmt.getGatewayAddress();
+      int freqChann = swapDmt.getFreqChannel();
+      int netId = swapDmt.getNetworkId();
+      int secu = swapDmt.getSecurityOpt();
+
+      NetworkPanel netPanel = new NetworkPanel(address, freqChann, netId, secu);
+      answer = JOptionPane.showConfirmDialog(null, netPanel, "Gateway's Network Settings",
+                   JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+      if (answer == JOptionPane.OK_OPTION)
+      {
+        address = netPanel.getAddress();
+        freqChann = netPanel.getFreqChannel();
+        netId = netPanel.getNetworkId();
+        secu = netPanel.getSecurity();
+
+        if (!swapDmt.setNetworkParams(address, freqChann, netId, secu))
+          JOptionPane.showMessageDialog(null,  "Unable to set gateway's network settings\n", "Warning", JOptionPane.WARNING_MESSAGE);
+      }
+    }
+    catch(CcException ex)
+    {
+      ex.display();
+    }
+  }
+
+  /**
+   * showDnetBox
+   *
+   * Display "device network" box
+   */
+  @Action
+  public void showDnetBox()
+  {
+    int answer;
+    int index = getMoteIndexFromList();
+    int address = 0xFF, freqChann, netId, secu;
+    SwapMote mote = null;
 
     // Get current network settings
-    int freqChann = swapDmt.getFreqChannel();
-    int netId = swapDmt.getNetworkId();
-    int secu = swapDmt.getSecurityOpt();
-
-    NetworkPanel netPanel = new NetworkPanel(freqChann, netId, secu);
-    answer = JOptionPane.showConfirmDialog(null, netPanel, "SWAP Network Settings",
-                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
-    if (answer == JOptionPane.OK_OPTION)
+    try
     {
-      freqChann = netPanel.getFreqChannel();
-      netId = netPanel.getNetworkId();
-      secu = netPanel.getSecurity();
+      freqChann = swapDmt.getFreqChannel();
+      netId = swapDmt.getNetworkId();
+      secu = swapDmt.getSecurityOpt();
 
-      if (!swapDmt.setNetworkParams(freqChann, netId, secu))
-        JOptionPane.showMessageDialog(null,  "This appplication was not able to contact one or more wireless devices\n" +
-                                             "You will probably have to configure these motes manually", "Warning", JOptionPane.WARNING_MESSAGE);
+      if (index >= 0)
+      {
+        address = mote.getAddress();
+        mote = swapDmt.getMote(index);
+      }
+
+      NetworkPanel netPanel = new NetworkPanel(address, freqChann, netId, secu);
+      answer = JOptionPane.showConfirmDialog(null, netPanel, "Device's Network Settings",
+                   JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+      if (answer == JOptionPane.OK_OPTION)
+      {
+        address = netPanel.getAddress();
+        freqChann = netPanel.getFreqChannel();
+        netId = netPanel.getNetworkId();
+        secu = netPanel.getSecurity();
+
+        boolean runSync = false;
+        // Mote not selected or mote with power-down mode?
+        if (mote == null)
+          runSync = true;
+        else if (mote.getPwrDownMode())
+          runSync = true;
+
+        if (runSync)
+        {
+          // Display SYNC waiting screen
+          syncDiag = new SyncDialog(null, true);
+          syncDiag.setVisible(true);
+
+          // Sync dialog closed by the user?
+          if (syncDiag != null)
+          {
+            syncDiag = null;
+            return;
+          }
+
+          // Sync signal received
+          if (syncAddress > 0)
+            mote = swapDmt.getMoteFromAddress(syncAddress);
+        }
+
+        // Send new parameters only if the mote has been contacted
+        if (mote != null)
+        {
+          if (mote.getAddress() != address)
+          {
+            if (!mote.sendAddressWack(address))
+            {
+              JOptionPane.showMessageDialog(null,  "Unable to set device network address", "Warning", JOptionPane.WARNING_MESSAGE);
+              return;
+            }
+          }
+          if (swapDmt.getNetworkId() != netId)
+          {
+            if (!mote.sendNetworkIdWack(netId))
+            {
+              JOptionPane.showMessageDialog(null,  "Unable to set Network ID on device", "Warning", JOptionPane.WARNING_MESSAGE);
+              return;
+            }
+          }
+          if (swapDmt.getFreqChannel() != freqChann)
+          {
+            if (!mote.sendFreqChannelWack(freqChann))
+            {
+              JOptionPane.showMessageDialog(null,  "Unable to set frequency channel on device", "Warning", JOptionPane.WARNING_MESSAGE);
+              return;
+            }
+          }
+          if (swapDmt.getSecurityOpt() != secu)
+          {
+            if (!mote.sendSecurityWack(secu))
+            {
+              JOptionPane.showMessageDialog(null,  "Unable to set security option on device", "Warning", JOptionPane.WARNING_MESSAGE);
+              return;
+            }
+          }
+        }
+        else
+          JOptionPane.showMessageDialog(null,  "Unable to contact remote device", "Warning", JOptionPane.WARNING_MESSAGE);
+      }
+    }
+    catch(CcException ex)
+    {
+      ex.display();
     }
   }
 
@@ -195,6 +285,58 @@ public class SWAPdmtView extends FrameView
     }
   }
 
+ /**
+   * showSetRegisterBox
+   *
+   * Display "Set register" box
+   */
+  @Action
+  public void showSetRegisterBox()
+  {
+    SwapMote mote = null;
+
+    RegisterPanel regPanel = new RegisterPanel();
+    int answer = JOptionPane.showConfirmDialog(null, regPanel, "Set register value",
+                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+    if (answer == JOptionPane.OK_OPTION)
+    {
+      int index = getMoteIndexFromList();
+
+      if (index > -1)
+        mote = swapDmt.getMote(index);
+
+      boolean runSync = false;
+      // Mote not selected or mote with power-down mode?
+      if (mote == null)
+        runSync = true;
+      else if (mote.getPwrDownMode())
+        runSync = true;
+
+      if (runSync)
+      {
+        // Display SYNC waiting screen
+        syncDiag = new SyncDialog(null, true);
+        syncDiag.setVisible(true);
+
+        // Sync dialog closed by the user?
+        if (syncDiag != null)
+        {
+          syncDiag = null;
+          return;
+        }
+
+        // Sync signal received
+        if (syncAddress > 0)
+          mote = swapDmt.getMoteFromAddress(syncAddress);
+      }
+
+      int regId = regPanel.getRegisterId();
+      String val = regPanel.getRegisterValue();
+      setRegVal(mote, regId, val);
+    }
+  }
+
   /**
    * showAboutBox
    *
@@ -227,8 +369,6 @@ public class SWAPdmtView extends FrameView
     jLabel1 = new javax.swing.JLabel();
     jLabelAddress = new javax.swing.JLabel();
     jLabelManufact = new javax.swing.JLabel();
-    jButtonSetEndpoint = new javax.swing.JButton();
-    jButtonSetAddress = new javax.swing.JButton();
     jLabelManufactDescr = new javax.swing.JLabel();
     jLabelProduct = new javax.swing.JLabel();
     jLabelProductDescr = new javax.swing.JLabel();
@@ -237,11 +377,13 @@ public class SWAPdmtView extends FrameView
     menuBar = new javax.swing.JMenuBar();
     javax.swing.JMenu fileMenu = new javax.swing.JMenu();
     javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
-    configMenu = new javax.swing.JMenu();
+    gatewayMenu = new javax.swing.JMenu();
     serialMenuItem = new javax.swing.JMenuItem();
-    networkMenuItem = new javax.swing.JMenuItem();
-    addrMenuItem = new javax.swing.JMenuItem();
+    gNetMenuItem = new javax.swing.JMenuItem();
+    deviceMenu = new javax.swing.JMenu();
+    dNetMenuItem = new javax.swing.JMenuItem();
     chronosMenuItem = new javax.swing.JMenuItem();
+    regMenuItem = new javax.swing.JMenuItem();
     javax.swing.JMenu helpMenu = new javax.swing.JMenu();
     javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
 
@@ -268,24 +410,6 @@ public class SWAPdmtView extends FrameView
 
     jLabelManufact.setText(resourceMap.getString("jLabelManufact.text")); // NOI18N
     jLabelManufact.setName("jLabelManufact"); // NOI18N
-
-    jButtonSetEndpoint.setText(resourceMap.getString("jButtonSetEndpoint.text")); // NOI18N
-    jButtonSetEndpoint.setEnabled(false);
-    jButtonSetEndpoint.setName("jButtonSetEndpoint"); // NOI18N
-    jButtonSetEndpoint.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButtonSetEndpointPressed(evt);
-      }
-    });
-
-    jButtonSetAddress.setText(resourceMap.getString("jButtonSetAddress.text")); // NOI18N
-    jButtonSetAddress.setEnabled(false);
-    jButtonSetAddress.setName("jButtonSetAddress"); // NOI18N
-    jButtonSetAddress.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButtonSetAddressPressed(evt);
-      }
-    });
 
     jLabelManufactDescr.setText(resourceMap.getString("jLabelManufactDescr.text")); // NOI18N
     jLabelManufactDescr.setName("jLabelManufactDescr"); // NOI18N
@@ -329,13 +453,9 @@ public class SWAPdmtView extends FrameView
             .addGap(378, 378, 378))
           .addGroup(mainPanelLayout.createSequentialGroup()
             .addComponent(jButtonConnect, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jButtonSetAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jButtonSetEndpoint)
-            .addGap(26, 26, 26)
+            .addGap(18, 18, 18)
             .addComponent(jLabelStatus)
-            .addGap(519, 519, 519))))
+            .addContainerGap())))
     );
     mainPanelLayout.setVerticalGroup(
       mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -359,8 +479,6 @@ public class SWAPdmtView extends FrameView
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jButtonConnect)
-          .addComponent(jButtonSetAddress)
-          .addComponent(jButtonSetEndpoint)
           .addComponent(jLabelStatus))
         .addGap(8, 8, 8))
     );
@@ -377,30 +495,40 @@ public class SWAPdmtView extends FrameView
 
     menuBar.add(fileMenu);
 
-    configMenu.setText(resourceMap.getString("configMenu.text")); // NOI18N
-    configMenu.setName("configMenu"); // NOI18N
+    gatewayMenu.setText(resourceMap.getString("gatewayMenu.text")); // NOI18N
+    gatewayMenu.setName("gatewayMenu"); // NOI18N
 
     serialMenuItem.setAction(actionMap.get("showSerialBox")); // NOI18N
     serialMenuItem.setText(resourceMap.getString("serialMenuItem.text")); // NOI18N
     serialMenuItem.setName("serialMenuItem"); // NOI18N
-    configMenu.add(serialMenuItem);
+    gatewayMenu.add(serialMenuItem);
 
-    networkMenuItem.setAction(actionMap.get("showNetworkBox")); // NOI18N
-    networkMenuItem.setText(resourceMap.getString("networkMenuItem.text")); // NOI18N
-    networkMenuItem.setName("networkMenuItem"); // NOI18N
-    configMenu.add(networkMenuItem);
+    gNetMenuItem.setAction(actionMap.get("showGnetBox")); // NOI18N
+    gNetMenuItem.setText(resourceMap.getString("gNetMenuItem.text")); // NOI18N
+    gNetMenuItem.setName("gNetMenuItem"); // NOI18N
+    gatewayMenu.add(gNetMenuItem);
 
-    addrMenuItem.setAction(actionMap.get("showAddressBox")); // NOI18N
-    addrMenuItem.setText(resourceMap.getString("addrMenuItem.text")); // NOI18N
-    addrMenuItem.setName("addrMenuItem"); // NOI18N
-    configMenu.add(addrMenuItem);
+    menuBar.add(gatewayMenu);
+
+    deviceMenu.setText(resourceMap.getString("deviceMenu.text")); // NOI18N
+    deviceMenu.setName("deviceMenu"); // NOI18N
+
+    dNetMenuItem.setAction(actionMap.get("showDnetBox")); // NOI18N
+    dNetMenuItem.setText(resourceMap.getString("dNetMenuItem.text")); // NOI18N
+    dNetMenuItem.setName("dNetMenuItem"); // NOI18N
+    deviceMenu.add(dNetMenuItem);
 
     chronosMenuItem.setAction(actionMap.get("showChronosBox")); // NOI18N
     chronosMenuItem.setText(resourceMap.getString("chronosMenuItem.text")); // NOI18N
     chronosMenuItem.setName("chronosMenuItem"); // NOI18N
-    configMenu.add(chronosMenuItem);
+    deviceMenu.add(chronosMenuItem);
 
-    menuBar.add(configMenu);
+    regMenuItem.setAction(actionMap.get("showSetRegisterBox")); // NOI18N
+    regMenuItem.setText(resourceMap.getString("regMenuItem.text")); // NOI18N
+    regMenuItem.setName("regMenuItem"); // NOI18N
+    deviceMenu.add(regMenuItem);
+
+    menuBar.add(deviceMenu);
 
     helpMenu.setText(resourceMap.getString("helpMenu.text")); // NOI18N
     helpMenu.setName("helpMenu"); // NOI18N
@@ -420,20 +548,6 @@ public class SWAPdmtView extends FrameView
    * 
    * "Set address" button pressed
    */
-  private void jButtonSetAddressPressed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSetAddressPressed
-    int index = getMoteIndexFromList();
-    if (index < 0)
-      return;
-    String answer = JOptionPane.showInputDialog(null, "Enter new address (1-255)");
-    int addr = Integer.parseInt(answer);
-    if (addr < 1 || addr > 255)
-    {
-      JOptionPane.showMessageDialog(null,  "Please enter a valid address", "Warning", JOptionPane.WARNING_MESSAGE);
-      return;
-    }
-    setAddress(index, Integer.parseInt(answer));
-  }//GEN-LAST:event_jButtonSetAddressPressed
-
   /**
    * jButtonConnectPressed
    *
@@ -452,10 +566,7 @@ public class SWAPdmtView extends FrameView
       if (swapDmt.isConnected())
       {
         // Enable items
-        jButtonSetAddress.setEnabled(true);
-        jButtonSetEndpoint.setEnabled(true);
-        networkMenuItem.setEnabled(true);
-        addrMenuItem.setEnabled(true);
+        setEnableMenus(true);
         // Clear list of motes
         jListSwapMotes.removeAll();
         // Change button text
@@ -465,7 +576,7 @@ public class SWAPdmtView extends FrameView
       }
       else
       {
-        JOptionPane.showMessageDialog(null,  "Unable to start comms. Please check serial modem", "Warning", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(null,  "Unable to start comms on " + swapDmt.getPortName() + "\nPlease check serial modem", "Warning", JOptionPane.WARNING_MESSAGE);
         // Update status
         updateStatus("Disconnected");
       }
@@ -482,10 +593,7 @@ public class SWAPdmtView extends FrameView
       if (!swapDmt.isConnected())
       {
         // Disable items
-        jButtonSetAddress.setEnabled(false);
-        jButtonSetEndpoint.setEnabled(false);
-        networkMenuItem.setEnabled(false);
-        addrMenuItem.setEnabled(false);
+        setEnableMenus(false);
         // Clear list of motes
         jListSwapMotes.removeAll();
         // Change button text
@@ -503,32 +611,6 @@ public class SWAPdmtView extends FrameView
   }//GEN-LAST:event_jButtonConnectPressed
 
   /**
-   * jButtonSetEndpointPressed
-   *
-   * "Set endpoint" button pressed
-   */
-  private void jButtonSetEndpointPressed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSetEndpointPressed
-    int index = getMoteIndexFromList();
-    if (index < 0)
-      return;
-    EndpointPanel endpPanel = new EndpointPanel();
-    int answer = JOptionPane.showConfirmDialog(null, endpPanel, "Set endpoint value",
-                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
-    if (answer == JOptionPane.OK_OPTION)
-    {
-      int epId = endpPanel.getEndpointId();
-      if (epId < 3 || epId > 255)
-      {
-        JOptionPane.showMessageDialog(null, "Please enter a valid endpoint", "Warning", JOptionPane.WARNING_MESSAGE);
-        return;
-      }
-      String val = endpPanel.getEndpointValue();
-      setRegVal(index, epId, val);
-    }
-  }//GEN-LAST:event_jButtonSetEndpointPressed
-
-  /**
    * jListSwapMotesSelected
    * 
    * Item selected from list of SWAP motes
@@ -538,12 +620,12 @@ public class SWAPdmtView extends FrameView
   }//GEN-LAST:event_jListSwapMotesSelected
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JMenuItem addrMenuItem;
   private javax.swing.JMenuItem chronosMenuItem;
-  private javax.swing.JMenu configMenu;
+  private javax.swing.JMenuItem dNetMenuItem;
+  private javax.swing.JMenu deviceMenu;
+  private javax.swing.JMenuItem gNetMenuItem;
+  private javax.swing.JMenu gatewayMenu;
   private javax.swing.JButton jButtonConnect;
-  private javax.swing.JButton jButtonSetAddress;
-  private javax.swing.JButton jButtonSetEndpoint;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabelAddress;
   private javax.swing.JLabel jLabelManufact;
@@ -555,7 +637,7 @@ public class SWAPdmtView extends FrameView
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JPanel mainPanel;
   private javax.swing.JMenuBar menuBar;
-  private javax.swing.JMenuItem networkMenuItem;
+  private javax.swing.JMenuItem regMenuItem;
   private javax.swing.JMenuItem serialMenuItem;
   // End of variables declaration//GEN-END:variables
 
@@ -611,8 +693,6 @@ public class SWAPdmtView extends FrameView
   {
     int index = jListSwapMotes.getSelectedIndex();
     jListSwapMotes.clearSelection();
-    if (index < 0)
-      JOptionPane.showMessageDialog(null, "Please select a device", "Warning", JOptionPane.WARNING_MESSAGE);
     return index;
   }
 
@@ -635,34 +715,6 @@ public class SWAPdmtView extends FrameView
     jLabelManufactDescr.setText(mote.getManufacturer());
     jLabelProductDescr.setText(mote.getProduct());
     jLabelAddress.setText("Address: " + Integer.toString(mote.getAddress()));
-  }
-
-  /**
-   * setAddress
-   *
-   * Send new address to mote
-   *
-   * 'index'    Index of the mote within the list
-   * 'address'  New device address
-   */
-  private void setAddress(int index, int address)
-  {
-    if (index < 0)
-    {
-      JOptionPane.showMessageDialog(null, "Warning", "Please select a mote", JOptionPane.WARNING_MESSAGE);
-      return;
-    }
-
-    SwapMote mote = swapDmt.getMote(index);
-    // Send command to mote
-    try
-    {
-      mote.cmdAddress(address);
-    }
-    catch (CcException ex)
-    {
-      ex.print();
-    }
   }
 
   /**
@@ -711,28 +763,6 @@ public class SWAPdmtView extends FrameView
   }
 
   /**
-   * setRegVal
-   *
-   * Send new register value
-   *
-   * 'index'  Index of the mote within the list
-   * 'regId'  Register ID
-   * 'value'  New register value
-   */
-  private void setRegVal(int index, int regId, String value)
-  {
-    if (index < 0)
-    {
-      JOptionPane.showMessageDialog(null, "Warning", "Please select a mote", JOptionPane.WARNING_MESSAGE);
-      return;
-    }
-
-    SwapMote mote = swapDmt.getMote(index);
-
-    setRegVal(mote, regId, value);
-  }
-
-  /**
    * configChronos
    *
    * Configure Chronos watch
@@ -748,6 +778,13 @@ public class SWAPdmtView extends FrameView
     // Display SYNC waiting screen
     syncDiag = new SyncDialog(null, true);
     syncDiag.setVisible(true);
+
+    // Sync dialog closed by the user?
+    if (syncDiag != null)
+    {
+      syncDiag = null;
+      return;
+    }
 
     // Once arrived to this point, we have a mote having sent a SYNC signal
     if (syncAddress > 0)
@@ -832,5 +869,20 @@ public class SWAPdmtView extends FrameView
   {
     jLabelStatus.setText(status);
     jLabelStatus.paintImmediately(jLabelStatus.getVisibleRect());
+  }
+
+  /**
+   * setEnableMenus
+   *
+   * Enable/disable menus
+   *
+   * 'enable' If true, enable menus. If false, disable
+   */
+  private void setEnableMenus(boolean enable)
+  {
+    gNetMenuItem.setEnabled(enable);
+    dNetMenuItem.setEnabled(enable);
+    chronosMenuItem.setEnabled(enable);
+    regMenuItem.setEnabled(enable);
   }
 }

@@ -26,8 +26,8 @@
                                       <Component id="jLabelManufact" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="jLabelProduct" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="jLabelAddress" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="jLabelProductDescr" alignment="0" pref="305" max="32767" attributes="1"/>
-                                      <Component id="jLabelManufactDescr" alignment="0" pref="305" max="32767" attributes="1"/>
+                                      <Component id="jLabelProductDescr" alignment="0" pref="218" max="32767" attributes="1"/>
+                                      <Component id="jLabelManufactDescr" alignment="0" pref="218" max="32767" attributes="1"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -35,13 +35,9 @@
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="jButtonConnect" min="-2" pref="92" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jButtonSetAddress" min="-2" pref="97" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jButtonSetEndpoint" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="jLabelStatus" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="519" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -71,8 +67,6 @@
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jButtonConnect" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jButtonSetAddress" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jButtonSetEndpoint" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabelStatus" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
@@ -122,26 +116,6 @@
             <Property name="text" type="java.lang.String" resourceKey="jLabelManufact.text"/>
             <Property name="name" type="java.lang.String" value="jLabelManufact" noResource="true"/>
           </Properties>
-        </Component>
-        <Component class="javax.swing.JButton" name="jButtonSetEndpoint">
-          <Properties>
-            <Property name="text" type="java.lang.String" resourceKey="jButtonSetEndpoint.text"/>
-            <Property name="enabled" type="boolean" value="false"/>
-            <Property name="name" type="java.lang.String" value="jButtonSetEndpoint" noResource="true"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonSetEndpointPressed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JButton" name="jButtonSetAddress">
-          <Properties>
-            <Property name="text" type="java.lang.String" resourceKey="jButtonSetAddress.text"/>
-            <Property name="enabled" type="boolean" value="false"/>
-            <Property name="name" type="java.lang.String" value="jButtonSetAddress" noResource="true"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonSetAddressPressed"/>
-          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabelManufactDescr">
           <Properties>
@@ -211,10 +185,10 @@
             </MenuItem>
           </SubComponents>
         </Menu>
-        <Menu class="javax.swing.JMenu" name="configMenu">
+        <Menu class="javax.swing.JMenu" name="gatewayMenu">
           <Properties>
-            <Property name="text" type="java.lang.String" resourceKey="configMenu.text"/>
-            <Property name="name" type="java.lang.String" value="configMenu" noResource="true"/>
+            <Property name="text" type="java.lang.String" resourceKey="gatewayMenu.text"/>
+            <Property name="name" type="java.lang.String" value="gatewayMenu" noResource="true"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="serialMenuItem">
@@ -226,22 +200,30 @@
                 <Property name="name" type="java.lang.String" value="serialMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="networkMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="gNetMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="swapdmt.SWAPdmtView" id="showNetworkBox" methodName="showNetworkBox"/>
+                  <action class="swapdmt.SWAPdmtView" id="showGnetBox" methodName="showGnetBox"/>
                 </Property>
-                <Property name="text" type="java.lang.String" resourceKey="networkMenuItem.text"/>
-                <Property name="name" type="java.lang.String" value="networkMenuItem" noResource="true"/>
+                <Property name="text" type="java.lang.String" resourceKey="gNetMenuItem.text"/>
+                <Property name="name" type="java.lang.String" value="gNetMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="addrMenuItem">
+          </SubComponents>
+        </Menu>
+        <Menu class="javax.swing.JMenu" name="deviceMenu">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="deviceMenu.text"/>
+            <Property name="name" type="java.lang.String" value="deviceMenu" noResource="true"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="dNetMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="swapdmt.SWAPdmtView" id="showAddressBox" methodName="showAddressBox"/>
+                  <action class="swapdmt.SWAPdmtView" id="showDnetBox" methodName="showDnetBox"/>
                 </Property>
-                <Property name="text" type="java.lang.String" resourceKey="addrMenuItem.text"/>
-                <Property name="name" type="java.lang.String" value="addrMenuItem" noResource="true"/>
+                <Property name="text" type="java.lang.String" resourceKey="dNetMenuItem.text"/>
+                <Property name="name" type="java.lang.String" value="dNetMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="chronosMenuItem">
@@ -251,6 +233,15 @@
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="chronosMenuItem.text"/>
                 <Property name="name" type="java.lang.String" value="chronosMenuItem" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="regMenuItem">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="swapdmt.SWAPdmtView" id="showSetRegisterBox" methodName="showSetRegisterBox"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="regMenuItem.text"/>
+                <Property name="name" type="java.lang.String" value="regMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
           </SubComponents>

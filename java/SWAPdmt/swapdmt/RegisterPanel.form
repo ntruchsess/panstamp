@@ -1,4 +1,4 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <Properties>
@@ -27,10 +27,10 @@
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jTextEndpVal" min="-2" pref="118" max="-2" attributes="0"/>
-                  <Component id="jTextEndpId" min="-2" pref="79" max="-2" attributes="0"/>
+                  <Component id="jTextRegisterVal" min="-2" pref="118" max="-2" attributes="0"/>
+                  <Component id="jComboRegisterId" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace pref="16" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -40,12 +40,12 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextEndpId" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jComboRegisterId" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextEndpVal" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jTextRegisterVal" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
@@ -59,22 +59,24 @@
         <Property name="name" type="java.lang.String" value="jLabel1" noResource="true"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="jTextEndpId">
-      <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="jTextEndpId.text"/>
-        <Property name="name" type="java.lang.String" value="jTextEndpId" noResource="true"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
         <Property name="text" type="java.lang.String" resourceKey="jLabel2.text"/>
         <Property name="name" type="java.lang.String" value="jLabel2" noResource="true"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="jTextEndpVal">
+    <Component class="javax.swing.JTextField" name="jTextRegisterVal">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="jTextEndpVal.text"/>
-        <Property name="name" type="java.lang.String" value="jTextEndpVal" noResource="true"/>
+        <Property name="text" type="java.lang.String" resourceKey="jTextRegisterVal.text"/>
+        <Property name="name" type="java.lang.String" value="jTextRegisterVal" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="jComboRegisterId">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="0"/>
+        </Property>
+        <Property name="name" type="java.lang.String" value="jComboRegisterId" noResource="true"/>
       </Properties>
     </Component>
   </SubComponents>

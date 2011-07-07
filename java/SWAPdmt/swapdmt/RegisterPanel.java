@@ -4,7 +4,7 @@
  */
 
 /*
- * EndpointPanel.java
+ * RegisterPanel.java
  *
  * Created on Mar 23, 2011, 9:50:35 AM
  */
@@ -15,11 +15,15 @@ package swapdmt;
  *
  * @author daniel
  */
-public class EndpointPanel extends javax.swing.JPanel {
+public class RegisterPanel extends javax.swing.JPanel {
 
-    /** Creates new form EndpointPanel */
-    public EndpointPanel() {
+    /** Creates new form RegisterPanel */
+    public RegisterPanel() {
         initComponents();
+
+        int i;
+        for(i=3 ; i<=255 ; i++)
+          jComboRegisterId.addItem(i);
     }
 
     /** This method is called from within the constructor to
@@ -32,24 +36,23 @@ public class EndpointPanel extends javax.swing.JPanel {
   private void initComponents() {
 
     jLabel1 = new javax.swing.JLabel();
-    jTextEndpId = new javax.swing.JTextField();
     jLabel2 = new javax.swing.JLabel();
-    jTextEndpVal = new javax.swing.JTextField();
+    jTextRegisterVal = new javax.swing.JTextField();
+    jComboRegisterId = new javax.swing.JComboBox();
 
     setName("Form"); // NOI18N
 
-    org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(swapdmt.SWAPdmtApp.class).getContext().getResourceMap(EndpointPanel.class);
+    org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(swapdmt.SWAPdmtApp.class).getContext().getResourceMap(RegisterPanel.class);
     jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
     jLabel1.setName("jLabel1"); // NOI18N
-
-    jTextEndpId.setText(resourceMap.getString("jTextEndpId.text")); // NOI18N
-    jTextEndpId.setName("jTextEndpId"); // NOI18N
 
     jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
     jLabel2.setName("jLabel2"); // NOI18N
 
-    jTextEndpVal.setText(resourceMap.getString("jTextEndpVal.text")); // NOI18N
-    jTextEndpVal.setName("jTextEndpVal"); // NOI18N
+    jTextRegisterVal.setText(resourceMap.getString("jTextRegisterVal.text")); // NOI18N
+    jTextRegisterVal.setName("jTextRegisterVal"); // NOI18N
+
+    jComboRegisterId.setName("jComboRegisterId"); // NOI18N
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
@@ -62,9 +65,9 @@ public class EndpointPanel extends javax.swing.JPanel {
           .addComponent(jLabel2))
         .addGap(18, 18, 18)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jTextEndpVal, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jTextEndpId, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addComponent(jTextRegisterVal, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jComboRegisterId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(16, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -72,31 +75,31 @@ public class EndpointPanel extends javax.swing.JPanel {
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel1)
-          .addComponent(jTextEndpId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(jComboRegisterId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel2)
-          .addComponent(jTextEndpVal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(jTextRegisterVal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JComboBox jComboRegisterId;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
-  private javax.swing.JTextField jTextEndpId;
-  private javax.swing.JTextField jTextEndpVal;
+  private javax.swing.JTextField jTextRegisterVal;
   // End of variables declaration//GEN-END:variables
 
   /**
-   * getEndpointId
+   * getRegisterId
    *
-   * Return endpoint id
+   * Return register id
    */
-  public int getEndpointId()
+  public int getRegisterId()
   {
-    String str = jTextEndpId.getText();
+    String str = (String)jComboRegisterId.getSelectedItem();
 
     try
     {
@@ -109,12 +112,12 @@ public class EndpointPanel extends javax.swing.JPanel {
   }
 
   /**
-   * getEndpointValue
+   * getRegisterValue
    *
    * Return endpoint value
    */
-  public String getEndpointValue()
+  public String getRegisterValue()
   {
-    return jTextEndpVal.getText();
+    return jTextRegisterVal.getText();
   }
 }
