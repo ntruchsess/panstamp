@@ -47,7 +47,6 @@
 #define AT_FVERSION              "ATFV"      // Firmware version
 #define AT_CARRIERFREQ           "ATCF"      // Carrier frequency
 #define AT_FREQCHANNEL           "ATCH"      // Frequency channel
-#define AT_DATARATE              "ATDR"      // Data rate
 #define AT_SYNCWORD              "ATSW"      // Synchronization word
 #define AT_DEVADDRESS            "ATDA"      // Device address
 

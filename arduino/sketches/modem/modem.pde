@@ -30,8 +30,8 @@
 #include "EEPROM.h"
 
 
-#define enableIRQ()    attachInterrupt(0, isrINT0event, FALLING);
-#define disableIRQ()   detachInterrupt(0);
+#define enableINT0irq()    attachInterrupt(0, isrINT0event, FALLING);
+#define disableINT0irq()   detachInterrupt(0);
 
 char strSerial[SERIAL_BUF_LEN];          // Serial buffer
 byte ch;
@@ -56,7 +56,7 @@ void isrINT0event(void)
   CCPACKET packet;
   
   // Disable interrupt
-  disableIRQ();
+  disableINT0irq();
   
   if (cc1101.receiveData(&packet) > 0)
   {
@@ -81,7 +81,7 @@ void isrINT0event(void)
   }
   
   // Enable interrupt
-  enableIRQ();
+  enableINT0irq();
 }
 
 /*
@@ -281,7 +281,7 @@ void setup()
   cc1101.setRxState();
 
   // Attach callback function for GDO0 (INT0)
-  enableIRQ();
+  enableINT0irq();
 }
 
 /**
