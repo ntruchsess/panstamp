@@ -4,7 +4,7 @@
   <product>Chronos</product>
   <pwrdownmode>true</pwrdownmode>
   <registers>
-    <reg id="12">
+    <reg id="13">
       <endpoint type="analog" dir="input">
         <description>temperature</description>
         <position>0</position>

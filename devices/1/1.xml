@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <device>
   <manufacturer>panStamp</manufacturer>
-  <product>Test mote</product>
+  <product>Dual Temperature/Humidity sensor</product>
   <pwrdownmode>true</pwrdownmode>
   <registers>
-    <reg id="10">
+    <reg id="11">
       <endpoint type="analog" dir="input">
         <description>voltage supply</description>
       </endpoint>
     </reg>
-    <reg id="11">
+    <reg id="12">
       <endpoint type="analog" dir="input">
         <description>humidity</description>
         <position>0</position>
