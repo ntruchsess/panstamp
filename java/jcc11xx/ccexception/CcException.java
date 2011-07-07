@@ -27,6 +27,7 @@ package ccexception;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import javax.swing.JOptionPane;
 
 /**
  * Class: SwapException
@@ -68,5 +69,15 @@ public class CcException extends Exception
     System.out.println("Exception: " + description);
     if (this.getCause() != null)
       System.out.println("Origin: " + this.getCause().toString());
+  }
+
+  /**
+   * display
+   *
+   * Display exception on popup window
+   */
+  public void display()
+  {
+    JOptionPane.showMessageDialog(null,  description, "Exception", JOptionPane.WARNING_MESSAGE);
   }
 }

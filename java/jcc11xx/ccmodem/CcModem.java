@@ -75,6 +75,36 @@ public class CcModem implements Gateway
   private boolean atResponseReceived = false;
 
   /**
+   * Hardware version of the serial modem
+   */
+  private long hwVersion;
+
+  /**
+   * Firmware version
+   */
+  private long fwVersion;
+
+  /**
+   * Carrier frequency
+   */
+  private int carrierFreq;
+
+  /**
+   * Frequency channel
+   */
+  private int freqChannel;
+
+  /**
+   * Synchronization word
+   */
+  private int syncWord;
+
+  /**
+   * Device address
+   */
+  private int deviceAddr;
+
+  /**
    * CcModem
    *
    * Class constructor
@@ -99,6 +129,42 @@ public class CcModem implements Gateway
   public void connect() throws CcException
   {
     commPort.connect();
+
+    if (serMode == SerialMode.DATA)
+      goToCommandMode();
+
+    String response;
+
+    // Retrieve modem settings
+    // Hardware version
+    if ((response = runAtCommand("ATHV?\r")) == null)
+      throw new CcException("Unable to retrieve Hardware Version from serial modem");
+    hwVersion = Long.parseLong(response, 16);
+
+    // Firmware version
+    if ((response = runAtCommand("ATFV?\r")) == null)
+      throw new CcException("Unable to retrieve Firmware Version from serial modem");
+    fwVersion = Long.parseLong(response, 16);
+
+    // Carrier frequency
+    if ((response = runAtCommand("ATCF?\r")) == null)
+      throw new CcException("Unable to retrieve Carrier Frequency from serial modem");
+    carrierFreq = Integer.parseInt(response, 16);
+
+    // Frequency channel
+    if ((response = runAtCommand("ATCH?\r")) == null)
+      throw new CcException("Unable to retrieve Frequency Channel from serial modem");
+    freqChannel = Integer.parseInt(response, 16);
+
+    // Synchronization word
+    if ((response = runAtCommand("ATSW?\r")) == null)
+      throw new CcException("Unable to retrieve Synchronization Word from serial modem");
+    syncWord = Integer.parseInt(response, 16);
+
+    // Device address
+    if ((response = runAtCommand("ATDA?\r")) == null)
+      throw new CcException("Unable to retrieve Device Address from serial modem");
+    deviceAddr = Integer.parseInt(response, 16);
   }
 
   /**
@@ -159,7 +225,7 @@ public class CcModem implements Gateway
     while (atResponse.startsWith("("))
     {
       if (!waitForResponse(2000))
-        return "-1";
+        return null;
     }
 
     return atResponse;
@@ -243,11 +309,9 @@ public class CcModem implements Gateway
    * Return:
    * 	Hardware version
    */
-  public long getHwVersion() throws CcException
+  public long getHwVersion()
   {
-    if (serMode == SerialMode.DATA)
-      goToCommandMode();
-    return Long.parseLong(runAtCommand("ATHV?\r"), 16);
+    return hwVersion;
   }
 
   /**
@@ -258,11 +322,9 @@ public class CcModem implements Gateway
    * Return:
    * 	Firmware version
    */
-  public long getFwVersion() throws CcException
+  public long getFwVersion()
   {
-    if (serMode == SerialMode.DATA)
-      goToCommandMode();
-    return Long.parseLong(runAtCommand("ATFV?\r"));
+    return fwVersion;
   }
 
   /**
@@ -270,12 +332,9 @@ public class CcModem implements Gateway
    *
    * Get carrier frequency from modem
    */
-  public int getCarrierFreq() throws CcException
+  public int getCarrierFreq()
   {
-    if (serMode == SerialMode.DATA)
-      goToCommandMode();
-
-    return Integer.parseInt(runAtCommand("ATCF?\r"), 16);
+    return carrierFreq;
   }
 
   /**
@@ -303,7 +362,10 @@ public class CcModem implements Gateway
     strBuf.append(Integer.toHexString(freq));
 
     if (runAtCommand("ATCF=" + strBuf.toString() + "\r").startsWith("OK"))
+    {
+      carrierFreq = freq;
       return true;
+    }
     return false;
   }
 
@@ -312,11 +374,9 @@ public class CcModem implements Gateway
    *
    * Get frequency channel from modem
    */
-  public int getFreqChannel() throws CcException
+  public int getFreqChannel()
   {
-    if (serMode == SerialMode.DATA)
-      goToCommandMode();
-    return Integer.parseInt(runAtCommand("ATCH?\r"), 16);
+    return freqChannel;
   }
 
   /**
@@ -343,19 +403,22 @@ public class CcModem implements Gateway
     strBuf.append("0");
     strBuf.append(Integer.toHexString(channel));
 
-    return runAtCommand("ATCH=" + strBuf.toString() + "\r").startsWith("OK");
+    if (runAtCommand("ATCH=" + strBuf.toString() + "\r").startsWith("OK"))
+    {
+      freqChannel = channel;
+      return true;
+    }
+    return false;
   }
 
-    /**
+  /**
    * getSyncWord
    *
    * Get sync word from modem
    */
-  public int getSyncWord() throws CcException
+  public int getSyncWord()
   {
-    if (serMode == SerialMode.DATA)
-      goToCommandMode();
-    return Integer.parseInt(runAtCommand("ATSW?\r"), 16);
+    return syncWord;
   }
 
   /**
@@ -385,7 +448,10 @@ public class CcModem implements Gateway
     strBuf.append(Integer.toHexString(sync));
 
     if (runAtCommand("ATSW=" + strBuf.toString() + "\r").startsWith("OK"))
+    {
+      syncWord = sync;
       return true;
+    }
     return false;
   }
 
@@ -394,11 +460,9 @@ public class CcModem implements Gateway
    *
    * Get device address from modem
    */
-  public int getDeviceAddr() throws CcException
+  public int getDeviceAddr()
   {
-    if (serMode == SerialMode.DATA)
-      goToCommandMode();
-    return Integer.parseInt(runAtCommand("ATDA?\r"), 16);
+    return deviceAddr;
   }
 
   /**
@@ -428,87 +492,10 @@ public class CcModem implements Gateway
     strBuf.append(Integer.toHexString(addr));
 
     if (runAtCommand("ATDA=" + strBuf.toString() + "\r").startsWith("OK"))
+    {
+      deviceAddr = addr;
       return true;
-    return false;
-  }
-
-  /**
-   * getDataRate
-   *
-   * Get data rate from modem
-   */
-  public int getDataRate() throws CcException
-  {
-    if (serMode == SerialMode.DATA)
-      goToCommandMode();
-    return Integer.parseInt(runAtCommand("ATDR?\r"), 16);
-  }
-
-  /**
-   * setDataRate
-   * 
-   * Set wireless data rate
-   * 
-   * 'drate'	New data rate
-   * 
-   * Return:
-   * 	1 if the command succeeds
-   * 	0 otherwise
-   */
-  public boolean setDataRate(int drate) throws CcException
-  {
-    if (serMode == SerialMode.DATA)
-      goToCommandMode();
-
-    StringBuilder strBuf = new StringBuilder("");
-
-    strBuf.append("0");
-    strBuf.append(Integer.toHexString(drate));
-
-    if (runAtCommand("ATDR=" + strBuf.toString() + "\r").startsWith("OK"))
-      return true;
-    return false;
-  }
-
-  /**
-   * getModulation
-   *
-   * Get modulation type from modem
-   */
-  public int getModulation() throws CcException
-  {
-    if (serMode == SerialMode.DATA)
-      goToCommandMode();
-
-    return Integer.parseInt(runAtCommand("ATMT?\r"), 16);
-  }
-
-  /**
-   * setModulation
-   * 
-   * Set modulation type
-   * 
-   * 'type'	New data rate
-   * 
-   * Return:
-   * 	1 if the command succeeds
-   * 	0 otherwise
-   */
-  public boolean setModulation(int type) throws CcException
-  {
-    if (serMode == SerialMode.DATA)
-      goToCommandMode();
-
-    StringBuilder strBuf = new StringBuilder("");
-
-    if (type > 0x0F)
-      return false;
-
-    strBuf.append("0");
-    strBuf.append(Integer.toHexString(type));
-
-    if (runAtCommand("ATMT=" + strBuf.toString() + "\r").startsWith("OK"))
-      return true;
+    }
     return false;
   }
 
