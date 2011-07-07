@@ -25,6 +25,8 @@
  */
 package ccmodem;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import serial.Gateway;
 import serial.TtyPort;
 import ccexception.CcException;
@@ -129,6 +131,12 @@ public class CcModem implements Gateway
   public void connect() throws CcException
   {
     commPort.connect();
+
+    try {
+      Thread.sleep(3000);
+    } catch (InterruptedException ex) {
+      Logger.getLogger(CcModem.class.getName()).log(Level.SEVERE, null, ex);
+    }
 
     if (serMode == SerialMode.DATA)
       goToCommandMode();
