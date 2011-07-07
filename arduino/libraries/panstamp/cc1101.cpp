@@ -470,23 +470,30 @@ byte CC1101::receiveData(CCPACKET * packet)
   {
     // Read data length
     packet->length = readConfigReg(CC1101_RXFIFO);
-    // Read data packet
-    readBurstReg(packet->data, CC1101_RXFIFO, packet->length);
-    // Read RSSI
-    packet->rssi = readConfigReg(CC1101_RXFIFO);
-    // Read LQI and CRC_OK
-    val = readConfigReg(CC1101_RXFIFO);
-    packet->lqi = val & 0x7F;
-    packet->crc_ok = bitRead(val, 7);
 
-    // Flush RX FIFO
-    cmdStrobe(CC1101_SFRX);
-
-    // Enter back into RX state
-    setRxState(); 
+    // If packewt is too long
+    if (packet->length > CC1101_DATA_LEN)
+      packet->length = 0;   // Discard packet
+    else
+    {
+      // Read data packet
+      readBurstReg(packet->data, CC1101_RXFIFO, packet->length);
+      // Read RSSI
+      packet->rssi = readConfigReg(CC1101_RXFIFO);
+      // Read LQI and CRC_OK
+      val = readConfigReg(CC1101_RXFIFO);
+      packet->lqi = val & 0x7F;
+      packet->crc_ok = bitRead(val, 7);
+    }
   }
   else
     packet->length = 0;
+
+  // Flush RX FIFO
+  cmdStrobe(CC1101_SFRX);
+
+  // Enter back into RX state
+  setRxState(); 
 
   return packet->length;
 }
