@@ -28,6 +28,7 @@ package swap;
 import device.Settings;
 import xmltools.XmlDevice;
 import ccexception.CcException;
+import device.SwapGateway;
 import xmltools.XmlException;
 
 import java.io.File;
@@ -41,6 +42,11 @@ import java.io.File;
  */
 public class SwapMote
 {
+  /**
+   * Serial gateway
+   */
+  private static SwapGateway gateway;
+
   /**
    * Manufacturer id
    */
@@ -70,11 +76,6 @@ public class SwapMote
    * Mote definition
    */
   private XmlDevice definition;
-
-  /**
-   * Pending packet to be sent to the mote
-   */
-  private SwapPacket pendingPacket = null;
 
   /**
    * SwapMote
@@ -172,21 +173,6 @@ public class SwapMote
   }
 
   /**
-   * cmdAddress
-   *
-   * Send command to mote in order to change its address
-   *
-   * 'address'	New device address
-   *
-   * Return expected response to be received from the targeted endpoint
-   */
-  public SwapInfoPacket cmdAddress(int address) throws CcException
-  {
-    SwapValue val = new SwapValue(address, 1);
-    return cmdRegister(SwapDefs.ID_DEVICE_ADDR, val);
-  }
-
-  /**
    * getNonce
    *
    * Get current cyclic nonce
@@ -217,59 +203,76 @@ public class SwapMote
   }
 
   /**
-   * cmdFreqChannel
+   * sendFreqChannelWack
    *
-   * Send command to mote in order to change its frequency channel
+   * Send frequency channel value and wait for response from the mote
    *
-   * 'freqChannel'	New carrier frequency
+   * 'freqChannel'	New frequency channel
    *
-   * Return expected response to be received from the targeted endpoint
+   * Return true if the mote confirmed (ACK'ed) the new frequency channel
    */
-  public SwapInfoPacket cmdFreqChannel(int freqChannel) throws CcException
+  public boolean sendFreqChannelWack(int freqChannel) throws ccexception.CcException
   {
     SwapValue val = new SwapValue(freqChannel, 1);
-    return cmdRegister(SwapDefs.ID_FREQ_CHANNEL, val);
+    return gateway.setMoteRegister(this, SwapDefs.ID_FREQ_CHANNEL, val);
   }
 
   /**
-   * cmdNetworkId
+   * sendNetworkIdWack
    *
-   * Send command to mote in order to change its network id
+   * Send network id value and wait for response from the mote
    *
-   * 'netId'	New carrier frequency
+   * 'netId'	New network id
    *
-   * Return expected response to be received from the targeted endpoint
+   * Return true if the mote confirmed (ACK'ed) the new network id
    */
-  public SwapInfoPacket cmdNetworkId(int netId) throws CcException
+  public boolean sendNetworkIdWack(int netId) throws CcException
   {
     SwapValue val = new SwapValue(netId, 2);
-    return cmdRegister(SwapDefs.ID_NETWORK_ID, val);
+    return gateway.setMoteRegister(this, SwapDefs.ID_NETWORK_ID, val);
   }
 
   /**
-   * cmdSecurity
+   * sendSecurityWack
    *
-   * Send command to mote in order to change its security option
+   * Send security option value and wait for response from the mote
    *
-   * 'secu'	New carrier frequency
+   * 'secu'	Security option
    *
-   * Return expected response to be received from the targeted endpoint
+   * Return true if the mote confirmed (ACK'ed) the new security option
    */
-  public SwapInfoPacket cmdSecurity(int secu) throws CcException
+  public boolean sendSecurityWack(int secu) throws CcException
   {
     SwapValue val = new SwapValue(secu, 1);
-    return cmdRegister(SwapDefs.ID_SECU_OPTION, val);
+    return gateway.setMoteRegister(this, SwapDefs.ID_SECU_OPTION, val);
   }
 
   /**
-   * cmdRestart
+   * sendAddressWack
+   *
+   * Send address value and wait for response from the mote
+   *
+   * 'addr'	New device address
+   *
+   * Return true if the mote confirmed (ACK'ed) the new device address
+   */
+  public boolean sendAddressWack(int addr) throws CcException
+  {
+    SwapValue val = new SwapValue(addr, 1);
+    return gateway.setMoteRegister(this, SwapDefs.ID_DEVICE_ADDR, val);
+  }
+
+  /**
+   * restart
    *
    * Restart wireless mote
+   *
+   * Return true if the mote confirmed (ACK'ed) the command
    */
-  public SwapInfoPacket cmdRestart() throws CcException
+  public boolean restart() throws CcException
   {
     SwapValue val = new SwapValue(SwapDefs.SYSTATE_RESTART, 1);
-    return cmdRegister(SwapDefs.ID_SYSTEM_STATE, val);
+    return gateway.setMoteRegister(this, SwapDefs.ID_SYSTEM_STATE, val);
   }
   
   /**
@@ -286,13 +289,7 @@ public class SwapMote
   {
     SwapInfoPacket infPacket = new SwapInfoPacket(this.getAddress(), id, val);
     SwapCommandPacket cmdPacket = new SwapCommandPacket(this.nonce, this.getAddress(), id, val);
-/*
-    // The mote may be sleeping at this moment
-    if (this.getPwrDownMode())
-      pendingPacket = cmdPacket; // Place the message for later transmission
-    else
- */
-      cmdPacket.send();
+    cmdPacket.send();
 
     return infPacket;
   }
@@ -307,26 +304,7 @@ public class SwapMote
   public void qryRegister(int id) throws CcException
   {
     SwapQueryPacket qryPacket = new SwapQueryPacket(this.getAddress(), id);
-
-    // The mote may be sleeping at this moment
-    if (this.getPwrDownMode())
-      pendingPacket = qryPacket; // Place the message for later transmission
-    else
-      qryPacket.send();
-  }
-  
-  /**
-   * sendPending
-   *
-   * Send pending SWAP message to mote
-   */
-  public void sendPending() throws CcException
-  {
-    if (pendingPacket != null)
-    {
-      pendingPacket.send();
-      pendingPacket = null;
-    }
+    qryPacket.send();
   }
   
   /**
@@ -347,5 +325,25 @@ public class SwapMote
   public void setState(int value)
   {
     state = value;
+  }
+
+  /**
+   * getGateway
+   *
+   * Return serial gateway
+   */
+  public final static SwapGateway getGateway()
+  {
+    return gateway;
+  }
+
+  /**
+   * setGateway
+   *
+   * Set serial gateway attribute
+   */
+  public static void setGateway(SwapGateway value)
+  {
+    gateway = value;
   }
 }

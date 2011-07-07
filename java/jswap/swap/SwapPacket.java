@@ -139,9 +139,9 @@ public class SwapPacket extends CcPacket
     int i;
     // Class members
     this.destAddress = destAddr;
-    this.srcAddress = SwapEndpoint.device.getAddress();
+    this.srcAddress = SwapMote.getGateway().getAddress();
     this.hop = hop;
-    this.security = SwapEndpoint.device.getSecurity();
+    this.security = SwapMote.getGateway().getSecurity();
     this.nonce = nonce;
     this.function = function;
     this.regAddress = regAddr;

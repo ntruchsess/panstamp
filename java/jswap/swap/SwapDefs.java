@@ -71,9 +71,10 @@ public class SwapDefs
   public static final int ID_SYSTEM_STATE = 3;
   public static final int ID_FREQ_CHANNEL = 4;
   public static final int ID_SECU_OPTION = 5;
-  public static final int ID_SECU_NONCE = 6;
-  public static final int ID_NETWORK_ID = 7;
-  public static final int ID_DEVICE_ADDR = 8;
+  public static final int ID_SECU_PASSWD = 6;
+  public static final int ID_SECU_NONCE = 7;
+  public static final int ID_NETWORK_ID = 8;
+  public static final int ID_DEVICE_ADDR = 9;
 
   /**
    * Basic System states

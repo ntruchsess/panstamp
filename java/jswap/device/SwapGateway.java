@@ -44,6 +44,7 @@ import org.w3c.dom.NodeList;
 import java.util.ArrayList;
 import java.io.File;
 import swap.SwapRegister;
+import swap.SwapValue;
 
 /**
  * Class: Device
@@ -52,7 +53,7 @@ import swap.SwapRegister;
  * 
  * SWAP device class. SWAP devices are typically computers using this library
  */
-public class SwapGateway extends SwapMote implements SwapPacketHandler
+public class SwapGateway implements SwapPacketHandler
 {
   /**
    * Serial settings
@@ -65,29 +66,9 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
   private XmlNetwork network;
   
   /**
-   * SWAP communication port
-   */
-  private SwapComm swapComm;
-
-  /**
    * Device event handler
    */
   private DeviceEventHandler eventHandler;
-
-  /**
-   * Security option
-   */
-  private int security = 0;
-
-  /**
-   * Network identifier
-   */
-  private int netId;
-
-  /**
-   * Frequency channel
-   */
-  private int freqChannel;
 
   /**
    * Vector of SWAP motes
@@ -109,28 +90,38 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
     */
   private boolean packetAcked = false;
 
-   /**
-    * Maximum waiting time (in ms) for ACK's
-    */
-  private final static int MAX_WAITTIME_ACK = 500;
-
-   /**
-    * Max tries for any configuration command
-    */
-  private final static int MAX_CONFIG_TRIES = 3;
+  /**
+   * Security nonce for all SWAP infos sent by the gateway
+   */
+  private int nonce = 0;
 
   /**
-   * Device
+   * SWAP communication object
+   */
+  private SwapComm swapComm;
+
+  /**
+   * Maximum waiting time (in ms) for ACK's
+   */
+  private final static int MAX_WAITTIME_ACK = 500;
+
+  /**
+   * Max tries for any SWAP command
+   */
+  private final static int MAX_SWAP_COMMAND_TRIES = 3;
+
+  /**
+   * SwapGateway
    *
    * Class constructor
    *
    * 'parent'	Device event handler parent
    */
-  public SwapGateway(DeviceEventHandler parent) throws XmlException
+  public SwapGateway(DeviceEventHandler parent) throws XmlException, CcException
   {
-    super(SwapDefs.DEF_PRODUCT_CODE, SwapDefs.DEF_DEV_ADDRESS);
+    eventHandler = parent;
 
-    this.eventHandler = parent;
+    Settings.read();
 
     // Generate serial parameters from XML file
     serial = new XmlSerial(Settings.getSerialFile());
@@ -142,28 +133,24 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
     this.alMotes = new ArrayList();
     // Create vector of SWAP endpoints
     this.alEndpoints = new ArrayList();
+    // Set gateway variable in SwapMote
+    SwapMote.setGateway(this);
   }
 
   /**
    * connect
    *
-   * Connect serial port and start SWAP comms
+   * Start serial port and SWAP comms
    */
   public void connect() throws CcException
   {
-    // SwapComm object
+    // Generate serial parameters from XML file
+    serial = new XmlSerial(Settings.getSerialFile());
     swapComm = new SwapComm(this, serial.getPort(), serial.getSpeed());
+    
     // Start SWAP comms
     swapComm.connect();
     
-    int val;
-    if ((val = swapComm.getFreqChannel()) >= 0)
-      freqChannel = val;
-    if ((val = swapComm.getNetworkId()) >= 0)
-      netId = val;
-    if ((val = swapComm.getAddress()) > 0)
-      setAddress(val);
-
     // Discover wireless motes
     alMotes.clear();
     discoverMotes();
@@ -172,13 +159,13 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
   /**
    * disconnect
    *
-   * Stop SWAP comms and disconnect serial port
+   * Stop serial port and SWAP comms
    */
   public void disconnect() throws CcException
   {
     swapComm.disconnect();
   }
-  
+
   /**
    * swapPacketReceived
    * 
@@ -220,7 +207,7 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
           break;
         case SwapPacket.FQUERY:
           // Query sent to this gateway?
-          if (packet.destAddress == this.getAddress())
+          if (packet.destAddress == swapComm.getAddress())
           {
             // Recover endpoint from array list
             SwapEndpoint endpoint = getEndpointFromAddress(packet.regAddress, packet.regId);
@@ -230,7 +217,7 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
           break;
         case SwapPacket.FCOMMAND:
           // Command sent to an endpoint belonging to this gateway?
-          if (packet.destAddress == this.getAddress() && packet.destAddress == packet.regAddress)
+          if (packet.destAddress == swapComm.getAddress() && packet.destAddress == packet.regAddress)
           {
             // Recover endpoint from array list
             SwapEndpoint endpoint = getEndpointFromAddress(packet.regAddress, packet.regId);
@@ -431,6 +418,86 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
   }
 
   /**
+   * getCarrierFreq
+   * 
+   * Get carrier frequency
+   */
+  public int getCarrierFreq() 
+  {
+    return swapComm.getCarrierFreq();
+  }
+
+  /**
+   * setCarrierFreq
+   * 
+   * Set carrier frequency
+   */
+  public boolean setCarrierFreq(int val) throws CcException
+  {
+    return swapComm.setCarrierFreq(val);
+  }
+
+  /**
+   * getFreqChannel
+   * 
+   * Get frequency channel
+   */
+  public int getFreqChannel() 
+  {
+    return swapComm.getFreqChannel();
+  }
+
+  /**
+   * setFreqChannel
+   * 
+   * Set frequency channel
+   */
+  public boolean setFreqChannel(int val) throws CcException
+  {
+    return swapComm.setFreqChannel(val);
+  }
+
+  /**
+   * getNetworkId
+   * 
+   * Get network id
+   */
+  public int getNetworkId() 
+  {
+    return swapComm.getNetworkId();
+  }
+
+  /**
+   * setNetworkId
+   * 
+   * Set network id
+   */
+  public boolean setNetworkId(int val) throws CcException
+  {
+    return swapComm.setNetworkId(val);
+  }
+
+  /**
+   * getAddress
+   * 
+   * Return device address
+   */
+  public int getAddress() 
+  {
+    return swapComm.getAddress();
+  }
+
+  /**
+   * setAddress
+   * 
+   * Set device address
+   */
+  public boolean setAddress(int val)  throws CcException
+  {
+    return swapComm.setAddress(val);
+  }
+
+  /**
    * getSecurity
    *
    * Return security option
@@ -441,143 +508,32 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
   }
 
   /**
-   * getFreqChannel
+   * setMoteRegister
    *
-   * Return frequency channel
-   */
-  public final int getFreqChannel()
-  {
-    return freqChannel;
-  }
-
-  /**
-   * setFreqChannel
+   * Set register value in a given mote
    *
-   * Set frequency channel
+   * 'mote'	SWAP mote
+   * 'regId'	Register id
+   * 'value'	New value
+   *
+   * Return true if the mote akcnowledges this command
    */
-  public boolean setFreqChannel(int value) throws CcException
+  public boolean setMoteRegister(SwapMote mote, int regId, SwapValue value) throws CcException
   {
-    SwapMote tmpMote;
     SwapInfoPacket ack;
     boolean res = true;
-    int i = 0, tries = 0;
+    int i;
 
-    while(i < alMotes.size())
+    // Send command multiple times if necessary
+    for(i=0 ; i<MAX_SWAP_COMMAND_TRIES ; i++)
     {
-      tmpMote = (SwapMote) alMotes.get(i);
-      ack = tmpMote.cmdFreqChannel(value);
-      if (tmpMote.getPwrDownMode())
-        i++;
-      else
-      {
-        tries++;
-        if (waitForAck(ack, MAX_WAITTIME_ACK))
-        {
-          i++;
-          tries = 0;
-        }
-        else if (tries == MAX_CONFIG_TRIES)
-        {
-          i++;
-          tries = 0;
-          res = false;
-        }
-      }
+      // Send command
+      ack = mote.cmdRegister(regId, value);
+      // Wait for aknowledgement from mote
+      if (waitForAck(ack, MAX_WAITTIME_ACK))
+        return true;  // ACK received !!
     }
-    if (swapComm.setFreqChannel(value))
-      freqChannel = value;
-
-    return res;
-  }
-
-  /**
-   * getNetId
-   *
-   * Return network id
-   */
-  public final int getNetId()
-  {
-    return netId;
-  }
-
-  /**
-   * setNetId
-   *
-   * Set network id
-   */
-  public boolean setNetId(int value) throws CcException
-  {
-    SwapMote tmpMote;
-    SwapInfoPacket ack;
-    boolean res = true;
-    int i = 0, tries = 0;
-
-    while(i < alMotes.size())
-    {
-      tmpMote = (SwapMote) alMotes.get(i);
-      ack = tmpMote.cmdNetworkId(value);
-      if (tmpMote.getPwrDownMode())
-        i++;
-      else
-      {
-        tries++;
-        if (waitForAck(ack, MAX_WAITTIME_ACK))
-        {
-          i++;
-          tries = 0;
-        }
-        else if (tries == MAX_CONFIG_TRIES)
-        {
-          i++;
-          tries = 0;
-          res = false;
-        }
-      }
-    }
-    if (swapComm.setNetworkId(value))
-      netId = value;
-
-    return res;
-  }
-
-  /**
-   * setAddress
-   *
-   * Set device address
-   */
-  public boolean setDevAddress(int value) throws CcException
-  {
-    SwapMote tmpMote;
-    SwapInfoPacket ack;
-    boolean res = true;
-    int i = 0, tries = 0;
-
-    while(i < alMotes.size())
-    {
-      tmpMote = (SwapMote) alMotes.get(i);
-      ack = tmpMote.cmdAddress(value);
-      if (tmpMote.getPwrDownMode())
-        i++;
-      else
-      {
-        tries++;
-        if (waitForAck(ack, MAX_WAITTIME_ACK))
-        {
-          i++;
-          tries = 0;
-        }
-        else if (tries == MAX_CONFIG_TRIES)
-        {
-          i++;
-          tries = 0;
-          res = false;
-        }
-      }
-    }
-    if (swapComm.setAddress(value))
-      setAddress(value);
-
-    return res;
+    return false;     // Got no ACK from mote
   }
 
   /**
@@ -786,41 +742,33 @@ public class SwapGateway extends SwapMote implements SwapPacketHandler
    * Set security settings
    *
    * 'security'	Security option
-   *
-   * Return false if at least one mote was not able to change its security settings
    */
-  public boolean setSecurity(int security) throws CcException
+  public void setSecurity(int security) throws XmlException
   {
-     SwapMote tmpMote;
-    SwapInfoPacket ack;
-    boolean res = true;
-    int i = 0, tries = 0;
-
-    while(i < alMotes.size())
-    {
-      tmpMote = (SwapMote) alMotes.get(i);
-      ack = tmpMote.cmdSecurity(security);
-      if (tmpMote.getPwrDownMode())
-        i++;
-      else
-      {
-        tries++;
-        if (waitForAck(ack, MAX_WAITTIME_ACK))
-        {
-          i++;
-          tries = 0;
-        }
-        else if (tries == MAX_CONFIG_TRIES)
-        {
-          i++;
-          tries = 0;
-          res = false;
-        }
-      }
-    }
     network.setSecurity(security);
     network.write();
+  }
 
-    return res;
+  /**
+   * incrementNonce
+   *
+   * Increment security nonce
+   */
+  public void incrementNonce()
+  {
+    if (nonce == 0xFF)
+      nonce = 0;
+    else
+      nonce++;
+  }
+
+  /**
+   * getNonce
+   *
+   * Return security nonce
+   */
+  public final int getNonce()
+  {
+    return nonce;
   }
 }

@@ -43,8 +43,10 @@ public class SwapInfoPacket extends SwapPacket
    */
   public SwapInfoPacket(SwapRegister register)
   {
-    super(BROADCAST_ADDR, 0, SwapEndpoint.device.getNonce(), SwapPacket.FINFO,
+    super(BROADCAST_ADDR, 0, SwapMote.getGateway().getNonce(), SwapPacket.FINFO,
             register.getAddress(), register.getId(), register.getValue());
+
+    SwapMote.getGateway().incrementNonce();
   }
 
   /**

@@ -74,16 +74,15 @@ public class SwapComm implements CcPacketHandler
    *
    * Class constructor
    *
-   * 'parent'	SWAP packet handler parent
-   * 'port'	Serial port name
-   * 'speed'	Serial baud rate
+   * 'parent' Packet handler parent
+   * 'port' Serial port
+   * 'speed'	Serial speed
    */
-  public SwapComm(SwapPacketHandler parent, String port, int speed) throws CcException
+  public SwapComm(SwapPacketHandler parent, String port, int speed)
   {
     packetHandler = parent;
     serPort = port;
     serSpeed = speed;
-    modem = new CcModem(this, serPort, serSpeed);
   }
 
   /**
@@ -93,6 +92,7 @@ public class SwapComm implements CcPacketHandler
    */
   public void connect() throws CcException
   {
+    modem = new CcModem(this, serPort, serSpeed);
     modem.connect();
     modem.goToDataMode();
   }
@@ -130,7 +130,7 @@ public class SwapComm implements CcPacketHandler
    *
    * Get carrier frequency
    */
-  public int getCarrierFreq() throws CcException
+  public int getCarrierFreq()
   {
     return modem.getCarrierFreq();
   }
@@ -153,7 +153,7 @@ public class SwapComm implements CcPacketHandler
    *
    * Get frequency channel
    */
-  public int getFreqChannel() throws CcException
+  public int getFreqChannel()
   {
     return modem.getFreqChannel();
   }
@@ -176,7 +176,7 @@ public class SwapComm implements CcPacketHandler
    *
    * Get network id
    */
-  public int getNetworkId() throws CcException
+  public int getNetworkId()
   {
     return modem.getSyncWord();
   }
@@ -199,7 +199,7 @@ public class SwapComm implements CcPacketHandler
    *
    * Return device address
    */
-  public int getAddress() throws CcException
+  public int getAddress()
   {
     return modem.getDeviceAddr();
   }
