@@ -185,8 +185,6 @@ enum CFREQ
  * CRC autoflush = false 
  * PA ramping = false 
  * TX power = 12
- * GDO0 mode = Asserts when a packet has been received with CRC OK. De-asserts when the first byte is read
- * from the RX FIFO.
  * GDO0 mode = Asserts when sync word has been sent / received, and de-asserts at the end of the packet.
  * In RX, the pin will also de-assert when a packet is discarded due to address or maximum length filtering
  * or when the radio enters RXFIFO_OVERFLOW state. In TX the pin will de-assert if the TX FIFO underflows
