@@ -43,6 +43,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import java.util.ArrayList;
 import java.io.File;
+import swap.SwapQueryPacket;
 import swap.SwapRegister;
 import swap.SwapValue;
 
@@ -187,7 +188,7 @@ public class SwapGateway implements SwapPacketHandler
           {
             case SwapDefs.ID_PRODUCT_CODE:
               // Add new mote to alMotes
-              SwapMote swapMote = new SwapMote(packet.value.toArray(), packet.srcAddress);
+              SwapMote swapMote = new SwapMote(packet.value.toArray(), packet.regAddress);
               swapMote.setNonce(packet.nonce);
               addMote(swapMote);
               createEndpoints(swapMote);
@@ -229,6 +230,13 @@ public class SwapGateway implements SwapPacketHandler
           break;
         default:
           break;
+      }
+      // New device?
+      if (getMoteFromAddress(packet.srcAddress) == null)
+      {
+        // Query device product code
+        SwapQueryPacket query = new SwapQueryPacket(packet.srcAddress, SwapDefs.ID_PRODUCT_CODE);
+        query.send();
       }
     }
     catch (CcException ex)
@@ -442,7 +450,7 @@ public class SwapGateway implements SwapPacketHandler
    * 
    * Get frequency channel
    */
-  public int getFreqChannel() 
+  public int getFreqChannel()
   {
     return swapComm.getFreqChannel();
   }

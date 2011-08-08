@@ -108,7 +108,6 @@ public class SwapPacket extends CcPacket
     // Superclass members
     length = packet.length;
     data = packet.data;
-    crc_ok = packet.crc_ok;
     rssi = packet.rssi;
     lqi = packet.lqi;
 
