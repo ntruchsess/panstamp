@@ -47,11 +47,6 @@ public class CcPacket
   public int[] data;
 
   /**
-   * CRC OK flag
-   */
-  public boolean crc_ok;
-
-  /**
    * Received Strength Signal Indication
    */
   public int rssi;
