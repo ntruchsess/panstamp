@@ -214,7 +214,7 @@ void handleSerialCmd(char* command)
       {
         if (atQuery == ATQUERY_COMMAND)
         {
-           if ((len-5) == 4)
+          if ((len-5) == 4)
           {
             arrV[0] = charToHex(strSerial[5]) << 4;
             arrV[0] |= charToHex(strSerial[6]);
@@ -242,6 +242,27 @@ void handleSerialCmd(char* command)
         }
         else
           Serial.println(cc1101.devAddress, HEX);
+      }
+      // Address check
+      else if (!strncmp(strSerial, AT_ADDRCHECK, 4))
+      {
+        if (atQuery == ATQUERY_COMMAND)
+        {
+          if (i == 0)
+          {
+            cc1101.disableAddressCheck();
+            Serial.println("OK");
+          }
+          if (i == 1)
+          {
+            cc1101.enableAddressCheck();
+            Serial.println("OK");
+          }
+          else
+            Serial.println("ERROR");
+        }
+        else
+          Serial.println("ERROR");
       }
       else
         Serial.println("ERROR");

@@ -49,6 +49,7 @@
 #define AT_FREQCHANNEL           "ATCH"      // Frequency channel
 #define AT_SYNCWORD              "ATSW"      // Synchronization word
 #define AT_DEVADDRESS            "ATDA"      // Device address
+#define AT_ADDRCHECK             "ATAC"      // Address check
 
 /**
  * Macros
