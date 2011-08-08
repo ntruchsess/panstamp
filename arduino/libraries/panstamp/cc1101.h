@@ -247,22 +247,12 @@ enum CFREQ
 /**
  * Macros
  */
-// Wait until SPI MISO line goes low
-#define wait_Miso()  while(bitRead(PORT_SPI_MISO, BIT_SPI_MISO))
-// Get GDO0 pin state
-#define getGDO0state()  bitRead(PORT_GDO0, BIT_GDO0)
-// Wait until GDO0 line goes high
-#define wait_GDO0_high()  while(!getGDO0state())
-// Wait until GDO0 line goes low
-#define wait_GDO0_low()  while(getGDO0state())
-// Select (SPI) SI443X
-#define cc1101_Select()  bitClear(PORT_SPI_SS, BIT_SPI_SS)
-// Deselect (SPI) SI443X
-#define cc1101_Deselect()  bitSet(PORT_SPI_SS, BIT_SPI_SS)
-// Read CC1101 Config register
-#define readConfigReg(regAddr)    readReg(regAddr, CC1101_CONFIG_REGISTER)
-// Read CC1101 Status register
-#define readStatusReg(regAddr)    readReg(regAddr, CC1101_STATUS_REGISTER)
+// Enter Rx state
+#define setRxState()              cmdStrobe(CC1101_SRX)
+// Disable address check
+#define disableAddressCheck()     writeReg(CC1101_PKTCTRL1, 0x04)
+// Enable address check
+#define enableAddressCheck()      writeReg(CC1101_PKTCTRL1, 0x06)
 
 /**
  * Class: CC1101
@@ -279,16 +269,6 @@ class CC1101
     SPI spi;
 
     /**
-     * writeReg
-     * 
-     * Write single register into the CC1101 IC via SPI
-     * 
-     * 'regAddr'	Register address
-     * 'value'	Value to be writen
-     */
-    void writeReg(byte regAddr, byte value);
-
-    /**
      * writeBurstReg
      * 
      * Write multiple registers into the CC1101 IC via SPI
@@ -298,15 +278,6 @@ class CC1101
      * 'len'	Data length
      */
     void writeBurstReg(byte regAddr, byte* buffer, byte len);
-
-    /**
-     * cmdStrobe
-     * 
-     * Send command strobe to the CC1101 IC via SPI
-     * 
-     * 'cmd'	Command strobe
-     */
-    void cmdStrobe(byte cmd);
 
     /**
      * readReg
@@ -368,6 +339,25 @@ class CC1101
     byte devAddress;
 
     /**
+     * writeReg
+     * 
+     * Write single register into the CC1101 IC via SPI
+     * 
+     * 'regAddr'	Register address
+     * 'value'	Value to be writen
+     */
+    void writeReg(byte regAddr, byte value);
+
+    /**
+     * cmdStrobe
+     * 
+     * Send command strobe to the CC1101 IC via SPI
+     * 
+     * 'cmd'	Command strobe
+     */
+    void cmdStrobe(byte cmd);
+
+    /**
      * reset
      * 
      * Reset CC1101
@@ -422,13 +412,6 @@ class CC1101
     void setChannel(byte chnl, bool save);
 
     /**
-     * setRxState
-     * 
-     * Enter RX state
-     */
-    void setRxState(void);
-
-    /**
      * setPowerDownState
      * 
      * Put CC1101 into power-down state
@@ -458,13 +441,6 @@ class CC1101
      * 'packet'	Container for the packet received
      */
     byte receiveData(CCPACKET *packet);
-
-    /**
-     * disableAddressCheck
-     * 
-     * Disable address check on the CC1101 IC
-     */
-    void disableAddressCheck();
 };
 
 #endif

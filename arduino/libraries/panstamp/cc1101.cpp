@@ -26,6 +26,26 @@
 #include "cc1101.h"
 #include "nvolat.h"
 
+/**
+ * Macros
+ */
+// Wait until SPI MISO line goes low
+#define wait_Miso()  while(bitRead(PORT_SPI_MISO, BIT_SPI_MISO))
+// Get GDO0 pin state
+#define getGDO0state()  bitRead(PORT_GDO0, BIT_GDO0)
+// Wait until GDO0 line goes high
+#define wait_GDO0_high()  while(!getGDO0state())
+// Wait until GDO0 line goes low
+#define wait_GDO0_low()  while(getGDO0state())
+// Select (SPI) CC1101
+#define cc1101_Select()  bitClear(PORT_SPI_SS, BIT_SPI_SS)
+// Deselect (SPI) CC1101
+#define cc1101_Deselect()  bitSet(PORT_SPI_SS, BIT_SPI_SS)
+// Read CC1101 Config register
+#define readConfigReg(regAddr)    readReg(regAddr, CC1101_CONFIG_REGISTER)
+// Read CC1101 Status register
+#define readStatusReg(regAddr)    readReg(regAddr, CC1101_STATUS_REGISTER)
+
  /**
   * PATABLE
   */
@@ -218,7 +238,7 @@ void CC1101::setDefaultRegs(void)
   writeReg(CC1101_AGCTEST,  CC1101_DEFVAL_AGCTEST);
   writeReg(CC1101_TEST2,  CC1101_DEFVAL_TEST2);
   writeReg(CC1101_TEST1,  CC1101_DEFVAL_TEST1);
-  writeReg(CC1101_TEST0,  CC1101_DEFVAL_TEST0); 
+  writeReg(CC1101_TEST0,  CC1101_DEFVAL_TEST0);
 }
 
 /**
@@ -379,16 +399,6 @@ void CC1101::setRegsFromEeprom(void)
 }
 
 /**
- * setRxState
- * 
- * Enter RX state
- */
-void CC1101::setRxState() 
-{
-  cmdStrobe(CC1101_SRX);
-}
-
-/**
  * setPowerDownState
  * 
  * Put CC1101 into power-down state
@@ -496,15 +506,5 @@ byte CC1101::receiveData(CCPACKET * packet)
   setRxState(); 
 
   return packet->length;
-}
-
-/**
- * disableAddressCheck
- * 
- * Disable address check on the CC1101 IC
- */
-void CC1101::disableAddressCheck()
-{
-  writeReg(CC1101_PKTCTRL1, 0x04);
 }
 
