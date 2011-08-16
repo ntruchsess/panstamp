@@ -60,7 +60,7 @@ void isrINT0event(void)
   
   if (cc1101.receiveData(&packet) > 0)
   {
-    if (packet.crc_ok && serMode == SERMODE_DATA)
+    if (packet.crc_ok && packet.length > 5 && serMode == SERMODE_DATA)
     {
       Serial.print("(");
       if (packet.rssi < 0x10)
