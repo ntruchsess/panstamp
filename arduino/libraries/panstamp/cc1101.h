@@ -207,9 +207,9 @@ enum CFREQ
 #define CC1101_DEFVAL_FREQ2_868  0x21        // Frequency Control Word, High Byte
 #define CC1101_DEFVAL_FREQ1_868  0x62        // Frequency Control Word, Middle Byte
 #define CC1101_DEFVAL_FREQ0_868  0x76        // Frequency Control Word, Low Byte
-// Carrier frequency = 915 MHz
-#define CC1101_DEFVAL_FREQ2_915  0x23        // Frequency Control Word, High Byte
-#define CC1101_DEFVAL_FREQ1_915  0x31        // Frequency Control Word, Middle Byte
+// Carrier frequency = 902 MHz
+#define CC1101_DEFVAL_FREQ2_915  0x22        // Frequency Control Word, High Byte
+#define CC1101_DEFVAL_FREQ1_915  0xB1        // Frequency Control Word, Middle Byte
 #define CC1101_DEFVAL_FREQ0_915  0x3B        // Frequency Control Word, Low Byte
 
 #define CC1101_DEFVAL_MDMCFG4    0xCA        // Modem Configuration
@@ -437,7 +437,7 @@ class CC1101
      * Read data packet from RX FIFO
      * 
      * Return:
-     * 	Amount fo bytes received
+     * 	Amount of bytes received
      * 'packet'	Container for the packet received
      */
     byte receiveData(CCPACKET *packet);

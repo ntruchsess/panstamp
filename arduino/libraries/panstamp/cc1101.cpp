@@ -244,7 +244,7 @@ void CC1101::setDefaultRegs(void)
 /**
  * init
  * 
- * Initializa CC1101
+ * Initialize CC1101
  */
 void CC1101::init(void) 
 {
@@ -345,13 +345,11 @@ void CC1101::setCarrierFreq(byte freq, bool save)
         writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_915);
         writeReg(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_915);
         break;
-      case CFREQ_868:
+      default:
         writeReg(CC1101_FREQ2,  CC1101_DEFVAL_FREQ2_868);
         writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_868);
         writeReg(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_868);
         break;
-      default:
-        return;
     }
     
     carrierFreq = freq;
@@ -377,20 +375,17 @@ void CC1101::setRegsFromEeprom(void)
   // Set carrier frequency
   if (bVal < CFREQ_LAST)
     setCarrierFreq(bVal, false);
-    
   // Read RF channel from EEPROM
   bVal = EEPROM.read(EEPROM_FREQ_CHANNEL);
   // Set RF channel
   if (bVal < NUMBER_OF_FCHANNELS )
     setChannel(bVal, false);
-
   // Read Sync word from EEPROM
   arrV[0] = EEPROM.read(EEPROM_SYNC_WORD);
   arrV[1] = EEPROM.read(EEPROM_SYNC_WORD + 1);
   // Set Sync word
   if (((arrV[0] != 0x00) && (arrV[0] != 0xFF)) || ((arrV[1] != 0x00) && (arrV[1] != 0xFF)))
     setSyncWord(arrV, false);
-    
   // Read device address from EEPROM
   bVal = EEPROM.read(EEPROM_DEVICE_ADDR);
   // Set device address

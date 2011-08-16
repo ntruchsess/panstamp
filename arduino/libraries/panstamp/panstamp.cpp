@@ -74,7 +74,6 @@ void isrGDO0event(void)
   
   // Disable interrupt
   disableIRQ_GDO0();
-
   if (panstamp.cc1101.receiveData(&ccPacket) > 0)
   {
     if (ccPacket.crc_ok)
