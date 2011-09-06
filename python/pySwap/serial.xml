@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<serial>
+  <port>/dev/ttyUSB2</port>
+  <speed>9600</speed>
+</serial>
