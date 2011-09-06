@@ -1,25 +1,26 @@
 <?xml version="1.0"?>
 <device>
-  <manufacturer>panStamp</manufacturer>
+  <developer>panStamp</developer>
   <product>Dual Temperature/Humidity sensor</product>
   <pwrdownmode>true</pwrdownmode>
-  <registers>
-    <reg id="11">
-      <endpoint type="analog" dir="input">
+  <regular>
+    <reg id="10">
+      <endpoint type="num" dir="inp">
         <description>voltage supply</description>
+        <size>2</size>
       </endpoint>
     </reg>
-    <reg id="12">
-      <endpoint type="analog" dir="input">
+    <reg id="11">
+      <endpoint type="num" dir="inp">
         <description>humidity</description>
         <position>0</position>
         <size>1</size>
       </endpoint>
-      <endpoint type="analog" dir="input">
+      <endpoint type="num" dir="inp">
         <description>temperature</description>
         <position>1</position>
         <size>1</size>
       </endpoint>
     </reg>
-  </registers>
+  </regular>
 </device>

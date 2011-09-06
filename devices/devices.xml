@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<devices>
+  <developer id="1" name="panStamp">
+    <dev id="1" option="temphum" label="DTH11 Temperature/Humidity sensor"/>
+    <dev id="2" option="chronos" label="SWAP-enabled Chronos watch"/>
+    <dev id="3" option="rgbdriver" label="RGB driver board"/>
+  </developer>
+</devices>

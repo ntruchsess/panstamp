@@ -1,25 +1,165 @@
 <?xml version="1.0"?>
 <device>
-  <manufacturer>panStamp</manufacturer>
-  <product>Chronos</product>
+  <developer>panStamp</developer>
+  <product>SWAP-Chronos</product>
   <pwrdownmode>true</pwrdownmode>
-  <registers>
+  <config>
+    <reg id="10">
+      <description>Calibration</description>
+      <param type="bin">
+        <description>Use metrics (1=Yes 0=No)</description>
+        <position>0</position>
+        <size>1</size>
+        <default>1</default>
+      </param>
+      <param type="num">
+        <description>Current temperature (NN.D format)</description>
+        <position>1</position>
+        <size>2</size>
+      </param>
+      <param type="num">
+        <description>Current altitude</description>
+        <position>3</position>
+        <size>2</size>
+      </param>
+    </reg>
+    <reg id="11">
+      <description>Transmit period</description>
+      <param type="num">
+        <description>Interval in seconds (0 for disabled)</description>
+      </param>
+    </reg>
+    <reg id="12">
+      <description>Date/Time</description>
+      <param type="num">
+        <description>Hour (24h format)</description>
+        <position>0</position>
+        <size>1</size>
+      </param>
+      <param type="num">
+        <description>Minutes</description>
+        <position>1</position>
+        <size>1</size>
+      </param>
+      <param type="num">
+        <description>Year (YYYY format)</description>
+        <position>3</position>
+        <size>2</size>
+        <default>2011</default>
+      </param>
+      <param type="num">
+        <description>Month</description>
+        <position>5</position>
+        <size>1</size>
+        <default>1</default>
+      </param>
+      <param type="num">
+        <description>Day</description>
+        <position>6</position>
+        <size>1</size>
+        <default>1</default>
+      </param>
+    </reg>
     <reg id="13">
-      <endpoint type="analog" dir="input">
+      <description>Time alarm</description>
+      <param type="num">
+        <description>Hour</description>
+        <position>0</position>
+        <size>1</size>
+      </param>
+      <param type="num">
+        <description>Minutes</description>
+        <position>1</position>
+        <size>1</size>
+      </param>
+    </reg>
+    <reg id="16">
+      <description>Browser page 0</description>
+      <param type="str">
+        <description>Label (5 chars)</description>
+        <position>0</position>
+        <size>5</size>
+        <default>PAGE0</default>
+      </param>
+      <param type="num">
+        <description>Device address (1-255)</description>
+        <position>5</position>
+        <size>1</size>
+        <default>255</default>
+      </param>
+      <param type="num">
+        <description>Register address (1-255)</description>
+        <position>6</position>
+        <size>1</size>
+        <default>255</default>
+      </param>
+      <param type="num">
+        <description>Register ID (10-255)</description>
+        <position>7</position>
+        <size>1</size>
+        <default>10</default>
+      </param>
+      <param type="bin">
+        <description>Type of endpoint (1=num 0=bin)</description>
+        <position>8.0</position>
+        <size>0.1</size>
+      </param>
+      <param type="bin">
+        <description>Direction of endpoint (1=Output 0=Input)</description>
+        <position>8.1</position>
+        <size>0.1</size>
+      </param>
+      <param type="bin">
+        <description>Enable decimals (1=Enable 0=Disable)</description>
+        <position>8.2</position>
+        <size>0.1</size>
+      </param>
+      <param type="bin">
+        <description>Value's signess (1=Signed 0=Unsigned)</description>
+        <position>8.3</position>
+        <size>0.1</size>
+      </param>
+      <param type="bin">
+        <description>Value in register (1=Combined 0=Alone)</description>
+        <position>8.4</position>
+        <size>0.1</size>
+      </param>
+      <param type="num">
+        <description>Step up/down delta</description>
+        <position>9</position>
+        <size>1</size>
+      </param>
+      <param type="num">
+        <description>Size in bytes (0-3)</description>
+        <position>10.0</position>
+        <size>0.2</size>
+        <default>1</default>
+      </param>
+      <param type="num">
+        <description>Position in register</description>
+        <position>10.2</position>
+        <size>0.6</size>
+      </param>
+    </reg>
+  </config>
+  <regular>
+    <reg id="14">
+      <description>Environmental sensors</description>
+      <endpoint type="num" dir="inp">
         <description>temperature</description>
         <position>0</position>
         <size>2</size>
       </endpoint>
-      <endpoint type="analog" dir="input">
+      <endpoint type="num" dir="inp">
         <description>pressure</description>
         <position>2</position>
         <size>4</size>
       </endpoint>
-      <endpoint type="analog" dir="input">
+      <endpoint type="num" dir="inp">
         <description>altitude</description>
         <position>6</position>
         <size>2</size>
       </endpoint>
     </reg>
-  </registers>
+  </regular>
 </device>
