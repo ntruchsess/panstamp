@@ -30,6 +30,7 @@ from swap.SwapDefs import SwapType
 from swap.SwapValue import SwapValue
 from swap.SwapParam import SwapParam
 
+
 class SwapEndpoint(SwapParam):
     """
     SWAP endpoint class
@@ -80,9 +81,10 @@ class SwapEndpoint(SwapParam):
         Send SWAP info packet about this endpoint
         """
         self.register.sendSwapInfo()
-    
+  
+
     def __init__(self, register=None, pType=SwapType.NUMBER, direction=SwapType.INPUT,
-                description=None, position="0", size="1", default=None):
+                name="", position="0", size="1", default=None, units=None):
         """
         Class constructor
 
@@ -94,4 +96,11 @@ class SwapEndpoint(SwapParam):
         'size'          Size in bytes
         'default'       Default value in string format
         """
-        SwapParam.__init__(self, register, pType, direction, description, position, size, default)
+        SwapParam.__init__(self, register, pType, direction, name, position, size, default)
+
+        # List of units
+        self.lstUnits = units
+        # Selected unit
+        self.unit = None
+        if self.lstUnits is not None and len(self.lstUnits) > 0:
+            self.unit = self.lstUnits[0]

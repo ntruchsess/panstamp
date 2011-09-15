@@ -62,7 +62,7 @@ class SwapValue(object):
         """
         Convert SWAP value into ASCII string
         """
-        return "".join(self._data)
+        return "".join(str(item) for item in self._data)
 
     
     def toAsciiHex(self):

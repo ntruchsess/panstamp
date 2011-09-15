@@ -26,8 +26,8 @@ __author__="Daniel Berenguer"
 __date__ ="$Aug 20, 2011 10:36:00 AM$"
 #########################################################################
 
-from swap.SwapParam import SwapParam
 from swap.SwapValue import SwapValue
+
 
 class SwapRegister(object):
     """ SWAP register class """
@@ -153,6 +153,9 @@ class SwapRegister(object):
                 if shiftParam < 0:
                     indexParam += 1
                     shiftParam = 7
+                    
+        # Update mote's time stamp
+        self.mote.updateTimeStamp()
 
                 
     def setValue(self, value):
@@ -164,18 +167,12 @@ class SwapRegister(object):
         if value.__class__ is not SwapValue:
             raise SwapException("setValue only accepts SwapValue objects")
             return
-        """
-        # Check current data length
-        newLength = value.getLength()
-        if self.value.getLength() != newLength:
-            # Data length was not correctly initialized. Correct this in the
-            # contained parameter only if there is only one
-            if len(self.lstItems) == 1:
-                self.lstItems[0].byteSize = newLength
-                self.lstItems[0].bitSize = 0
-        """
+ 
         # Set register value
         self.value = value
+        
+        # Update mote's time stamp
+        self.mote.updateTimeStamp()
         
         # Now update the value in every endpoint or parameter contained in this register
         for param in self.lstItems:
@@ -188,7 +185,7 @@ class SwapRegister(object):
 
         'mote'          Mote containing the current register
         'id'            Register ID
-        'description'   Short description about hte register
+        'name'   Short name about hte register
         """
         # Owner mote of the current register
         self.mote = mote
@@ -196,8 +193,8 @@ class SwapRegister(object):
         self.id = id
         # SWAP value contained in the current register
         self.value = None
-        # Brief description
-        self.description = description
+        # Brief name
+        self.name = description
         # List of endpoints belonging to the current register
         self.lstItems = []
 

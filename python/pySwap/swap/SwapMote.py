@@ -37,6 +37,9 @@ from swap.SwapValue import SwapValue
 from swapexception.SwapException import SwapException
 from xmltools.XmlDevice import XmlDevice
 
+import time
+
+
 class SwapMote(object):
     """ SWAP device class"""
     def cmdRegister(self, regId, value):
@@ -109,6 +112,13 @@ class SwapMote(object):
         return self.cmdRegisterWack(SwapRegId.ID_SYSTEM_STATE, val)
 
     
+    def updateTimeStamp(self):
+        """
+        Update time stamp
+        """
+        self.timeStamp = time.time()
+    
+    
     def __init__(self, server=None, productCode=None, address=0xFF):
         if server is None:
             raise SwapException("SwapMote constructor needs a valid SwapServer object")
@@ -127,7 +137,7 @@ class SwapMote(object):
                 self.manufacturerId = self.manufacturerId | (productCode[i] << 8 * (3-i))
                 self.productId = self.productId | (productCode[i + 4] << 8 * (3-i))
 
-            # Definition file
+        # Definition file
         # Definition settings
         self.definition = XmlDevice(self);
 
@@ -146,4 +156,6 @@ class SwapMote(object):
             self.lstRegRegs = self.definition.getRegList()
             # List of config registers
             self.lstCfgRegs = self.definition.getRegList(config=True)
+        # Initial time stamp
+        self.timeStamp = None
 

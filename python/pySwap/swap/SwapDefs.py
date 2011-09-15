@@ -74,6 +74,21 @@ class SwapType:
     BINARY = "bin"
     NUMBER = "num"
     STRING = "str"
-    VIRTUAL = "vir"
     INPUT = "inp"
     OUTPUT = "out"
+    
+    @staticmethod
+    def toString(type):
+        """
+        Return complete name of the type
+        """
+        if type == SwapType.BINARY:
+            return "binary"
+        elif type == SwapType.NUMBER:
+            return "number"
+        elif type == SwapType.STRING:
+            return "string"
+        elif type == SwapType.INPUT:
+            return "input"
+        elif type == SwapType.OUTPUT:
+            return "output"

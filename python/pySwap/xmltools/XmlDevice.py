@@ -32,9 +32,32 @@ from swap.SwapCfgParam import SwapCfgParam
 from swap.SwapRegister import SwapRegister
 from swap.SwapValue import SwapValue
 from swap.SwapDefs import SwapType
+from swapexception.SwapException import SwapException
 
 import os
 import xml.etree.ElementTree as xml
+
+class XmlUnit:
+    """
+    Endpoint units appearing in any XmlDevice object
+    """
+    def __init__(self, name="", factor=1, offset=0):
+        """
+        Class constructor
+        """
+        # Unit name
+        self.name = name
+        # Factor operator
+        try:
+            self.factor = int(factor)
+        except ValueError:
+            self.factor = float(factor)
+        # Offset operator
+        try:
+            self.offset = int(offset)
+        except ValueError:
+            self.offset = float(offset)
+      
 
 class XmlDevice(object):
     """
@@ -48,7 +71,7 @@ class XmlDevice(object):
         # Parse XML file
         tree = xml.parse(self.fileName)
         if tree is None:
-            return
+            raise IOError(self.fileName  + " does not exist")
         # Get the root node
         root = tree.getroot()
         # Get manufacturer
@@ -62,7 +85,7 @@ class XmlDevice(object):
         # Get Power Down flag
         elem = root.find("pwrdownmode")
         if elem is not None:
-            self.pwrDownMode = (elem.text.lower() == "True")
+            self.pwrDownMode = (elem.text.lower() == "true")
 
 
     def getRegList(self, config=False):
@@ -79,7 +102,7 @@ class XmlDevice(object):
         # Parse XML file
         tree = xml.parse(self.fileName)
         if tree is None:
-            return
+            return None
         # Get the root node
         root = tree.getroot()
         # Get manufacturer
@@ -95,19 +118,12 @@ class XmlDevice(object):
                 strRegId = reg.get("id")
                 if strRegId is not None:
                     regId = int(strRegId)
-                    # Get register description
-                    elem = reg.find("description")
-                    regDescr = ""
-                    if elem is not None:
-                        regDescr = elem.text
+                    # Get register name
+                    regName = reg.get("name", default="")
                     # Create register from id and mote
-                    swRegister = SwapRegister(self.mote, regId, regDescr)
+                    print regName
+                    swRegister = SwapRegister(self.mote, regId, regName)
 
-                    # Initial position and sizes
-                    maxParamPosByte = 0
-                    maxParamPosBit = 0
-                    paramSizeByte = 0
-                    paramSizeBit = 0
                     # List of endpoints belonging to the register
                     if config == True:
                         elementName = "param"
@@ -118,10 +134,7 @@ class XmlDevice(object):
                         # Read XML fields
                         paramType = param.get("type", default="num")
                         paramDir = param.get("dir", default="inp")
-                        elem = param.find("description")
-                        paramDescr = ""
-                        if elem is not None:
-                            paramDescr = elem.text
+                        paramName = param.get("name", default="")
                         paramPos = "0"
                         elem = param.find("position")
                         if elem is not None:
@@ -138,19 +151,30 @@ class XmlDevice(object):
                             try:
                                 defVal = int(paramDef)
                             except ValueError:
-                                raise SwapExeption("Default value " + str(paramDef) + " is not an integer")
+                                raise SwapException("Default value " + str(paramDef) + " is not an integer")
                                 return
                         else:
                             defVal = paramDef
+                        # Get list of units
+                        units = param.findall("units/unit")
+                        lstUnits = None
+                        if units is not None:
+                            lstUnits = []
+                            for unit in units:
+                                name = unit.get("name", default=None)
+                                factor = unit.get("factor", default=1)
+                                offset = unit.get("offset", default=0)
+                                xmlUnit = XmlUnit(name, factor, offset)
+                                lstUnits.append(xmlUnit)
 
                         if config == True:
                             # Create SWAP config parameter
-                            swParam = SwapCfgParam(register=swRegister, pType=paramType, description=paramDescr,
+                            swParam = SwapCfgParam(register=swRegister, pType=paramType, name=paramName,
                                             position=paramPos, size=paramSize, default=defVal)
-                        else:
+                        else:                          
                             # Create SWAP endpoint
-                            swParam = SwapEndpoint(register=swRegister, pType=paramType, direction=paramDir, description=paramDescr,
-                                            position=paramPos, size=paramSize, default=defVal)
+                            swParam = SwapEndpoint(register=swRegister, pType=paramType, direction=paramDir, name=paramName,
+                                            position=paramPos, size=paramSize, default=defVal, units=lstUnits)
 
                         # Add current parameter to the register
                         swRegister.add(swParam)

@@ -34,7 +34,7 @@ class SwapCfgParam(SwapParam):
     Class representing a configuration parameter for a given mote
     """
 
-    def __init__(self, register=None, pType=SwapType.NUMBER, description=None,
+    def __init__(self, register=None, pType=SwapType.NUMBER, name="",
                 position="0", size="1", default=None):
         """
         Class constructor
@@ -47,6 +47,6 @@ class SwapCfgParam(SwapParam):
         'size'          Size in bytes.bits
         'default'       Default value in string format
         """
-        SwapParam.__init__(self, register, type, None, description, position, size, default)
+        SwapParam.__init__(self, register, type, None, name, position, size, default)
         # Save default value
         self.default = default

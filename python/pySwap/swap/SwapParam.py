@@ -29,6 +29,9 @@ __date__ ="$Aug 26, 2011 8:56:27 AM$"
 from swap.SwapDefs import SwapType
 from swap.SwapValue import SwapValue
 
+import time
+
+
 class SwapParam:
     """
     Generic SWAP parameter, integrated into a SWAP register
@@ -59,6 +62,8 @@ class SwapParam:
         if shiftParam < 0:
             shiftParam = 7
         for i in range(bitsToCopy):
+            if indexReg >= len(lstRegVal):
+                break            
             if (lstRegVal[indexReg] >> shiftReg) & 0x01 == 0:
                 mask = ~(1 << shiftParam)
                 lstParamVal[indexParam] &= mask
@@ -110,9 +115,9 @@ class SwapParam:
                             decimal = int(value[dot+1:])
                             res = integer * 10 ** numDec + decimal
                         except ValueError:
-                            raise SwapException(value + " is not a valid value for " + self.description)
+                            raise SwapException(value + " is not a valid value for " + self.name)
                     else:
-                        raise SwapException(value + " is not a valid value for " + self.description)
+                        raise SwapException(value + " is not a valid value for " + self.name)
             else:   # SwapType.STRING
                 res = value
         else:
@@ -125,26 +130,44 @@ class SwapParam:
 
         # Update current value
         self.value = SwapValue(res, length)
+        # Update time stamp
+        self.lastUpdate = time.time()
 
         # Update register value
         self.register.update()
 
 
+    def getValueInAscii(self):
+        """
+        Return value in ASCII format
+        """
+        if self.type == SwapType.NUMBER:
+            # Add units
+            if self.unit is not None:
+                strVal = str(self.value.toInteger() * self.unit.factor + self.unit.offset)
+            else:
+                strVal = str(self.value.toInteger())
+        else:
+            strVal = self.value.toAscii()
+        
+        return strVal
+
+
     def __init__(self, register=None, pType=SwapType.NUMBER, direction=SwapType.INPUT, \
-                description="", position="0", size="1", default=None):
+                name="", position="0", size="1", default=None):
         """
         Class constructor
 
         'register'      Register containing this parameter
         'pType'         Type of SWAP parameter (see SwapDefs.SwapType)
         'direction'     Input or output (see SwapDefs.SwapType)
-        'description'   Short description about hte parameter
+        'name'   Short name about hte parameter
         'position'      Position in bytes.bits within the parent register
         'size'          Size in bytes.bits
         'default'       Default value in string format
         """
-        # Parameter description
-        self.description = description
+        # Parameter name
+        self.name = name
         # Register where the current endpoint is taken from
         self.register = register
         # Data type
@@ -177,8 +200,9 @@ class SwapParam:
 
         # Current value
         self.value = None
+        # Initial time stamp
+        self.lastUpdate = None
         # Set initial value
-
         if default is not None:
             self.setValue(default)
 
