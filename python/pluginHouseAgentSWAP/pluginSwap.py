@@ -35,8 +35,6 @@ from plugins.pluginapi import PluginAPI
 from twisted.internet import reactor
 
 
-
-
 if __name__ == "__main__":
     """
     Run SWAP daemon for HouseAgent"
