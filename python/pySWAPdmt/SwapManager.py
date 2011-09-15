@@ -41,7 +41,7 @@ class SwapManager:
     def newEndpointDetected(self, endpoint):
         """ New endpoint detected by SWAP server """
         if self._printSWAP == True:
-            print "New endpoint with Reg ID = " + str(endpoint.getRegId()) + " : " + endpoint.description
+            print "New endpoint with Reg ID = " + str(endpoint.getRegId()) + " : " + endpoint.name
 
 
     def moteStateChanged(self, mote):
@@ -67,7 +67,7 @@ class SwapManager:
                 strVal = str(endpoint.value.toInteger())
             else:
                 strVal = endpoint.value.toAscii()
-            print endpoint.description + " in address " + str(endpoint.getRegAddress()) + " changed to " + strVal
+            print endpoint.name + " in address " + str(endpoint.getRegAddress()) + " changed to " + strVal
 
 
     def getAddressInSync(self):

@@ -123,11 +123,11 @@ if __name__ == "__main__":
 
                 for cfgReg in listCfgRegs:
                     print "-----------------------------------------------"
-                    print cfgReg.description
+                    print cfgReg.name
                     print "-----------------------------------------------"
                     if cfgReg.lstItems is not None:
                         for cfgParam in cfgReg.lstItems:
-                            print cfgParam.description + ": [" + str(cfgParam.default) + "]"
+                            print cfgParam.name + ": [" + str(cfgParam.default) + "]"
                             data = raw_input(">")
                             if data != "":
                                 cfgParam.setValue(data)
