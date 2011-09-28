@@ -113,9 +113,7 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Endpoint value changed.  <a href="#a0d5dc07d44c239bc04a1b2f1ad7b6127"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapInterface_1_1SwapInterface.html#acd7ab35e15684c7b31631589561db8c9">parameterValueChanged</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration parameter changed.  <a href="#acd7ab35e15684c7b31631589561db8c9"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a93ccefaf7aafa0d7657839a31b5830bf"></a><!-- doxytag: member="swap::SwapInterface::SwapInterface::getNbOfMotes" ref="a93ccefaf7aafa0d7657839a31b5830bf" args="" -->
-def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapInterface_1_1SwapInterface.html#a93ccefaf7aafa0d7657839a31b5830bf">getNbOfMotes</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the amounf of motes available in lstMotes. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapInterface_1_1SwapInterface.html#a93ccefaf7aafa0d7657839a31b5830bf">getNbOfMotes</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapInterface_1_1SwapInterface.html#ac430bf7ac3d55855ab92ded70106bd84">getMote</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Return mote from list.  <a href="#ac430bf7ac3d55855ab92ded70106bd84"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapInterface_1_1SwapInterface.html#a02348b5590e114e60c95606ff5b0442a">setMoteRegister</a></td></tr>
@@ -130,9 +128,11 @@ def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abed7f2eccefe561deb0dfec1738dc9cc"></a><!-- doxytag: member="swap::SwapInterface::SwapInterface::server" ref="abed7f2eccefe561deb0dfec1738dc9cc" args="" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>server</b></td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapInterface_1_1SwapInterface.html#abed7f2eccefe561deb0dfec1738dc9cc">server</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Start SWAP server. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0468976a22a5f87b544620cf1a4dad33"></a><!-- doxytag: member="swap::SwapInterface::SwapInterface::lstMotes" ref="a0468976a22a5f87b544620cf1a4dad33" args="" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>lstMotes</b></td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapInterface_1_1SwapInterface.html#a0468976a22a5f87b544620cf1a4dad33">lstMotes</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">List of motes. <br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>SWAP Interface superclass. </p>
@@ -164,7 +164,12 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Class constructor. </p>
-<p>'verbose' Print out SWAP frames </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">verbose,:</td><td>Print out SWAP frames </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -195,7 +200,12 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Endpoint value changed. </p>
-<p>'endpoint' Endpoint having changed </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">endpoint,:</td><td>Endpoint having changed </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -231,7 +241,32 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Return mote from list. </p>
-<p>'index' Index of the mote within lstMotes 'address' SWAP address of the mote </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index,:</td><td>Index of the mote within lstMotes </td></tr>
+    <tr><td class="paramname">address,:</td><td>SWAP address of the mote</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>mote </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a93ccefaf7aafa0d7657839a31b5830bf"></a><!-- doxytag: member="swap::SwapInterface::SwapInterface::getNbOfMotes" ref="a93ccefaf7aafa0d7657839a31b5830bf" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def swap::SwapInterface::SwapInterface::getNbOfMotes </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<dl class="return"><dt><b>Returns:</b></dt><dd>the amounf of motes available in lstMotes </dd></dl>
 
 </div>
 </div>
@@ -261,7 +296,12 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Mote address changed. </p>
-<p>'mote' Mote having changed </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mote,:</td><td>Mote having changed </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -291,7 +331,12 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Mote state changed. </p>
-<p>'mote' Mote having changed </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mote,:</td><td>Mote having changed </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -321,7 +366,12 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>New endpoint detected by SWAP server. </p>
-<p>'endpoint' Endpoint detected </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">endpoint,:</td><td>Endpoint detected </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -386,7 +436,12 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>New configuration parameter detected by SWAP server. </p>
-<p>'parameter' Endpoint detected </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parameter,:</td><td>Endpoint detected </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -416,7 +471,12 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Configuration parameter changed. </p>
-<p>'parameter' configuration parameter having changed </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parameter,:</td><td>configuration parameter having changed </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -452,8 +512,14 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Query mote register, wait for response and return value Non re-entrant method!! </p>
-<p>'mote' Mote to be queried 'regID' Register ID</p>
-<p>Return register value </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mote,:</td><td>Mote to be queried </td></tr>
+    <tr><td class="paramname">regID,:</td><td>Register ID</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>register value </dd></dl>
 
 </div>
 </div>
@@ -483,7 +549,12 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Register value changed. </p>
-<p>'register' Register having changed </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">register,:</td><td>Register having changed </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -525,8 +596,15 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Set new register value on wireless mote. </p>
-<p>'mote' Mote targeted by this command 'regId' Register ID 'value' New register value</p>
-<p>Return True if the command is correctly ack'ed. Return False otherwise </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mote,:</td><td>Mote targeted by this command </td></tr>
+    <tr><td class="paramname">regId,:</td><td>Register ID </td></tr>
+    <tr><td class="paramname">value,:</td><td>New register value</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>True if the command is correctly ack'ed. Return False otherwise </dd></dl>
 
 </div>
 </div>
@@ -539,7 +617,7 @@ Public Attributes</h2></td></tr>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -551,7 +629,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Sep 29 2011 00:11:33 for pyswap by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Sep 29 2011 00:23:05 for pyswap by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>
