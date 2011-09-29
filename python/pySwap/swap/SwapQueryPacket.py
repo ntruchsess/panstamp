@@ -30,7 +30,15 @@ from swap.SwapPacket import SwapPacket
 from swap.SwapDefs import SwapFunction, SwapAddress
 
 class SwapQueryPacket(SwapPacket):
-    """ Standard SWAP Query packet class """
+    """
+    SWAP Query packet class
+    """
     def __init__(self, rAddr=SwapAddress.BROADCAST_ADDR, rId=0):
+        """
+        Class constructor
+        
+        @param rAddr: Register address
+        @param rId: Register ID
+        """
         SwapPacket.__init__(self, destAddr=rAddr, function=SwapFunction.QUERY, regAddr=rAddr, regId=rId)
   

@@ -26,16 +26,54 @@ __author__="Daniel Berenguer"
 __date__ ="$Aug 20, 2011 10:36:00 AM$"
 #########################################################################
 
-class SwapException(Exception):
-    """Main exception class for pySwap"""
-    def display(self):
-        """Print exception description"""
-        print(self.description)
+from xmltools.XmlSettings import XmlSettings
 
+import time, datetime, os
+
+class SwapException(Exception):
+    """
+    Main exception class for pySwap
+    """
+    def display(self):
+        """
+        Print exception description
+        """
+        print datetime.datetime.fromtimestamp(self.timeStamp).strftime("%d-%m-%Y %H:%M:%S"), self.description
+
+
+    def log(self):
+        """
+        Write exception in log file
+        """
+        f = open(XmlSettings.errorFile, 'a')
+        f.write(datetime.datetime.fromtimestamp(self.timeStamp).strftime("%d-%m-%Y %H:%M:%S") + ": " + self.description + "\n")
+        f.close()
+        
+
+    @staticmethod
+    def clear():
+        """
+        Clear error file
+        """
+        # Remove existing error file
+        if os.path.exists(XmlSettings.errorFile):
+            os.remove(XmlSettings.errorFile)
+            
+                  
     def __str__(self):
+        """
+        String representation of the exception
+        """
         return repr(self.description)
 
+
     def __init__(self, value):
+        """
+        Class constructor
+        
+        @param value: Description about the error
+        """
+        self.timeStamp = time.time()
         # Exception description
         self.description = "SwapException occurred: " + value
   

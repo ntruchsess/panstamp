@@ -28,6 +28,7 @@ __date__ ="$Aug 26, 2011 8:56:27 AM$"
 
 from swap.SwapDefs import SwapType
 from swap.SwapValue import SwapValue
+from swapexception.SwapException import SwapException
 
 import time
 
@@ -37,6 +38,24 @@ class SwapParam:
     Generic SWAP parameter, integrated into a SWAP register
     """
 
+    def getRegAddress(self):
+        """
+        Return register address of the current parameter
+        
+        @return Register address
+        """
+        return self.register.getAddress()
+
+
+    def getRegId(self):
+        """
+        Return register ID of the current parameter
+        
+        @return Register ID
+        """
+        return self.register.id
+    
+    
     def update(self):
         """
         Update parameter's value, posibly after a change in its parent register
@@ -94,7 +113,7 @@ class SwapParam:
         """
         Set parameter value
 
-        'value'  New parameter value
+        @param value: New parameter value
         """
         if value.__class__ is SwapValue:
             self.value = value
@@ -139,44 +158,51 @@ class SwapParam:
 
     def getValueInAscii(self):
         """
-        Return value in ASCII format
+        Return value in ASCII string format
+        
+        @return Value in ASCII format
         """
         if self.type == SwapType.NUMBER:
             # Add units
             if self.unit is not None:
-                strVal = str(self.value.toInteger() * self.unit.factor + self.unit.offset)
+                strVal = str(self.value.toInteger() * self.unit.factor + self.unit.offset) + " " + self.unit.name
             else:
                 strVal = str(self.value.toInteger())
-        else:
+        elif self.type == SwapType.BINARY:
             strVal = self.value.toAscii()
+        else:
+            strVal = self.value.toAsciiStr()
         
         return strVal
-
-
-    def __init__(self, register=None, pType=SwapType.NUMBER, direction=SwapType.INPUT, \
-                name="", position="0", size="1", default=None):
+    
+    
+    def __init__(self, register=None, pType=SwapType.NUMBER, direction=SwapType.INPUT, name="", position="0", size="1", default=None, verif=None, units=None):
         """
         Class constructor
 
-        'register'      Register containing this parameter
-        'pType'         Type of SWAP parameter (see SwapDefs.SwapType)
-        'direction'     Input or output (see SwapDefs.SwapType)
-        'name'   Short name about hte parameter
-        'position'      Position in bytes.bits within the parent register
-        'size'          Size in bytes.bits
-        'default'       Default value in string format
+        @param register: Register containing this parameter
+        @param pType: Type of SWAP endpoint (see SwapDefs.SwapType)
+        @param direction: Input or output (see SwapDefs.SwapType)
+        @param name: Short name about the parameter
+        @param description: Short description about hte parameter
+        @param position: Position in bytes.bits within the parent register
+        @param size: Size in bytes.bits
+        @param default: Default value in string format
+        @param verif: Verification string
+        @param units: List of units
         """
-        # Parameter name
+        ## Parameter name
         self.name = name
-        # Register where the current endpoint is taken from
+        ## Register where the current parameter belongs to
         self.register = register
-        # Data type
-        self.type = pType
-        # Direction
+             
+        ## Data type (see SwapDefs.SwapType for more details)
+        self.type = pType       
+        ## Direction (see SwapDefs.SwapType for more details)
         self.direction = direction
-        # Position (in bytes) of the parameter within the parent register
+        ## Position (in bytes) of the parameter within the register
         self.bytePos = 0
-        # Position (in bits) after bytePos
+        ## Position (in bits) after bytePos
         self.bitPos = 0
         # Get true positions
         dot = position.find('.')
@@ -186,9 +212,9 @@ class SwapParam:
         else:
             self.bytePos = int(position)
 
-        # Size (in bytes) of the parameter value
+        ## Size (in bytes) of the parameter value
         self.byteSize = 1
-        # Size in bits of the parameter value after byteSize
+        ## Size in bits of the parameter value after byteSize
         self.bitSize = 0
         # Get true sizes
         dot = size.find('.')
@@ -198,13 +224,24 @@ class SwapParam:
         else:
             self.byteSize = int(size)
 
-        # Current value
+        ## Current value
         self.value = None
-        # Initial time stamp
+        ## Time stamp of the last update
         self.lastUpdate = None
         # Set initial value
         if default is not None:
             self.setValue(default)
 
-        # Flag that tells us whether this parameter changed its value last time or not
+        ## Flag that tells us whether this parameter changed its value during the last update or not
         self.valueChanged = False
+        
+        ## Verification string. This can be a macro or a regular expression
+        self.verif = verif
+        
+        ## List of units
+        self.lstUnits = units
+        ## Selected unit
+        self.unit = None
+        if self.lstUnits is not None and len(self.lstUnits) > 0:
+            self.unit = self.lstUnits[0]
+

@@ -27,18 +27,27 @@ __date__ ="$Aug 20, 2011 10:36:00 AM$"
 #########################################################################
 
 class SwapAddress:
-    """ SWAP reserved addresses """
-    # Broadcast address
+    """
+    SWAP reserved addresses
+    """
+    ## Broadcast address
     BROADCAST_ADDR = 0x00
     
 class SwapFunction:
-    """ SWAP function codes """
+    """
+    SWAP function codes
+    """
+    ## SWAP INFO type
     INFO = 0x00
+    ## SWAP QUERY type
     QUERY = 0x01
+    ## SWAP COMMAND type
     COMMAND = 0x02
 
 class SwapRegId:
-    """ Standard register ID's """
+    """
+    Standard register ID's
+    """
     ID_PRODUCT_CODE = 0
     ID_HW_VERSION = 1
     ID_FW_VERSION = 2
@@ -51,7 +60,9 @@ class SwapRegId:
     ID_DEVICE_ADDR = 9
 
 class SwapState:
-    """ System states """
+    """
+    System states
+    """
     RESTART = 0
     RUNNING = 1
     SYNC = 2
@@ -59,7 +70,13 @@ class SwapState:
 
     @staticmethod
     def toString(state):
-        """ Return string defining the system state """
+        """
+        Return string defining the system state
+        
+        @param state: SWAP state to be converted to string
+        
+        @return State in string format
+        """
         if state == SwapState.RESTART:
             return "System restarting"
         elif state == SwapState.RUNNING:
@@ -68,9 +85,13 @@ class SwapState:
             return "Synchronization mode"
         elif state == SwapState.STOP:
             return "System stopping"
+        else:
+            return str(state)
 
 class SwapType:
-    """ Data types """
+    """
+    Data types
+    """
     BINARY = "bin"
     NUMBER = "num"
     STRING = "str"
@@ -81,6 +102,10 @@ class SwapType:
     def toString(type):
         """
         Return complete name of the type
+        
+        @param type: Type of parameter
+        
+        @return Type of parameter in string format
         """
         if type == SwapType.BINARY:
             return "binary"

@@ -26,16 +26,28 @@ __author__="Daniel Berenguer"
 __date__ ="$Aug 20, 2011 10:36:00 AM$"
 #########################################################################
 
+from swapexception.SwapException import SwapException
+
 class CcPacket(object):
-    """Standard packet structure of the CC11xx family of IC's"""
+    """
+    Standard packet structure of the CC11xx family of IC's
+    """
 
     def send(self, modem):
-        """ Transmit packet"""
+        """
+        Transmit packet
+        
+        @param modem: Modem object
+        """
         if modem is not None:
             modem.sendCcPacket(self)
     
     def toString(self):
-        """ Convert packet data to string"""
+        """
+        Convert packet data to string
+        
+        @return CcPacket in string format
+        """
         # Convert list of bytes to list of strings
         strList = []
         for item in self.data:
@@ -46,18 +58,26 @@ class CcPacket(object):
         return strBuf
     
     def __init__(self, strPacket=None):
-        # Data bytes
+        """
+        Class constructor
+        
+        @param strPacket: Wireless packet in string format
+        """
+        ## Data bytes
         self.data = []
-        # RSSI value in case of packet received
+        ## RSSI value in case of packet received
         self.rssi = 0
-        # LQI in case of packet received
+        ## LQI in case of packet received
         self.lqi = 0
         if strPacket is not None:
             # Check the existence of the (RSSI/LQI) pair
-            assert (strPacket[0], strPacket[5]) == ('(', ')'), "Incorrect packet format for incoming data. Lack of (RSSI,LQI)."
-            assert len(strPacket) % 2 == 0, "Incorrect packet format. Amount of characters should not be odd."
-            # RSSI and LQI bytes
+            if (strPacket[0], strPacket[5]) != ('(', ')'):
+                raise SwapException("Incorrect packet format for incoming data. Lack of (RSSI,LQI).")
+            if len(strPacket) % 2 > 0:
+                raise SwapException("Incorrect packet format. Amount of characters should not be odd.")
+            ## RSSI byte
             self.rssi = int(strPacket[1:3], 16)
+            ## LQI byte
             self.lqi = int(strPacket[3:5], 16)
             # Parse data fields
             for i in range(6, len(strPacket), 2):

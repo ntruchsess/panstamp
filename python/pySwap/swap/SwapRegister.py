@@ -27,39 +27,55 @@ __date__ ="$Aug 20, 2011 10:36:00 AM$"
 #########################################################################
 
 from swap.SwapValue import SwapValue
+from swapexception.SwapException import SwapException
 
 
 class SwapRegister(object):
-    """ SWAP register class """
+    """
+    SWAP register class
+    """
 
     def getAddress(self):
-        """ Return register address """
+        """
+        Return address of the current register
+        
+        @return Register address
+        """
         return self.mote.address
 
     
     def sendSwapCmd(self, value):
-        """ Send SWAP command to the current register
-        Return expected SWAP info response to be received from the mote"""
+        """
+        Send SWAP command to the current register
+        
+        @param value: New register value
+        
+        @return Expected SWAP info response to be received from the mote
+        """
         return self.mote.cmdRegister(self.id, value)
 
 
     def sendSwapQuery(self):
-        """ Send SWAP query to the current register"""
-        return self.mote.qryRegister(self.id)
+        """
+        Send SWAP query to the current register
+        """
+        self.mote.qryRegister(self.id)
 
 
     def sendSwapInfo(self):
-        """ Send SWAP info packet about this register"""
-        return self.mote.infRegister(self.id)
+        """
+        Send SWAP info packet about this register
+        """
+        self.mote.infRegister(self.id)
 
 
     def cmdValueWack(self, value):
         """
         Send command to register value and wait for mote's confirmation
 
-        'value'  New register value
+        @param value: New register value
         
-        Return True if command successfully ACK'es
+        @return True if the command is successfully acknowledged
         """
         return self.mote.cmdRegisterWack(self.id, value)
 
@@ -68,7 +84,7 @@ class SwapRegister(object):
         """
         Add item (endpoint or parameter) to the associated list of items
         
-        'item'  Item to be added to the list
+        @param item: Item to be added to the list
         """
         self.lstItems.append(item)
 
@@ -76,6 +92,8 @@ class SwapRegister(object):
     def getNbOfItems(self):
         """
         Return the amount of items belonging to the current register
+        
+        @return Amount of items (endpoints or parameters) contained into the current register
         """
         return len(self.lstItems)
 
@@ -83,6 +101,8 @@ class SwapRegister(object):
     def getLength(self):
         """
         Return data length in bytes
+        
+        @return Length in bytes of the current register
         """
         maxByteSize = 0
         maxBytePos = 0
@@ -155,14 +175,15 @@ class SwapRegister(object):
                     shiftParam = 7
                     
         # Update mote's time stamp
-        self.mote.updateTimeStamp()
+        if self.mote is not None:
+            self.mote.updateTimeStamp()
 
                 
     def setValue(self, value):
         """
         Set register value
 
-        'value'  New register value
+        @param value: New register value
         """
         if value.__class__ is not SwapValue:
             raise SwapException("setValue only accepts SwapValue objects")
@@ -178,23 +199,35 @@ class SwapRegister(object):
         for param in self.lstItems:
             param.update()
                
+               
+    def isConfig(self):
+        """
+        This method tells us whether the current register contains configuration paramters or not
+        
+        @return True if this register contains configuration parameters. Return False otherwise
+        """
+        if len(self.lstItems) > 0:
+            if self.lstItems[0].__class__.__name__ == "SwapCfgParam":
+                return True
+        return False
+    
     
     def __init__(self, mote=None, id=None, description=None):
         """
         Class constructor
 
-        'mote'          Mote containing the current register
-        'id'            Register ID
-        'name'   Short name about hte register
+        @param mote: Mote containing the current register
+        @param id: Register ID
+        @param name: Generic name of the current register
         """
-        # Owner mote of the current register
+        ## Mote owner of the current register
         self.mote = mote
-        # Register ID
+        ## Register ID
         self.id = id
-        # SWAP value contained in the current register
+        ## SWAP value contained in the current register
         self.value = None
-        # Brief name
+        ## Brief name
         self.name = description
-        # List of endpoints belonging to the current register
+        ## List of endpoints or configuration parameters belonging to the current register
         self.lstItems = []
 

@@ -41,9 +41,18 @@ import time
 
 
 class SwapMote(object):
-    """ SWAP device class"""
+    """
+    SWAP mote class
+    """
     def cmdRegister(self, regId, value):
-        """ Send command to register and return expected response (SWAP info)"""
+        """
+        Send command to register and return expected response
+        
+        @param regId: Register ID
+        @param value: New value
+        
+        @return Expected SWAP info packet sent from mote after reception of this command
+        """
         # Expected response from mote
         infPacket = SwapInfoPacket(self.address, regId, value)
         # Command to be sent to the mote
@@ -55,7 +64,11 @@ class SwapMote(object):
 
 
     def qryRegister(self, regId):
-        """ Send query to register"""
+        """
+        Send query to register
+        
+        @param regId: Register ID
+        """
         # Query packet to be sent
         qryPacket = SwapQueryPacket(self.address, regId)
         # Send query
@@ -63,7 +76,11 @@ class SwapMote(object):
 
 
     def infRegister(self, regId):
-        """ Send SWAP info packet about the current value of the register passed as argument"""
+        """
+        Send SWAP info packet about the current value of the register passed as argument
+        
+        @param regId: Register ID
+        """
         # Info packet to be sent
         infPacket = SwapInfoPacket(self.address, regId)
         # Send SWAP info packet
@@ -71,43 +88,81 @@ class SwapMote(object):
 
 
     def cmdRegisterWack(self, regId, value):
-        """ Send SWAP command to remote register and wait for confirmation
-        Return True if ACK received from mote """
+        """
+        Send SWAP command to remote register and wait for confirmation
+        
+        @param regId: Register ID
+        @param value: New value
+        
+        @return True if ACK is received from mote. Return False otherwise
+        """
         return self.server.setMoteRegister(self, regId, value)
 
 
     def setAddress(self, address):
-        """ Set mote address. Return true if ACK received from mote"""
+        """
+        Set mote address
+        
+        @param address: New mote address
+        
+        @return True if this command is confirmed from the mote. Return False otherwise
+        """
         val = SwapValue(address, length=1)
         return self.cmdRegisterWack(SwapRegId.ID_DEVICE_ADDR, val)
 
 
     def setNetworkId(self, netId):
-        """ Set mote's network id. Return true if ACK received from mote"""
+        """
+        Set mote's network id. Return true if ACK received from mote
+        
+        @param netId: New Network ID
+        
+        @return True if this command is confirmed from the mote. Return False otherwise
+        """
         val = SwapValue(netId, length=2)
         return self.cmdRegisterWack(SwapRegId.ID_NETWORK_ID, val)
 
 
     def setFreqChannel(self, channel):
-        """ Set mote's frequency channel. Return true if ACK received from mote"""
+        """
+        Set mote's frequency channel. Return true if ACK received from mote
+        
+        @param channel: New frequency channel
+        
+        @return True if this command is confirmed from the mote. Return False otherwise
+        """
         val = SwapValue(channel, length=1)
         return self.cmdRegisterWack(SwapRegId.ID_FREQ_CHANNEL, val)
 
 
     def setSecurity(self, secu):
-        """ Set mote's security option. Return true if ACK received from mote"""
+        """
+        Set mote's security option. Return true if ACK received from mote
+        
+        @param secu: Security option
+        
+        @return True if this command is confirmed from the mote. Return False otherwise
+        """
         val = SwapValue(secu, length=1)
         return self.cmdRegisterWack(SwapRegId.ID_SECU_OPTION, val)
 
     
     def restart(self):
-        """ Ask mote to restart """
+        """
+        Ask mote to restart
+        
+        @return True if this command is confirmed from the mote. Return False otherwise
+        """
         val = SwapValue(SwapState.RESTART, length=1)
         return self.cmdRegisterWack(SwapRegId.ID_SYSTEM_STATE, val)
 
 
     def leaveSync(self):
-        """ Ask mote to leave SYNC mode """
+        """
+        Ask mote to leave SYNC mode
+        
+        @return True if this command is confirmed from the mote. Return False otherwise
+        """
         val = SwapValue(SwapState.STOP, length=1)
         return self.cmdRegisterWack(SwapRegId.ID_SYSTEM_STATE, val)
 
@@ -120,15 +175,22 @@ class SwapMote(object):
     
     
     def __init__(self, server=None, productCode=None, address=0xFF):
+        """
+        Class constructor
+        
+        @param server: SWAP server object
+        @param productCode: Product Code
+        @param address: Mote address
+        """
         if server is None:
             raise SwapException("SwapMote constructor needs a valid SwapServer object")
-        # Swap server object
+        ## Swap server object
         self.server = server
-        # Product ID
+        ## Product ID
         self.productId = 0
-        # Manufacturer ID
+        ## Manufacturer ID
         self.manufacturerId = 0
-        # Definition settings
+        ## Definition settings
         self.config = None
 
         # Get manufacturer and product id from product code
@@ -138,24 +200,24 @@ class SwapMote(object):
                 self.productId = self.productId | (productCode[i + 4] << 8 * (3-i))
 
         # Definition file
-        # Definition settings
-        self.definition = XmlDevice(self);
+        ## Definition settings
+        self.definition = XmlDevice(self)
 
-        # Device address
+        ## Device address
         self.address = address
-        # Current mote's security nonce
+        ## Current mote's security nonce
         self.nonce = 0
-        # State of the mote
+        ## State of the mote
         self.state = SwapState.RUNNING
-        # List of regular registers provided by this mote
+        ## List of regular registers provided by this mote
         self.lstRegRegs = None
-        # List of config registers provided by this mote
+        ## List of config registers provided by this mote
         self.lstCfgRegs = None
         if self.definition is not None:
             # List of regular registers
             self.lstRegRegs = self.definition.getRegList()
             # List of config registers
             self.lstCfgRegs = self.definition.getRegList(config=True)
-        # Initial time stamp
+        ## Time stamp of the last update received from mote
         self.timeStamp = None
 

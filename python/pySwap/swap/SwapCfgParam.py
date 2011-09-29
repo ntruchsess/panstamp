@@ -35,18 +35,20 @@ class SwapCfgParam(SwapParam):
     """
 
     def __init__(self, register=None, pType=SwapType.NUMBER, name="",
-                position="0", size="1", default=None):
+                position="0", size="1", default=None, verif=None):
         """
         Class constructor
 
-        'register'      Register containing this parameter
-        'type'          Type of SWAP endpoint (see SwapDefs.SwapType)
-        'direction'     Input or output (see SwapDefs.SwapType)
-        'description'   Short description about hte parameter
-        'position'      Position in bytes.bits within the parent register
-        'size'          Size in bytes.bits
-        'default'       Default value in string format
+        @param register: Register containing this parameter
+        @param pType: Type of SWAP endpoint (see SwapDefs.SwapType)
+        @param direction: Input or output (see SwapDefs.SwapType)
+        @param name: Short name about the parameter
+        @param description: Short description about hte parameter
+        @param position: Position in bytes.bits within the parent register
+        @param size: Size in bytes.bits
+        @param default: Default value in string format
+        @param verif: Verification string
         """
-        SwapParam.__init__(self, register, type, None, name, position, size, default)
-        # Save default value
+        SwapParam.__init__(self, register, pType, None, name, position, size, default, verif)
+        ## Default value
         self.default = default

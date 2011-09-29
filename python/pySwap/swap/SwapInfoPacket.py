@@ -31,7 +31,18 @@ __date__ ="$Aug 20, 2011 10:36:00 AM$"
 
 from swap.SwapPacket import SwapPacket
 
+
 class SwapInfoPacket(SwapPacket):
+    """
+    SWAP Information packet class
+    """
     def __init__(self, rAddr, rId, val):
+        """
+        Class constructor
+        
+        @param rAddr: Register address
+        @param rId: Register ID
+        @param val: New value
+        """
         SwapPacket.__init__(self, regAddr=rAddr, regId=rId, value=val)
  

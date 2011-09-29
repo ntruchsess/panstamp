@@ -29,9 +29,13 @@ __date__ ="$Aug 20, 2011 10:36:00 AM$"
 import xml.etree.ElementTree as xml
 
 class XmlSerial(object):
-    """Serial configuration settings"""
+    """
+    Serial configuration settings
+    """
     def read(self):
-        """ Read config file"""
+        """ 
+        Read configuration file
+        """
         # Parse XML file
         tree = xml.parse(self.fileName)
         if tree is None:
@@ -48,28 +52,29 @@ class XmlSerial(object):
             self.speed = int(elem.text)
     
     def save(self):
-        """ Save serial port settings in disk"""
-        # XML root
-        root = xml.Element("serial")
-        # "port" element
-        elem = xml.Element("port", text=self.port)
-        root.append(elem)
-        # "speed" element
-        elem = xml.Element("speed", text=str(self.speed))
-        root.append(elem)
-        # XML doc
-        doc = xml.ElementTree(root)
-        # Write XML doc
-        file = open(XmlSettings.fileName, 'w')
-        doc.write(file)
+        """
+        Save serial port settings in disk
+        """
+        file = open(self.fileName, 'w')
+        file.write("<?xml version=\"1.0\"?>\n")
+        file.write("<serial>\n")
+        file.write("\t<port>" + self.port + "</port>\n")
+        file.write("\t<speed>" + str(self.speed) + "</speed>\n")
+        file.write("</serial>\n")
         file.close()
     
+    
     def __init__(self, fileName = "serial.xml"):
-        # Name/path of the current configuration file
+        """
+        Class constructor
+        
+        @param filename: Path to the serial configuration file
+        """
+        ## Name/path of the current configuration file
         self.fileName = fileName
-        # Name/path of the serial port
+        ## Name/path of the serial port
         self.port = "/dev/ttyUSB0"
-        # Speed of the serial port in bps
+        ## Speed of the serial port in bps
         self.speed = 9600
         # Read XML file
         self.read()

@@ -29,6 +29,8 @@ __author__="Daniel Berenguer"
 __date__  ="$Aug 20, 2011 10:36:00 AM$"
 #########################################################################
 
+from swapexception.SwapException import SwapException
+
 class SwapValue(object):
     """
     Multi-format SWAP value class
@@ -36,13 +38,17 @@ class SwapValue(object):
   
     def getLength(self):
         """
-        Return data length
+        Get data length
+        
+        @return Length in bytes of the current value
         """
         return len(self._data)
     
     def toInteger(self):
         """
         Convert SWAP value into number
+        
+        @return Current value in integer format
         """
         val = 0
         for i, item in enumerate(self._data):
@@ -52,7 +58,9 @@ class SwapValue(object):
 
     def clone(self):
         """
-        Return a copy of the current value
+        Get a copy of the current value
+        
+        @return Copy of the current value
         """
         lstData = self._data[:]
         return SwapValue(lstData)
@@ -60,14 +68,26 @@ class SwapValue(object):
 
     def toAscii(self):
         """
-        Convert SWAP value into ASCII string
+        Convert SWAP value into ASCII string. Use this function for sequences of integer numbers
+        
+        @return Current value in ASCII format
         """
         return "".join(str(item) for item in self._data)
+    
+
+    def toAsciiStr(self):
+        """
+        Convert SWAP value into readable ASCII string. Use this function for real ASCII strings
+        
+        @return 
+        """
+        return "".join(chr(item) for item in self._data)
 
     
     def toAsciiHex(self):
         """
-        Convert SWAP value into printable ASCII hex string
+        Convert SWAP value into printable ASCII hex string. Use this function for sequences of
+        integer numbers
         """
         out = []
         for item in self._data:
@@ -77,13 +97,22 @@ class SwapValue(object):
 
        
     def toList(self):
-        """ Convert SWAP value into list"""
+        """
+        Convert SWAP value into list
+        
+        @return Current value as a list of bytes
+        """
         return self._data
 
 
     def isEqual(self, value):
         """
-        Return True if the value passed as argument is equal to the current one
+        Compare current value with the one passed as argument
+        
+        @param value: Value to be compared agains the current one
+        
+        @return True if the value passed as argument is equal to the current one. Return False
+        otherwise
         """
         if self.getLength() == value.getLength():
             if self._data[:] == value.toList()[:]:
@@ -91,53 +120,23 @@ class SwapValue(object):
         return False
 
 
-    def parseString(self, data):
-        """
-        Parse string and return SWAP value
-        """
-        if data is not str:
-            raise SwapException("parseString only accepts strings as argument")
-            return
-
-        res = None
-        if self.type in [SwapType.NUMBER, SwapType.BINARY]:
-            try:
-                res = int(value)
-            except ValueError:
-                # Possible decimal number
-                dot = value.find(".")
-                if dot > -1:
-                    try:
-                        integer = int(value[:dot])
-                        numDec = len(value[dot+1:])
-                        decimal = int(value[dot+1:])
-                        res = integer * 10 ** numDec + decimal
-                    except ValueError:
-                        raise SwapException(value + " is not a valid value for " + self.description)
-                else:
-                    raise SwapException(value + " is not a valid value for " + self.description)
-        else:   # SwapType.STRING
-            res = value
-            res = []
-            for ch in value:
-                res.append(ord(ch))
-
-        return res
-
-
     def __init__(self, value=None, length=0):
         """
         Class constructor
+        
+        @param value: Raw value in form of list, boolean, integer, long, string or unicode
         """
-        # Raw value in form of list
+        ## Raw value in form of list
         self._data = []
         isAsciiString = False
         if value is not None:
             # In case of list passed in the constructor
             if type(value) is list:
                 self._data = value
+            elif type(value) is bool:
+                res = int(value)
             # In case a string is passed in the constructor
-            elif type(value) is str:
+            elif type(value) in [str, unicode]:
                 try:
                     res = int(value)
                 except ValueError:

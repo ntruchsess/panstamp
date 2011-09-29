@@ -30,6 +30,17 @@ from swap.SwapPacket import SwapPacket
 from swap.SwapDefs import SwapFunction
 
 class SwapCommandPacket(SwapPacket):
+    """
+    SWAP Command packet class
+    """
     def __init__(self, rAddr, rId, val, secNonce=0):
+        """
+        Class constructor
+        
+        @param rAddr: Register address
+        @param rId: Register ID
+        @param val: New value
+        @param secNonce: Security nonce
+        """
         SwapPacket.__init__(self, destAddr=rAddr, nonce=secNonce, function=SwapFunction.COMMAND, regAddr=rAddr, regId=rId, value=val)
 

@@ -35,27 +35,14 @@ class SwapEndpoint(SwapParam):
     """
     SWAP endpoint class
     """
-
-    def getRegAddress(self):
-        """
-        Return register address
-        """
-        return self.register.getAddress()
-
-    def getRegId(self):
-        """
-        Return register id
-        """
-        return self.register.id
-
-  
+ 
     def sendSwapCmd(self, value):
         """
         Send SWAP command for the current endpoint
         
-        'value'     New endpoint value
+        @param value: New endpoint value
         
-        Return expected SWAP info response to be received from the mote
+        @return Expected SWAP info response to be received from the mote
         """
 
         # Insert new endpoint value into the current register value
@@ -82,25 +69,24 @@ class SwapEndpoint(SwapParam):
         """
         self.register.sendSwapInfo()
   
-
+   
+    
     def __init__(self, register=None, pType=SwapType.NUMBER, direction=SwapType.INPUT,
-                name="", position="0", size="1", default=None, units=None):
+                name="", position="0", size="1", default=None, verif=None, units=None):
         """
         Class constructor
-
-        'register'      Register containing this endpoint
-        'type'          Type of SWAP endpoint (see SwapDefs.SwapType)
-        'direction'     Input or output (see SwapDefs.SwapType)
-        'description'   Short description about hte endpoint
-        'position'      Position in bytes within the parent register
-        'size'          Size in bytes
-        'default'       Default value in string format
+        
+        @param register: Register containing this parameter
+        @param pType: Type of SWAP endpoint (see SwapDefs.SwapType)
+        @param direction: Input or output (see SwapDefs.SwapType)
+        @param name: Short name about the parameter
+        @param description: Short description about hte parameter
+        @param position: Position in bytes.bits within the parent register
+        @param size: Size in bytes.bits
+        @param default: Default value in string format
+        @param verif: Verification string
+        @param units: List of units
         """
-        SwapParam.__init__(self, register, pType, direction, name, position, size, default)
+        SwapParam.__init__(self, register, pType, direction, name, position, size, default, verif, units)
 
-        # List of units
-        self.lstUnits = units
-        # Selected unit
-        self.unit = None
-        if self.lstUnits is not None and len(self.lstUnits) > 0:
-            self.unit = self.lstUnits[0]
+

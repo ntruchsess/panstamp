@@ -29,18 +29,24 @@ __date__ ="$Aug 20, 2011 10:36:00 AM$"
 import xml.etree.ElementTree as xml
 
 class XmlSettings(object):
-    """Main configuration settings: config files and directories"""
-    # Name/path of the current configuration file
+    """
+    Main configuration settings: config files and directories
+    """
+    ## Name/path of the current configuration file
     fileName = "settings.xml"
-    # Name/path of the serial configuration file
+    ## Name/path of the serial configuration file
     serialFile = "serial.xml"
-    # Name/path of the wireless network configuration file
+    ## Name/path of the wireless network configuration file
     networkFile = "network.xml"
-    # Directory where all device config files are stored
+    ## Directory where all device config files are stored
     deviceDir = "devices"
+    ## Name/path of the error log file
+    errorFile = "error.log"
 
     def read(self):
-        """ Read config file"""
+        """
+        Read configuration file file
+        """
         # Parse XML file
         tree = xml.parse(XmlSettings.fileName)
         if tree is None:
@@ -59,9 +65,16 @@ class XmlSettings(object):
         elem = root.find("network")
         if elem is not None:
             XmlSettings.networkFile = elem.text
-    
+        # Get path name of the error log file
+        elem = root.find("errlog")
+        if elem is not None:
+            XmlSettings.errorFile = elem.text
+
+
     def save(self):
-        """ Save current configuration file in disk"""
+        """
+        Save current configuration file in disk
+        """
         # XML root
         root = xml.Element("settings")
         # "devices" element
@@ -73,6 +86,9 @@ class XmlSettings(object):
         # "network" element
         elem = xml.Element("network", text=XmlSettings.networkFile)
         root.append(elem)
+        # "network" element
+        elem = xml.Element("errlog", text=XmlSettings.errorFile)
+        root.append(elem)
         # XML doc
         doc = xml.ElementTree(root)
         # Write XML doc
@@ -81,6 +97,11 @@ class XmlSettings(object):
         file.close()
         
     def __init__(self, fileName = "settings.xml"):
+        """
+        Class constructor
+        
+        @param filename: Path to the configuration file
+        """
         # Name/path of the current configuration file
         XmlSettings.fileName = fileName
         # Read XML file

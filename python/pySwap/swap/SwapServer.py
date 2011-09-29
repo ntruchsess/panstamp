@@ -40,26 +40,99 @@ from xmltools.XmlNetwork import XmlNetwork
 import time
 
 class SwapServer:
-    """ SWAP server class"""
+    """
+    SWAP server class
+    """
     # Maximum waiting time (in ms) for ACK's
     _MAX_WAITTIME_ACK = 500
     # Max tries for any SWAP command
     _MAX_SWAP_COMMAND_TRIES = 3
 
    
+    def start(self):
+        """
+        Start SWAP server
+        """
+        # Serial configuration settings
+        self._xmlSerial = XmlSerial(self._xmlSettings.serialFile)
+        # Network configuration settings
+        self._xmlNetwork = XmlNetwork(self._xmlSettings.networkFile)
+
+        # Serial configuration settings
+        self._xmlSerial = XmlSerial(self._xmlSettings.serialFile)
+        
+        try:
+            # Create and start serial modem object
+            self.modem = SerialModem(self._xmlSerial.port, self._xmlSerial.speed, self.verbose)
+            if self.modem is None:
+                raise SwapException("Unable to start serial modem on port " + self._xmlSerial.port)
+            # Declare receiving callback function
+            self.modem.setRxCallback(self._ccPacketReceived)
+    
+            # Set modem configuration from _xmlNetwork
+            paramChanged = False
+            # Device address
+            if self._xmlNetwork.devAddress is not None:
+                if self.modem.deviceAddr != self._xmlNetwork.devAddress:
+                    if self.modem.setDevAddress(self._xmlNetwork.devAddress) == False:
+                        raise SwapException("Unable to set modem's device address to " + self._xmlNetwork.devAddress)
+                    else:
+                        paramChanged = True
+            # Device address
+            if self._xmlNetwork.NetworkId is not None:
+                if self.modem.syncWord != self._xmlNetwork.NetworkId:
+                    if self.modem.setSyncWord(self._xmlNetwork.NetworkId) == False:
+                        raise SwapException("Unable to set modem's network ID to " + self._xmlNetwork.NetworkId)
+                    else:
+                        paramChanged = True
+            # Frequency channel
+            if self._xmlNetwork.freqChannel is not None:
+                if self.modem.freqChannel != self._xmlNetwork.freqChannel:
+                    if self.modem.setFreqChannel(self._xmlNetwork.freqChannel) == False:
+                        raise SwapException("Unable to set modem's frequency channel to " + self._xmlNetwork.freqChannel)
+                    else:
+                        paramChanged = True
+    
+            # Return to data mode if necessary
+            if paramChanged == True:
+                self.modem.goToDataMode()
+    
+            # Discover motes in the current SWAP network
+            self._discoverMotes()
+        except SwapException:
+            raise
+        
+        
     def stop(self):
-        """ Stop SWAP server"""
+        """
+        Stop SWAP server
+        """
         self.modem.stop()
         pass
 
+
+    def resetNetwork(self):
+        """
+        Clear SWAP network
+        """
+        # Clear lists of motes
+        self.lstMotes = []
+
+        
     def _ccPacketReceived(self, ccPacket):
-        # Convert CcPacket into SwapPacket
-        swPacket = SwapPacket(ccPacket)
+        """
+        CcPacket received
+        
+        @param ccPacket: CcPacket received        
+        """
+        try:
+            # Convert CcPacket into SwapPacket
+            swPacket = SwapPacket(ccPacket)
+        except SwapException:
+            raise
+        
         # Check function code
         if swPacket.function == SwapFunction.INFO:
-            # Discard info packets with no data field
-            if swPacket.value.getLength() == 0:
-                return
             # Expected response?
             self._checkInfo(swPacket)
             # Check type of data received
@@ -88,7 +161,7 @@ class SwapServer:
         """
         Check SWAP mote from against the current list
         
-        'mote' to be searched in the list
+        @param mote: to be searched in the list
         """
         # Search mote in list
         exists = False
@@ -115,8 +188,8 @@ class SwapServer:
         """
         Update new mote address in list
         
-        'oldAddr'   Old address
-        'newAddr'   New address
+        @param oldAddr: Old address
+        @param newAddr: New address
         """
         # Has the address really changed?
         if oldAddr == newAddr:
@@ -135,24 +208,24 @@ class SwapServer:
         """
         Update mote state in list
 
-        'packet'    SWAP packet to extract the information from
+        @param packet: SWAP packet to extract the information from
         """
         # New system state
         state = packet.value.toInteger()
 
         # Search mote in list
-        for i, item in enumerate(self.lstMotes):
-            if item.address == packet.srcAddress:
+        for mote in self.lstMotes:
+            if mote.address == packet.srcAddress:
                 # Has the state really changed?
-                if item.state == state:
+                if mote.state == state:
                     return
 
                 # Update system state in the list
-                self.lstMotes[i].state = state
+                mote.state = state
 
                 # Notify state change to event handler
                 if self._eventHandler.moteStateChanged is not None:
-                    self._eventHandler.moteStateChanged(self.lstMotes[i])
+                    self._eventHandler.moteStateChanged(mote)
                 break
 
 
@@ -160,28 +233,50 @@ class SwapServer:
         """
         Update register value in the list of motes
 
-        'packet'    SWAP packet to extract the information from
+        @param packet: SWAP packet to extract the information from
         """
         # Search in the list of motes
         for mote in self.lstMotes:
             # Same register address?
             if mote.address == packet.regAddress:
-                # Search within its list of registers
-                for reg in mote.lstRegRegs:
-                    # Same register ID?
-                    if reg.id == packet.regId:
-                        # Save new register value
-                        reg.setValue(packet.value)
-                        # Notify register'svalue change to event handler
-                        if self._eventHandler.registerValueChanged is not None:
-                            self._eventHandler.registerValueChanged(reg)
-                        # Notify endpoint's value change to event handler
-                        if self._eventHandler.endpointValueChanged is not None:
-                            # Has any of the endpoints changed?
-                            for endp in reg.lstItems:
-                                if endp.valueChanged == True:
-                                    self._eventHandler.endpointValueChanged(endp)
-                        return
+                # Search within its list of regular registers
+                if mote.lstRegRegs is not None:
+                    for reg in mote.lstRegRegs:
+                        # Same register ID?
+                        if reg.id == packet.regId:
+                            # Did register's value change?
+                            if not reg.value.isEqual(packet.value):
+                                # Save new register value
+                                reg.setValue(packet.value)
+                                # Notify register'svalue change to event handler
+                                if self._eventHandler.registerValueChanged is not None:
+                                    self._eventHandler.registerValueChanged(reg)
+                                # Notify endpoint's value change to event handler
+                                if self._eventHandler.endpointValueChanged is not None:
+                                    # Has any of the endpoints changed?
+                                    for endp in reg.lstItems:
+                                        if endp.valueChanged == True:
+                                            self._eventHandler.endpointValueChanged(endp)
+                                return
+                # Search within its list of config registers
+                if mote.lstCfgRegs is not None:
+                    for reg in mote.lstCfgRegs:
+                        # Same register ID?
+                        if reg.id == packet.regId:
+                            # Did register's value change?
+                            if not reg.value.isEqual(packet.value):
+                                # Save new register value
+                                reg.setValue(packet.value)
+                                # Notify register'svalue change to event handler
+                                if self._eventHandler.registerValueChanged is not None:
+                                    self._eventHandler.registerValueChanged(reg)
+                                # Notify parameter's value change to event handler
+                                if self._eventHandler.paramValueChanged is not None:
+                                    # Has any of the endpoints changed?
+                                    for param in reg.lstItems:
+                                        if param.valueChanged == True:
+                                            self._eventHandler.paramValueChanged(param)
+                                return
                 return
 
 
@@ -189,7 +284,7 @@ class SwapServer:
         """
         Compare expected SWAP info against info packet received
 
-        'info'    SWAP packet to extract the information from
+        @param info: SWAP packet to extract the information from
         """
         # Check possible command ACK
         self._packetAcked = False
@@ -223,16 +318,20 @@ class SwapServer:
     def getNbOfMotes(self):
         """
         Return the amounf of motes available in the list
+        
+        @return Amount of motes available in lstMotes
         """
-        return len(lstMotes)
+        return len(self.lstMotes)
 
 
     def getMote(self, index=None, address=None):
         """
-        Return mote from list
+        Return mote from list given its index or address
 
-        'index'     Index of hte mote within lstMotes
-        'address'   Address of the mote
+        @param index: Index of hte mote within lstMotes
+        @param address: Address of the mote
+        
+        @return mote
         """
         if index is not None and index >= 0:
             return self.lstMotes[index]
@@ -248,11 +347,11 @@ class SwapServer:
         Set new register value on wireless mote
         Non re-entrant method!!
 
-        'mote'      Mote containing the register
-        'regId'     Register ID
-        'value'     New register value
+        @param mote: Mote containing the register
+        @param regId: Register ID
+        @param value: New register value
 
-        Return True if the command is correctly ack'ed. Return False otherwise
+        @return True if the command is correctly ack'ed. Return False otherwise
         """
         # Send command multiple times if necessary
         for i in range(SwapServer._MAX_SWAP_COMMAND_TRIES):
@@ -269,10 +368,10 @@ class SwapServer:
         Query mote register, wait for response and return value
         Non re-entrant method!!
         
-        'mote'      Mote containing the register
-        'regId'     Register ID
+        @param mote: Mote containing the register
+        @param regId: Register ID
         
-        Return register value
+        @return register value
         """
         # Queried register
         register = SwapRegister(mote, regId)
@@ -292,8 +391,10 @@ class SwapServer:
         Wait for ACK (SWAP info packet)
         Non re-entrant method!!
 
-        'ackPacket'     SWAP info packet to expect as a valid ACK
-        'waitTime'      Max waiting time in milliseconds
+        @param ackPacket: SWAP info packet to expect as a valid ACK
+        @param waitTime: Max waiting time in milliseconds
+        
+        @return True if the ACK is received. False otherwise
         """
         # Expected ACK packet (SWAP info)
         self._expectedAck = ackPacket
@@ -316,8 +417,10 @@ class SwapServer:
         Wait for ACK (SWAP info packet)
         Non re-entrant method!!
         
-        'register'     Expected register to be informed about
-        'waitTime'     Max waiting time in milliseconds
+        @param register: Expected register to be informed about
+        @param waitTime: Max waiting time in milliseconds
+        
+        @return True if the ACK is received. False otherwise
         """
         # Expected ACK packet (SWAP info)
         self._expectedRegister = register
@@ -339,10 +442,12 @@ class SwapServer:
         """
         Class constructor
 
-        'eventHandler'  Parent event handler object
-        'verbose'       Verbose SWAP traffic
+        @param eventHandler: Parent event handler object
+        @param verbose: Verbose SWAP traffic
         """
-        # Serial wireless gateway
+        ## Verbose SWAP frames
+        self.verbose = verbose
+        ## Serial wireless gateway
         self.modem = None
         # Server's Security nonce
         self._nonce = 0
@@ -354,65 +459,23 @@ class SwapServer:
         self._valueReceived = None
         # Register being queried
         self._expectedRegister = None
-        # List of SWAP motes available in the network
+        ## List of SWAP motes available in the network
         self.lstMotes = []
 
         # Event handling object. Its class must define the following methods
         # in order to dispatch incoming SWAP events:
         # - newMoteDetected(mote)
         # - newEndpointDetected(endpoint)
+        # - newParameterDetected(parameter)
         # - moteStateChanged(mote)
         # - moteAddressChanged(mote)
         # - registerValueChanged(register)
         # - endpointValueChanged(endpoint)
+        # - parameterValueChanged(parameter)
         self._eventHandler = eventHandler
 
         # General settings
         self._xmlSettings = XmlSettings()
-        # Serial configuration settings
-        self._xmlSerial = XmlSerial(self._xmlSettings.serialFile)
-        # Network configuration settings
-        self._xmlNetwork = XmlNetwork(self._xmlSettings.networkFile)
-
-        # Serial configuration settings
-        self._xmlSerial = XmlSerial(self._xmlSettings.serialFile)
-        # Create and start serial modem object
-        self.modem = SerialModem(self._xmlSerial.port, self._xmlSerial.speed, verbose)
-        if self.modem is None:
-            raise SwapException("Unable to start serial modem on port " + self._xmlSerial.port)
-        # Declare receiving callback function
-        self.modem.setRxCallback(self._ccPacketReceived)
-
-        # Set modem configuration from _xmlNetwork
-        paramChanged = False
-        # Device address
-        if self._xmlNetwork.devAddress is not None:
-            if self.modem.deviceAddr != self._xmlNetwork.devAddress:
-                if self.modem.setDevAddress(self._xmlNetwork.devAddress) == False:
-                    raise SwapException("Unable to set modem's device address to " + self._xmlNetwork.devAddress)
-                else:
-                    paramChanged = True
-        # Device address
-        if self._xmlNetwork.NetworkId is not None:
-            if self.modem.syncWord != self._xmlNetwork.NetworkId:
-                if self.modem.setSyncWord(self._xmlNetwork.NetworkId) == False:
-                    raise SwapException("Unable to set modem's network ID to " + self._xmlNetwork.NetworkId)
-                else:
-                    paramChanged = True
-        # Frequency channel
-        if self._xmlNetwork.freqChannel is not None:
-            if self.modem.freqChannel != self._xmlNetwork.freqChannel:
-                if self.modem.setFreqChannel(self._xmlNetwork.freqChannel) == False:
-                    raise SwapException("Unable to set modem's frequency channel to " + self._xmlNetwork.freqChannel)
-                else:
-                    paramChanged = True
-
-        # Return to data mode if necessary
-        if paramChanged == True:
-            self.modem.goToDataMode()
-
-        # Clear lists
-        self.lstMotes = []
-
-        # Discover motes in the current SWAP network
-        self._discoverMotes()
+ 
+        # Start SWAP server
+        self.start()
