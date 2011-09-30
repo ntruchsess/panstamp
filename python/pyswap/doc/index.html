@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>pyswap: Main Page</title>
+<title>pyswap: Python SWAP library</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -23,6 +23,8 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  
+  <td id="projectlogo"><img alt="Logo" src="panStamp_web.png"/></td>
   
   
   <td style="padding-left: 0.5em;">
@@ -68,10 +70,27 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="header">
   <div class="headertitle">
-<div class="title">pyswap Documentation</div>  </div>
+<div class="title">Python SWAP library </div>  </div>
 </div>
 <div class="contents">
-</div>
+<div class="textblock"><h2><a class="anchor" id="intro_sec"></a>
+Introduction</h2>
+<p>pyswap is a Python library made to communicate with SWAP networks through a serial panStamp. This library is the core of every application written for computers in the scope of the panStamp project; SWAPdmt and the SWAP plugin for HouseAgent? are indeed based on this library.</p>
+<p>pyswap is more than a communication library in fact. It takes care of discovering motes, registering resources in memory and maintaining configuration files. You'll find that this library does the most part of whatever application you may need for your computer. At the end, you'll need to subscribe to some callback functions that will alert your application about any event in the network.</p>
+<h2><a class="anchor" id="descr_sec"></a>
+Description</h2>
+<p>In order to use pyswap you should follow these steps:</p>
+<ul>
+<li>Download this library and add it to your PYTHONPATH variable.</li>
+<li>Copy settings.xml, serial.xml and network.xml into your application source folder and change their contents according to your settings (serial port, Network Id, gateway address, etc).</li>
+<li>Download "devices" from our repositories and place it wherever you want in your computer. Then set device to the correct location in settings.xml. Next time you run your application, it will be able to find static descriptions about any device in your SWAP network.</li>
+<li>Write your application</li>
+</ul>
+<h2><a class="anchor" id="interf_sec"></a>
+Interface</h2>
+<p>pyswap provides an event-based interface that frees your application from having to store devices, registers or parameters by itself. This interface just notifies your application about any event occurred in the SWAP network, including value changes and detection of new motes and their endpoints. In order to use this interface, you must create a Python module containing a class deriving from SwapInterface?. Then, according to your needs, you'll end by defining different callback methods that will notify your application about the occurrence of certain events.</p>
+<p>Visit our wiki for more information: <a class="el" href="">http://code.google.com/p/panstamp/wiki/pyswap</a></p>
+</div></div>
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -89,7 +108,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Sep 29 2011 17:39:11 for pyswap by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Sep 30 2011 15:49:35 for pyswap by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>

@@ -173,5 +173,5 @@ class SerialPort(threading.Thread):
             # Set DTR line to LOW
             self._serPort.setDTR(False)
             
-        except serial.SerialException:
-            raise SwapException("Unable to open serial port " + self.portName)
+        except serial.SerialException as ex:
+            raise SwapException(str(ex))
