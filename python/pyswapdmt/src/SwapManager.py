@@ -87,9 +87,6 @@ class SwapManager(SwapInterface):
         if self._printSWAP == True:
             print endpoint.name + " in address " + str(endpoint.getRegAddress()) + " changed to " + endpoint.getValueInAscii()
             
-        # Update value in SWAP browser
-        self.browser.updateEndpointInTree(endpoint)
-            
             
     def paramValueChanged(self, param):
         """
