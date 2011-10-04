@@ -50,7 +50,7 @@ class SwapRegister(object):
         
         @param value: New register value
         
-        @return Expected SWAP info response to be received from the mote
+        @return Expected SWAP status response to be received from the mote
         """
         return self.mote.cmdRegister(self.id, value)
 
@@ -62,11 +62,11 @@ class SwapRegister(object):
         self.mote.qryRegister(self.id)
 
 
-    def sendSwapInfo(self):
+    def sendSwapStatus(self):
         """
-        Send SWAP info packet about this register
+        Send SWAP status packet about this register
         """
-        self.mote.infRegister(self.id)
+        self.mote.staRegister(self.id)
 
 
     def cmdValueWack(self, value):

@@ -37,8 +37,8 @@ class SwapFunction:
     """
     SWAP function codes
     """
-    ## SWAP INFO type
-    INFO = 0x00
+    ## SWAP STATUS type
+    STATUS = 0x00
     ## SWAP QUERY type
     QUERY = 0x01
     ## SWAP COMMAND type

@@ -1,0 +1,146 @@
+#########################################################################
+#
+# SwapInterface
+#
+# Copyright (c) 2011 Daniel Berenguer <dberenguer@usapiens.com>
+#
+# This file is part of the panStamp project.
+#
+# panStamp  is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# panStamp is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with panLoader; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+# USA
+#
+#########################################################################
+__author__="Daniel Berenguer"
+__date__  ="Sep 28, 2011 1:09:12 PM$"
+#########################################################################
+
+from swap.SwapServer import SwapServer
+
+
+class SwapInterface:
+    """
+    SWAP Interface superclass. Any SWAP application should derive from this one
+    """
+    def newMoteDetected(self, mote):
+        """
+        New mote detected by SWAP server
+        
+        'mote'  mote detected
+        """
+        raise NotImplementedError, 'Subclass must implement newMoteDetected'
+
+
+    def newParameterDetected(self, parameter):
+        """
+        New configuration parameter detected by SWAP server
+        
+        'parameter'  Endpoint detected
+        """
+        raise NotImplementedError, 'Subclass must implement newParameterDetected'
+    
+    
+    def newEndpointDetected(self, endpoint):
+        """
+        New endpoint detected by SWAP server
+        
+        'endpoint'  Endpoint detected
+        """
+        raise NotImplementedError, 'Subclass must implement newEndpointDetected'
+
+
+    def moteStateChanged(self, mote):
+        """
+        Mote state changed
+        
+        'mote'  Mote having changed
+        """
+        raise NotImplementedError, 'Subclass must implement moteStateChanged'
+
+
+    def moteAddressChanged(self, mote):
+        """
+        Mote address changed
+        
+        'mote'  Mote having changed
+        """
+        raise NotImplementedError, 'Subclass must implement moteAddressChanged'
+
+
+    def registerValueChanged(self, register):
+        """
+        Register value changed
+        
+        'register'  Register having changed
+        """
+        raise NotImplementedError, 'Subclass must implement registerValueChanged'
+    
+    
+    def endpointValueChanged(self, endpoint):
+        """
+        Endpoint value changed
+        
+        'endpoint'  Endpoint having changed
+        """
+        raise NotImplementedError, 'Subclass must implement endpointValueChanged'
+    
+    
+    def parameterValueChanged(self, parameter):
+        """
+        Configuration parameter changed
+        
+        'parameter'  configuration parameter having changed
+        """
+        raise NotImplementedError, 'Subclass must implement parameterValueChanged'
+
+
+    def getNbOfMotes(self):
+        """ Return the amounf of motes available in the list"""
+        return self.server.getNbOfMotes()
+
+
+    def getMote(self, index=None, address=None):
+        """ Return mote from list"""
+        return self.server.getMote(index, address)
+
+
+    def setMoteRegister(self, mote, regId, value):
+        """ Set new register value on wireless mote
+        Return True if the command is correctly ack'ed. Return False otherwise """
+        return self.server.setMoteRegister(mote, regId, value)
+
+
+    def queryMoteRegister(self, mote, regId):
+        """ Query mote register, wait for response and return value
+        Non re-entrant method!! """
+        return self.server.queryMoteRegister(mote, regId)
+
+
+    def stop(self):
+        """ Stop SWAP server """
+        self.server.stop()
+
+
+    def __init__(self, verbose=False):
+        """
+        Class constructor
+        """       
+        try:
+            # Start SWAP server
+            print "SWAP server starting... "
+            self.server = SwapServer(self, verbose)
+            print "SWAP server is now running... "
+        except:
+            raise
+  

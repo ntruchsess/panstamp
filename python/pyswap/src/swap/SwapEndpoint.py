@@ -42,7 +42,7 @@ class SwapEndpoint(SwapParam):
         
         @param value: New endpoint value
         
-        @return Expected SWAP info response to be received from the mote
+        @return Expected SWAP status response to be received from the mote
         """
 
         # Insert new endpoint value into the current register value
@@ -63,11 +63,11 @@ class SwapEndpoint(SwapParam):
         self.register.sendSwapQuery()
 
     
-    def sendSwapInfo(self):
+    def sendSwapStatus(self):
         """
-        Send SWAP info packet about this endpoint
+        Send SWAP status packet about this endpoint
         """
-        self.register.sendSwapInfo()
+        self.register.sendSwapStatus()
   
    
     

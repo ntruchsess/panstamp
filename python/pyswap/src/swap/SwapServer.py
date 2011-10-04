@@ -132,9 +132,9 @@ class SwapServer:
             raise
         
         # Check function code
-        if swPacket.function == SwapFunction.INFO:
+        if swPacket.function == SwapFunction.STATUS:
             # Expected response?
-            self._checkInfo(swPacket)
+            self._checkStatus(swPacket)
             # Check type of data received
             # Product code received
             if swPacket.regId == SwapRegId.ID_PRODUCT_CODE:
@@ -280,30 +280,30 @@ class SwapServer:
                 return
 
 
-    def _checkInfo(self, info):
+    def _checkStatus(self, status):
         """
-        Compare expected SWAP info against info packet received
+        Compare expected SWAP status against status packet received
 
-        @param info: SWAP packet to extract the information from
+        @param status: SWAP packet to extract the information from
         """
         # Check possible command ACK
         self._packetAcked = False
-        if (self._expectedAck is not None) and (info.function == SwapFunction.INFO):
-            if info.regAddress == self._expectedAck.regAddress:
-                if info.regId == self._expectedAck.regId:
-                    self._packetAcked = self._expectedAck.value.isEqual(info.value)
+        if (self._expectedAck is not None) and (status.function == SwapFunction.STATUS):
+            if status.regAddress == self._expectedAck.regAddress:
+                if status.regId == self._expectedAck.regId:
+                    self._packetAcked = self._expectedAck.value.isEqual(status.value)
 
         # Check possible response to a precedent query
         self._valueReceived = None
-        if (self._expectedRegister is not None) and (info.function == SwapFunction.INFO):
-            if info.regAddress == self._expectedRegister.getAddress():
-                if info.regId == self._expectedRegister.id:
-                    self._valueReceived = info.value
+        if (self._expectedRegister is not None) and (status.function == SwapFunction.STATUS):
+            if status.regAddress == self._expectedRegister.getAddress():
+                if status.regId == self._expectedRegister.id:
+                    self._valueReceived = status.value
 
         # Update nonce in list
-        mote = self.getMote(address=info.srcAddress)
+        mote = self.getMote(address=status.srcAddress)
         if mote is not None:
-            mote.nonce = info.nonce
+            mote.nonce = status.nonce
             
 
     def _discoverMotes(self):
@@ -388,15 +388,15 @@ class SwapServer:
 
     def _waitForAck(self, ackPacket, waitTime):
         """
-        Wait for ACK (SWAP info packet)
+        Wait for ACK (SWAP status packet)
         Non re-entrant method!!
 
-        @param ackPacket: SWAP info packet to expect as a valid ACK
+        @param ackPacket: SWAP status packet to expect as a valid ACK
         @param waitTime: Max waiting time in milliseconds
         
         @return True if the ACK is received. False otherwise
         """
-        # Expected ACK packet (SWAP info)
+        # Expected ACK packet (SWAP status)
         self._expectedAck = ackPacket
         
         loops = waitTime / 10
@@ -414,7 +414,7 @@ class SwapServer:
 
     def _waitForReg(self, register, waitTime):
         """
-        Wait for ACK (SWAP info packet)
+        Wait for ACK (SWAP status packet)
         Non re-entrant method!!
         
         @param register: Expected register to be informed about
@@ -422,7 +422,7 @@ class SwapServer:
         
         @return True if the ACK is received. False otherwise
         """
-        # Expected ACK packet (SWAP info)
+        # Expected ACK packet (SWAP status)
         self._expectedRegister = register
 
         loops = waitTime / 10
@@ -453,7 +453,7 @@ class SwapServer:
         self._nonce = 0
         # True if last packet was ack'ed
         self._packetAcked = False
-        # Expected ACK packet (SWAP info packet containing a given endpoint data)
+        # Expected ACK packet (SWAP status packet containing a given endpoint data)
         self._expectedAck = None
         # Value received about register being queried
         self._valueReceived = None

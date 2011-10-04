@@ -29,7 +29,7 @@ __author__="Daniel Berenguer"
 __date__  ="$Aug 20, 2011 10:36:00 AM$"
 #########################################################################
 
-from swap.SwapInfoPacket import SwapInfoPacket
+from swap.SwapStatusPacket import SwapStatusPacket
 from swap.SwapCommandPacket import SwapCommandPacket
 from swap.SwapQueryPacket import SwapQueryPacket
 from swap.SwapDefs import SwapRegId, SwapState
@@ -51,10 +51,10 @@ class SwapMote(object):
         @param regId: Register ID
         @param value: New value
         
-        @return Expected SWAP info packet sent from mote after reception of this command
+        @return Expected SWAP status packet sent from mote after reception of this command
         """
         # Expected response from mote
-        infPacket = SwapInfoPacket(self.address, regId, value)
+        infPacket = SwapStatusPacket(self.address, regId, value)
         # Command to be sent to the mote
         cmdPacket = SwapCommandPacket(self.address, regId, value, self.nonce)
         # Send command
@@ -75,15 +75,15 @@ class SwapMote(object):
         qryPacket.send(self.server.modem)
 
 
-    def infRegister(self, regId):
+    def staRegister(self, regId):
         """
-        Send SWAP info packet about the current value of the register passed as argument
+        Send SWAP status packet about the current value of the register passed as argument
         
         @param regId: Register ID
         """
-        # Info packet to be sent
-        infPacket = SwapInfoPacket(self.address, regId)
-        # Send SWAP info packet
+        # Status packet to be sent
+        infPacket = SwapStatusPacket(self.address, regId)
+        # Send SWAP status packet
         infPacket.send(self.server.modem)
 
 
@@ -219,5 +219,5 @@ class SwapMote(object):
             # List of config registers
             self.lstCfgRegs = self.definition.getRegList(config=True)
         ## Time stamp of the last update received from mote
-        self.timeStamp = None
+        self.timeStamp = time.time()
 

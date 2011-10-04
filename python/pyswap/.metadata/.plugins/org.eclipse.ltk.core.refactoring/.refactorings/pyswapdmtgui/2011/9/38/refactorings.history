@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;pyswapdmtgui/src/SwapTree.py&apos; to &apos;SwapBrowser.py&apos;" description="Rename resource &apos;SwapTree.py&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/SwapTree.py" name="SwapBrowser.py" stamp="1316162809379" updateReferences="true"/>
+</session>

@@ -137,7 +137,7 @@ class SerialPort(threading.Thread):
         timeStamp = str(time.time())
         dot = timeStamp.find('.')
         if len(timeStamp[dot+1:]) < 2:
-            timeStamp = timeStamp + "  "
+            timeStamp = timeStamp + " "
             
         print timeStamp + " " +  buf
 
