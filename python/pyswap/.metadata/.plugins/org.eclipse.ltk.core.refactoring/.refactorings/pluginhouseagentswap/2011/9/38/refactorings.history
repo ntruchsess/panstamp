@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Rename resource &apos;pluginhouseagentswap/src/pages/swap.py&apos; to &apos;pages.py&apos;" description="Rename resource &apos;swap.py&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/pages/swap.py" name="pages.py" stamp="1315840139949" updateReferences="true"/>
-</session>

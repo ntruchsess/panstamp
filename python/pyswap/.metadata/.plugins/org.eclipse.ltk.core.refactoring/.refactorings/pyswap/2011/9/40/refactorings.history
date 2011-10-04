@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Rename resource &apos;pyswap/src/swap/SwapManager.py&apos; to &apos;SwapInterface.py&apos;" description="Rename resource &apos;SwapManager.py&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/swap/SwapManager.py" name="SwapInterface.py" stamp="1317208168499" updateReferences="true"/>
-</session>
