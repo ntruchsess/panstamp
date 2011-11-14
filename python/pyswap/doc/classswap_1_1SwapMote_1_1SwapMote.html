@@ -122,6 +122,10 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a640b41040def8e6c5b6aa64d8cd15857"></a><!-- doxytag: member="swap::SwapMote::SwapMote::updateTimeStamp" ref="a640b41040def8e6c5b6aa64d8cd15857" args="" -->
 def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapMote_1_1SwapMote.html#a640b41040def8e6c5b6aa64d8cd15857">updateTimeStamp</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Update time stamp. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapMote_1_1SwapMote.html#a36cb417a85fc92cf92efe982b369fd37">getRegister</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Get register given its ID.  <a href="#a36cb417a85fc92cf92efe982b369fd37"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapMote_1_1SwapMote.html#a0ff02bd16d7ab83292cd1e7adb68b4c7">getParameter</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Get parameter given its name.  <a href="#a0ff02bd16d7ab83292cd1e7adb68b4c7"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapMote_1_1SwapMote.html#a782795397c31d5fb69d766f0536debd7">__init__</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor.  <a href="#a782795397c31d5fb69d766f0536debd7"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
@@ -296,6 +300,78 @@ Public Attributes</h2></td></tr>
   </dd>
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>True if ACK is received from mote. Return False otherwise </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a0ff02bd16d7ab83292cd1e7adb68b4c7"></a><!-- doxytag: member="swap::SwapMote::SwapMote::getParameter" ref="a0ff02bd16d7ab83292cd1e7adb68b4c7" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def swap::SwapMote::SwapMote::getParameter </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Get parameter given its name. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name,:</td><td>name of the parameter belonging to this mote</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>: SwapParam object </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a36cb417a85fc92cf92efe982b369fd37"></a><!-- doxytag: member="swap::SwapMote::SwapMote::getRegister" ref="a36cb417a85fc92cf92efe982b369fd37" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def swap::SwapMote::SwapMote::getRegister </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>regId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Get register given its ID. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">regId,:</td><td>Register ID</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>SwapRegister object </dd></dl>
 
 </div>
 </div>
@@ -550,6 +626,7 @@ Public Attributes</h2></td></tr>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table class="params">
     <tr><td class="paramname">regId,:</td><td>Register ID </td></tr>
+    <tr><td class="paramname">value,:</td><td>New value </td></tr>
   </table>
   </dd>
 </dl>
@@ -577,7 +654,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Oct 4 2011 11:38:58 for pyswap by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Nov 14 2011 16:32:56 for pyswap by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>

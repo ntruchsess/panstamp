@@ -116,16 +116,14 @@ def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor.  <a href="#a54bb038fd9c3a857dd5d863a760f2d26"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="accfa0a0de08bad8f1a85be092c049eeb"></a><!-- doxytag: member="modem::SerialPort::SerialPort::goOn" ref="accfa0a0de08bad8f1a85be092c049eeb" args="" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>goOn</b></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5bd057513cd711a1e885ab40ba978334"></a><!-- doxytag: member="modem::SerialPort::SerialPort::serialReceived" ref="a5bd057513cd711a1e885ab40ba978334" args="" -->
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmodem_1_1SerialPort_1_1SerialPort.html#a5bd057513cd711a1e885ab40ba978334">serialReceived</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a648989fec3795c80525896bcf1d4e0d7"></a><!-- doxytag: member="modem::SerialPort::SerialPort::serial_received" ref="a648989fec3795c80525896bcf1d4e0d7" args="" -->
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmodem_1_1SerialPort_1_1SerialPort.html#a648989fec3795c80525896bcf1d4e0d7">serial_received</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback Rx function. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af13afbffafe893f788c017813cc9af81"></a><!-- doxytag: member="modem::SerialPort::SerialPort::portName" ref="af13afbffafe893f788c017813cc9af81" args="" -->
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmodem_1_1SerialPort_1_1SerialPort.html#af13afbffafe893f788c017813cc9af81">portName</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa242a7f4ea867a912687be9123b8d248"></a><!-- doxytag: member="modem::SerialPort::SerialPort::portname" ref="aa242a7f4ea867a912687be9123b8d248" args="" -->
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmodem_1_1SerialPort_1_1SerialPort.html#aa242a7f4ea867a912687be9123b8d248">portname</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Name(path) of the serial port. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="affc10e73a5856cf8887b6de2f4fc855c"></a><!-- doxytag: member="modem::SerialPort::SerialPort::portSpeed" ref="affc10e73a5856cf8887b6de2f4fc855c" args="" -->
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmodem_1_1SerialPort_1_1SerialPort.html#affc10e73a5856cf8887b6de2f4fc855c">portSpeed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6b77c4c2f7c382cfa5a02e14f5291ac3"></a><!-- doxytag: member="modem::SerialPort::SerialPort::portspeed" ref="a6b77c4c2f7c382cfa5a02e14f5291ac3" args="" -->
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmodem_1_1SerialPort_1_1SerialPort.html#a6b77c4c2f7c382cfa5a02e14f5291ac3">portspeed</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Speed of the serial port in bps. <br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
@@ -145,7 +143,7 @@ Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>portName</em> = <code>&quot;/dev/ttyUSB0&quot;</code>, </td>
+          <td class="paramname"><em>portname</em> = <code>&quot;/dev/ttyUSB0&quot;</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -171,7 +169,7 @@ Public Attributes</h2></td></tr>
 <p>Class constructor. </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table class="params">
-    <tr><td class="paramname">portName,:</td><td>Name/path of the serial port </td></tr>
+    <tr><td class="paramname">portname,:</td><td>Name/path of the serial port </td></tr>
     <tr><td class="paramname">speed,:</td><td>Serial baudrate in bps </td></tr>
     <tr><td class="paramname">verbose,:</td><td>Print out SWAP traffic (True or False) </td></tr>
   </table>
@@ -195,7 +193,7 @@ Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>buffer</em>&#160;</td>
+          <td class="paramname"><em>buf</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -209,7 +207,7 @@ Public Attributes</h2></td></tr>
 <p>Send string buffer via serial. </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table class="params">
-    <tr><td class="paramname">buffer,:</td><td>Packet to be transmitted </td></tr>
+    <tr><td class="paramname">buf,:</td><td>Packet to be transmitted </td></tr>
   </table>
   </dd>
 </dl>
@@ -230,7 +228,7 @@ Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>cbFunction</em>&#160;</td>
+          <td class="paramname"><em>cb_function</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -245,7 +243,7 @@ Public Attributes</h2></td></tr>
 <p>This function is called whenever a new serial packet is received from the gateway</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table class="params">
-    <tr><td class="paramname">cbFunction,:</td><td>User-defined callback function </td></tr>
+    <tr><td class="paramname">cb_function,:</td><td>User-defined callback function </td></tr>
   </table>
   </dd>
 </dl>
@@ -273,7 +271,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Oct 4 2011 11:38:57 for pyswap by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Nov 14 2011 16:32:56 for pyswap by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>
