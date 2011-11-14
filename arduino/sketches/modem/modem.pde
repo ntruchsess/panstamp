@@ -253,7 +253,7 @@ void handleSerialCmd(char* command)
             cc1101.disableAddressCheck();
             Serial.println("OK");
           }
-          if (i == 1)
+          else if (i == 1)
           {
             cc1101.enableAddressCheck();
             Serial.println("OK");
@@ -277,7 +277,7 @@ void handleSerialCmd(char* command)
  */
 void setup()
 { 
-  Serial.begin(9600);
+  Serial.begin(38400);
   Serial.flush();
 
   // Reset serial buffer
@@ -288,7 +288,7 @@ void setup()
   // Attach interrupt function to Timer1
   Timer1.attachInterrupt(isrT1event);
 
-  Serial.println("Let's go modem!");
+  Serial.println("Modem ready!");
    
   // Setup CC1101
   cc1101.init();
