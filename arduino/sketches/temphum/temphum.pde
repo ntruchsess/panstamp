@@ -33,10 +33,11 @@
  * Arduino setup function
  */
 void setup()
-{ 
+{
   // Init panStamp
   panstamp.init();
   
+  // Transmit product code
   getRegister(REGI_PRODUCTCODE)->getData();
 }
 
@@ -47,8 +48,13 @@ void setup()
  */
 void loop()
 {
+  // Voltage supply
+  getRegister(REGI_VOLTSUPPLY)->getData();
+
+  // Send Humidity&Temperature
   getRegister(REGI_HUMIDTEMP)->getData();
-  
+
+  // Sleep
   panstamp.sleepFor(WDTO_8S);
 }
 

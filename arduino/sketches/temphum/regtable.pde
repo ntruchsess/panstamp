@@ -106,10 +106,11 @@ const void updtVoltSupply(byte eId)
 const void updtTempHum(byte eId)
 {
   int result;
-  
+
   if ((result = dht11_ReadTempHum()) < 0)
-    return;
-    
+    //return;
+    result = 0;
+ 
   // Update register value
   regTempHum.value[0] = (result >> 8) & 0xFF;
   regTempHum.value[1] = result & 0xFF;
