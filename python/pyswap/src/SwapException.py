@@ -45,7 +45,7 @@ class SwapException(Exception):
         """
         Write exception in log file
         """
-        f = open(XmlSettings.errorFile, 'a')
+        f = open(XmlSettings.error_file, 'a')
         f.write(datetime.datetime.fromtimestamp(self.timeStamp).strftime("%d-%m-%Y %H:%M:%S") + ": " + self.description + "\n")
         f.close()
         
@@ -56,8 +56,8 @@ class SwapException(Exception):
         Clear error file
         """
         # Remove existing error file
-        if os.path.exists(XmlSettings.errorFile):
-            os.remove(XmlSettings.errorFile)
+        if os.path.exists(XmlSettings.error_file):
+            os.remove(XmlSettings.error_file)
             
                   
     def __str__(self):

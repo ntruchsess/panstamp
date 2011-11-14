@@ -38,7 +38,7 @@ class XmlNetwork(object):
         Read configuration file
         """
         # Parse XML file
-        tree = xml.parse(self.fileName)
+        tree = xml.parse(self.file_name)
         if tree is None:
             return
         # Get the root node
@@ -46,15 +46,15 @@ class XmlNetwork(object):
         # Get frequency channel
         elem = root.find("channel")
         if elem is not None:
-            self.freqChannel = int(elem.text)
+            self.freq_channel = int(elem.text)
         # Get Network ID
         elem = root.find("netid")
         if elem is not None:
-            self.NetworkId = int(elem.text, 16)
+            self.network_id = int(elem.text, 16)
         # Get device address
         elem = root.find("address")
         if elem is not None:
-            self.devAddress = int(elem.text)
+            self.devaddress = int(elem.text)
         # Get device address
         elem = root.find("security")
         if elem is not None:
@@ -65,31 +65,31 @@ class XmlNetwork(object):
         """
         Save network settings in file
         """
-        file = open(self.fileName, 'w')
-        file.write("<?xml version=\"1.0\"?>\n")
-        file.write("<network>\n")
-        file.write("\t<channel>" + str(self.freqChannel) + "</channel>\n")
-        file.write("\t<netid>" + hex(self.NetworkId) + "</netid>\n")
-        file.write("\t<address>" + str(self.devAddress) + "</address>\n")
-        file.write("\t<security>" + str(self.security) + "</security>\n")
-        file.write("</network>\n")
-        file.close()
+        f = open(self.file_name, 'w')
+        f.write("<?xml version=\"1.0\"?>\n")
+        f.write("<network>\n")
+        f.write("\t<channel>" + str(self.freq_channel) + "</channel>\n")
+        f.write("\t<netid>" + hex(self.network_id) + "</netid>\n")
+        f.write("\t<address>" + str(self.devaddress) + "</address>\n")
+        f.write("\t<security>" + str(self.security) + "</security>\n")
+        f.write("</network>\n")
+        f.close()
 
     
-    def __init__(self, fileName="network.xml"):
+    def __init__(self, file_name="network.xml"):
         """
         Class constructor
         
         @param filename: Path to the network configuration file
         """
         ## Name/path of the current configuration file
-        self.fileName = fileName
+        self.file_name = file_name
         ## Frequency channel
-        self.freqChannel = 0
+        self.freq_channel = 0
         ## Network identifier (synchronization word)
-        self.NetworkId = 0xB547
+        self.network_id = 0xB547
         ## Device address
-        self.devAddress = 1
+        self.devaddress = 1
         ## Security option
         self.security = 0
         # Read XML file

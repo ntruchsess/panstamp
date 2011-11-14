@@ -30,7 +30,7 @@ import time
 
 from modem.SerialPort import SerialPort
 from modem.CcPacket import CcPacket
-from swapexception.SwapException import SwapException
+from SwapException import SwapException
 
 class SerialModem:
     """
@@ -49,32 +49,32 @@ class SerialModem:
         """
         Stop serial gateway
         """
-        if self._serPort is not None:
-            self._serPort.stop()
+        if self._serport is not None:
+            self._serport.stop()
 
 
-    def _serialPacketReceived(self, buffer):
+    def _serialPacketReceived(self, buf):
         """
         Serial packet received. This is a callback function called from
         the SerialPort object
         
-        @param buffer: Serial packet received in String format
+        @param buf: Serial packet received in String format
         """
         # If modem in command mode
-        if self._serMode == SerialModem.Mode.COMMAND:
-            self._atResponse = buffer
-            self._atResponseReceived = True
+        if self._sermode == SerialModem.Mode.COMMAND:
+            self._atresponse = buf
+            self.__atresponse_received = True
         # If modem in data mode
         else:
             # Waiting for ready signal from modem?
-            if self._waitModemStart == False:
-                if buffer == "Modem ready!":
-                    self._waitModemStart = True
+            if self._wait_modem_start == False:
+                if buf == "Modem ready!":
+                    self._wait_modem_start = True
             # Create CcPacket from string and notify reception
-            elif self._ccPacketReceived is not None:
+            elif self._ccpacket_received is not None:
                 try:
-                    ccPacket = CcPacket(buffer)
-                    self._ccPacketReceived(ccPacket)
+                    ccPacket = CcPacket(buf)
+                    self._ccpacket_received(ccPacket)
                 except SwapException:
                     raise
 
@@ -85,7 +85,7 @@ class SerialModem:
         
         @param cbFunct: Definition of custom Callback function for the reception of packets
         """
-        self._ccPacketReceived = cbFunct
+        self._ccpacket_received = cbFunct
         
 
     def goToCommandMode(self):
@@ -94,14 +94,14 @@ class SerialModem:
         
         @return True if the serial gateway does enter Command Mode. Return false otherwise
         """
-        self._serMode = SerialModem.Mode.COMMAND
+        self._sermode = SerialModem.Mode.COMMAND
         response = self.runAtCommand("+++", 3000)
         if response is None:
             return False
         if response[:2] == "OK":
             return True
 
-        self._serMode = SerialModem.Mode.DATA
+        self._sermode = SerialModem.Mode.DATA
         return False
 
 
@@ -115,7 +115,7 @@ class SerialModem:
         if response is None:
             return False
         if response[0:2] == "OK":
-            self._serMode = SerialModem.Mode.DATA;
+            self._sermode = SerialModem.Mode.DATA;
             return True;
         return False;
 
@@ -127,7 +127,7 @@ class SerialModem:
         @return True if the serial gateway is successfully restarted
         """
         # Switch to command mode if necessary
-        if self._serMode == SerialModem.Mode.DATA:
+        if self._sermode == SerialModem.Mode.DATA:
             self.goToCommandMode()
         # Run AT command
         response = self.runAtCommand("ATZ\r")
@@ -145,21 +145,21 @@ class SerialModem:
         
         @return Response received from gateway or None in case of lack of response (timeout)
         """
-        self._atResponseReceived = False
+        self.__atresponse_received = False
         # Send command via serial
-        if self._serPort is None:
-            raise SwapException("Port " + self.portName + " is not open")
+        if self._serport is None:
+            raise SwapException("Port " + self.portname + " is not open")
 
         # Skip wireless packets
-        self._atResponse = "("
+        self._atresponse = "("
         # Send serial packet
-        self._serPort.send(cmd)
+        self._serport.send(cmd)
 
-        while self._atResponse[0] == '(':
+        while self._atresponse[0] == '(':
             if not self._waitForResponse(timeout):
                 return None
         # Return response received from gateway
-        return self._atResponse
+        return self._atresponse
 
 
     def sendCcPacket(self, packet):
@@ -169,7 +169,7 @@ class SerialModem:
         @param packet: CcPacket to be transmitted
         """
         strBuf = packet.toString() + "\r"
-        self._serPort.send(strBuf)
+        self._serport.send(strBuf)
 
    
     def setFreqChannel(self, value):
@@ -182,14 +182,14 @@ class SerialModem:
         if value > 0xFF:
             raise SwapException("Frequency channels must be 1-byte length")
         # Switch to command mode if necessary
-        if self._serMode == SerialModem.Mode.DATA:
+        if self._sermode == SerialModem.Mode.DATA:
             self.goToCommandMode()
         # Run AT command
         response =  self.runAtCommand("ATCH=" + "{0:02X}".format(value) + "\r")
         if response is None:
             return False
         if response[0:2] == "OK":
-            self.freqChannel = value
+            self.freq_channel = value
             return True
         return False
     
@@ -203,19 +203,19 @@ class SerialModem:
         if value > 0xFFFF:
             raise SwapException("Synchronization words must be 2-byte length")
         # Switch to command mode if necessary
-        if self._serMode == SerialModem.Mode.DATA:
+        if self._sermode == SerialModem.Mode.DATA:
             self.goToCommandMode()
         # Run AT command
         response = self.runAtCommand("ATSW=" + "{0:04X}".format(value) + "\r")
         if response is None:
             return False
         if response[0:2] == "OK":
-            self.syncWord = value
+            self.syncword = value
             return True
         else:
             return False
     
-    def setDevAddress(self, value):
+    def devaddressess(self, value):
         """
         Set device address for the serial gateway
         
@@ -225,14 +225,14 @@ class SerialModem:
         if value > 0xFF:
             raise SwapException("Device addresses must be 1-byte length")
         # Switch to command mode if necessary
-        if self._serMode == SerialModem.Mode.DATA:
+        if self._sermode == SerialModem.Mode.DATA:
             self.goToCommandMode()
         # Run AT command
         response = self.runAtCommand("ATDA=" + "{0:02X}".format(value) + "\r")
         if response is None:
             return False
         if response[0:2] == "OK":
-            self.devAddress = value
+            self.devaddress = value
             return True
         else:
             return False
@@ -244,7 +244,7 @@ class SerialModem:
         @param millis: Amount of milliseconds to wait for a response
         """
         loops = millis / 10
-        while not self._atResponseReceived:
+        while not self.__atresponse_received:
             time.sleep(0.01)
             loops -= 1
             if loops == 0:
@@ -252,44 +252,44 @@ class SerialModem:
         return True
 
 
-    def __init__(self, portName="/dev/ttyUSB0", speed=38400, verbose=False):
+    def __init__(self, portname="/dev/ttyUSB0", speed=38400, verbose=False):
         """
         Class constructor
         
-        @param portName: Name/path of the serial port
+        @param portname: Name/path of the serial port
         @param speed: Serial baudrate in bps
         @param verbose: Print out SWAP traffic (True or False)
         """
         # Serial mode (command or data modes)
-        self._serMode = None
+        self._sermode = None
         # Response to the last AT command sent to the serial modem
-        self._atResponse = ""
+        self._atresponse = ""
         # AT response received from modem
-        self._atResponseReceived = None
+        self.__atresponse_received = None
         # "Packet received" callback function. To be defined by the parent object
-        self._ccPacketReceived = None
+        self._ccpacket_received = None
         ## Name(path) of the serial port
-        self.portName = portName
+        self.portname = portname
         ## Speed of the serial port in bps
-        self.portSpeed = speed
+        self.portspeed = speed
         ## Hardware version of the serial modem
-        self.hwVersion = None
+        self.hwversion = None
         ## Firmware version of the serial modem
-        self.fwVersion = None
+        self.fwversion = None
 
         try:
             # Open serial port
-            self._serPort = SerialPort(self.portName, self.portSpeed, verbose)
+            self._serport = SerialPort(self.portname, self.portspeed, verbose)
             # Reset serial mode
-            self._serPort.reset()
+            self._serport.reset()
             # Define callback function for incoming serial packets
-            self._serPort.setRxCallback(self._serialPacketReceived)
+            self._serport.setRxCallback(self._serialPacketReceived)
             # Run serial port thread
-            self._serPort.start()
+            self._serport.start()
     
             # This flags switches to True when the serial modem is ready
-            self._waitModemStart = False
-            while self._waitModemStart == False:
+            self._wait_modem_start = False
+            while self._wait_modem_start == False:
                 pass
     
             # Retrieve modem settings
@@ -301,34 +301,34 @@ class SerialModem:
             response = self.runAtCommand("ATHV?\r")
             if response is None:
                 raise SwapException("Unable to retrieve Hardware Version from serial modem")
-            self.hwVersion = long(response, 16)
+            self.hwversion = long(response, 16)
     
             # Firmware version
             response = self.runAtCommand("ATFV?\r")
             if response is None:
                 raise SwapException("Unable to retrieve Firmware Version from serial modem")
-            self.fwVersion = long(response, 16)
+            self.fwversion = long(response, 16)
     
             # Frequency channel
             response = self.runAtCommand("ATCH?\r")
             if response is None:
                 raise SwapException("Unable to retrieve Frequency Channel from serial modem")
             ## Frequency channel of the serial gateway
-            self.freqChannel = int(response, 16)
+            self.freq_channel = int(response, 16)
     
             # Synchronization word
             response = self.runAtCommand("ATSW?\r")
             if response is None:
                 raise SwapException("Unable to retrieve Synchronization Word from serial modem")
             ## Synchronization word of the serial gateway
-            self.syncWord = int(response, 16)
+            self.syncword = int(response, 16)
     
             # Device address
             response = self.runAtCommand("ATDA?\r")
             if response is None:
                 raise SwapException("Unable to retrieve Device Address from serial modem")
             ## Device address of the serial gateway
-            self.deviceAddr = int(response, 16)
+            self.devaddress = int(response, 16)
     
             # Switch to data mode
             self.goToDataMode()

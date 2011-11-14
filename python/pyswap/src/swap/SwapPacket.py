@@ -32,7 +32,7 @@ __date__ ="$Aug 20, 2011 10:36:00 AM$"
 from modem.CcPacket import CcPacket
 from swap.SwapValue import SwapValue
 from swap.SwapDefs import SwapAddress, SwapFunction
-from swapexception.SwapException import SwapException
+from SwapException import SwapException
 
 class SwapPacket(CcPacket):
     """
@@ -44,11 +44,11 @@ class SwapPacket(CcPacket):
         
         @param ccModem: modem object to be used for transmission
         """
-        self.srcAddress = ccModem.deviceAddr
+        self.srcAddress = ccModem.devaddress
         self.data[1] = self.srcAddress
         CcPacket.send(self, ccModem)
 
-    def __init__(self, ccPacket=None, destAddr=SwapAddress.BROADCAST_ADDR, hop=0, nonce=0, function=SwapFunction.INFO, regAddr=0, regId=0, value=None):
+    def __init__(self, ccPacket=None, destAddr=SwapAddress.BROADCAST_ADDR, hop=0, nonce=0, function=SwapFunction.STATUS, regAddr=0, regId=0, value=None):
         """
         Class constructor
         
@@ -128,4 +128,46 @@ class SwapPacket(CcPacket):
                     self.data.append(item)
 
 
-  
+class SwapStatusPacket(SwapPacket):
+    """
+    SWAP status packet class
+    """
+    def __init__(self, rAddr, rId, val):
+        """
+        Class constructor
+        
+        @param rAddr: Register address
+        @param rId: Register ID
+        @param val: New value
+        """
+        SwapPacket.__init__(self, regAddr=rAddr, regId=rId, value=val)
+ 
+
+class SwapQueryPacket(SwapPacket):
+    """
+    SWAP Query packet class
+    """
+    def __init__(self, rAddr=SwapAddress.BROADCAST_ADDR, rId=0):
+        """
+        Class constructor
+        
+        @param rAddr: Register address
+        @param rId: Register ID
+        """
+        SwapPacket.__init__(self, destAddr=rAddr, function=SwapFunction.QUERY, regAddr=rAddr, regId=rId)
+        
+        
+class SwapCommandPacket(SwapPacket):
+    """
+    SWAP Command packet class
+    """
+    def __init__(self, rAddr, rId, val, secNonce=0):
+        """
+        Class constructor
+        
+        @param rAddr: Register address
+        @param rId: Register ID
+        @param val: New value
+        @param secNonce: Security nonce
+        """
+        SwapPacket.__init__(self, destAddr=rAddr, nonce=secNonce, function=SwapFunction.COMMAND, regAddr=rAddr, regId=rId, value=val)

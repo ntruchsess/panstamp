@@ -26,6 +26,8 @@ __author__="Daniel Berenguer"
 __date__ ="$Aug 20, 2011 10:36:00 AM$"
 #########################################################################
 
+from SwapException import SwapException
+
 import xml.etree.ElementTree as xml
 
 class XmlSerial(object):
@@ -37,7 +39,7 @@ class XmlSerial(object):
         Read configuration file
         """
         # Parse XML file
-        tree = xml.parse(self.fileName)
+        tree = xml.parse(self.file_name)
         if tree is None:
             return
         # Get the root node
@@ -55,23 +57,25 @@ class XmlSerial(object):
         """
         Save serial port settings in disk
         """
-        file = open(self.fileName, 'w')
-        file.write("<?xml version=\"1.0\"?>\n")
-        file.write("<serial>\n")
-        file.write("\t<port>" + self.port + "</port>\n")
-        file.write("\t<speed>" + str(self.speed) + "</speed>\n")
-        file.write("</serial>\n")
-        file.close()
+        try:
+            f = open(self.file_name, 'w')
+            f.write("<?xml version=\"1.0\"?>\n")
+            f.write("<serial>\n")
+            f.write("\t<port>" + self.port + "</port>\n")
+            f.write("\t<speed>" + str(self.speed) + "</speed>\n")
+            f.write("</serial>\n")
+            f.close()
+        except:
+            raise SwapException("Unable to save " + self.file_name)
     
-    
-    def __init__(self, fileName = "serial.xml"):
+    def __init__(self, file_name = "serial.xml"):
         """
         Class constructor
         
         @param filename: Path to the serial configuration file
         """
         ## Name/path of the current configuration file
-        self.fileName = fileName
+        self.file_name = file_name
         ## Name/path of the serial port
         self.port = "/dev/ttyUSB0"
         ## Speed of the serial port in bps

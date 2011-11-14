@@ -28,12 +28,11 @@ __xmldirfile__ = "devices.xml"
 #########################################################################
 
 from xmltools.XmlSettings import XmlSettings
-from swap.SwapEndpoint import SwapEndpoint
-from swap.SwapCfgParam import SwapCfgParam
+from swap.SwapParam import SwapCfgParam, SwapEndpoint
 from swap.SwapRegister import SwapRegister
 from swap.SwapValue import SwapValue
 from swap.SwapDefs import SwapType
-from swapexception.SwapException import SwapException
+from SwapException import SwapException
 
 import os
 import xml.etree.ElementTree as xml
@@ -253,10 +252,10 @@ class XmlDevice(object):
         # Get manufacturer
 
         # List of register elements belonging to the device
-        type = "regular"
+        regtype = "regular"
         if config == True:
-            type = "config"
-        lstElemReg = root.findall(type + "/reg")
+            regtype = "config"
+        lstElemReg = root.findall(regtype + "/reg")
         if lstElemReg is not None:
             for reg in lstElemReg:
                 # Get register id
@@ -365,4 +364,3 @@ class XmlDevice(object):
 
         # Read definition parameters from XML file
         self.getDefinition()
-

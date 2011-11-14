@@ -26,13 +26,20 @@ __author__="Daniel Berenguer"
 __date__  ="Sep 28, 2011 1:09:12 PM$"
 #########################################################################
 
-from swap.SwapServer import SwapServer
+from SwapServer import SwapServer
 
 
 class SwapInterface:
     """
     SWAP Interface superclass. Any SWAP application should derive from this one
     """
+    def swapServerStarted(self):
+        """
+        SWAP server started successfully
+        """
+        pass
+
+
     def newMoteDetected(self, mote):
         """
         New mote detected by SWAP server
@@ -150,6 +157,21 @@ class SwapInterface:
         return self.server.queryMoteRegister(mote, regId)
 
 
+    def create_server(self):
+        """
+        Create server object
+        """
+        self.server = SwapServer(self, self.verbose)
+        return self.server
+        
+
+    def start(self):
+        """
+        Start SWAP server
+        """
+        self.server.start()
+        
+
     def stop(self):
         """
         Stop SWAP server
@@ -157,18 +179,21 @@ class SwapInterface:
         self.server.stop()
 
 
-    def __init__(self, verbose=False):
+    def __init__(self, verbose=False, start=True):
         """
         Class constructor
         
         @param verbose: Print out SWAP frames
-        """       
-        try:            
-            print "SWAP server starting... "
-            ## SWAP server
-            self.server = SwapServer(self, verbose)
-            ## List of motes
-            self.lstMotes = self.server.lstMotes
-            print "SWAP server is now running... "
-        except:
-            raise
+        @param start: Start SWAP server if True
+        """
+        ## Verbose option
+        self.verbose = verbose
+        ## SWAP server
+        self.server = None
+        ## List of motes
+        self.lstMotes = None
+                       
+        print "SWAP server starting... "
+        self.server = SwapServer(self, self.verbose, start)
+        self.lstMotes = self.server.lstMotes
+        print "SWAP server is now running... "

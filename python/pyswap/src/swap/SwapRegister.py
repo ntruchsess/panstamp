@@ -27,7 +27,7 @@ __date__ ="$Aug 20, 2011 10:36:00 AM$"
 #########################################################################
 
 from swap.SwapValue import SwapValue
-from swapexception.SwapException import SwapException
+from SwapException import SwapException
 
 
 class SwapRegister(object):

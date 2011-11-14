@@ -29,12 +29,10 @@ __author__="Daniel Berenguer"
 __date__  ="$Aug 20, 2011 10:36:00 AM$"
 #########################################################################
 
-from swap.SwapStatusPacket import SwapStatusPacket
-from swap.SwapCommandPacket import SwapCommandPacket
-from swap.SwapQueryPacket import SwapQueryPacket
+from swap.SwapPacket import SwapStatusPacket, SwapCommandPacket, SwapQueryPacket
 from swap.SwapDefs import SwapRegId, SwapState
 from swap.SwapValue import SwapValue
-from swapexception.SwapException import SwapException
+from SwapException import SwapException
 from xmltools.XmlDevice import XmlDevice
 
 import time
@@ -80,9 +78,12 @@ class SwapMote(object):
         Send SWAP status packet about the current value of the register passed as argument
         
         @param regId: Register ID
+        @param value: New value
         """
+        # Get register
+        reg = self.getRegister(regId)
         # Status packet to be sent
-        infPacket = SwapStatusPacket(self.address, regId)
+        infPacket = SwapStatusPacket(self.address, regId, reg.value)
         # Send SWAP status packet
         infPacket.send(self.server.modem)
 
@@ -174,6 +175,48 @@ class SwapMote(object):
         self.timeStamp = time.time()
     
     
+    def getRegister(self, regId):
+        """
+        Get register given its ID
+        
+        @param regId: Register ID
+        
+        @return SwapRegister object
+        """
+        # Regular registers
+        for reg in self.lstRegRegs:
+            if reg.id == regId:
+                return reg            
+        # Configuration registers
+        for reg in self.lstCfgRegs:
+            if reg.id == regId:
+                return reg
+
+        return None
+
+
+    def getParameter(self, name):
+        """
+        Get parameter given its name
+        
+        @param name: name of the parameter belonging to this mote
+        
+        @return: SwapParam object
+        """
+        # Regular registers
+        for reg in self.lstRegRegs:
+            for param in reg.lstItems:
+                if param.name == name:
+                    return param
+        # Configuration registers
+        for reg in self.lstCfgRegs:
+            for param in reg.lstItems:
+                if param.name == name:
+                    return param
+                
+        return None
+            
+        
     def __init__(self, server=None, productCode=None, address=0xFF):
         """
         Class constructor

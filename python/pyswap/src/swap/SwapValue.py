@@ -29,7 +29,6 @@ __author__="Daniel Berenguer"
 __date__  ="$Aug 20, 2011 10:36:00 AM$"
 #########################################################################
 
-from swapexception.SwapException import SwapException
 
 class SwapValue(object):
     """

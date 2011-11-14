@@ -29,17 +29,17 @@ __date__ ="$Aug 20, 2011 10:36:00 AM$"
 from modem.SerialModem import SerialModem
 from swap.SwapRegister import SwapRegister
 from swap.SwapDefs import SwapFunction, SwapRegId
-from swap.SwapPacket import SwapPacket
-from swap.SwapQueryPacket import SwapQueryPacket
+from swap.SwapPacket import SwapPacket, SwapQueryPacket
 from swap.SwapMote import SwapMote
-from swapexception.SwapException import SwapException
+from SwapException import SwapException
 from xmltools.XmlSettings import XmlSettings
 from xmltools.XmlSerial import XmlSerial
 from xmltools.XmlNetwork import XmlNetwork
 
+import threading
 import time
 
-class SwapServer:
+class SwapServer(threading.Thread):
     """
     SWAP server class
     """
@@ -49,66 +49,80 @@ class SwapServer:
     _MAX_SWAP_COMMAND_TRIES = 3
 
    
-    def start(self):
+    def run(self):
+        """
+        Start SWAP server thread
+        """
+        self._start()
+
+
+    def _start(self):
         """
         Start SWAP server
         """
-        # Serial configuration settings
-        self._xmlSerial = XmlSerial(self._xmlSettings.serialFile)
         # Network configuration settings
-        self._xmlNetwork = XmlNetwork(self._xmlSettings.networkFile)
-
+        self._xmlnetwork = XmlNetwork(self._xmlSettings.network_file)
         # Serial configuration settings
-        self._xmlSerial = XmlSerial(self._xmlSettings.serialFile)
+        self._xmlserial = XmlSerial(self._xmlSettings.serial_file)
         
         try:
             # Create and start serial modem object
-            self.modem = SerialModem(self._xmlSerial.port, self._xmlSerial.speed, self.verbose)
+            self.modem = SerialModem(self._xmlserial.port, self._xmlserial.speed, self.verbose)
             if self.modem is None:
-                raise SwapException("Unable to start serial modem on port " + self._xmlSerial.port)
+                raise SwapException("Unable to start serial modem on port " + self._xmlserial.port)
             # Declare receiving callback function
             self.modem.setRxCallback(self._ccPacketReceived)
     
-            # Set modem configuration from _xmlNetwork
-            paramChanged = False
+            # Set modem configuration from _xmlnetwork
+            param_changed = False
             # Device address
-            if self._xmlNetwork.devAddress is not None:
-                if self.modem.deviceAddr != self._xmlNetwork.devAddress:
-                    if self.modem.setDevAddress(self._xmlNetwork.devAddress) == False:
-                        raise SwapException("Unable to set modem's device address to " + self._xmlNetwork.devAddress)
+            if self._xmlnetwork.devaddress is not None:
+                if self.modem.devaddress != self._xmlnetwork.devaddress:
+                    if self.modem.setDevAddress(self._xmlnetwork.devaddress) == False:
+                        raise SwapException("Unable to set modem's device address to " + self._xmlnetwork.devaddress)
                     else:
-                        paramChanged = True
+                        param_changed = True
             # Device address
-            if self._xmlNetwork.NetworkId is not None:
-                if self.modem.syncWord != self._xmlNetwork.NetworkId:
-                    if self.modem.setSyncWord(self._xmlNetwork.NetworkId) == False:
-                        raise SwapException("Unable to set modem's network ID to " + self._xmlNetwork.NetworkId)
+            if self._xmlnetwork.network_id is not None:
+                if self.modem.syncword != self._xmlnetwork.network_id:
+                    if self.modem.setSyncWord(self._xmlnetwork.network_id) == False:
+                        raise SwapException("Unable to set modem's network ID to " + self._xmlnetwork.network_id)
                     else:
-                        paramChanged = True
+                        param_changed = True
             # Frequency channel
-            if self._xmlNetwork.freqChannel is not None:
-                if self.modem.freqChannel != self._xmlNetwork.freqChannel:
-                    if self.modem.setFreqChannel(self._xmlNetwork.freqChannel) == False:
-                        raise SwapException("Unable to set modem's frequency channel to " + self._xmlNetwork.freqChannel)
+            if self._xmlnetwork.freq_channel is not None:
+                if self.modem.freq_channel != self._xmlnetwork.freq_channel:
+                    if self.modem.setFreqChannel(self._xmlnetwork.freq_channel) == False:
+                        raise SwapException("Unable to set modem's frequency channel to " + self._xmlnetwork.freq_channel)
                     else:
-                        paramChanged = True
+                        param_changed = True
     
             # Return to data mode if necessary
-            if paramChanged == True:
+            if param_changed == True:
                 self.modem.goToDataMode()
+                
+            self.is_running = True
+            # Notify parent about the start of the server
+            self._eventHandler.swapServerStarted()
     
             # Discover motes in the current SWAP network
             self._discoverMotes()
         except SwapException:
             raise
         
-        
+
     def stop(self):
         """
         Stop SWAP server
         """
-        self.modem.stop()
-        pass
+        self._stop.set()
+        self.is_running = False
+        if self.modem is not None:
+            self.modem.stop()
+
+
+    def stopped(self):
+        return self._stop.isSet()
 
 
     def resetNetwork(self):
@@ -129,9 +143,10 @@ class SwapServer:
             # Convert CcPacket into SwapPacket
             swPacket = SwapPacket(ccPacket)
         except SwapException:
-            raise
+            return
         
         # Check function code
+        # STATUS packet received
         if swPacket.function == SwapFunction.STATUS:
             # Expected response?
             self._checkStatus(swPacket)
@@ -155,7 +170,16 @@ class SwapServer:
             else:
                 # Update register in the list of motes
                 self._updateRegisterValue(swPacket)
-
+        # QUERY packet received
+        elif swPacket.function == SwapFunction.QUERY:
+            # Query addressed to our gateway?
+            if swPacket.destAddress == self.modem.devaddress:
+                # Get mote from address
+                mote = self.getMote(address=swPacket.regAddress)
+                if mote is not None:
+                    # Send status packet
+                    mote.staRegister(swPacket.regId)
+                    
 
     def _checkMote(self, mote):
         """
@@ -438,13 +462,25 @@ class SwapServer:
         return res
 
 
-    def __init__(self, eventHandler, verbose=False):
+    def getNetId(self):
+        """
+        Get current network ID
+        
+        @return Network ID
+        """
+        return self.modem.syncword
+
+
+    def __init__(self, eventHandler, verbose=False, start=True):
         """
         Class constructor
 
         @param eventHandler: Parent event handler object
         @param verbose: Verbose SWAP traffic
+        @param start: Start server upon creation if this flag is True
         """
+        threading.Thread.__init__(self)
+        self._stop = threading.Event()
         ## Verbose SWAP frames
         self.verbose = verbose
         ## Serial wireless gateway
@@ -476,6 +512,9 @@ class SwapServer:
 
         # General settings
         self._xmlSettings = XmlSettings()
- 
-        # Start SWAP server
-        self.start()
+
+        ## Ture if server is running
+        self.is_running = False
+        # Start server
+        if start:
+            self.start()

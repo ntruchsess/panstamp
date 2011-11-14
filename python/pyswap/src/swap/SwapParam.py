@@ -28,7 +28,7 @@ __date__ ="$Aug 26, 2011 8:56:27 AM$"
 
 from swap.SwapDefs import SwapType
 from swap.SwapValue import SwapValue
-from swapexception.SwapException import SwapException
+from SwapException import SwapException
 
 import time
 
@@ -176,6 +176,23 @@ class SwapParam:
         return strVal
     
     
+    def setUnit(self, strunit):
+        """
+        Set unit for the current parameter
+        
+        @param strunit: new unit in string format
+        """
+        if self.lstunits is None:
+            raise SwapException("Parameter " + self.name + " does not support units")
+        
+        for unit in self.lstunits:
+            if unit.name == strunit:
+                self.unit = unit
+                return
+            
+        raise SwapException("Unit " + strunit + " not found")
+    
+    
     def __init__(self, register=None, pType=SwapType.NUMBER, direction=SwapType.INPUT, name="", position="0", size="1", default=None, verif=None, units=None):
         """
         Class constructor
@@ -239,9 +256,95 @@ class SwapParam:
         self.verif = verif
         
         ## List of units
-        self.lstUnits = units
+        self.lstunits = units
         ## Selected unit
         self.unit = None
-        if self.lstUnits is not None and len(self.lstUnits) > 0:
-            self.unit = self.lstUnits[0]
+        if self.lstunits is not None and len(self.lstunits) > 0:
+            self.unit = self.lstunits[0]
 
+        ## Display this parameter from master app
+        self.display = False
+        
+
+class SwapCfgParam(SwapParam):
+    """
+    Class representing a configuration parameter for a given mote
+    """
+
+    def __init__(self, register=None, pType=SwapType.NUMBER, name="",
+                position="0", size="1", default=None, verif=None):
+        """
+        Class constructor
+
+        @param register: Register containing this parameter
+        @param pType: Type of SWAP endpoint (see SwapDefs.SwapType)
+        @param direction: Input or output (see SwapDefs.SwapType)
+        @param name: Short name about the parameter
+        @param description: Short description about hte parameter
+        @param position: Position in bytes.bits within the parent register
+        @param size: Size in bytes.bits
+        @param default: Default value in string format
+        @param verif: Verification string
+        """
+        SwapParam.__init__(self, register, pType, None, name, position, size, default, verif)
+        ## Default value
+        self.default = default
+        
+        
+class SwapEndpoint(SwapParam):
+    """
+    SWAP endpoint class
+    """
+ 
+    def sendSwapCmd(self, value):
+        """
+        Send SWAP command for the current endpoint
+        
+        @param value: New endpoint value
+        
+        @return Expected SWAP status response to be received from the mote
+        """
+
+        # Insert new endpoint value into the current register value
+        lstValue = self.register.value
+        lstValue[self.bytePos: self.bytePos + self.byteSize] = value.toList()
+
+        # Convert to SWapValue
+        newVal = SwapValue(lstValue)
+
+        # Send SWAP command
+        return self.register.sendSwapCmd(newVal)
+
+
+    def sendSwapQuery(self):
+        """
+        Send SWAP query for the current endpoint
+        """
+        self.register.sendSwapQuery()
+
+    
+    def sendSwapStatus(self):
+        """
+        Send SWAP status packet about this endpoint
+        """
+        self.register.sendSwapStatus()
+  
+   
+    
+    def __init__(self, register=None, pType=SwapType.NUMBER, direction=SwapType.INPUT,
+                name="", position="0", size="1", default=None, verif=None, units=None):
+        """
+        Class constructor
+        
+        @param register: Register containing this parameter
+        @param pType: Type of SWAP endpoint (see SwapDefs.SwapType)
+        @param direction: Input or output (see SwapDefs.SwapType)
+        @param name: Short name about the parameter
+        @param description: Short description about hte parameter
+        @param position: Position in bytes.bits within the parent register
+        @param size: Size in bytes.bits
+        @param default: Default value in string format
+        @param verif: Verification string
+        @param units: List of units
+        """
+        SwapParam.__init__(self, register, pType, direction, name, position, size, default, verif, units)
