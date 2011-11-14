@@ -98,9 +98,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af8195f84a35f1209a6e1d5faa14a6894"></a><!-- doxytag: member="SwapBrowser::SwapBrowser::__init__" ref="af8195f84a35f1209a6e1d5faa14a6894" args="" -->
-def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSwapBrowser_1_1SwapBrowser.html#af8195f84a35f1209a6e1d5faa14a6894">__init__</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSwapBrowser_1_1SwapBrowser.html#af8195f84a35f1209a6e1d5faa14a6894">__init__</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor.  <a href="#af8195f84a35f1209a6e1d5faa14a6894"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2f912e20e05929f3eaac6d66366a42a6"></a><!-- doxytag: member="SwapBrowser::SwapBrowser::build_tree" ref="a2f912e20e05929f3eaac6d66366a42a6" args="" -->
+def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSwapBrowser_1_1SwapBrowser.html#a2f912e20e05929f3eaac6d66366a42a6">build_tree</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Build SWAP tree. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSwapBrowser_1_1SwapBrowser.html#a6321b519bdb92669d3b3828691900bdb">addMote</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Add mote to the tree.  <a href="#a6321b519bdb92669d3b3828691900bdb"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSwapBrowser_1_1SwapBrowser.html#a754fb15033ce8d2c0d03f74c8400c7a5">updateEndpointInTree</a></td></tr>
@@ -111,12 +113,10 @@ def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa51c4f268c76170af03810510ec24d45"></a><!-- doxytag: member="SwapBrowser::SwapBrowser::parent" ref="aa51c4f268c76170af03810510ec24d45" args="" -->
 &#160;</td><td class="memItemRight" valign="bottom"><b>parent</b></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7bf5242abef4b675924922943eb4de93"></a><!-- doxytag: member="SwapBrowser::SwapBrowser::monitor" ref="a7bf5242abef4b675924922943eb4de93" args="" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>monitor</b></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad22441feeda2b4cc5e3cf9033bc8efbf"></a><!-- doxytag: member="SwapBrowser::SwapBrowser::server" ref="ad22441feeda2b4cc5e3cf9033bc8efbf" args="" -->
 &#160;</td><td class="memItemRight" valign="bottom"><b>server</b></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6ccd72e381c005ba6892c3346b963484"></a><!-- doxytag: member="SwapBrowser::SwapBrowser::netId" ref="a6ccd72e381c005ba6892c3346b963484" args="" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>netId</b></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7bf5242abef4b675924922943eb4de93"></a><!-- doxytag: member="SwapBrowser::SwapBrowser::monitor" ref="a7bf5242abef4b675924922943eb4de93" args="" -->
+&#160;</td><td class="memItemRight" valign="bottom"><b>monitor</b></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae6c10df742f55d3552c8dae90203b747"></a><!-- doxytag: member="SwapBrowser::SwapBrowser::menuGateway" ref="ae6c10df742f55d3552c8dae90203b747" args="" -->
 &#160;</td><td class="memItemRight" valign="bottom"><b>menuGateway</b></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aedd0b6ab30760ce04b201e09741aad44"></a><!-- doxytag: member="SwapBrowser::SwapBrowser::tree" ref="aedd0b6ab30760ce04b201e09741aad44" args="" -->
@@ -140,7 +140,57 @@ Public Attributes</h2></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>SWAP data browser. </p>
-</div><hr/><h2>Member Function Documentation</h2>
+</div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="af8195f84a35f1209a6e1d5faa14a6894"></a><!-- doxytag: member="SwapBrowser::SwapBrowser::__init__" ref="af8195f84a35f1209a6e1d5faa14a6894" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def SwapBrowser::SwapBrowser::__init__ </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>parent</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>server</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>monitor</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Class constructor. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parent,:</td><td>parent object </td></tr>
+    <tr><td class="paramname">monitor,:</td><td>monitor dialog </td></tr>
+    <tr><td class="paramname">server,:</td><td>SWAP server </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="a6321b519bdb92669d3b3828691900bdb"></a><!-- doxytag: member="SwapBrowser::SwapBrowser::addMote" ref="a6321b519bdb92669d3b3828691900bdb" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -252,7 +302,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Sep 30 2011 16:40:22 for pyswapdmtgui by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Nov 14 2011 16:51:32 for pyswapdmtgui by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>

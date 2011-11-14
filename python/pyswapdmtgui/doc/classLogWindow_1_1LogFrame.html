@@ -98,9 +98,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9e5f414c465ef30b0c1a72a2782b2174"></a><!-- doxytag: member="LogWindow::LogFrame::write" ref="a9e5f414c465ef30b0c1a72a2782b2174" args="" -->
-def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLogWindow_1_1LogFrame.html#a9e5f414c465ef30b0c1a72a2782b2174">write</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Add new line into the log window. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLogWindow_1_1LogFrame.html#a9e5f414c465ef30b0c1a72a2782b2174">write</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Add new line into the log window.  <a href="#a9e5f414c465ef30b0c1a72a2782b2174"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLogWindow_1_1LogFrame.html#a3732b9cd936267c7de6a458e51efd844">get_message_type</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the type of message received or being sent.  <a href="#a3732b9cd936267c7de6a458e51efd844"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b56bf8a8b1a550b87a68e1b24abffdf"></a><!-- doxytag: member="LogWindow::LogFrame::__init__" ref="a7b56bf8a8b1a550b87a68e1b24abffdf" args="" -->
 def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLogWindow_1_1LogFrame.html#a7b56bf8a8b1a550b87a68e1b24abffdf">__init__</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor. <br/></td></tr>
@@ -108,10 +109,88 @@ def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a397c1039e78b9f415f1ec5da731036cf"></a><!-- doxytag: member="LogWindow::LogFrame::log" ref="a397c1039e78b9f415f1ec5da731036cf" args="" -->
 &#160;</td><td class="memItemRight" valign="bottom"><b>log</b></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afabf1557c9ac1d718d1b7fc352893a4a"></a><!-- doxytag: member="LogWindow::LogFrame::arrow_left_icon" ref="afabf1557c9ac1d718d1b7fc352893a4a" args="" -->
+&#160;</td><td class="memItemRight" valign="bottom"><b>arrow_left_icon</b></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7c8eb7f94679c38ae9e0717ce8d4e6a9"></a><!-- doxytag: member="LogWindow::LogFrame::arrow_right_icon" ref="a7c8eb7f94679c38ae9e0717ce8d4e6a9" args="" -->
+&#160;</td><td class="memItemRight" valign="bottom"><b>arrow_right_icon</b></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad971e11ce3c14100664036e2aa90640f"></a><!-- doxytag: member="LogWindow::LogFrame::warning_icon" ref="ad971e11ce3c14100664036e2aa90640f" args="" -->
+&#160;</td><td class="memItemRight" valign="bottom"><b>warning_icon</b></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>Frame subclass used to log events. </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a3732b9cd936267c7de6a458e51efd844"></a><!-- doxytag: member="LogWindow::LogFrame::get_message_type" ref="a3732b9cd936267c7de6a458e51efd844" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def LogWindow::LogFrame::get_message_type </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>msg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Get the type of message received or being sent. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">msg,:</td><td>SWAP message</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>Type of message in string format </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a9e5f414c465ef30b0c1a72a2782b2174"></a><!-- doxytag: member="LogWindow::LogFrame::write" ref="a9e5f414c465ef30b0c1a72a2782b2174" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def LogWindow::LogFrame::write </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>text</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Add new line into the log window. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">text,:</td><td>Text string to be displayed in the log window </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>/home/daniel/development/Aptana/pyswapdmtgui/src/LogWindow.py</li>
 </ul>
 </div>
@@ -132,7 +211,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Sep 30 2011 16:40:22 for pyswapdmtgui by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Nov 14 2011 16:51:32 for pyswapdmtgui by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>
