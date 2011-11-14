@@ -29,9 +29,9 @@ __date__ ="$Aug 21, 2011 4:30:47 PM$"
 from SwapBrowser import SwapBrowser
 from LogWindow import LogFrame
 
-from swap.SwapInterface import SwapInterface
+from SwapInterface import SwapInterface
 from swap.SwapDefs import SwapState
-from swapexception.SwapException import SwapException
+from SwapException import SwapException
 
 import wx
 
@@ -39,6 +39,13 @@ class SwapManager(SwapInterface):
     """
     SWAP Management Class
     """
+    def swapServerStarted(self):
+        """
+        SWAP server started successfully
+        """
+        self.browser.build_tree()
+
+    
     def newMoteDetected(self, mote):
         """
         New mote detected by SWAP server
@@ -50,8 +57,8 @@ class SwapManager(SwapInterface):
                 print "New mote with address " + str(mote.address) + " : " + mote.definition.product + \
                 " (by " + mote.definition.manufacturer + ")"
                 
-                # Append mote to the browsing tree
-                self.browser.addMote(mote)
+            # Append mote to the browsing tree
+            self.browser.addMote(mote)
 
 
     def newEndpointDetected(self, endpoint):
@@ -99,7 +106,8 @@ class SwapManager(SwapInterface):
             print endpoint.name + " in address " + str(endpoint.getRegAddress()) + " changed to " + endpoint.getValueInAscii()
             
         # Update value in SWAP browser
-        self.browser.updateEndpointInTree(endpoint)
+        if self.browser is not None:
+            self.browser.updateEndpointInTree(endpoint)
 
 
     def paramValueChanged(self, param):
@@ -115,7 +123,7 @@ class SwapManager(SwapInterface):
         self.browser.updateEndpointInTree(param)
         
 
-    def exit(self):
+    def terminate(self):
         """
         Exit application
         """
@@ -140,26 +148,30 @@ class SwapManager(SwapInterface):
         # wxPython app
         self.app = wx.PySimpleApp(0)
         wx.InitAllImageHandlers()
-       
+               
         # Start SWAP server
         try:
             # Superclass call
-            SwapInterface.__init__(self, verbose)
-
-            # Create SWAP Network Monitor window
-            netMonitor = LogFrame("SWAP Network Monitor")
-            netMonitor.Show(True)
-            
-            # Open SWAP browser
-            self.browser = SwapBrowser(self, server=self.server, monitor=netMonitor)
-            self.browser.SetSize(wx.Size(350,500))
-            self.app.SetTopWindow(self.browser)
-            self.browser.Show()
-                    
+            SwapInterface.__init__(self, verbose, False)  
             # Clear error file
-            SwapException.clear()
+            SwapException.clear()         
         except SwapException as ex:
             ex.display()
             ex.log()
+
+        # Create SWAP Network Monitor window
+        net_monitor = LogFrame("SWAP Network Monitor")
+        # Open SWAP browser
+        self.browser = SwapBrowser(self, server=self.server, monitor=net_monitor)
+        self.browser.SetSize(wx.Size(370,500))
+        self.app.SetTopWindow(self.browser)
+        self.browser.CenterOnScreen()
+        self.browser.Show()
+        # Open monitor window
+        position = self.browser.GetPosition()
+        size = self.browser.GetSize()
+        position += (size[0]+200, 0)
+        net_monitor.SetPosition(position)
+        net_monitor.Show(True)
 
         self.app.MainLoop()

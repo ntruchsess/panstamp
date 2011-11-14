@@ -90,5 +90,3 @@ class DeviceSelector(ConfigDialog):
         self.doLayout()        
         # Fit dialog size to its contents
         self.Fit()
-        # Display dialog
-        self.ShowModal()    # instead of Show(True)

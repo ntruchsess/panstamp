@@ -43,14 +43,14 @@ class NetworkDialog(ConfigDialog):
         Create GUI controls
         """
         # Add controls to the layout
-        self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "freqChannel"), size=(200, 26)), "Frequency channel")
-        self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "netId")), "Network ID")
-        self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "devAddress")), "Device address")
+        self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "freq_channel"), size=(200, 26)), "Frequency channel")
+        self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "netid")), "Network ID")
+        self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "devaddress")), "Device address")
         self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "security")), "Security option")
         self.addOkCancelButtons()
         
 
-    def __init__(self, parent=None, devAddr=255, netId=0xB547, freqChann=0, secu=0):
+    def __init__(self, parent=None, devAddr=255, netid=0xB547, freq_channel=0, secu=0):
         """
         Class constructor
 
@@ -58,13 +58,13 @@ class NetworkDialog(ConfigDialog):
         """
         ConfigDialog.__init__(self, parent, title="Network settings")
         # Configuration settings
-        self.config = XmlNetwork(XmlSettings.networkFile)
+        self.config = XmlNetwork(XmlSettings.network_file)
         # SWAP device address
-        self.devAddress = devAddr
+        self.devaddress = devAddr
         # SWAP Network ID
-        self.netId = netId
+        self.netid = netid
         # Frequency channel
-        self.freqChannel = freqChann
+        self.freq_channel = freq_channel
         # Security option
         self.security = secu
         # Create widgets
@@ -73,5 +73,3 @@ class NetworkDialog(ConfigDialog):
         self.doLayout()
         # Fit dialog size to its contents
         self.Fit()
-        # Display dialog
-        self.ShowModal()

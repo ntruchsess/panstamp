@@ -43,8 +43,8 @@ class SerialDialog(ConfigDialog):
         Create GUI controls
         """
         # Add controls to the layout
-        self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "portName"), size=(200, 26)), "Serial port")
-        self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "portSpeed")), "Serial baud rate (bps)")
+        self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "portname"), size=(200, 26)), "Serial port")
+        self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "portspeed")), "Serial baud rate (bps)")
         self.addOkCancelButtons()
         
 
@@ -53,8 +53,8 @@ class SerialDialog(ConfigDialog):
         Save Serial settings into config file
         """
         # Update serial port config
-        self.config.port = self.portName
-        self.config.speed = self.portSpeed
+        self.config.port = self.portname
+        self.config.speed = self.portspeed
         # Save data in config file
         self.config.save()
 
@@ -67,11 +67,11 @@ class SerialDialog(ConfigDialog):
         """
         ConfigDialog.__init__(self, parent, title="Serial port")
         # Configuration settings
-        self.config = XmlSerial(XmlSettings.serialFile)
+        self.config = XmlSerial(XmlSettings.serial_file)
         # Name/path of the serial port
-        self.portName = self.config.port
+        self.portname = self.config.port
         # Serial port baud rate (in bps)
-        self.portSpeed = self.config.speed
+        self.portspeed = self.config.speed
         # Create widgets
         self._createControls()
         # Layout widgets

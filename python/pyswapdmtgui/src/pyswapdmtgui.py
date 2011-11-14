@@ -32,4 +32,4 @@ from SwapManager import SwapManager
 if __name__ == "__main__":  
 
     # Start SWAP manager tool
-    manager = SwapManager(True, True)
+    manager = SwapManager(True)

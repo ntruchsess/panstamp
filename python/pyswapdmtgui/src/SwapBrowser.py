@@ -35,8 +35,8 @@ from SerialDialog import SerialDialog
 from NetworkDialog import NetworkDialog
 
 from swap.SwapDefs import SwapType, SwapState
-from swapexception.SwapException import SwapException
-from xmltools.XmlDeviceDir import XmlDeviceDir
+from SwapException import SwapException
+from xmltools.XmlDevice import XmlDeviceDir
 from xmltools.XmlSettings import XmlSettings
 from xmltools.XmlNetwork import XmlNetwork
 
@@ -48,22 +48,27 @@ class SwapBrowser(wx.Frame):
     SWAP data browser
     '''
 
-    def __init__(self, parent=None, server=None, netId=None, monitor=None):
+    def __init__(self, parent=None, server=None, monitor=None):
         '''
         Class constructor
+        
+        @param parent: parent object
+        @param monitor: monitor dialog
+        @param server: SWAP server
         '''
         args = (None, -1, "SWAP browser")
         kwargs = {"style" : wx.DEFAULT_FRAME_STYLE}
         wx.Frame.__init__(self, *args, **kwargs)
+
+        favicon = wx.Icon("images/swap.ico", wx.BITMAP_TYPE_ICO, 16, 16)
+        self.SetIcon(favicon)
         
         # Parent
         self.parent = parent
-        # SWAP monitor
-        self.monitor = monitor
         # SWAP server
         self.server = server
-        # SWAP network ID
-        self.netId = self.server.modem.syncWord
+        # SWAP monitor
+        self.monitor = monitor
         # Sync dialog
         self._waitForSyncDialog = None
         # Mote in SYNC mode
@@ -86,7 +91,6 @@ class SwapBrowser(wx.Frame):
         self.menuGateway.Append(202, "&Disconnect", "Disconnect serial gateway")
         self.menuGateway.Append(203, "&Serial port", "Configure gateway\'s serial port")
         self.menuGateway.Append(204, "&Network", "Configure gateway\'s network settings")
-        self.menuGateway.Append(205, "&Clear network", "Clear SWAP network data")
         
         # Devices menu
         menuDevices.Append(301, "&Network settings", "Configure network settings")
@@ -112,27 +116,24 @@ class SwapBrowser(wx.Frame):
         wx.EVT_MENU(self, 202, self._OnDisconnect)
         wx.EVT_MENU(self, 203, self._OnSerialConfig)
         wx.EVT_MENU(self, 204, self._OnGatewayNetworkConfig)
-        wx.EVT_MENU(self, 205, self._OnClearNetwork)
         wx.EVT_MENU(self, 301, self._OnMoteNetworkConfig)
         wx.EVT_MENU(self, 302, self._OnConfigDevice)
         wx.EVT_MENU(self, 401, self._OnViewMonitor)
         wx.EVT_MENU(self, 501, self._OnAbout)
         wx.EVT_MENU(self, 101, self._OnClose)
         self.Bind(wx.EVT_CLOSE, self._OnCloseBrowser)
-        
-        # Disable Connect item. Enable Disconnect item
-        self.menuGateway.Enable(201, enable=False)
-        self.menuGateway.Enable(202, enable=True)
-        
+               
         # SWAP browsing tree
         self.tree = wx.TreeCtrl(self, -1, style=wx.TR_HAS_BUTTONS|wx.TR_DEFAULT_STYLE|wx.SUNKEN_BORDER)
-        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(self.tree, 1, wx.EXPAND, 0)
+
         self.SetAutoLayout(True)
         self.SetSizer(sizer)
         sizer.Fit(self)
         sizer.SetSizeHints(self)
-        self.Layout()
+        self.SetSize((800, 500))
+        self.Layout()        
 
         # create the image list:
         il = wx.ImageList(16, 16)
@@ -145,15 +146,24 @@ class SwapBrowser(wx.Frame):
         self.outputIcon = il.Add(wx.Bitmap("images/output.ico", wx.BITMAP_TYPE_ICO))
         self.tree.AssignImageList(il)
 
-        # initialize the tree
-        self._buildTree() 
+        if self.server.is_running:
+            # Build SWAP tree
+            self.build_tree()
+            # Disable Connect item. Enable Disconnect item
+            self.menuGateway.Enable(201, enable=False)
+            self.menuGateway.Enable(202, enable=True)
+        else:
+            # Disable Disconnect item. Enable Connect item
+            self.menuGateway.Enable(202, enable=False)
+            self.menuGateway.Enable(201, enable=True)
 
 
     def _OnViewMonitor(self, evn):
         """
         View->SWAP Network Monitor pressed
         """
-        self.monitor.Show(True)
+        if self.monitor is not None:
+            self.monitor.Show(True)
 
 
     def _OnSerialConfig(self, evn):
@@ -169,13 +179,18 @@ class SwapBrowser(wx.Frame):
         Gateway->Network pressed. Callback function
         """
         # Configuration settings
-        config = XmlNetwork(XmlSettings.networkFile)
+        config = XmlNetwork(XmlSettings.network_file)
         # Open network config dialog
-        dialog = NetworkDialog(self, self.server.modem.deviceAddr, hex(self.server.modem.syncWord), self.server.modem.freqChannel, config.security)
+        dialog = NetworkDialog(self, self.server.modem.devaddress, hex(self.server.modem.syncword), self.server.modem.freq_channel, config.security)
+        res = dialog.ShowModal()
+        
         # Save new settings in xml file
-        config.devAddress = int(dialog.devAddress)
-        config.NetworkId = int(dialog.netId, 16)
-        config.freqChannel = int(dialog.freqChannel)
+        if res == wx.ID_CANCEL:
+            return
+        
+        config.devaddress = int(dialog.devaddress)
+        config.network_id = int(dialog.netid, 16)
+        config.freq_channel = int(dialog.freq_channel)
         config.security = int(dialog.security)
         config.save()
         
@@ -188,7 +203,7 @@ class SwapBrowser(wx.Frame):
         """
         paramsOk = False
         # Configuration settings
-        config = XmlNetwork(XmlSettings.networkFile)
+        config = XmlNetwork(XmlSettings.network_file)
         
         # Any mote selected from the tree?
         itemID = self.tree.GetSelection()
@@ -196,20 +211,20 @@ class SwapBrowser(wx.Frame):
             obj = self.tree.GetPyData(itemID)
             if obj.__class__.__name__ == "SwapMote":
                 address = obj.address
-                netId = config.NetworkId
-                freqChann = config.freqChannel
+                netid = config.network_id
+                freqChann = config.freq_channel
                 secu = config.security                  
                 paramsOk = True
 
         # No mote selected from the tree?
         if not paramsOk:
             address = 0xFF
-            netId = config.NetworkId
-            freqChann = config.freqChannel
+            netid = config.network_id
+            freqChann = config.freq_channel
             secu = config.security
         
         # Open network config dialog
-        dialog = NetworkDialog(self, address, netId, freqChann, secu)
+        dialog = NetworkDialog(self, address, netid, freqChann, secu)
         
         # No mote selected?
         if obj is None:
@@ -220,11 +235,11 @@ class SwapBrowser(wx.Frame):
             obj = self._moteInSync  
         
         # Send new config to mote
-        if not obj.setAddress(int(dialog.devAddress)):
+        if not obj.setAddress(int(dialog.devaddress)):
             self._Warning("Unable to set mote's address")
-        if not obj.setNetworkId(int(dialog.netId, 16)):
+        if not obj.setNetworkId(int(dialog.netid, 16)):
             self._Warning("Unable to set mote's Network ID")
-        if not obj.setFreqChannel(int(dialog.freqChannel)):
+        if not obj.setFreqChannel(int(dialog.freq_channel)):
             self._Warning("Unable to set mote's frequency channel")
         if not obj.setSecurity(int(dialog.security)):
             self._Warning("Unable to set mote's security option")
@@ -233,14 +248,18 @@ class SwapBrowser(wx.Frame):
     def _OnConnect(self, evn=None):
         """
         Connect option pressed
-        """
-        # Start SWAP server
+        """        
         try:
-            self.server.start()
-            self.menuGateway.Enable(201, enable=False)
-            self.menuGateway.Enable(202, enable=True)
+            if self.server is None:
+                # Create new SWAP server
+                self.server = self.parent.create_server() 
+            else:
+                # Restart existing SWAP server
+                self.server._start()
+                self.menuGateway.Enable(201, enable=False)
+                self.menuGateway.Enable(202, enable=True)
         except SwapException as ex:
-            self._Warning("Unable to connect to the network. " + ex.description)
+            self._Warning(ex.description)
             ex.log()
 
 
@@ -249,20 +268,11 @@ class SwapBrowser(wx.Frame):
         Disconnect option pressed
         """
         # Stop SWAP server
-        self.server.stop()
+        if self.server is not None:
+            self.server.stop()
         self.menuGateway.Enable(201, enable=True)
         self.menuGateway.Enable(202, enable=False)
-        
-        
-    def _OnClearNetwork(self, evn):
-        """
-        Clear Network option pressed
-        """
-        # Reset SWAP network data
-        self.server.resetNetwork()
-        # Clear browsing tree
-        self.tree.DeleteAllItems()
-        
+              
         
     def _OnConfigDevice(self, evn):
         """
@@ -281,6 +291,11 @@ class SwapBrowser(wx.Frame):
                  
         if not isOk:
             selector = DeviceSelector()
+            res = selector.ShowModal()
+            
+            if res == wx.ID_CANCEL:
+                return
+            
             option = selector.getSelection()                    
             selector.Destroy()       
             # Get Develoepr/device directory from devices.xml
@@ -320,17 +335,27 @@ class SwapBrowser(wx.Frame):
             menu.Destroy()   
         
         
-    def _buildTree(self):
+    def build_tree(self):
         '''
         Build SWAP tree
-        
-        'netId'  SWAP network ID
         '''
-        if self.netId is not None:
-            rootStr = "SWAP network " + hex(self.netId)
+        if self.server is None:
+            return
+
+        if self.server.is_running:
+            # Disable Connect item. Enable Disconnect item
+            self.menuGateway.Enable(201, enable=False)
+            self.menuGateway.Enable(202, enable=True)
+            
+        netid = self.server.getNetId()
+        
+        if netid is not None:
+            rootStr = "SWAP network " + hex(netid)
         else:
             rootStr = "SWAP network"
       
+        # Clear tree
+        self.tree.DeleteAllItems()
         self.rootID = self.tree.AddRoot(rootStr)
         self.tree.SetPyData(self.rootID, None)
 
@@ -572,7 +597,9 @@ class SwapBrowser(wx.Frame):
         """
         Callback function called whenever the browser is closed
         """
-        self.monitor.Destroy()
-        self.server.stop()
+        if self.monitor is not None:
+            self.monitor.Destroy()
+        if self.server is not None:
+            self.server.stop()
         self.Destroy()
-        self.parent.exit()
+        self.parent.terminate()
