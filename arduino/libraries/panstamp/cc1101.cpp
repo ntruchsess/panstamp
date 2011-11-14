@@ -251,7 +251,7 @@ void CC1101::init(void)
   byte val;
   
   spi.init();                           // Initialize SPI interface
-  pinMode(GDO0, INPUT);                 // Config FDO0 as input
+  pinMode(GDO0, INPUT);                 // Config GDO0 as input
   pinMode(GDO2, INPUT);                 // Config GDO2 as input
 
   reset();                              // Reset CC1101
@@ -420,13 +420,13 @@ void CC1101::setPowerDownState()
 boolean CC1101::sendData(CCPACKET packet)
 {
   // Enter RX state
-  cmdStrobe(CC1101_SRX);
+  setRxState();
 
   // Check that the RX state has been entered
   while (readStatusReg(CC1101_MARCSTATE) != 0x0D)
     delay(1);
   delayMicroseconds(500);
-  
+
   // Set data length at the first position of the TX FIFO
   writeReg(CC1101_TXFIFO,  packet.length);
   // Write data into the TX FIFO
@@ -434,23 +434,24 @@ boolean CC1101::sendData(CCPACKET packet)
 
   // CCA enabled: will enter TX state only if the channel is clear
   cmdStrobe(CC1101_STX);
-  
+
   // Check that TX state is being entered (state = RXTX_SETTLING)
   if(readStatusReg(CC1101_MARCSTATE) != 0x15)
     return false;
 
   // Wait for the sync word to be transmitted
   wait_GDO0_high();
+
   // Wait until the end of the packet transmission
   wait_GDO0_low();
 
-  // Flush TX FIFO
-  cmdStrobe(CC1101_SFTX);
+  // Flush TX FIFO. Don't uncomment
+  // cmdStrobe(CC1101_SFTX);
   
   // Enter back into RX state
   setRxState();
-  
-  //cCheck that the TX FIFO is empty
+
+  // Check that the TX FIFO is empty
   if((readStatusReg(CC1101_TXBYTES) & 0x7F) == 0)
     return true;
 

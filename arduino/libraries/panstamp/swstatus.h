@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2011 Daniel Berenguer <dberenguer@usapiens.com>
  * 
- * swinfo.cpp
+ * swstatus.h
  *
  * This file is part of the panStamp project.
  * 
@@ -24,29 +24,25 @@
  * Creation date: 03/03/2011
  */
 
-#include "swinfo.h"
-#include "panstamp.h"
+#ifndef _SWSTATUS_H
+#define _SWSTATUS_H
 
-/**
- * SWINFO
- * 
- * Class constructor
- * 
- * 'rId'	Register id
- * '*val'	New value
- * 'len'	Buffer length
- */
-SWINFO::SWINFO(byte rId, byte *val, byte len) 
+#include "WProgram.h"
+#include "swpacket.h"
+
+
+class SWSTATUS : public SWPACKET
 {
-  destAddr = SWAP_BCAST_ADDR;
-  srcAddr = panstamp.cc1101.devAddress;
-  hop = 0;
-  security = panstamp.security & 0x0F;
-  nonce = ++panstamp.nonce;
-  function = SWAPFUNCT_INF;
-  regAddr = panstamp.cc1101.devAddress;
-  regId = rId;
-  value.length = len;
-  value.data = val;
-}
-
+  public:
+    /**
+     * SWSTATUS
+     * 
+     * Class constructor
+     * 
+     * 'rId'	Register id
+     * '*val'	New value
+     * 'len'	Buffer length
+     */
+    SWSTATUS(byte rId, byte *val, byte len);
+};
+#endif

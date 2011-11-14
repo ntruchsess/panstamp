@@ -40,7 +40,7 @@
 /**
  * Macros
  */
-#define setSwapInfoCallBack(ptrFunc)   infoReceived = ptrFunc
+#define setSwapStatusCallBack(ptrFunc)   statusReceived = ptrFunc
 
 /**
  * System states
@@ -91,9 +91,9 @@ class PANSTAMP
     byte systemState;
 
     /**
-     * SWAP info packet received. Callaback function
+     * SWAP status packet received. Callaback function
      */
-    void (*infoReceived)(SWPACKET *info);
+    void (*statusReceived)(SWPACKET *status);
 
     /**
      * PANSTAMP

@@ -25,7 +25,7 @@
  */
 
 #include "register.h"
-#include "swinfo.h"
+#include "swstatus.h"
 
 byte regIndex = 0;
 
@@ -39,8 +39,8 @@ void REGISTER::getData(void)
   // Update register value
   if (updateValue != NULL)
     updateValue(id);
-  // Send SWAP information message about the new value
-  sendSwapInfo();
+  // Send SWAP status message about the new value
+  sendSwapStatus();
 }
 
 /**
@@ -56,32 +56,32 @@ void REGISTER::setData(byte *data)
   if (setValue != NULL)
     setValue(id, data);
 
-  // Send SWAP information message
-  sendSwapInfo();
+  // Send SWAP status message
+  sendSwapStatus();
 }
 
 /**
- * sendSwapInfo
+ * sendSwapStatus
  * 
- * Send SWAP information message
+ * Send SWAP status message
  */
-void REGISTER::sendSwapInfo(void) 
+void REGISTER::sendSwapStatus(void) 
 {
-  SWINFO packet = SWINFO(id, value, length);
+  SWSTATUS packet = SWSTATUS(id, value, length);
 
   packet.send();
 }
 
 /**
- * sendPriorSwapInfo
+ * sendPriorSwapStatus
  * 
- * Send SWAP information message before applying the new value
+ * Send SWAP status message before applying the new value
  *
  * 'newVal'  New value
  */
-void REGISTER::sendPriorSwapInfo(byte *newVal) 
+void REGISTER::sendPriorSwapStatus(byte *newVal) 
 {
-  SWINFO packet = SWINFO(id, newVal, length);
+  SWSTATUS packet = SWSTATUS(id, newVal, length);
 
   packet.send();
 }

@@ -29,7 +29,7 @@ disableAddressCheck KEYWORD2
 sleepFor	KEYWORD2
 getData	KEYWORD2
 setData KEYWORD2
-sendSwapInfo	KEYWORD2
+sendSwapStatus	KEYWORD2
 
 #######################################
 # Atributes (KEYWORD2)

@@ -124,7 +124,7 @@ const void setSysState(byte id, byte *state)                \
   switch(state[0])                                          \
   {                                                         \
     case SYSTATE_RESTART:                                   \
-      /* Send info message before restarting the mote */    \
+      /* Send status message before restarting the mote */    \
       panstamp.reset();                                     \
       break;                                                \
     case SYSTATE_SYNC:                                      \
@@ -147,9 +147,9 @@ const void setFreqChannel(byte id, byte *channel)           \
 {                                                           \
   if (channel[0] != regFreqChannel.value[0])                \
   {                                                         \
-    /* Send info message before entering the new            \
+    /* Send status message before entering the new            \
     frequency channel */                                    \
-    regFreqChannel.sendPriorSwapInfo(channel);              \
+    regFreqChannel.sendPriorSwapStatus(channel);              \
     /* Update register value */                             \
     panstamp.cc1101.setChannel(channel[0], true);           \
     /* Restart device */                                    \
@@ -169,9 +169,9 @@ const void setSecuOption(byte id, byte *secu)               \
 {                                                           \
   if (secu[0] != regSecuOption.value[0])                    \
   {                                                         \
-    /* Send info message before applying the new            \
+    /* Send status message before applying the new            \
     security option*/                                       \
-    regSecuOption.sendPriorSwapInfo(secu);                  \
+    regSecuOption.sendPriorSwapStatus(secu);                  \
     /* Update register value */                             \
     panstamp.setSecurity(secu[0] & 0x0F, true);             \
   }                                                         \
@@ -189,8 +189,8 @@ const void setDevAddress(byte id, byte *addr)               \
 {                                                           \
   if ((addr[0] > 0) && (addr[0] != regDevAddress.value[0])) \
   {                                                         \
-    /* Send info before taking the new address */           \
-    regDevAddress.sendPriorSwapInfo(addr);                  \
+    /* Send status before taking the new address */           \
+    regDevAddress.sendPriorSwapStatus(addr);                  \
     /* Update register value */                             \
     panstamp.cc1101.setDevAddress(addr[0], true);           \
     /* Restart device */                                    \
@@ -211,8 +211,8 @@ const void setNetworkId(byte rId, byte *nId)                \
   if ((nId[0] != regNetworkId.value[0]) ||                  \
       (nId[1] != regNetworkId.value[1]))                    \
   {                                                         \
-    /* Send info before taking the new network ID */        \
-    regNetworkId.sendPriorSwapInfo(nId);                    \
+    /* Send status before taking the new network ID */        \
+    regNetworkId.sendPriorSwapStatus(nId);                    \
     /* Update register value */                             \
     panstamp.cc1101.setSyncWord(nId, true);                 \
     /* Restart device */                                    \

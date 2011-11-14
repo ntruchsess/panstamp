@@ -81,7 +81,7 @@ boolean SWPACKET::send(void)
   packet.data[4] = function;
   packet.data[5] = regAddr;
   packet.data[6] = regId;
-  
+
   for(i=0 ; i<value.length ; i++)
     packet.data[i+7] = value.data[i];
 

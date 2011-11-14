@@ -43,7 +43,7 @@ extern byte regTableSize;
  */
 PANSTAMP::PANSTAMP(void)
 {
-  infoReceived = NULL;
+  statusReceived = NULL;
 }
 
 /**
@@ -91,7 +91,7 @@ void isrGDO0event(void)
           if (swPacket.value.length == reg->length)
             reg->setData(swPacket.value.data);
           else
-            reg->sendSwapInfo();
+            reg->sendSwapStatus();
           break;
         case SWAPFUNCT_QRY:
           // Valid register?
@@ -99,10 +99,10 @@ void isrGDO0event(void)
             break;
           reg->getData();
           break;
-        case SWAPFUNCT_INF:
+        case SWAPFUNCT_STA:
           // User callback function declared?
-          if (panstamp.infoReceived != NULL)
-            panstamp.infoReceived(&swPacket);
+          if (panstamp.statusReceived != NULL)
+            panstamp.statusReceived(&swPacket);
           break;
         default:
           break;
@@ -184,7 +184,7 @@ void PANSTAMP::reset()
 {
   // Tell the network that our panStamp is restarting
   byte state[] = {SYSTATE_RESTART};
-  getRegister(3)->sendPriorSwapInfo(state);
+  getRegister(3)->sendPriorSwapStatus(state);
 
   // Reset panStamp
   wdt_disable();  

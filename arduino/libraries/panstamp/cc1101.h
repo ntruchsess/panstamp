@@ -253,6 +253,10 @@ enum CFREQ
 #define disableAddressCheck()     writeReg(CC1101_PKTCTRL1, 0x04)
 // Enable address check
 #define enableAddressCheck()      writeReg(CC1101_PKTCTRL1, 0x06)
+// Disable CCA
+#define disableCCA()              writeReg(CC1101_MCSM1, 0)
+// Enable CCA
+#define enableCCA()               writeReg(CC1101_MCSM1, CC1101_DEFVAL_MCSM1)
 
 /**
  * Class: CC1101

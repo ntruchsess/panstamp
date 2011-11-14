@@ -101,20 +101,20 @@ class REGISTER
     void setData(byte *data);
 
     /**
-     * sendSwapInfo
+     * sendSwapStatus
      * 
-     * Send SWAP information message
+     * Send SWAP status message
      */
-    void sendSwapInfo(void);
+    void sendSwapStatus(void);
 
     /**
-     * sendPriorSwapInfo
+     * sendPriorSwapStatus
      * 
-     * Send SWAP information message before applying the new value
+     * Send SWAP status message before applying the new value
      *
      * 'newVal'  New value
      */
-    void sendPriorSwapInfo(byte *newVal);
+    void sendPriorSwapStatus(byte *newVal);
 };
 
 /**
