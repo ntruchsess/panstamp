@@ -29,13 +29,13 @@ __version__ = "1.0"
 #########################################################################
 
 from SwapManager import SwapManager
-from swapexception.SwapException import SwapException
+from SwapException import SwapException
 from xmltools.XmlDevice import XmlDeviceDir
 
 from optik import OptionParser
 
 
-def quit():
+def _quit():
     """ Quit application """
     print __appname__ + " terminated"
     # Stop SWAP manager
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     parser.add_option("-i", "--netid", type="string", dest="netId",
                       help="Network ID (2-byte hexadecimal)")
     # Frequency channel
-    parser.add_option("-f", "--freqchannel", type="int", dest="freqChannel",
+    parser.add_option("-f", "--freqchannel", type="int", dest="freq_channel",
                       help="Frequency channel")
     # Security option
     parser.add_option("-x", "--secoption", type="int", dest="security",
@@ -115,11 +115,11 @@ if __name__ == "__main__":
                 xmlMote = deviceDir.getDeviceDef(options.device)
                 if xmlMote is None:
                     print "Unable to find device \"" + options.device + "\" in directory"
-                    quit()      # Quit application
+                    _quit()      # Quit application
                 listCfgRegs = xmlMote.getRegList(True)
                 if listCfgRegs is None:
                     print "Unable to retrieve configuration parameters from mote"
-                    quit()      # Quit application
+                    _quit()      # Quit application
 
                 for cfgReg in listCfgRegs:
                     print "-----------------------------------------------"
@@ -137,38 +137,38 @@ if __name__ == "__main__":
             # Standard registers
             #--------------------
             # Device address
-            devAddress = options.devAddr
-            if devAddress is not None:
+            devaddress = options.devAddr
+            if devaddress is not None:
                 # Get mote from address
-                mote = manager.getMote(address=devAddress)
+                mote = manager.getMote(address=devaddress)
                 # Is this mote a Power-Down device?
                 if mote.definition.pwrDownMode:
-                    devAddress = None   # Ask for SYNC
-                    print "Device with address " + str(devAddress) + " is surely sleeping"
+                    devaddress = None   # Ask for SYNC
+                    print "Device with address " + str(devaddress) + " is surely sleeping"
 
             inSyncMode = False
-            if devAddress is None:
+            if devaddress is None:
                 # Address not specified. Ask for symc mode
                 print "Put the device into SYNC mode..."
                 while manager.getAddressInSync() is None:
                     pass
-                devAddress = manager.getAddressInSync()
+                devaddress = manager.getAddressInSync()
                 manager.resetAddressInSync()
                 inSyncMode = True
 
             # Get mote from address
-            mote = manager.getMote(address=devAddress)
+            mote = manager.getMote(address=devaddress)
             if mote is None:
-                print "Device with address " + str(devAddress) + " can't be found"
-                quit()      # Quit application
+                print "Device with address " + str(devaddress) + " can't be found"
+                _quit()      # Quit application
 
             # OK, we have now a valid mote
 
             # Frequency channel
-            if options.freqChannel is not None:
-                if options.freqChannel < 0:
+            if options.freq_channel is not None:
+                if options.freq_channel < 0:
                     print "Only positive channels please"
-                if mote.setFreqChannel(options.freqChannel):
+                if mote.setFreqChannel(options.freq_channel):
                     print "New frequency channel correctly set"
 
             # Security option
@@ -227,11 +227,11 @@ if __name__ == "__main__":
                 else:
                     # Restart mote
                     mote.restart()
-                quit()      # Quit application
+                _quit()      # Quit application
 
         # Close server if no monitoring action is pending
         if options.sniff == False and options.monitor == False:
-            quit()      # Quit application
+            _quit()      # Quit application
 
     except SwapException as ex:
         ex.display()

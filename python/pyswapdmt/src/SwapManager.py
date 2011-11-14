@@ -26,7 +26,7 @@ __author__="Daniel Berenguer"
 __date__ ="$Aug 21, 2011 4:30:47 PM$"
 #########################################################################
 
-from swap.SwapInterface import SwapInterface
+from SwapInterface import SwapInterface
 from swap.SwapDefs import SwapState
 
 class SwapManager(SwapInterface):
@@ -120,7 +120,7 @@ class SwapManager(SwapInterface):
         'monitor'  Print out network events or not
         """
         # Superclass call
-        SwapInterface.__init__(self, verbose)
+        SwapInterface.__init__(self, verbose)        
         # Print SWAP activity
         self._printSWAP = monitor
         # Mote address in SYNC mode
