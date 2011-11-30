@@ -72,10 +72,13 @@ void isrGDO0event(void)
   SWPACKET swPacket;
   REGISTER *reg;
 
+Serial.println("IRQ");
+
   // Disable interrupt
   disableIRQ_GDO0();
   if (panstamp.cc1101.receiveData(&ccPacket) > 0)
   {
+Serial.println("Received");
     if (ccPacket.crc_ok)
     {
       swPacket = SWPACKET(ccPacket);
@@ -210,6 +213,9 @@ void PANSTAMP::reset()
  */
 void PANSTAMP::sleepFor(byte time) 
 {
+  // Disable GDO0 interrupt
+  disableIRQ_GDO0();
+
   // Power-down CC1101
   cc1101.setPowerDownState();
   // Power-down panStamp
@@ -236,6 +242,9 @@ void PANSTAMP::sleepFor(byte time)
   power_all_enable();
   // Enable ADC
   ADCSRA |= (1 << ADEN);
+
+  // Enable GDO0 interrupt
+  enableIRQ_GDO0();
 }
 
 /**

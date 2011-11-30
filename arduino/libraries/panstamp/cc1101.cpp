@@ -100,7 +100,7 @@ void CC1101::writeBurstReg(byte regAddr, byte* buffer, byte len)
  * 'cmd'	Command strobe
  */     
 void CC1101::cmdStrobe(byte cmd) 
-{ 
+{
   cc1101_Select();                      // Select CC1101
   wait_Miso();                          // Wait until MISO goes low
   spi.send(cmd);                        // Send strobe command
@@ -174,6 +174,9 @@ void CC1101::reset(void)
   wait_Miso();                          // Wait until MISO goes low
 
   cc1101_Deselect();                    // Deselect CC1101
+
+  setDefaultRegs();                     // Reconfigure CC1101
+  setRegsFromEeprom();                  // Take user settings from EEPROM
 }
 
 /**
@@ -184,6 +187,9 @@ void CC1101::reset(void)
 void CC1101::setDefaultRegs(void) 
 {
   byte defSyncWrd[] = {CC1101_DEFVAL_SYNC1, CC1101_DEFVAL_SYNC0};
+
+byte val = readReg(CC1101_SYNC1, CC1101_CONFIG_REGISTER);
+Serial.println(val, HEX);
 
   writeReg(CC1101_IOCFG2,  CC1101_DEFVAL_IOCFG2);
   writeReg(CC1101_IOCFG1,  CC1101_DEFVAL_IOCFG1);
@@ -252,9 +258,8 @@ void CC1101::init(void)
   pinMode(GDO0, INPUT);                 // Config GDO0 as input
 
   reset();                              // Reset CC1101
-
-  setDefaultRegs();                     // Configure CC1101 registers
-  setRegsFromEeprom();                  // Take user settings from EEPROM
+//  setDefaultRegs();                     // Configure CC1101 registers
+//  setRegsFromEeprom();                  // Take user settings from EEPROM
 
   // Configure PATABLE
   writeBurstReg(CC1101_PATABLE, (byte*)paTable, 8);
