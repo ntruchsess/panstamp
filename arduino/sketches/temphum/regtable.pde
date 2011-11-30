@@ -42,6 +42,9 @@ DEFINE_COMMON_REGISTERS();
 /*
  * Definition of custom registers
  */
+// Periodic Tx interval
+static byte dtTxInterval[2];
+REGISTER regTxInterval(dtTxInterval, sizeof(dtTxInterval), NULL, NULL);
 // Voltage supply
 static byte dtVoltSupply[2];
 REGISTER regVoltSupply(dtVoltSupply, sizeof(dtVoltSupply), &updtVoltSupply, NULL);
@@ -53,6 +56,7 @@ REGISTER regTempHum(dtTempHum, sizeof(dtTempHum), &updtTempHum, NULL);
  * Initialize table of registers
  */
 DECLARE_REGISTERS_START()
+  &regTxInterval,
   &regVoltSupply,
   &regTempHum
 DECLARE_REGISTERS_END()

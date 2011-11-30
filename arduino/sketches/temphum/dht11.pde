@@ -29,21 +29,13 @@
 /**
  * Pin definitions
  */
-/*
-#define PORTW_DHT11_DATA  PORTC
-#define PORTR_DHT11_DATA  PINC
-#define PORTD_DHT11_DATA  DDRC
-#define PORTW_DHT11_PWR   PORTB
-#define PORTD_DHT11_PWR   DDRB
-*/
 #define PORTW_DHT11_DATA  PORTD
 #define PORTR_DHT11_DATA  PIND
 #define PORTD_DHT11_DATA  DDRD
 #define PORTW_DHT11_PWR   PORTD
 #define PORTD_DHT11_PWR   DDRD
-#define BIT_DHT11_DATA    7
-//#define BIT_DHT11_PWR     1
-#define BIT_DHT11_PWR     6
+#define BIT_DHT11_DATA    6
+#define BIT_DHT11_PWR     5
 #define setDataPin()      bitSet(PORTW_DHT11_DATA, BIT_DHT11_DATA)
 #define clearDataPin()    bitClear(PORTW_DHT11_DATA, BIT_DHT11_DATA)
 #define getDataPin()      bitRead(PORTR_DHT11_DATA, BIT_DHT11_DATA)
