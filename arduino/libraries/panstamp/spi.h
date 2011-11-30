@@ -35,7 +35,6 @@
 #define SPI_MISO 12     // PB4 = MISO
 #define SPI_SCK  13     // PB5 = SCK
 #define GDO0	 2        // PD2 = INT0
-#define GDO2	 3        // PD3 = INT1
 
 #define PORT_SPI_MISO  PINB
 #define BIT_SPI_MISO  4

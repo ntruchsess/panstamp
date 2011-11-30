@@ -248,13 +248,11 @@ void CC1101::setDefaultRegs(void)
  */
 void CC1101::init(void) 
 {
-  byte val;
-  
   spi.init();                           // Initialize SPI interface
   pinMode(GDO0, INPUT);                 // Config GDO0 as input
-  pinMode(GDO2, INPUT);                 // Config GDO2 as input
 
   reset();                              // Reset CC1101
+
   setDefaultRegs();                     // Configure CC1101 registers
   setRegsFromEeprom();                  // Take user settings from EEPROM
 

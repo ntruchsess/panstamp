@@ -71,7 +71,7 @@ void isrGDO0event(void)
   CCPACKET ccPacket;
   SWPACKET swPacket;
   REGISTER *reg;
-  
+
   // Disable interrupt
   disableIRQ_GDO0();
   if (panstamp.cc1101.receiveData(&ccPacket) > 0)
@@ -153,9 +153,6 @@ void PANSTAMP::setup_watchdog(byte time)
  */
 void PANSTAMP::init() 
 {
-  byte bVal;
-  byte arrV[2];
-  
   // Setup CC1101
   cc1101.init();
 
@@ -215,7 +212,6 @@ void PANSTAMP::sleepFor(byte time)
 {
   // Power-down CC1101
   cc1101.setPowerDownState();
-
   // Power-down panStamp
   set_sleep_mode(SLEEP_MODE_PWR_DOWN);
   sleep_enable();
@@ -240,8 +236,6 @@ void PANSTAMP::sleepFor(byte time)
   power_all_enable();
   // Enable ADC
   ADCSRA |= (1 << ADEN);
-  // Reset CC1101
-  cc1101.reset();
 }
 
 /**
