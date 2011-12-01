@@ -29,6 +29,7 @@
 
 #define enableIRQ_GDO0()        attachInterrupt(0, isrGDO0event, FALLING);
 #define disableIRQ_GDO0()       detachInterrupt(0);
+#define REGI_SYSSTATE           3
 
 /**
  * Array of registers
@@ -72,13 +73,10 @@ void isrGDO0event(void)
   SWPACKET swPacket;
   REGISTER *reg;
 
-Serial.println("IRQ");
-
   // Disable interrupt
   disableIRQ_GDO0();
   if (panstamp.cc1101.receiveData(&ccPacket) > 0)
   {
-Serial.println("Received");
     if (ccPacket.crc_ok)
     {
       swPacket = SWPACKET(ccPacket);
@@ -213,9 +211,6 @@ void PANSTAMP::reset()
  */
 void PANSTAMP::sleepFor(byte time) 
 {
-  // Disable GDO0 interrupt
-  disableIRQ_GDO0();
-
   // Power-down CC1101
   cc1101.setPowerDownState();
   // Power-down panStamp
@@ -233,7 +228,15 @@ void PANSTAMP::sleepFor(byte time)
   sleep_mode();
 
   // ZZZZZZZZ...
+}
 
+/**
+ * wakeUp
+ *
+ * Wake from sleep mode
+ */
+void PANSTAMP::wakeUp(void) 
+{
   // Exit from sleep
   sleep_disable();
   wdt_disable();
@@ -242,9 +245,20 @@ void PANSTAMP::sleepFor(byte time)
   power_all_enable();
   // Enable ADC
   ADCSRA |= (1 << ADEN);
+}
 
-  // Enable GDO0 interrupt
-  enableIRQ_GDO0();
+/**
+ * enterSystemState
+ *
+ * Enter system state
+ *
+ * 'state'  New system state
+ */
+void PANSTAMP::enterSystemState(SYSTATE state)
+{
+  // Enter SYNC mode (full Rx mode)
+  byte newState[] = {state};
+  regTable[REGI_SYSSTATE]->setData(newState);
 }
 
 /**

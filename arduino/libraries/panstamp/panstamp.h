@@ -136,7 +136,23 @@ class PANSTAMP
      *  WDTO_8S = 8 s
      */
     void sleepFor(byte time);
-    
+
+    /**
+     * wakeUp
+     *
+     * Wake from sleep mode
+     */
+    void wakeUp(void);
+
+    /**
+     * enterSystemState
+     *
+     * Enter system state
+     *
+     * 'state'  New system state
+     */
+    void enterSystemState(SYSTATE state);
+
     /**
      * getInternalTemp
      * 
