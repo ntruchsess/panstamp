@@ -478,12 +478,11 @@ class SwapServer(threading.Thread):
         return self.modem.syncword
 
 
-    def __init__(self, eventHandler, settings=None, verbose=False, start=True):
+    def __init__(self, eventHandler, verbose=False, start=True):
         """
         Class constructor
 
         @param eventHandler: Parent event handler object
-        @param settings: path to the main configuration file
         @param verbose: Verbose SWAP traffic
         @param start: Start server upon creation if this flag is True
         """
@@ -519,7 +518,7 @@ class SwapServer(threading.Thread):
         self._eventHandler = eventHandler
 
         # General settings
-        self._xmlSettings = XmlSettings(settings)
+        self._xmlSettings = XmlSettings()
 
         ## Ture if server is running
         self.is_running = False
