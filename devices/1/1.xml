@@ -17,16 +17,16 @@
         <position>0</position>
         <size>2</size>
         <units>
-          <unit name="C" factor="1" offset="0"/>
-          <unit name="F" factor="1.8" offset="32"/>
-          <unit name="K" factor="1" offset="273.15"/>
+          <unit name="C" factor="0.0039" offset="0"/>
+          <unit name="F" factor="0.0070" offset="32"/>
+          <unit name="K" factor="0.0039" offset="273.15"/>
         </units>
       </endpoint>
       <endpoint name="Humidity" type="num" dir="inp">
         <position>2</position>
         <size>2</size>
         <units>
-          <unit name="%" factor="1" offset="0"/>
+          <unit name="%" factor="0.0039" offset="0"/>
         </units>
       </endpoint>
     </reg>
