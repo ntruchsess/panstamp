@@ -4,22 +4,18 @@
   <product>RGB LED controller</product>
   <pwrdownmode>false</pwrdownmode>
   <regular>
-    <reg id="10">
-      <endpoint type="num" dir="out">
-        <description>RGB level</description>
+    <reg name="RGB" id="10">
+      <endpoint name="RGBlevel" type="num" dir="out">
       </endpoint>
-      <endpoint type="num" dir="out">
-        <description>Red level</description>
+      <endpoint name="Red" type="num" dir="out">
         <position>0</position>
         <size>1</size>
       </endpoint>
-      <endpoint type="num" dir="out">
-        <description>Green level</description>
+      <endpoint name="Green" type="num" dir="out">
         <position>1</position>
         <size>1</size>
       </endpoint>
-      <endpoint type="num" dir="out">
-        <description>Blue level</description>
+      <endpoint name="Blue" type="num" dir="out">
         <position>2</position>
         <size>1</size>
       </endpoint>

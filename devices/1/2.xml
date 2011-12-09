@@ -4,161 +4,154 @@
   <product>SWAP-Chronos</product>
   <pwrdownmode>true</pwrdownmode>
   <config>
-    <reg id="10">
-      <description>Calibration</description>
-      <param type="bin">
-        <description>Use metrics (1=Yes 0=No)</description>
+    <reg name="Calibration" id="11">
+      <param name="Use metrics (1=Yes 0=No)" type="bin">
         <position>0</position>
         <size>1</size>
         <default>1</default>
       </param>
-      <param type="num">
-        <description>Current temperature (NN.D format)</description>
+      <param name="Current temperature in Celsious (NN.D format)" type="num">
         <position>1</position>
         <size>2</size>
+        <verif>[-+]?[0-9]*\.[0-9]{1}</verif>
       </param>
-      <param type="num">
-        <description>Current altitude</description>
+      <param name="Current altitude in mts" type="num">
         <position>3</position>
         <size>2</size>
+      <verif>^(\d*)$</verif>
       </param>
     </reg>
-    <reg id="11">
-      <description>Transmit period</description>
-      <param type="num">
-        <description>Interval in seconds (0 for disabled)</description>
-      </param>
-    </reg>
-    <reg id="12">
-      <description>Date/Time</description>
-      <param type="num">
-        <description>Hour (24h format)</description>
+    <reg name="Date/Time" id="13">
+      <param name="Hour (24h format)" type="num">
         <position>0</position>
         <size>1</size>
+        <verif>HOUR</verif>
       </param>
-      <param type="num">
-        <description>Minutes</description>
+      <param name="Minutes" type="num">
         <position>1</position>
         <size>1</size>
+        <verif>MINUTE</verif>
       </param>
-      <param type="num">
-        <description>Year (YYYY format)</description>
+      <param name="Year (YYYY format)" type="num">
         <position>3</position>
         <size>2</size>
         <default>2011</default>
+        <verif>YEAR</verif>
       </param>
-      <param type="num">
-        <description>Month</description>
+      <param name="Month" type="num">
         <position>5</position>
         <size>1</size>
         <default>1</default>
+        <verif>MONTH</verif>
       </param>
-      <param type="num">
-        <description>Day</description>
+      <param name="Day" type="num">
         <position>6</position>
         <size>1</size>
-        <default>1</default>
+        <default>1</default>               
+        <verif>MDAY</verif>
       </param>
     </reg>
-    <reg id="13">
-      <description>Time alarm</description>
-      <param type="num">
-        <description>Hour</description>
+    <reg name="Time alarm" id="14">
+      <param name="Hour" type="num">
         <position>0</position>
         <size>1</size>
+        <verif>HOUR</verif>
       </param>
-      <param type="num">
-        <description>Minutes</description>
+      <param name="Minutes" type="num">
         <position>1</position>
         <size>1</size>
+        <verif>MINUTE</verif>
       </param>
     </reg>
-    <reg id="16">
-      <description>Browser page 0</description>
-      <param type="str">
-        <description>Label (5 chars)</description>
+    <reg name="Browser page 0" id="17">
+      <param name="Label (5 chars)" type="str">
         <position>0</position>
         <size>5</size>
         <default>PAGE0</default>
+        <verif>^([A-Z0-9_-]){5}$</verif>
       </param>
-      <param type="num">
-        <description>Device address (1-255)</description>
+      <param name="Device address (1-255)" type="num">
         <position>5</position>
         <size>1</size>
         <default>255</default>
+        <verif>RANGE(1,255)</verif>
       </param>
-      <param type="num">
-        <description>Register address (1-255)</description>
+      <param name="Register address (1-255)" type="num">
         <position>6</position>
         <size>1</size>
         <default>255</default>
+        <verif>RANGE(1,255)</verif>
       </param>
-      <param type="num">
-        <description>Register ID (10-255)</description>
+      <param name="Register ID (10-255)" type="num">
         <position>7</position>
         <size>1</size>
         <default>10</default>
+        <verif>RANGE(10,255)</verif>
       </param>
-      <param type="bin">
-        <description>Type of endpoint (1=num 0=bin)</description>
-        <position>8.0</position>
+      <param name="Type of endpoint (1=num 0=bin)" type="bin">
+        <position>8.7</position>
         <size>0.1</size>
       </param>
-      <param type="bin">
-        <description>Direction of endpoint (1=Output 0=Input)</description>
-        <position>8.1</position>
+      <param name="Direction of endpoint (1=Output 0=Input)" type="bin">
+        <position>8.6</position>
         <size>0.1</size>
       </param>
-      <param type="bin">
-        <description>Enable decimals (1=Enable 0=Disable)</description>
-        <position>8.2</position>
+      <param name="Enable decimals (1=Enable 0=Disable)" type="bin">
+        <position>8.5</position>
         <size>0.1</size>
       </param>
-      <param type="bin">
-        <description>Value's signess (1=Signed 0=Unsigned)</description>
-        <position>8.3</position>
-        <size>0.1</size>
-      </param>
-      <param type="bin">
-        <description>Value in register (1=Combined 0=Alone)</description>
+      <param name="Value's signess (1=Signed 0=Unsigned)" type="bin">
         <position>8.4</position>
         <size>0.1</size>
       </param>
-      <param type="num">
-        <description>Step up/down delta</description>
+      <param name="Value in register (1=Combined 0=Alone)" type="bin">
+        <position>8.3</position>
+        <size>0.1</size>
+      </param>
+      <param name="Step up/down delta" type="num">
         <position>9</position>
         <size>1</size>
+        <verif>^(\d*)$</verif>
       </param>
-      <param type="num">
-        <description>Size in bytes (0-3)</description>
+      <param name="Size in bytes (0-3)" type="num">
         <position>10.0</position>
         <size>0.2</size>
         <default>1</default>
+        <verif>^([0-3])$</verif>
       </param>
-      <param type="num">
-        <description>Position in register</description>
+      <param name="Position in register" type="num">
         <position>10.2</position>
         <size>0.6</size>
+        <verif>^(\d*)$</verif>
       </param>
     </reg>
   </config>
   <regular>
-    <reg id="14">
-      <description>Environmental sensors</description>
-      <endpoint type="num" dir="inp">
-        <description>temperature</description>
+    <reg name="Environmental sensors" id="15">
+      <endpoint name="Temperature" type="num" dir="inp">
         <position>0</position>
         <size>2</size>
+        <units>
+          <unit name="C" factor="0.1" offset="0"/>
+          <unit name="F" factor="0.18" offset="32"/>
+          <unit name="K" factor="0.1" offset="273.15"/>
+        </units>
       </endpoint>
-      <endpoint type="num" dir="inp">
-        <description>pressure</description>
+      <endpoint name="Pressure" type="num" dir="inp">
         <position>2</position>
         <size>4</size>
+        <units>
+          <unit name="mbar" factor="0.01" offset="0"/>
+          <unit name="Pa" factor="1" offset="0"/>
+          <unit name="kPa" factor="0.001" offset="0"/>
+        </units>
       </endpoint>
-      <endpoint type="num" dir="inp">
-        <description>altitude</description>
+      <endpoint name="Altitude" type="num" dir="inp">
         <position>6</position>
         <size>2</size>
+        <units>
+          <unit name="m" factor="1" offset="0"/>
+        </units>
       </endpoint>
     </reg>
   </regular>
