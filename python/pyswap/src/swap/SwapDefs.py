@@ -82,12 +82,10 @@ class SwapState:
         """
         if state == SwapState.RESTART:
             return "System restarting"
-        elif state == SwapState.RUNNING:
-            return "System running"
-        elif state == SwapState.SYNC:
-            return "Synchronization mode"
-        elif state == SwapState.STOPSWAP:
-            return "System stopping"
+        elif state == SwapState.RXON:
+            return "System with wireless Rx on"
+        elif state == SwapState.RXOFF:
+            return "System with wireless Rx off"
         else:
             return str(state)
 
