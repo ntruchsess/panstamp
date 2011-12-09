@@ -30,7 +30,7 @@
 /**
  * Hardware version
  */
-#define HARDWARE_VERSION        0x00000100
+#define HARDWARE_VERSION        0x00000200
 
 /**
  * Firmware version

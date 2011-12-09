@@ -1,5 +1,5 @@
 /**
- * dht11.pde
+ * dht11
  *
  * Copyright (c) 2011 Daniel Berenguer <dberenguer@usapiens.com>
  * 
@@ -24,7 +24,7 @@
  * Creation date: 03/31/2011
  */
 
-#include "WProgram.h"
+#include "Arduino.h"
 
 /**
  * Pin definitions
@@ -101,10 +101,16 @@ int dht11_ReadTempHum(void)
   delayMicroseconds(40);
 	
   if ((dht11_in = getDataPin()))
+  {
+    Serial.println("NO1");
     return -1;  // Start condition not met
+  }
   delayMicroseconds(80);	
   if (!(dht11_in = getDataPin()))
+  {
+    Serial.println("NO2");
     return -1;  // Start condition not met
+  }
   delayMicroseconds(80);
 
   // now ready for data reception
@@ -118,12 +124,15 @@ int dht11_ReadTempHum(void)
   sensorOFF();
   
   dht11Crc = dht11Data[0] + dht11Data[1] + dht11Data[2] + dht11Data[3];
+Serial.print(dht11Data[4], DEC);
+Serial.print(" = ");
+Serial.println(dht11Crc, DEC);
   // check check_sum
   if(dht11Data[4]!= dht11Crc)
     return -1;  // CRC error
 
   result = ((dht11Data[0] << 8) & 0xFF00) | (dht11Data[2] & 0xFF);
-  
+Serial.println(result, DEC);
   return result;
 }
 

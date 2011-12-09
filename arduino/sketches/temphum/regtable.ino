@@ -1,5 +1,5 @@
 /**
- * regtable.pde
+ * regtable
  *
  * Copyright (c) 2011 Daniel Berenguer <dberenguer@usapiens.com>
  * 
@@ -37,26 +37,23 @@ DECLARE_COMMON_CALLBACKS()
 /**
  * Definition of common registers
  */
-DEFINE_COMMON_REGISTERS();
+DEFINE_COMMON_REGISTERS()
 
 /*
  * Definition of custom registers
  */
-// Periodic Tx interval
-static byte dtTxInterval[2];
-REGISTER regTxInterval(dtTxInterval, sizeof(dtTxInterval), NULL, NULL);
 // Voltage supply
 static byte dtVoltSupply[2];
 REGISTER regVoltSupply(dtVoltSupply, sizeof(dtVoltSupply), &updtVoltSupply, NULL);
 // Temperature and humidity from the DHT11 sensor
-static byte dtTempHum[2];
+static byte dtTempHum[4];
 REGISTER regTempHum(dtTempHum, sizeof(dtTempHum), &updtTempHum, NULL);
+DHT11 dht11;  // DHT11 sensor object
 
 /**
  * Initialize table of registers
  */
 DECLARE_REGISTERS_START()
-  &regTxInterval,
   &regVoltSupply,
   &regTempHum
 DECLARE_REGISTERS_END()
@@ -109,13 +106,18 @@ const void updtVoltSupply(byte eId)
  */
 const void updtTempHum(byte eId)
 {
-  int result;
+  // Power sensor on
+  digitalWrite(SENSOR_PWRPIN, HIGH);
+  delay(400);
 
-  if ((result = dht11_ReadTempHum()) < 0)
-    //return;
-    result = 0;
- 
-  // Update register value
-  regTempHum.value[0] = (result >> 8) & 0xFF;
-  regTempHum.value[1] = result & 0xFF;
+  if (dht11.read() == 0)
+  {
+    regTempHum.value[0] = dht11.temperature & 0xFF;
+    regTempHum.value[1] = 0;
+    regTempHum.value[2] = dht11.humidity & 0xFF;
+    regTempHum.value[3] = 0;
+  }
+
+  // Power sensor off
+  digitalWrite(SENSOR_PWRPIN, LOW);
 }

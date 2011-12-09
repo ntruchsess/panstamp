@@ -27,7 +27,7 @@
 #ifndef _REGTABLE_H
 #define _REGTABLE_H
 
-#include "WProgram.h"
+#include "Arduino.h"
 #include "register.h"
 #include "commonregs.h"
 
@@ -35,9 +35,8 @@
  * Register indexes
  */
 DEFINE_COMMON_REGINDEX_START()
-  REGI_TXINTERVAL,
   REGI_VOLTSUPPLY,
-  REGI_HUMIDTEMP
+  REGI_TEMPHUM
 DEFINE_COMMON_REGINDEX_END()
 
 #endif
