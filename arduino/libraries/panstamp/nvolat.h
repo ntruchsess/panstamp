@@ -26,7 +26,7 @@
 #ifndef _NVOLAT_H
 #define _NVOLAT_H
 
-#include "WProgram.h"
+#include "Arduino.h"
 #include <EEPROM.h>
 
 /**
@@ -37,5 +37,6 @@
 #define EEPROM_SECU_OPTION       0x02   // 1-byte register
 #define EEPROM_SYNC_WORD         0x03   // 2-byte register
 #define EEPROM_DEVICE_ADDR       0x05   // 1-byte register
+#define EEPROM_TX_INTERVAL       0x06   // 2-byte register
 
 #endif

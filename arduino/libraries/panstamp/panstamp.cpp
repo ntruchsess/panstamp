@@ -159,6 +159,9 @@ void PANSTAMP::init()
 
   // Read security option byte from EEPROM
   security = EEPROM.read(EEPROM_SECU_OPTION);
+  // Read periodic Tx interval from EEPROM
+  txInterval[0] = EEPROM.read(EEPROM_TX_INTERVAL);
+  txInterval[1] = EEPROM.read(EEPROM_TX_INTERVAL + 1);
 
   delayMicroseconds(50);  
 
@@ -170,7 +173,7 @@ void PANSTAMP::init()
 
   // Default values
   nonce = 0xFF;
-  systemState = SYSTATE_RUNNING;
+  systemState = SYSTATE_RXON;
 }
 
 /**
@@ -191,7 +194,7 @@ void PANSTAMP::reset()
 }
 
 /**
- * sleepFor
+ * sleepWd
  * 
  * Put panStamp into Power-down state during "time".
  * This function uses the internal watchdog timer in order to exit (interrupt)
@@ -209,7 +212,7 @@ void PANSTAMP::reset()
  *  WDTO_4S = 4 s
  *  WDTO_8S = 8 s
  */
-void PANSTAMP::sleepFor(byte time) 
+void PANSTAMP::sleepWd(byte time) 
 {
   // Power-down CC1101
   cc1101.setPowerDownState();
@@ -228,6 +231,9 @@ void PANSTAMP::sleepFor(byte time)
   sleep_mode();
 
   // ZZZZZZZZ...
+
+  // Wake-up!!
+  wakeUp();
 }
 
 /**
@@ -245,6 +251,50 @@ void PANSTAMP::wakeUp(void)
   power_all_enable();
   // Enable ADC
   ADCSRA |= (1 << ADEN);
+}
+
+/**
+ * goToSleep
+ *
+ * Sleep whilst in power-down mode. This function currently uses sleepWd in a loop
+ */
+void PANSTAMP::goToSleep(void)
+{
+  // Get the amount of seconds to sleep from the internal register
+  int intInterval = txInterval[0] * 0x100 + txInterval[1];
+  int i, loops;
+  byte minTime;
+
+  // No interval? Then return
+  if (intInterval == 0)
+    return;
+
+  // Search the maximum sleep time passed as argument to sleepWd that best
+  // suits our desired interval
+  if (intInterval % 8 == 0)
+  {
+    loops = intInterval / 8;
+    minTime = WDTO_8S;
+  }
+  else if (intInterval % 4 == 0)
+  {
+    loops = intInterval / 4;
+    minTime = WDTO_4S;
+  }
+  else if (intInterval % 2 == 0)
+  {
+    loops = intInterval / 2;
+    minTime = WDTO_2S;
+  }
+  else
+  {
+    loops = intInterval;
+    minTime = WDTO_1S;
+  }
+
+  // Sleep
+  for (i=0 ; i<loops ; i++)
+    panstamp.sleepWd(minTime);
 }
 
 /**
@@ -301,6 +351,26 @@ void PANSTAMP::setSecurity(byte secu, bool save)
     // Save in EEPROM
     if (save)
       EEPROM.write(EEPROM_SECU_OPTION, secu);
+  }
+}
+
+/**
+ * setTxInterval
+ * 
+ * Set interval for periodic transmissions
+ * 
+ * 'interval'	New periodic interval. 0 for asynchronous devices
+ * 'save'     If TRUE, save parameter in EEPROM
+ */
+void PANSTAMP::setTxInterval(byte* interval, bool save)
+{
+  memcpy(txInterval, interval, sizeof(txInterval));
+
+  // Save in EEPROM
+  if (save)
+  {
+    EEPROM.write(EEPROM_TX_INTERVAL, interval[0]);
+    EEPROM.write(EEPROM_TX_INTERVAL + 1, interval[1]);
   }
 }
 

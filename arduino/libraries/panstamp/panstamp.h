@@ -27,7 +27,7 @@
 #ifndef _PANSTAMP_H
 #define _PANSTAMP_H
 
-#include "WProgram.h"
+#include "Arduino.h"
 #include "EEPROM.h"
 #include "cc1101.h"
 #include "register.h"
@@ -48,9 +48,8 @@
 enum SYSTATE
 {
   SYSTATE_RESTART = 0,
-  SYSTATE_RUNNING,
-  SYSTATE_SYNC,
-  SYSTATE_STOP
+  SYSTATE_RXON,
+  SYSTATE_RXOFF
 };
 
 /**
@@ -68,7 +67,28 @@ class PANSTAMP
      * 'time'	Watchdog timer value
      */
     void setup_watchdog(byte time);
-   
+
+    /**
+     * sleepWd
+     * 
+     * Put panStamp into Power-down state during "time".
+     * This function uses the internal watchdog timer in order to exit (interrupt)
+     * from the power-doen state
+     * 
+     * 'time'	Sleeping time:
+     *  WDTO_15MS  = 15 ms
+     *  WDTO_30MS  = 30 ms
+     *  WDTO_60MS  = 60 ms
+     *  WDTO_120MS  = 120 ms
+     *  WDTO_250MS  = 250 ms
+     *  WDTO_500MS  = 500 ms
+     *  WDTO_1S = 1 s
+     *  WDTO_2S = 2 s
+     *  WDTO_4S = 4 s
+     *  WDTO_8S = 8 s
+     */
+    void sleepWd(byte time);
+
   public:
     /**
      * CC1101 radio interface
@@ -90,6 +110,11 @@ class PANSTAMP
      */
     byte systemState;
 
+    /**
+     * Interval between periodic transmissions. 0 for asynchronous transmissions
+     */
+    byte txInterval[2];
+ 
     /**
      * SWAP status packet received. Callaback function
      */
@@ -117,32 +142,18 @@ class PANSTAMP
     void reset(void);
 
     /**
-     * sleepFor
-     * 
-     * Put panStamp into Power-down state during "time".
-     * This function uses the internal watchdog timer in order to exit (interrupt)
-     * from the power-doen state
-     * 
-     * 'time'	Sleeping time:
-     *  WDTO_15MS  = 15 ms
-     *  WDTO_30MS  = 30 ms
-     *  WDTO_60MS  = 60 ms
-     *  WDTO_120MS  = 120 ms
-     *  WDTO_250MS  = 250 ms
-     *  WDTO_500MS  = 500 ms
-     *  WDTO_1S = 1 s
-     *  WDTO_2S = 2 s
-     *  WDTO_4S = 4 s
-     *  WDTO_8S = 8 s
-     */
-    void sleepFor(byte time);
-
-    /**
      * wakeUp
      *
      * Wake from sleep mode
      */
     void wakeUp(void);
+
+    /**
+     * goToSleep
+     *
+     * Sleep whilst in power-down mode. This function currently uses sleepWd in a loop
+     */
+    void goToSleep(void);
 
     /**
      * enterSystemState
@@ -172,6 +183,16 @@ class PANSTAMP
      * 'save' If TRUE, save parameter in EEPROM
      */
     void setSecurity(byte secu, bool save);
+
+    /**
+     * setTxInterval
+     * 
+     * Set interval for periodic transmissions
+     * 
+     * 'interval'	New periodic interval. 0 for asynchronous devices
+     * 'save'     If TRUE, save parameter in EEPROM
+     */
+    void setTxInterval(byte* interval, bool save);
 };
 
 /**

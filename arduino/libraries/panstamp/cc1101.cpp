@@ -22,7 +22,6 @@
  * Creation date: 03/03/2011
  */
 
-#include "WProgram.h"
 #include "cc1101.h"
 #include "nvolat.h"
 
@@ -187,9 +186,6 @@ void CC1101::reset(void)
 void CC1101::setDefaultRegs(void) 
 {
   byte defSyncWrd[] = {CC1101_DEFVAL_SYNC1, CC1101_DEFVAL_SYNC0};
-
-byte val = readReg(CC1101_SYNC1, CC1101_CONFIG_REGISTER);
-Serial.println(val, HEX);
 
   writeReg(CC1101_IOCFG2,  CC1101_DEFVAL_IOCFG2);
   writeReg(CC1101_IOCFG1,  CC1101_DEFVAL_IOCFG1);

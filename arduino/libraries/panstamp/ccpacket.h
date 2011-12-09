@@ -25,7 +25,7 @@
 #ifndef _CCPACKET_H
 #define _CCPACKET_H
 
-#include "WProgram.h"
+#include "Arduino.h"
 
 /**
  * Buffer and data lengths

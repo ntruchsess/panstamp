@@ -27,7 +27,7 @@
 #ifndef _SWPACKET_H
 #define _SWPACKET_H
 
-#include "WProgram.h"
+#include "Arduino.h"
 #include "ccpacket.h"
 //#include "panstamp.h"
 

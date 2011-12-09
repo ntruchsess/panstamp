@@ -42,7 +42,8 @@ enum CUSTOM_REGINDEX                    \
   REGI_SECUPASSWD,                      \
   REGI_SECUNONCE,                       \
   REGI_NETWORKID,                       \
-  REGI_DEVADDRESS,                    
+  REGI_DEVADDRESS,                      \
+  REGI_TXINTERVAL,
 
 #define DEFINE_COMMON_REGINDEX_END()    };
 
@@ -74,7 +75,9 @@ REGISTER regSecuNonce(&panstamp.nonce, sizeof(panstamp.nonce), NULL, NULL);     
 /* Network Id */                                                                                                             \
 REGISTER regNetworkId(panstamp.cc1101.syncWord, sizeof(panstamp.cc1101.syncWord), NULL, &setNetworkId);                      \
 /* Device address */                                                                                                         \
-REGISTER regDevAddress(&panstamp.cc1101.devAddress, sizeof(panstamp.cc1101.devAddress), NULL, &setDevAddress);
+REGISTER regDevAddress(&panstamp.cc1101.devAddress, sizeof(panstamp.cc1101.devAddress), NULL, &setDevAddress);               \
+/* Periodic Tx interval */                                                                                                   \
+REGISTER regTxInterval(panstamp.txInterval, sizeof(panstamp.txInterval), NULL, &setTxInterval);
 
 /**
  * Macros for the declaration of global table of registers
@@ -90,7 +93,8 @@ REGISTER *regTable[] = {             \
         &regSecuPasswd,              \
         &regSecuNonce,               \
         &regNetworkId,               \
-        &regDevAddress,
+        &regDevAddress,              \
+        &regTxInterval,
 
 #define DECLARE_REGISTERS_END()      \
 };                                   \
@@ -106,6 +110,7 @@ const void setFreqChannel(byte id, byte *channel);          \
 const void setSecuOption(byte id, byte *secu);              \
 const void setDevAddress(byte id, byte *addr);              \
 const void setNetworkId(byte rId, byte *nId);               \
+const void setTxInterval(byte id, byte *interval);
 
 /**
  * Macro for the definition of getter/setter functions related to all common registers
@@ -124,13 +129,11 @@ const void setSysState(byte id, byte *state)                \
   switch(state[0])                                          \
   {                                                         \
     case SYSTATE_RESTART:                                   \
-      /* Send status message before restarting the mote */    \
+      /* Send status message before restarting the mote */  \
       panstamp.reset();                                     \
       break;                                                \
-    case SYSTATE_SYNC:                                      \
-      panstamp.systemState = SYSTATE_SYNC;                  \
-      break;                                                \
     default:                                                \
+      panstamp.systemState = state[0];                      \
       break;                                                \
   }                                                         \
 }                                                           \
@@ -189,8 +192,8 @@ const void setDevAddress(byte id, byte *addr)               \
 {                                                           \
   if ((addr[0] > 0) && (addr[0] != regDevAddress.value[0])) \
   {                                                         \
-    /* Send status before taking the new address */           \
-    regDevAddress.sendPriorSwapStatus(addr);                  \
+    /* Send status before taking the new address */         \
+    regDevAddress.sendPriorSwapStatus(addr);                \
     /* Update register value */                             \
     panstamp.cc1101.setDevAddress(addr[0], true);           \
     /* Restart device */                                    \
@@ -204,21 +207,37 @@ const void setDevAddress(byte id, byte *addr)               \
  * Set network id                                           \
  *                                                          \
  * 'rId' Register ID                                        \
- * 'nId'  New network id                                    \
+ * 'nId' New network id                                     \
  */                                                         \
 const void setNetworkId(byte rId, byte *nId)                \
 {                                                           \
   if ((nId[0] != regNetworkId.value[0]) ||                  \
       (nId[1] != regNetworkId.value[1]))                    \
   {                                                         \
-    /* Send status before taking the new network ID */        \
-    regNetworkId.sendPriorSwapStatus(nId);                    \
+    /* Send status before taking the new network ID */      \
+    regNetworkId.sendPriorSwapStatus(nId);                  \
     /* Update register value */                             \
     panstamp.cc1101.setSyncWord(nId, true);                 \
     /* Restart device */                                    \
     panstamp.reset();                                       \
   }                                                         \
 }                                                           \
+/**                                                         \
+ * setTxInterval                                            \
+ *                                                          \
+ * Set periodic Tx interval                                 \
+ *                                                          \
+ * 'id'        Register ID                                  \
+ * 'interval'  New interval (in seconds)                    \
+ */                                                         \
+const void setTxInterval(byte id, byte *interval)           \
+{                                                           \
+  if ((interval[0] != regTxInterval.value[0]) ||            \
+      (interval[1] != regTxInterval.value[1]))              \
+  {                                                         \
+    panstamp.setTxInterval(interval, true);                 \
+  }                                                         \
+}
 
 #endif
 
