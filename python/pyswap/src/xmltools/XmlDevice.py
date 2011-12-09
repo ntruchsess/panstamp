@@ -229,7 +229,11 @@ class XmlDevice(object):
         # Get Power Down flag
         elem = root.find("pwrdownmode")
         if elem is not None:
-            self.pwrDownMode = (elem.text.lower() == "true")
+            self.pwrdownmode = (elem.text.lower() == "true")
+        # Get periodic tx interval
+        elem = root.find("txinterval")
+        if elem is not None:
+            self.txinterval = int(elem.text)
 
 
     def getRegList(self, config=False):
@@ -357,7 +361,9 @@ class XmlDevice(object):
         ## Name of the Product
         self.product = None
         ## Power down mode (True or False). If True, the mote sleeps most of the times
-        self.pwrDownMode = False
+        self.pwrdownmode = False
+        ## Interval (in sec) between periodic transmissions. 0 for disabled
+        self.txinterval = 0
 
         if self.mote is not None:
             self.fileName = XmlSettings.deviceDir + os.sep + "{0:X}".format(self.mote.manufacturerId) + os.sep + "{0:X}".format(self.mote.productId) + ".xml"

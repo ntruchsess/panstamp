@@ -123,8 +123,8 @@ def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Set frequency channel for the wireless gateway.  <a href="#ab54e8fde5bd57b025b21aee7c49588cc"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmodem_1_1SerialModem_1_1SerialModem.html#afb66730a557cb209f3ffb8caa41b5495">setSyncWord</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Set synchronization word for the wireless gateway.  <a href="#afb66730a557cb209f3ffb8caa41b5495"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmodem_1_1SerialModem_1_1SerialModem.html#a564aad867dd03795bf83de1872f9861b">devaddressess</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Set device address for the serial gateway.  <a href="#a564aad867dd03795bf83de1872f9861b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmodem_1_1SerialModem_1_1SerialModem.html#a7c4b421ac7e89d9960509aa05013e71e">setDevAddress</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Set device address for the serial gateway.  <a href="#a7c4b421ac7e89d9960509aa05013e71e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmodem_1_1SerialModem_1_1SerialModem.html#afe28dadbae5c0b215a94ab4628e398f5">__init__</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor.  <a href="#afe28dadbae5c0b215a94ab4628e398f5"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
@@ -204,41 +204,6 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <hr/><h2>Member Function Documentation</h2>
-<a class="anchor" id="a564aad867dd03795bf83de1872f9861b"></a><!-- doxytag: member="modem::SerialModem::SerialModem::devaddressess" ref="a564aad867dd03795bf83de1872f9861b" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">def modem::SerialModem::SerialModem::devaddressess </td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>value</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Set device address for the serial gateway. </p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table class="params">
-    <tr><td class="paramname">value,:</td><td>New device address </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a class="anchor" id="ad81822a437f2d172fe67be866650f4fb"></a><!-- doxytag: member="modem::SerialModem::SerialModem::goToCommandMode" ref="ad81822a437f2d172fe67be866650f4fb" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -377,6 +342,41 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a7c4b421ac7e89d9960509aa05013e71e"></a><!-- doxytag: member="modem::SerialModem::SerialModem::setDevAddress" ref="a7c4b421ac7e89d9960509aa05013e71e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def modem::SerialModem::SerialModem::setDevAddress </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Set device address for the serial gateway. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value,:</td><td>New device address </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="ab54e8fde5bd57b025b21aee7c49588cc"></a><!-- doxytag: member="modem::SerialModem::SerialModem::setFreqChannel" ref="ab54e8fde5bd57b025b21aee7c49588cc" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -504,7 +504,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Nov 14 2011 16:32:56 for pyswap by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Dec 9 2011 16:23:27 for pyswap by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>

@@ -96,13 +96,15 @@ class XmlSettings(object):
         doc.write(file)
         file.close()
         
-    def __init__(self, file_name = "settings.xml"):
+    def __init__(self, file_name=None):
         """
         Class constructor
         
         @param filename: Path to the configuration file
         """
         # Name/path of the current configuration file
+        if file_name is None:
+            file_name = "settings.xml"
         XmlSettings.file_name = file_name
         # Read XML file
         self.read()

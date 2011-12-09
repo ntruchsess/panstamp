@@ -192,7 +192,8 @@ class SerialModem:
             self.freq_channel = value
             return True
         return False
-    
+
+
     def setSyncWord(self, value):
         """
         Set synchronization word for the wireless gateway
@@ -214,8 +215,9 @@ class SerialModem:
             return True
         else:
             return False
-    
-    def devaddressess(self, value):
+
+
+    def setDevAddress(self, value):
         """
         Set device address for the serial gateway
         

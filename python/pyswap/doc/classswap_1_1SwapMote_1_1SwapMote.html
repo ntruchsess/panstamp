@@ -115,10 +115,12 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Set mote's frequency channel.  <a href="#a8597f70f98ba1edaf106a0c5a8a84f3d"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapMote_1_1SwapMote.html#a6d9f8635ffcd55f825d7c0a49109acd1">setSecurity</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Set mote's security option.  <a href="#a6d9f8635ffcd55f825d7c0a49109acd1"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapMote_1_1SwapMote.html#ac4ff2cae3958d5b61de7ae62cf9f4d8d">setTxInterval</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Set periodic Tx interval.  <a href="#ac4ff2cae3958d5b61de7ae62cf9f4d8d"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapMote_1_1SwapMote.html#a2629421c34a6e1d28317b8fd74aa7665">restart</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Ask mote to restart.  <a href="#a2629421c34a6e1d28317b8fd74aa7665"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapMote_1_1SwapMote.html#a8b77dd4dd93fe01a111ffb441af51544">leaveSync</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Ask mote to leave SYNC mode.  <a href="#a8b77dd4dd93fe01a111ffb441af51544"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Ask mote to leave SYNC mode (RXON state)  <a href="#a8b77dd4dd93fe01a111ffb441af51544"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a640b41040def8e6c5b6aa64d8cd15857"></a><!-- doxytag: member="swap::SwapMote::SwapMote::updateTimeStamp" ref="a640b41040def8e6c5b6aa64d8cd15857" args="" -->
 def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapMote_1_1SwapMote.html#a640b41040def8e6c5b6aa64d8cd15857">updateTimeStamp</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Update time stamp. <br/></td></tr>
@@ -163,6 +165,12 @@ Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a53660947fbd44a7deeb70a67b801f88b"></a><!-- doxytag: member="swap::SwapMote::SwapMote::lstCfgRegs" ref="a53660947fbd44a7deeb70a67b801f88b" args="" -->
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapMote_1_1SwapMote.html#a53660947fbd44a7deeb70a67b801f88b">lstCfgRegs</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">List of config registers provided by this mote. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4c2f74fc08b5cbd0c0016754d0ef16cc"></a><!-- doxytag: member="swap::SwapMote::SwapMote::pwrdownmode" ref="a4c2f74fc08b5cbd0c0016754d0ef16cc" args="" -->
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapMote_1_1SwapMote.html#a4c2f74fc08b5cbd0c0016754d0ef16cc">pwrdownmode</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Powerdown mode. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adcf939a773d87b1dd2393fe57ee95aee"></a><!-- doxytag: member="swap::SwapMote::SwapMote::txinterval" ref="adcf939a773d87b1dd2393fe57ee95aee" args="" -->
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classswap_1_1SwapMote_1_1SwapMote.html#adcf939a773d87b1dd2393fe57ee95aee">txinterval</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Interval between periodic transmissions. <br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>SWAP mote class. </p>
@@ -390,7 +398,7 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Ask mote to leave SYNC mode. </p>
+<p>Ask mote to leave SYNC mode (RXON state) </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>True if this command is confirmed from the mote. Return False otherwise </dd></dl>
 
 </div>
@@ -597,6 +605,43 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ac4ff2cae3958d5b61de7ae62cf9f4d8d"></a><!-- doxytag: member="swap::SwapMote::SwapMote::setTxInterval" ref="ac4ff2cae3958d5b61de7ae62cf9f4d8d" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def swap::SwapMote::SwapMote::setTxInterval </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>interval</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Set periodic Tx interval. </p>
+<p>Return true if ACK received from mote</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">interval,:</td><td>New Tx interval</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>True if this command is confirmed from the mote. Return False otherwise </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a398c0a7161eb82b8a2db1ae4c692bd65"></a><!-- doxytag: member="swap::SwapMote::SwapMote::staRegister" ref="a398c0a7161eb82b8a2db1ae4c692bd65" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -654,7 +699,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Nov 14 2011 16:32:56 for pyswap by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Dec 9 2011 16:23:28 for pyswap by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>

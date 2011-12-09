@@ -33,6 +33,7 @@ class SwapAddress:
     ## Broadcast address
     BROADCAST_ADDR = 0x00
     
+    
 class SwapFunction:
     """
     SWAP function codes
@@ -43,6 +44,7 @@ class SwapFunction:
     QUERY = 0x01
     ## SWAP COMMAND type
     COMMAND = 0x02
+    
 
 class SwapRegId:
     """
@@ -58,15 +60,16 @@ class SwapRegId:
     ID_SECU_NONCE = 7
     ID_NETWORK_ID = 8
     ID_DEVICE_ADDR = 9
+    ID_TX_INTERVAL = 10
+    
 
 class SwapState:
     """
     System states
     """
     RESTART = 0
-    RUNNING = 1
-    SYNC = 2
-    STOP = 3
+    RXON = 1
+    RXOFF = 2
 
     @staticmethod
     def toString(state):
@@ -83,7 +86,7 @@ class SwapState:
             return "System running"
         elif state == SwapState.SYNC:
             return "Synchronization mode"
-        elif state == SwapState.STOP:
+        elif state == SwapState.STOPSWAP:
             return "System stopping"
         else:
             return str(state)

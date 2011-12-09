@@ -28,7 +28,7 @@ __date__ ="$Aug 20, 2011 10:36:00 AM$"
 
 from modem.SerialModem import SerialModem
 from swap.SwapRegister import SwapRegister
-from swap.SwapDefs import SwapFunction, SwapRegId
+from swap.SwapDefs import SwapFunction, SwapRegId, SwapState
 from swap.SwapPacket import SwapPacket, SwapQueryPacket
 from swap.SwapMote import SwapMote
 from SwapException import SwapException
@@ -207,6 +207,13 @@ class SwapServer(threading.Thread):
                     if  self._eventHandler.newEndpointDetected is not None:
                         self._eventHandler.newEndpointDetected(endp)
 
+        if mote.state != SwapState.RXON:
+            # Update mote state to Rx ON
+            mote.state = SwapState.RXON
+            # Notify state change to event handler
+            if self._eventHandler.moteStateChanged is not None:
+                self._eventHandler.moteStateChanged(mote)
+                        
 
     def _updateMoteAddress(self, oldAddr, newAddr):
         """
@@ -219,12 +226,12 @@ class SwapServer(threading.Thread):
         if oldAddr == newAddr:
             return
         # Search mote in list
-        for i, item in enumerate(self.lstMotes):
-            if item.address == oldAddr:
-                self.lstMotes[i].address = newAddr
+        for mote in self.lstMotes:
+            if mote.address == oldAddr:
+                mote.address = newAddr
                 # Notify address change to event handler
                 if self._eventHandler.moteAddressChanged is not None:
-                    self._eventHandler.moteAddressChanged(self.lstMotes[i])
+                    self._eventHandler.moteAddressChanged(mote)
                 break
 
 
@@ -252,7 +259,7 @@ class SwapServer(threading.Thread):
                     self._eventHandler.moteStateChanged(mote)
                 break
 
-
+           
     def _updateRegisterValue(self, packet):
         """
         Update register value in the list of motes
@@ -471,11 +478,12 @@ class SwapServer(threading.Thread):
         return self.modem.syncword
 
 
-    def __init__(self, eventHandler, verbose=False, start=True):
+    def __init__(self, eventHandler, settings=None, verbose=False, start=True):
         """
         Class constructor
 
         @param eventHandler: Parent event handler object
+        @param settings: path to the main configuration file
         @param verbose: Verbose SWAP traffic
         @param start: Start server upon creation if this flag is True
         """
@@ -511,7 +519,7 @@ class SwapServer(threading.Thread):
         self._eventHandler = eventHandler
 
         # General settings
-        self._xmlSettings = XmlSettings()
+        self._xmlSettings = XmlSettings(settings)
 
         ## Ture if server is running
         self.is_running = False

@@ -147,6 +147,18 @@ class SwapMote(object):
         val = SwapValue(secu, length=1)
         return self.cmdRegisterWack(SwapRegId.ID_SECU_OPTION, val)
 
+
+    def setTxInterval(self, interval):
+        """
+        Set periodic Tx interval. Return true if ACK received from mote
+        
+        @param interval: New Tx interval
+        
+        @return True if this command is confirmed from the mote. Return False otherwise
+        """
+        val = SwapValue(interval, length=2)
+        return self.cmdRegisterWack(SwapRegId.ID_TX_INTERVAL, val)
+    
     
     def restart(self):
         """
@@ -160,11 +172,11 @@ class SwapMote(object):
 
     def leaveSync(self):
         """
-        Ask mote to leave SYNC mode
+        Ask mote to leave SYNC mode (RXON state)
         
         @return True if this command is confirmed from the mote. Return False otherwise
         """
-        val = SwapValue(SwapState.STOP, length=1)
+        val = SwapValue(SwapState.RXOFF, length=1)
         return self.cmdRegisterWack(SwapRegId.ID_SYSTEM_STATE, val)
 
     
@@ -251,7 +263,7 @@ class SwapMote(object):
         ## Current mote's security nonce
         self.nonce = 0
         ## State of the mote
-        self.state = SwapState.RUNNING
+        self.state = SwapState.RXON
         ## List of regular registers provided by this mote
         self.lstRegRegs = None
         ## List of config registers provided by this mote
@@ -263,4 +275,8 @@ class SwapMote(object):
             self.lstCfgRegs = self.definition.getRegList(config=True)
         ## Time stamp of the last update received from mote
         self.timeStamp = time.time()
+        ## Powerdown mode
+        self.pwrdownmode = self.definition.pwrdownmode
+        ## Interval between periodic transmissions
+        self.txinterval = self.definition.txinterval
 
