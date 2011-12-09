@@ -81,6 +81,9 @@ if __name__ == "__main__":
     # Security option
     parser.add_option("-x", "--secoption", type="int", dest="security",
                       help="Security option (0 for no security)")
+    # Periodic Tx interval
+    parser.add_option("-p", "--interval", type="int", dest="txinterval",
+                      help="Periodic Tx interval")
 
     # Or address unitary registers
     # Register id
@@ -142,7 +145,7 @@ if __name__ == "__main__":
                 # Get mote from address
                 mote = manager.getMote(address=devaddress)
                 # Is this mote a Power-Down device?
-                if mote.definition.pwrDownMode:
+                if mote.definition.pwrdownmode:
                     devaddress = None   # Ask for SYNC
                     print "Device with address " + str(devaddress) + " is surely sleeping"
 
@@ -177,6 +180,13 @@ if __name__ == "__main__":
                     print "Only positive options please"
                 if mote.setSecurity(options.security):
                     print "New security option correctly set"
+                    
+            # Periodic Tx interval
+            if options.txinterval is not None:
+                if options.txinterval < 0:
+                    print "Only positive intervals please"
+                if mote.setTxInterval(options.interval):
+                    print "New periodic Tx interval correctly set"
 
             # Network id
             if options.netId is not None:
