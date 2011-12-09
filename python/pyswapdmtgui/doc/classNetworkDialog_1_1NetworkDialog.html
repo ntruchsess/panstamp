@@ -112,15 +112,23 @@ Public Member Functions</h2></td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac752f4826c2110847b7288023edcc9c8"></a><!-- doxytag: member="NetworkDialog::NetworkDialog::config" ref="ac752f4826c2110847b7288023edcc9c8" args="" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>config</b></td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkDialog_1_1NetworkDialog.html#ac752f4826c2110847b7288023edcc9c8">config</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration settings. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aececdaa76fea83335f2e842f5c84119b"></a><!-- doxytag: member="NetworkDialog::NetworkDialog::devaddress" ref="aececdaa76fea83335f2e842f5c84119b" args="" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>devaddress</b></td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkDialog_1_1NetworkDialog.html#aececdaa76fea83335f2e842f5c84119b">devaddress</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">SWAP device address. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3444eb69aa130ba38f30a66997d48b2d"></a><!-- doxytag: member="NetworkDialog::NetworkDialog::netid" ref="a3444eb69aa130ba38f30a66997d48b2d" args="" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>netid</b></td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkDialog_1_1NetworkDialog.html#a3444eb69aa130ba38f30a66997d48b2d">netid</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">SWAP Network ID. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a47ea645ac763f3d48a6b9ee97568a877"></a><!-- doxytag: member="NetworkDialog::NetworkDialog::freq_channel" ref="a47ea645ac763f3d48a6b9ee97568a877" args="" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>freq_channel</b></td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkDialog_1_1NetworkDialog.html#a47ea645ac763f3d48a6b9ee97568a877">freq_channel</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Frequency channel. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad6e0cfaa455b196adf765ec0cb0c921c"></a><!-- doxytag: member="NetworkDialog::NetworkDialog::security" ref="ad6e0cfaa455b196adf765ec0cb0c921c" args="" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>security</b></td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkDialog_1_1NetworkDialog.html#ad6e0cfaa455b196adf765ec0cb0c921c">security</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Security option. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac6dd2358b4ab2b88cdf30840d6121b8c"></a><!-- doxytag: member="NetworkDialog::NetworkDialog::interval" ref="ac6dd2358b4ab2b88cdf30840d6121b8c" args="" -->
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkDialog_1_1NetworkDialog.html#ac6dd2358b4ab2b88cdf30840d6121b8c">interval</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Periodic Tx interval. <br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>Network configuration dialog. </p>
@@ -163,7 +171,13 @@ Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>secu</em> = <code>0</code>&#160;</td>
+          <td class="paramname"><em>secu</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>interval</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -175,7 +189,12 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Class constructor. </p>
-<p>'parent' Parent object </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parent</td><td>Parent object </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -188,7 +207,7 @@ Public Attributes</h2></td></tr>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -200,7 +219,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Nov 14 2011 16:51:32 for pyswapdmtgui by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Dec 9 2011 16:55:12 for pyswapdmtgui by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>

@@ -43,30 +43,34 @@ class NetworkDialog(ConfigDialog):
         Create GUI controls
         """
         # Add controls to the layout
-        self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "freq_channel"), size=(200, 26)), "Frequency channel")
+        self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "freq_channel")), "Frequency channel")
         self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "netid")), "Network ID")
         self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "devaddress")), "Device address")
         self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "security")), "Security option")
+        if self.interval is not None:
+            self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "interval")), "Periodic Tx interval")
         self.addOkCancelButtons()
         
 
-    def __init__(self, parent=None, devAddr=255, netid=0xB547, freq_channel=0, secu=0):
+    def __init__(self, parent=None, devAddr=255, netid=0xB547, freq_channel=0, secu=0, interval=None):
         """
         Class constructor
 
-        'parent'    Parent object
+        @param parent    Parent object
         """
         ConfigDialog.__init__(self, parent, title="Network settings")
-        # Configuration settings
+        ## Configuration settings
         self.config = XmlNetwork(XmlSettings.network_file)
-        # SWAP device address
+        ## SWAP device address
         self.devaddress = devAddr
-        # SWAP Network ID
+        ## SWAP Network ID
         self.netid = netid
-        # Frequency channel
+        ## Frequency channel
         self.freq_channel = freq_channel
-        # Security option
+        ## Security option
         self.security = secu
+        ## Periodic Tx interval
+        self.interval = interval
         # Create widgets
         self._createControls()
         # Layout widgets

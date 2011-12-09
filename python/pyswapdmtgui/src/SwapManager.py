@@ -81,7 +81,7 @@ class SwapManager(SwapInterface):
             print "Mote with address " + str(mote.address) + " switched to \"" + \
             SwapState.toString(mote.state) + "\""
         # SYNC mode entered?
-        if mote.state == SwapState.SYNC:
+        if mote.state == SwapState.RXON:
             if self.browser is not None:
                 self.browser.syncReceived(mote)
 

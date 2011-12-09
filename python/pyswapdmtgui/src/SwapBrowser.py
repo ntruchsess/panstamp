@@ -181,7 +181,10 @@ class SwapBrowser(wx.Frame):
         # Configuration settings
         config = XmlNetwork(XmlSettings.network_file)
         # Open network config dialog
-        dialog = NetworkDialog(self, self.server.modem.devaddress, hex(self.server.modem.syncword), self.server.modem.freq_channel, config.security)
+        if self.server.modem is None:
+            dialog = NetworkDialog(self, config.devaddress, hex(config.network_id), config.freq_channel, config.security)
+        else:
+            dialog = NetworkDialog(self, self.server.modem.devaddress, hex(self.server.modem.syncword), self.server.modem.freq_channel, config.security)
         res = dialog.ShowModal()
         
         # Save new settings in xml file
@@ -205,15 +208,24 @@ class SwapBrowser(wx.Frame):
         # Configuration settings
         config = XmlNetwork(XmlSettings.network_file)
         
+        # This is our mote
+        mote = None
+        
         # Any mote selected from the tree?
         itemID = self.tree.GetSelection()
         if itemID is not None:
             obj = self.tree.GetPyData(itemID)
             if obj.__class__.__name__ == "SwapMote":
-                address = obj.address
+                mote = obj
+                address = mote.address
                 netid = config.network_id
                 freqChann = config.freq_channel
-                secu = config.security                  
+                secu = config.security
+                if mote.pwrdownmode == True:
+                    mote = None
+                    txinterval = None
+                else:
+                    txinterval = mote.txinterval
                 paramsOk = True
 
         # No mote selected from the tree?
@@ -222,27 +234,34 @@ class SwapBrowser(wx.Frame):
             netid = config.network_id
             freqChann = config.freq_channel
             secu = config.security
+            txinterval = 0
         
         # Open network config dialog
-        dialog = NetworkDialog(self, address, netid, freqChann, secu)
-        
+        dialog = NetworkDialog(self, address, hex(netid), freqChann, secu, txinterval)
+        res = dialog.ShowModal()
+
+        if res == wx.ID_CANCEL:
+            return
+              
         # No mote selected?
-        if obj is None:
+        if mote is None:
             # Ask for SYNC mode
             res = self._WaitForSync()
             if not res:
                 return
-            obj = self._moteInSync  
+            mote = self._moteInSync  
         
         # Send new config to mote
-        if not obj.setAddress(int(dialog.devaddress)):
+        if not mote.setAddress(int(dialog.devaddress)):
             self._Warning("Unable to set mote's address")
-        if not obj.setNetworkId(int(dialog.netid, 16)):
+        if not mote.setNetworkId(int(dialog.netid, 16)):
             self._Warning("Unable to set mote's Network ID")
-        if not obj.setFreqChannel(int(dialog.freq_channel)):
+        if not mote.setFreqChannel(int(dialog.freq_channel)):
             self._Warning("Unable to set mote's frequency channel")
-        if not obj.setSecurity(int(dialog.security)):
+        if not mote.setSecurity(int(dialog.security)):
             self._Warning("Unable to set mote's security option")
+        if not mote.setTxInterval(int(dialog.interval)):
+            self._Warning("Unable to set mote's Tx interval")
     
        
     def _OnConnect(self, evn=None):
@@ -442,13 +461,38 @@ class SwapBrowser(wx.Frame):
                                 # Append new endpoint to the tree
                                 newEndpID = self.tree.InsertItem(regID, endpID, text=endpoint.name + " = " + endpoint.getValueInAscii(), image=icon)
                                 self.tree.SetPyData(newEndpID, endp)
-                                # Remove the old endpoint
+                                # Remove old endpoint
                                 self.tree.Delete(endpID)
                                 return
                             endpID, endpCookie = self.tree.GetNextChild(regID, endpCookie)
                         return
                     regID, regCookie = self.tree.GetNextChild(moteID, regCookie)
                 return
+            moteID, moteCookie = self.tree.GetNextChild(self.rootID, moteCookie)
+            
+            
+    def updateAddressInTree(self, mote):
+        """
+        Update mote address in tree
+        
+        'mote'  Mote to be updated in the tree
+        """
+        # Try with first mote in tree
+        moteID, moteCookie = self.tree.GetFirstChild(self.rootID)
+        
+        while moteID.IsOk():
+            m = self.tree.GetPyData(moteID)
+            if m == mote:                
+                # Add mote to the root
+                newMoteID = self.tree.AppendItem(self.rootID, "Mote " + str(mote.address) + ": " + mote.definition.product)
+                self.tree.SetItemImage(newMoteID, self.moteIcon, wx.TreeItemIcon_Normal)
+                # Associate mote with its tree entry
+                self.tree.SetPyData(newMoteID, mote)                
+                # Remove old mote
+                self.tree.Delete(moteID)
+                return
+            
+            # Try with next mote in tree
             moteID, moteCookie = self.tree.GetNextChild(self.rootID, moteCookie)
 
 
@@ -467,7 +511,7 @@ class SwapBrowser(wx.Frame):
                         dialog = ParamDialog(self, reg)                        
                         dialog.Destroy()
                     # Does this device need to enter SYNC mode first?
-                    if obj.pwrDownMode == True:
+                    if obj.pwrdownmode == True:
                         res = self._WaitForSync()
                         if not res:
                             return
@@ -485,7 +529,7 @@ class SwapBrowser(wx.Frame):
                         dialog = ParamDialog(self, reg)
                         dialog.Destroy()
                     # Does this device need to enter SYNC mode first?
-                    if mote.definition.pwrDownMode == True:
+                    if mote.definition.pwrdownmode == True:
                         res = self._WaitForSync()
                         if not res:
                             return
@@ -501,7 +545,7 @@ class SwapBrowser(wx.Frame):
                 dialog.Destroy()
                 mote = obj.mote
                 # Does this device need to enter SYNC mode first?
-                if mote.definition.pwrDownMode == True:
+                if mote.definition.pwrdownmode == True:
                     res = self._WaitForSync()
                     if not res:
                         return
@@ -514,7 +558,7 @@ class SwapBrowser(wx.Frame):
             
             # Mote still in SYNC mode?
             if self._moteInSync is not None:
-                if self._moteInSync.state == SwapState.SYNC:
+                if self._moteInSync.state == SwapState.RXON:
                     # Leave SYNC mode
                     self._moteInSync.leaveSync()
                     self._moteInSync = None
