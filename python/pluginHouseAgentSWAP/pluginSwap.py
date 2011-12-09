@@ -29,25 +29,25 @@ __version__ = "1.0"
 #########################################################################
 
 from SwapManager import SwapManager
-from swapexception.SwapException import SwapException
+from SwapException import SwapException
 
-from plugins.pluginapi import PluginAPI
-from twisted.internet import reactor
-
+import sys
 
 if __name__ == "__main__":
     """
     Run SWAP daemon for HouseAgent"
     """
-    # Start HouseAgent plugin
-    pluginId = "d116c674-8d86-4fd4-9b7e-0cb8624dd90a"
-    pluginapi = PluginAPI(pluginId, "SWAP")
-
+    
+    settings_file = None
+    
+    if len(sys.argv) > 1:
+        if sys.argv[1] == '-f':
+            settings_file = sys.argv[2]
+    
     # SWAP stuff here...
     try:
         # Start SWAP manager tool
-        manager = SwapManager(pluginapi, True, True)
+        manager = SwapManager(settings_file, True, True)
     except SwapException as ex:
         ex.display()
-
-    reactor.run()
+        ex.log()

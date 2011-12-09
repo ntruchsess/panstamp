@@ -31,6 +31,7 @@ from mako.template import Template
 from twisted.web.resource import Resource
 from twisted.web.server import NOT_DONE_YET
 from twisted.internet import defer
+import json
 
 
 def init_pages(web, coordinator, db):
@@ -52,10 +53,10 @@ class SWAP_add(Resource):
         self.db = db
         
     def result(self, result):
-        
+                
         lookup = TemplateLookup(directories=['houseagent/templates/'])
         template = Template(filename='houseagent/plugins/swap/templates/add.html', lookup=lookup)
-        
+              
         self.request.write(str(template.render(result=result[1], locations=result[0], mote=self.mote, product=self.product, pluginid=self.pluginid, pluginguid=self.pluginguid)))
         self.request.finish()
     
@@ -84,30 +85,41 @@ class SWAP_network(Resource):
         Resource.__init__(self)
         self.coordinator = coordinator
         self.db = db
+        self.plugins = self.coordinator.get_plugins_by_type("SWAP")
 
     def result(self, result):
-        print "result=", result
         lookup = TemplateLookup(directories=['houseagent/templates/'])
         template = Template(filename='houseagent/plugins/swap/templates/network.html', lookup=lookup)
         
-        self.request.write(str(template.render(result=result, pluginguid=self.pluginguid, pluginid=self.pluginid)))
+        self.request.write(str(template.render(result=result, pluginguid=self.pluginguid, pluginid=self.pluginid, addrindb=self.addresses_in_db)))
         self.request.finish()
 
+    def get_queried_devices(self, devices):
+        self.addresses_in_db = []
+        for dev in devices:
+            self.addresses_in_db.append(str(dev[2]))
+        self.coordinator.send_custom(self.plugins[0].guid, "get_networkinfo", {}).addCallback(self.result) 
+        
     def query_error(self, error):
         print "FAIL:", error
     
     def render_GET(self, request):
         self.request = request
-        plugins = self.coordinator.get_plugins_by_type("SWAP")
         
-        if len(plugins) == 0:
+        deferlist = []
+        self.plugins = self.coordinator.get_plugins_by_type("SWAP")
+        
+        if len(self.plugins) == 0:
             self.request.write(str("No online SWAP plugins found..."))
             self.request.finish()
-        elif len(plugins) == 1:
-            self.pluginguid = plugins[0].guid
-            self.pluginid = plugins[0].id
-            self.coordinator.send_custom(plugins[0].guid, "get_networkinfo", {}).addCallback(self.result)   
-                
+        elif len(self.plugins) == 1:
+            self.pluginguid = self.plugins[0].guid
+            self.pluginid = self.plugins[0].id
+            self.db.query_plugin_devices(self.pluginid).addCallback(self.get_queried_devices) 
+
+        d = defer.gatherResults(deferlist)
+        d.addCallback(self.result)
+                        
         return NOT_DONE_YET
 
 
@@ -120,17 +132,15 @@ class SWAP_added(Resource):
         self.coordinator = coordinator      
         self.db = db
         
-    def device_added(self, result):
-        print "SWAP DEVICE ADDED! YAY!"
-        
-        self.request.write(str("done!")) 
-        self.request.finish()             
+    def device_added(self, result):       
+        self.request.write(str("done!"))
+        self.request.finish()         
     
     def render_POST(self, request):
         self.request = request
         data = json.loads(request.content.read())
 
-        self.db.add_device(data['name'], data['nodeid'], data['pluginid'], data['location']).addCallback(self.device_added)
-        self.coordinator.send_custom(data['pluginguid'], "track_values", {'values': data['valueids']})
+        self.db.save_device(data['name'], data['mote'], data['pluginid'], data['location']).addCallback(self.device_added)    
+        self.coordinator.send_custom(data['pluginguid'], "track_values", {'mote': data['mote'], 'values': data['valueids']})
         
         return NOT_DONE_YET
