@@ -271,17 +271,16 @@ class SwapManager(SwapInterface):
         self.cfgdevices = XmlDevices()
 
 
-    def __init__(self, settings=None, verbose=False, monitor=False):
+    def __init__(self, verbose=False, monitor=False):
         """
         Class constructor
         
-        @param settings: path to the main configuration file
         @param verbose: Print out SWAP frames or not
         @param monitor: Print out network events or not
         """
         try:
             # Superclass call
-            SwapInterface.__init__(self, settings, verbose)
+            SwapInterface.__init__(self, verbose)
         except:
             raise
 
