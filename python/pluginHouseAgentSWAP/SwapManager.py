@@ -63,10 +63,11 @@ class SwapManager(SwapInterface):
 
         # Set param units for this endpoint
         values = self.cfgdevices.getValues(endpoint.getRegAddress())
-        if endpoint.name in values:
-            endpoint.display = True
-            if values[endpoint.name] != "":
-                endpoint.setUnit(values[endpoint.name])
+        if values is not None:
+            if endpoint.name in values:
+                endpoint.display = True
+                if values[endpoint.name] != "":
+                    endpoint.setUnit(values[endpoint.name])
 
 
     def moteStateChanged(self, mote):
@@ -79,7 +80,7 @@ class SwapManager(SwapInterface):
             print "Mote with address " + str(mote.address) + " switched to \"" + \
             SwapState.toString(mote.state) + "\""
         # SYNC mode entered?
-        if mote.state == SwapState.SYNC:
+        if mote.state == SwapState.RXON:
             self._addrInSyncMode = mote.address        
 
 
