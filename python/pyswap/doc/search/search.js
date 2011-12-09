@@ -7,18 +7,10 @@
 
 var indexSectionsWithContent =
 {
-  0: "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010111111111001111111111101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-  1: "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001100000000100000100001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-  2: "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010101110101001110111111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-  3: "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000111111011001111111111100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
 };
 
 var indexSectionNames =
 {
-  0: "all",
-  1: "classes",
-  2: "functions",
-  3: "variables"
 };
 
 function convertToId(search)
@@ -263,11 +255,11 @@ function SearchBox(name, resultsPath, inFrame, label)
         var node = child.firstChild;
         if (j==id)
         {
-          node.innerHTML='&#8226;';
+          node.innerHTML='&bull;';
         }
         else
         {
-          node.innerHTML='&#160;';
+          node.innerHTML='&nbsp;';
         }
         j++;
       }
@@ -360,7 +352,7 @@ function SearchBox(name, resultsPath, inFrame, label)
        hasResultsPage = false;
     }
 
-    window.frames.MSearchResults.location = resultsPageWithSearch;  
+    window.frames.MSearchResults.location.href = resultsPageWithSearch;  
     var domPopupSearchResultsWindow = this.DOMPopupSearchResultsWindow();
 
     if (domPopupSearchResultsWindow.style.display!='block')
@@ -379,8 +371,8 @@ function SearchBox(name, resultsPath, inFrame, label)
        else
        {
          var domPopupSearchResults = this.DOMPopupSearchResults();
-         var left = getXPos(domSearchBox) + 150; // domSearchBox.offsetWidth;
-         var top  = getYPos(domSearchBox) + 20;  // domSearchBox.offsetHeight + 1;
+         var left = getXPos(domSearchBox) + domSearchBox.offsetWidth;
+         var top  = getYPos(domSearchBox) + domSearchBox.offsetHeight + 1;
          domPopupSearchResultsWindow.style.display = 'block';
          left -= domPopupSearchResults.offsetWidth;
          domPopupSearchResultsWindow.style.top     = top  + 'px';
