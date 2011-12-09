@@ -27,7 +27,7 @@
 #ifndef _MODEM_H
 #define _MODEM_H
 
-#include "WProgram.h"
+#include "Arduino.h"
 #include "tools.h"
 #include "version.h"
 
@@ -50,11 +50,6 @@
 #define AT_SYNCWORD              "ATSW"      // Synchronization word
 #define AT_DEVADDRESS            "ATDA"      // Device address
 #define AT_ADDRCHECK             "ATAC"      // Address check
-
-/**
- * Macros
- */
-#define resetTimer()    t1Ticks = 0; Timer1.restart();
 
 /**
  * Serial modes

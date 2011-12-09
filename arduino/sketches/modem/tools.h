@@ -27,7 +27,7 @@
 #ifndef _TOOLS_H
 #define _TOOLS_H
 
-#include "WProgram.h"
+#include "Arduino.h"
 
 byte charToHex(byte ch);
 

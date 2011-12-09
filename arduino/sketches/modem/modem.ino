@@ -32,13 +32,13 @@
 
 #define enableINT0irq()    attachInterrupt(0, isrINT0event, FALLING);
 #define disableINT0irq()   detachInterrupt(0);
+#define resetTimer()      t1Ticks = 0
 
 char strSerial[SERIAL_BUF_LEN];          // Serial buffer
 byte ch;
 int len = 0;
 SERMODE serMode = SERMODE_DATA;          // Serial mode (data or command mode)
 byte t1Ticks = 0;                        // Timer 1 ticks
-boolean t1Timeout = false;               // True when T1 times out
 
 /**
  * CC1101 object
@@ -94,7 +94,7 @@ void isrT1event(void)
   if (t1Ticks == MAX_SERIAL_SILENCE_TK)
   {
     Timer1.stop();
-    t1Ticks = 0;
+    resetTimer();
     // Pending "+++" command?
     if (!strcmp(strSerial, AT_GOTO_CMDMODE))
     {
@@ -103,7 +103,7 @@ void isrT1event(void)
     }
     memset(strSerial, 0, sizeof(strSerial));
     len = 0;
-    Timer1.start();
+    Timer1.resume();
   }
   else
     t1Ticks++;
