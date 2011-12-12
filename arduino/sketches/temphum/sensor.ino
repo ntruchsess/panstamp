@@ -1,5 +1,5 @@
 /**
- * dht11
+ * sensor
  *
  * Copyright (c) 2011 Daniel Berenguer <dberenguer@usapiens.com>
  * 
@@ -25,6 +25,7 @@
  */
 
 #include "Arduino.h"
+#include "regtable.h"
 
 /**
  * Pin definitions
@@ -48,37 +49,48 @@
 /**
  * Local functions
  */
-byte dht11_ReadByte(void);
+byte sensor_ReadByte(void);
 
 /**
- * dht11_ReadByte
+ * sensor_ReadByte
  *
  * Read data byte from DHT11 sensor
  */
-byte dht11_ReadByte(void)
+byte sensor_ReadByte(void)
 {
   byte i, result = 0;
-  
+  int count = 20000;
+
   for(i=0; i< 8; i++)
   {
-    while(!getDataPin());
+    while(!getDataPin())
+    {
+      if (--count == 0)
+        return -1;
+    }
     delayMicroseconds(30);
 		
     if (getDataPin())
       result |=(1<<(7-i));
-    while(getDataPin());
+
+    count = 20000;
+    while(getDataPin())
+    {
+      if (--count == 0)
+        return -1;
+    }
   }
   return result;
 }
 
 /**
- * dht11_ReadTempHum
+ * sensor_ReadTempHum
  *
- * Read temperature and humidity values
+ * Read temperature and humidity values from DHT11 sensor
  *
- * Return integer with the following containing hum(1 byte):temp(1 byte)
+ * Return -1 in case of error. Return 0 otherwise
  */
-int dht11_ReadTempHum(void)
+int sensor_ReadTempHum(void)
 {
   byte dht11Data[5];
   byte dht11_in, i, dht11Crc;
@@ -87,7 +99,7 @@ int dht11_ReadTempHum(void)
   // Power ON sensor
   setPwrOutput();
   sensorON();
-  delay(200);
+  delay(250);
   
   setDataOutput();
   setDataPin();
@@ -101,21 +113,15 @@ int dht11_ReadTempHum(void)
   delayMicroseconds(40);
 	
   if ((dht11_in = getDataPin()))
-  {
-    Serial.println("NO1");
     return -1;  // Start condition not met
-  }
   delayMicroseconds(80);	
   if (!(dht11_in = getDataPin()))
-  {
-    Serial.println("NO2");
     return -1;  // Start condition not met
-  }
   delayMicroseconds(80);
 
   // now ready for data reception
   for (i=0; i<5; i++)
-    dht11Data[i] = dht11_ReadByte();
+    dht11Data[i] = sensor_ReadByte();
 
   setDataOutput();
   setDataPin();
@@ -124,15 +130,14 @@ int dht11_ReadTempHum(void)
   sensorOFF();
   
   dht11Crc = dht11Data[0] + dht11Data[1] + dht11Data[2] + dht11Data[3];
-Serial.print(dht11Data[4], DEC);
-Serial.print(" = ");
-Serial.println(dht11Crc, DEC);
   // check check_sum
   if(dht11Data[4]!= dht11Crc)
     return -1;  // CRC error
 
-  result = ((dht11Data[0] << 8) & 0xFF00) | (dht11Data[2] & 0xFF);
-Serial.println(result, DEC);
-  return result;
+  dtTempHum[0] = dht11Data[2];  // Temperature
+  dtTempHum[1] = 0;
+  dtTempHum[2] = dht11Data[0];  // Humidity
+  dtTempHum[3] = 0;
+  
+  return 0;
 }
-

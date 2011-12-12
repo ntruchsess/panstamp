@@ -39,5 +39,10 @@ DEFINE_COMMON_REGINDEX_START()
   REGI_TEMPHUM
 DEFINE_COMMON_REGINDEX_END()
 
+/**
+ * Sensor values
+ */
+byte dtTempHum[4];
+
 #endif
 

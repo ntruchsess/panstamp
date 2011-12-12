@@ -26,18 +26,11 @@
  
 #include "regtable.h"
 #include "panstamp.h"
-#include "dht11.h"
 
 /**
  * LED pin
  */
 #define LEDPIN               4
-
-/**
- * DHT11 pins
- */
-#define SENSOR_DATAPIN       6
-#define SENSOR_PWRPIN        5
 
 /**
  * setup
@@ -49,12 +42,8 @@ void setup()
   int i;
   byte ledState = LOW;
   
-//  Serial.begin(38400);
-//  Serial.println("Starting...");
-  
   pinMode(LEDPIN, OUTPUT);
-  pinMode(SENSOR_PWRPIN, OUTPUT);
-   
+
   // Init panStamp
   panstamp.init();
   
@@ -79,10 +68,12 @@ void setup()
  */
 void loop()
 {
-  digitalWrite(LEDPIN, HIGH);
+//  wdt_enable(WDTO_4S);
   getRegister(REGI_VOLTSUPPLY)->getData();
+  digitalWrite(LEDPIN, HIGH);
   getRegister(REGI_TEMPHUM)->getData();
   digitalWrite(LEDPIN, LOW);
+//  wdt_disable();
   panstamp.goToSleep();
 }
 

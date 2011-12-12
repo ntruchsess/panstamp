@@ -46,9 +46,7 @@ DEFINE_COMMON_REGISTERS()
 static byte dtVoltSupply[2];
 REGISTER regVoltSupply(dtVoltSupply, sizeof(dtVoltSupply), &updtVoltSupply, NULL);
 // Temperature and humidity from the DHT11 sensor
-static byte dtTempHum[4];
 REGISTER regTempHum(dtTempHum, sizeof(dtTempHum), &updtTempHum, NULL);
-DHT11 dht11;  // DHT11 sensor object
 
 /**
  * Initialize table of registers
@@ -106,18 +104,6 @@ const void updtVoltSupply(byte eId)
  */
 const void updtTempHum(byte eId)
 {
-  // Power sensor on
-  digitalWrite(SENSOR_PWRPIN, HIGH);
-  delay(400);
-
-  if (dht11.read() == 0)
-  {
-    regTempHum.value[0] = dht11.temperature & 0xFF;
-    regTempHum.value[1] = 0;
-    regTempHum.value[2] = dht11.humidity & 0xFF;
-    regTempHum.value[3] = 0;
-  }
-
-  // Power sensor off
-  digitalWrite(SENSOR_PWRPIN, LOW);
+  // Read temperature and humidity from sensor
+  sensor_ReadTempHum();
 }
