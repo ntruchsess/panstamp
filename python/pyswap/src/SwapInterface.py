@@ -74,7 +74,7 @@ class SwapInterface:
         @param mote: Mote having changed
         """
         pass
-
+ 
 
     def moteAddressChanged(self, mote):
         """
@@ -179,10 +179,11 @@ class SwapInterface:
         self.server.stop()
 
 
-    def __init__(self, verbose=False, start=True):
+    def __init__(self, settings=None, verbose=False, start=True):
         """
         Class constructor
 
+        @param settings: path to the main configuration file
         @param verbose: Print out SWAP frames
         @param start: Start SWAP server if True
         """
@@ -193,7 +194,9 @@ class SwapInterface:
         ## List of motes
         self.lstMotes = None
                        
-        print "SWAP server starting... "
-        self.server = SwapServer(self, self.verbose, start)
+        if start:
+            print "SWAP server starting... "
+        self.server = SwapServer(self, settings, self.verbose, start)
         self.lstMotes = self.server.lstMotes
-        print "SWAP server is now running... "
+        if start:
+            print "SWAP server is now running... "
