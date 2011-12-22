@@ -70,9 +70,9 @@ DEFINE_COMMON_CALLBACKS()
  *
  * Measure voltage supply and update register
  *
- * 'eId'  Register ID
+ * 'rId'  Register ID
  */
-const void updtVoltSupply(byte eId)
+const void updtVoltSupply(byte rId)
 {
   unsigned short result;
   
@@ -91,8 +91,8 @@ const void updtVoltSupply(byte eId)
    */
 
   // Update register value
-  regTable[eId]->value[0] = (result >> 8) & 0xFF;
-  regTable[eId]->value[1] = result & 0xFF;
+  regTable[rId]->value[0] = (result >> 8) & 0xFF;
+  regTable[rId]->value[1] = result & 0xFF;
 }
 
 /**
@@ -100,9 +100,9 @@ const void updtVoltSupply(byte eId)
  *
  * Measure humidity and temperature and update register
  *
- * 'eId'  Register ID
+ * 'rId'  Register ID
  */
-const void updtTempHum(byte eId)
+const void updtTempHum(byte rId)
 {
   // Read temperature and humidity from sensor
   sensor_ReadTempHum();

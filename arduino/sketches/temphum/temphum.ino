@@ -41,22 +41,31 @@ void setup()
 {
   int i;
   byte ledState = LOW;
-  
+
   pinMode(LEDPIN, OUTPUT);
+  digitalWrite(LEDPIN, LOW);
 
   // Init panStamp
   panstamp.init();
-  
+
   // Transmit product code
   getRegister(REGI_PRODUCTCODE)->getData();
 
+  // Enter SYNC state
+  panstamp.enterSystemState(SYSTATE_SYNC);
+
   // During 3 seconds, listen the network for possible commands whilst the LED blinks
-  for(i=0 ; i<12 ; i++)
+  for(i=0 ; i<6 ; i++)
   {
-    ledState = !ledState;
-    digitalWrite(LEDPIN, ledState);
-    delay(250);
+    digitalWrite(LEDPIN, HIGH);
+    delay(100);
+    digitalWrite(LEDPIN, LOW);
+    delay(400);
   }
+  // Transmit periodic Tx interval
+  getRegister(REGI_TXINTERVAL)->getData();
+  // Transmit power voltage
+  getRegister(REGI_VOLTSUPPLY)->getData();
   // Switch to Rx OFF state
   panstamp.enterSystemState(SYSTATE_RXOFF);
 }
@@ -68,12 +77,17 @@ void setup()
  */
 void loop()
 {
-//  wdt_enable(WDTO_4S);
-  getRegister(REGI_VOLTSUPPLY)->getData();
+  wdt_enable(WDTO_4S);
+  
+  // Enable the following block of code if you want the panStamp to send Vcc and blink the LED
+  /*
   digitalWrite(LEDPIN, HIGH);
-  getRegister(REGI_TEMPHUM)->getData();
+  getRegister(REGI_VOLTSUPPLY)->getData();
   digitalWrite(LEDPIN, LOW);
-//  wdt_disable();
+  */
+  
+  getRegister(REGI_TEMPHUM)->getData();
+  wdt_disable();
   panstamp.goToSleep();
 }
 

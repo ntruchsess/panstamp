@@ -94,7 +94,7 @@ int sensor_ReadTempHum(void)
 {
   byte dht11Data[5];
   byte dht11_in, i, dht11Crc;
-  int result;
+  int result, temperature, humidity;
   
   // Power ON sensor
   setPwrOutput();
@@ -134,10 +134,14 @@ int sensor_ReadTempHum(void)
   if(dht11Data[4]!= dht11Crc)
     return -1;  // CRC error
 
-  dtTempHum[0] = dht11Data[2];  // Temperature
-  dtTempHum[1] = 0;
-  dtTempHum[2] = dht11Data[0];  // Humidity
-  dtTempHum[3] = 0;
+  // Prepare values for 2-decimal format:
+  temperature = dht11Data[2] * 100;  // Temperature
+  humidity = dht11Data[0] * 100;     // Humidity
+  
+  dtTempHum[0] = (temperature >> 8) & 0xFF;
+  dtTempHum[1] = temperature & 0xFF;
+  dtTempHum[2] = (humidity >> 8) & 0xFF;
+  dtTempHum[3] = humidity & 0xFF;
   
   return 0;
 }
