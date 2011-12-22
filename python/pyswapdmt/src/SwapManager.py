@@ -120,7 +120,7 @@ class SwapManager(SwapInterface):
         'monitor'  Print out network events or not
         """
         # Superclass call
-        SwapInterface.__init__(self, verbose)        
+        SwapInterface.__init__(self, None, verbose)        
         # Print SWAP activity
         self._printSWAP = monitor
         # Mote address in SYNC mode

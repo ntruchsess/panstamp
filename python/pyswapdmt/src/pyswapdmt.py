@@ -113,9 +113,9 @@ if __name__ == "__main__":
                 # Custom registers
                 #-------------------
                 # Get Develoepr/device directory from devices.xml
-                deviceDir = XmlDeviceDir()
+                devicedir = XmlDeviceDir()
                 # Find our mote within the directory
-                xmlMote = deviceDir.getDeviceDef(options.device)
+                xmlMote = devicedir.getDeviceDef(options.device)
                 if xmlMote is None:
                     print "Unable to find device \"" + options.device + "\" in directory"
                     _quit()      # Quit application
