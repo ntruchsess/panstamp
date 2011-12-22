@@ -98,6 +98,7 @@ void isrT1event(void)
     // Pending "+++" command?
     if (!strcmp(strSerial, AT_GOTO_CMDMODE))
     {
+      disableINT0irq();  // Disable wireless reception interrupt
       Serial.println("OK-Command mode");
       serMode = SERMODE_COMMAND;
     }
@@ -158,6 +159,7 @@ void handleSerialCmd(char* command)
       {
         serMode = SERMODE_DATA;
         Serial.println("OK-Data mode");
+        enableINT0irq();  // Enable wireless reception interrupt
       }
     }
     // Set new value
@@ -181,22 +183,6 @@ void handleSerialCmd(char* command)
       {
         if (atQuery == ATQUERY_REQUEST)
           Serial.println(FIRMWARE_VERSION, HEX);
-      }
-      // Carrier frequency
-      else if (!strncmp(strSerial, AT_CARRIERFREQ, 4))
-      {
-        if (atQuery == ATQUERY_COMMAND)
-        {
-          if (i < CFREQ_LAST)
-          {
-            cc1101.setCarrierFreq(i, true);
-            Serial.println("OK");
-          }
-          else
-            Serial.println("ERROR");
-        }
-        else
-          Serial.println(cc1101.carrierFreq, HEX);   
       }
       // Frequency channel
       else if (!strncmp(strSerial, AT_FREQCHANNEL, 4))
@@ -279,6 +265,7 @@ void setup()
 { 
   Serial.begin(38400);
   Serial.flush();
+  Serial.println("");
 
   // Reset serial buffer
   memset(strSerial, 0, sizeof(strSerial));
@@ -288,6 +275,7 @@ void setup()
   // Attach interrupt function to Timer1
   Timer1.attachInterrupt(isrT1event);
 
+  // Default mode is COMMAND
   Serial.println("Modem ready!");
    
   // Setup CC1101
@@ -313,8 +301,11 @@ void setup()
 void loop()
 {
   // Read serial command
-  while (Serial.available() > 0)
+  if (Serial.available() > 0)
   {
+    // Disable wireless reception interrupt
+    disableINT0irq();
+    
     resetTimer();
     ch = Serial.read();
 
@@ -335,6 +326,9 @@ void loop()
       strSerial[len] = ch; 
       len++;
     }
+    
+    // Enable wireless reception interrupt
+    enableINT0irq();
   }
 }
 
