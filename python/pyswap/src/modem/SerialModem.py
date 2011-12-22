@@ -94,13 +94,16 @@ class SerialModem:
         
         @return True if the serial gateway does enter Command Mode. Return false otherwise
         """
-        self._sermode = SerialModem.Mode.COMMAND
-        response = self.runAtCommand("+++", 3000)
-        if response is None:
-            return False
-        if response[:2] == "OK":
+        if self._sermode == SerialModem.Mode.COMMAND:
             return True
+        
+        self._sermode = SerialModem.Mode.COMMAND
+        response = self.runAtCommand("+++", 5000)
 
+        if response is not None:
+            if response[:2] == "OK":
+                return True
+        
         self._sermode = SerialModem.Mode.DATA
         return False
 
@@ -111,12 +114,16 @@ class SerialModem:
         
         @return True if the serial gateway does enter Data Mode. Return false otherwise
         """
+        if self._sermode == SerialModem.Mode.DATA:
+            return True
+        
         response = self.runAtCommand("ATO\r")
-        if response is None:
-            return False
-        if response[0:2] == "OK":
-            self._sermode = SerialModem.Mode.DATA;
-            return True;
+        
+        if response is not None:
+            if response[0:2] == "OK":
+                self._sermode = SerialModem.Mode.DATA;
+                return True;
+        
         return False;
 
     
@@ -154,7 +161,8 @@ class SerialModem:
         self._atresponse = "("
         # Send serial packet
         self._serport.send(cmd)
-
+        
+        # Wait for response from modem
         while self._atresponse[0] == '(':
             if not self._waitForResponse(timeout):
                 return None
@@ -263,7 +271,7 @@ class SerialModem:
         @param verbose: Print out SWAP traffic (True or False)
         """
         # Serial mode (command or data modes)
-        self._sermode = None
+        self._sermode = SerialModem.Mode.DATA
         # Response to the last AT command sent to the serial modem
         self._atresponse = ""
         # AT response received from modem

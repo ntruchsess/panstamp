@@ -38,7 +38,7 @@ class SwapException(Exception):
         """
         Print exception description
         """
-        print datetime.datetime.fromtimestamp(self.timeStamp).strftime("%d-%m-%Y %H:%M:%S"), self.description
+        print datetime.datetime.fromtimestamp(self.timestamp).strftime("%d-%m-%Y %H:%M:%S"), self.description
 
 
     def log(self):
@@ -46,7 +46,7 @@ class SwapException(Exception):
         Write exception in log file
         """
         f = open(XmlSettings.error_file, 'a')
-        f.write(datetime.datetime.fromtimestamp(self.timeStamp).strftime("%d-%m-%Y %H:%M:%S") + ": " + self.description + "\n")
+        f.write(datetime.datetime.fromtimestamp(self.timestamp).strftime("%d-%m-%Y %H:%M:%S") + ": " + self.description + "\n")
         f.close()
         
 
@@ -73,7 +73,7 @@ class SwapException(Exception):
         
         @param value: Description about the error
         """
-        self.timeStamp = time.time()
+        self.timestamp = time.time()
         # Exception description
         self.description = "SwapException occurred: " + value
   

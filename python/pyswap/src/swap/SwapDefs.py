@@ -70,6 +70,8 @@ class SwapState:
     RESTART = 0
     RXON = 1
     RXOFF = 2
+    SYNC = 3
+    LOWBAT = 4
 
     @staticmethod
     def toString(state):
@@ -81,11 +83,15 @@ class SwapState:
         @return State in string format
         """
         if state == SwapState.RESTART:
-            return "System restarting"
+            return "Device restarting"
         elif state == SwapState.RXON:
-            return "System with wireless Rx on"
+            return "RF reception enabled"
         elif state == SwapState.RXOFF:
-            return "System with wireless Rx off"
+            return "RF reception disabled"
+        elif state == SwapState.SYNC:
+            return "Synchronization mode"
+        elif state == SwapState.LOWBAT:
+            return "Device battery is low"
         else:
             return str(state)
 

@@ -28,7 +28,7 @@ __date__ ="$Aug 20, 2011 10:36:00 AM$"
 
 from modem.SerialModem import SerialModem
 from swap.SwapRegister import SwapRegister
-from swap.SwapDefs import SwapFunction, SwapRegId, SwapState
+from swap.SwapDefs import SwapFunction, SwapRegId
 from swap.SwapPacket import SwapPacket, SwapQueryPacket
 from swap.SwapMote import SwapMote
 from SwapException import SwapException
@@ -39,12 +39,13 @@ from xmltools.XmlNetwork import XmlNetwork
 import threading
 import time
 
+#class SwapServer(threading.Thread):
 class SwapServer(threading.Thread):
     """
     SWAP server class
     """
     # Maximum waiting time (in ms) for ACK's
-    _MAX_WAITTIME_ACK = 500
+    _MAX_WAITTIME_ACK = 2000
     # Max tries for any SWAP command
     _MAX_SWAP_COMMAND_TRIES = 3
 
@@ -52,13 +53,6 @@ class SwapServer(threading.Thread):
     def run(self):
         """
         Start SWAP server thread
-        """
-        self._start()
-
-
-    def _start(self):
-        """
-        Start SWAP server
         """
         # Network configuration settings
         self._xmlnetwork = XmlNetwork(self._xmlSettings.network_file)
@@ -68,8 +62,7 @@ class SwapServer(threading.Thread):
         try:
             # Create and start serial modem object
             self.modem = SerialModem(self._xmlserial.port, self._xmlserial.speed, self.verbose)
-            if self.modem is None:
-                raise SwapException("Unable to start serial modem on port " + self._xmlserial.port)
+
             # Declare receiving callback function
             self.modem.setRxCallback(self._ccPacketReceived)
     
@@ -100,29 +93,29 @@ class SwapServer(threading.Thread):
             # Return to data mode if necessary
             if param_changed == True:
                 self.modem.goToDataMode()
-                
+                            
             self.is_running = True
+            
             # Notify parent about the start of the server
             self._eventHandler.swapServerStarted()
-    
+                    
             # Discover motes in the current SWAP network
             self._discoverMotes()
         except SwapException:
+            threading.Thread.__init__(self)
             raise
         
+        threading.Thread.__init__(self)
+           
 
     def stop(self):
         """
         Stop SWAP server
         """
-        self._stop.set()
-        self.is_running = False
+        #self._stop.set()
         if self.modem is not None:
             self.modem.stop()
-
-
-    def stopped(self):
-        return self._stop.isSet()
+        self.is_running = False
 
 
     def resetNetwork(self):
@@ -154,7 +147,7 @@ class SwapServer(threading.Thread):
             # Product code received
             if swPacket.regId == SwapRegId.ID_PRODUCT_CODE:
                 try:
-                    mote = SwapMote(self, swPacket.value.toList(), swPacket.srcAddress)
+                    mote = SwapMote(self, swPacket.value.toList(), swPacket.srcAddress, swPacket.security, swPacket.nonce)
                     mote.nonce = swPacket.nonce
                     self._checkMote(mote)
                 except IOError as ex:
@@ -166,6 +159,10 @@ class SwapServer(threading.Thread):
             # System state received
             elif swPacket.regId == SwapRegId.ID_SYSTEM_STATE:
                 self._updateMoteState(swPacket)
+            # Periodic Tx interval received
+            elif swPacket.regId == SwapRegId.ID_TX_INTERVAL:
+                # Update interval in list of motes
+                self._updateMoteTxInterval(swPacket)
             # For any other register id
             else:
                 # Update register in the list of motes
@@ -202,18 +199,11 @@ class SwapServer(threading.Thread):
             if self._eventHandler.newMoteDetected is not None:
                 self._eventHandler.newMoteDetected(mote)
             # Notify the event handler about the discovery of new endpoints
-            for reg in mote.lstRegRegs:
+            for reg in mote.lstregregs:
                 for endp in reg.lstItems:
                     if  self._eventHandler.newEndpointDetected is not None:
                         self._eventHandler.newEndpointDetected(endp)
-
-        if mote.state != SwapState.RXON:
-            # Update mote state to Rx ON
-            mote.state = SwapState.RXON
-            # Notify state change to event handler
-            if self._eventHandler.moteStateChanged is not None:
-                self._eventHandler.moteStateChanged(mote)
-                        
+                       
 
     def _updateMoteAddress(self, oldAddr, newAddr):
         """
@@ -225,14 +215,13 @@ class SwapServer(threading.Thread):
         # Has the address really changed?
         if oldAddr == newAddr:
             return
-        # Search mote in list
-        for mote in self.lstMotes:
-            if mote.address == oldAddr:
-                mote.address = newAddr
-                # Notify address change to event handler
-                if self._eventHandler.moteAddressChanged is not None:
-                    self._eventHandler.moteAddressChanged(mote)
-                break
+        # Get mote from list
+        mote = self.getMote(address=oldAddr)
+        if mote is not None:
+            mote.address = newAddr
+            # Notify address change to event handler
+            if self._eventHandler.moteAddressChanged is not None:
+                self._eventHandler.moteAddressChanged(mote)
 
 
     def _updateMoteState(self, packet):
@@ -244,71 +233,89 @@ class SwapServer(threading.Thread):
         # New system state
         state = packet.value.toInteger()
 
-        # Search mote in list
-        for mote in self.lstMotes:
-            if mote.address == packet.srcAddress:
-                # Has the state really changed?
-                if mote.state == state:
-                    return
+        # Get mote from list
+        mote = self.getMote(address=packet.regAddress)
+        if mote is not None:
+            # Has the state really changed?
+            if mote.state == state:
+                return
 
-                # Update system state in the list
-                mote.state = state
+            # Update system state in the list
+            mote.state = state
 
-                # Notify state change to event handler
-                if self._eventHandler.moteStateChanged is not None:
-                    self._eventHandler.moteStateChanged(mote)
-                break
+            # Notify state change to event handler
+            if self._eventHandler.moteStateChanged is not None:
+                self._eventHandler.moteStateChanged(mote)
 
-           
+
+    def _updateMoteTxInterval(self, packet):
+        """
+        Update mote Tx interval in list
+
+        @param packet: SWAP packet to extract the information from
+        """
+        # New periodic Tx interval (in seconds)
+        interval = packet.value.toInteger()
+
+        # Get mote from list
+        mote = self.getMote(address=packet.regAddress)
+        if mote is not None:
+            # Has the interval really changed?
+            if mote.txinterval == interval:
+                return
+
+            # Update system state in the list
+            mote.txinterval = interval
+       
+        
     def _updateRegisterValue(self, packet):
         """
         Update register value in the list of motes
 
         @param packet: SWAP packet to extract the information from
         """
-        # Search in the list of motes
-        for mote in self.lstMotes:
-            # Same register address?
-            if mote.address == packet.regAddress:
-                # Search within its list of regular registers
-                if mote.lstRegRegs is not None:
-                    for reg in mote.lstRegRegs:
-                        # Same register ID?
-                        if reg.id == packet.regId:
-                            # Did register's value change?
-                            if not reg.value.isEqual(packet.value):
-                                # Save new register value
-                                reg.setValue(packet.value)
-                                # Notify register'svalue change to event handler
-                                if self._eventHandler.registerValueChanged is not None:
-                                    self._eventHandler.registerValueChanged(reg)
-                                # Notify endpoint's value change to event handler
-                                if self._eventHandler.endpointValueChanged is not None:
-                                    # Has any of the endpoints changed?
-                                    for endp in reg.lstItems:
-                                        if endp.valueChanged == True:
-                                            self._eventHandler.endpointValueChanged(endp)
-                                return
-                # Search within its list of config registers
-                if mote.lstCfgRegs is not None:
-                    for reg in mote.lstCfgRegs:
-                        # Same register ID?
-                        if reg.id == packet.regId:
-                            # Did register's value change?
-                            if not reg.value.isEqual(packet.value):
-                                # Save new register value
-                                reg.setValue(packet.value)
-                                # Notify register'svalue change to event handler
-                                if self._eventHandler.registerValueChanged is not None:
-                                    self._eventHandler.registerValueChanged(reg)
-                                # Notify parameter's value change to event handler
-                                if self._eventHandler.paramValueChanged is not None:
-                                    # Has any of the endpoints changed?
-                                    for param in reg.lstItems:
-                                        if param.valueChanged == True:
-                                            self._eventHandler.paramValueChanged(param)
-                                return
-                return
+        # Get mote from list
+        mote = self.getMote(address=packet.regAddress)
+        if mote is not None:
+            # Search within its list of regular registers
+            if mote.lstregregs is not None:
+                for reg in mote.lstregregs:
+                    # Same register ID?
+                    if reg.id == packet.regId:
+                        # Did register's value change?
+                        if not reg.value.isEqual(packet.value):
+                            # Save new register value
+                            reg.setValue(packet.value)
+                            # Notify register'svalue change to event handler
+                            if self._eventHandler.registerValueChanged is not None:
+                                self._eventHandler.registerValueChanged(reg)
+                            # Notify endpoint's value change to event handler
+                            if self._eventHandler.endpointValueChanged is not None:
+                                # Has any of the endpoints changed?
+                                for endp in reg.lstItems:
+                                    if endp.valueChanged == True:
+                                        self._eventHandler.endpointValueChanged(endp)
+                            return
+            # Search within its list of config registers
+            if mote.lstcfgregs is not None:
+                for reg in mote.lstcfgregs:
+                    # Same register ID?
+                    if reg.id == packet.regId:
+                        # Did register's value change?
+                        if not reg.value.isEqual(packet.value):
+                            # Save new register value
+                            reg.setValue(packet.value)
+                            # Notify register'svalue change to event handler
+                            if self._eventHandler.registerValueChanged is not None:
+                                self._eventHandler.registerValueChanged(reg)
+                            # Notify parameter's value change to event handler
+                            if self._eventHandler.paramValueChanged is not None:
+                                # Has any of the endpoints changed?
+                                for param in reg.lstItems:
+                                    if param.valueChanged == True:
+                                        self._eventHandler.paramValueChanged(param)
+                            return
+            return
 
 
     def _checkStatus(self, status):
@@ -331,9 +338,10 @@ class SwapServer(threading.Thread):
                 if status.regId == self._expectedRegister.id:
                     self._valueReceived = status.value
 
-        # Update nonce in list
+        # Update security option and nonce in list
         mote = self.getMote(address=status.srcAddress)
         if mote is not None:
+            mote.security = status.security
             mote.nonce = status.nonce
             
 
@@ -367,9 +375,9 @@ class SwapServer(threading.Thread):
         if index is not None and index >= 0:
             return self.lstMotes[index]
         elif (address is not None) and (address > 0) and (address <= 255):
-            for item in self.lstMotes:
-                if item.address == address:
-                    return item
+            for mote in self.lstMotes:
+                if mote.address == address:
+                    return mote
         return None
 
 
@@ -388,6 +396,7 @@ class SwapServer(threading.Thread):
         for i in range(SwapServer._MAX_SWAP_COMMAND_TRIES):
             # Send command
             ack = mote.cmdRegister(regId, value);
+            #print "Expected ACK:", ack.toString()
             # Wait for aknowledgement from mote
             if self._waitForAck(ack, SwapServer._MAX_WAITTIME_ACK):
                 return True;    # ACK received
@@ -417,26 +426,31 @@ class SwapServer(threading.Thread):
         return regVal
 
 
-    def _waitForAck(self, ackPacket, waitTime):
+    def _waitForAck(self, ackPacket, wait_time):
         """
         Wait for ACK (SWAP status packet)
         Non re-entrant method!!
 
         @param ackPacket: SWAP status packet to expect as a valid ACK
-        @param waitTime: Max waiting time in milliseconds
+        @param wait_time: Max waiting time in milliseconds
         
         @return True if the ACK is received. False otherwise
         """
         # Expected ACK packet (SWAP status)
         self._expectedAck = ackPacket
         
-        loops = waitTime / 10
+        #loops = wait_time / 10
+        start = time.time()
         while not self._packetAcked:
+            """
             time.sleep(0.01)
             loops -= 1
             if loops == 0:
                 break
- 
+            """
+            if (time.time() - start)*1000 >= wait_time:
+                break
+            
         res = self._packetAcked
         self._expectedAck = None
         self._packetAcked = False
@@ -478,16 +492,18 @@ class SwapServer(threading.Thread):
         return self.modem.syncword
 
 
-    def __init__(self, eventHandler, verbose=False, start=True):
+    def __init__(self, eventHandler, settings=None, verbose=False, start=True):
         """
         Class constructor
 
         @param eventHandler: Parent event handler object
+        @param settings: path to the main configuration file
         @param verbose: Verbose SWAP traffic
         @param start: Start server upon creation if this flag is True
         """
         threading.Thread.__init__(self)
         self._stop = threading.Event()
+
         ## Verbose SWAP frames
         self.verbose = verbose
         ## Serial wireless gateway
@@ -518,9 +534,9 @@ class SwapServer(threading.Thread):
         self._eventHandler = eventHandler
 
         # General settings
-        self._xmlSettings = XmlSettings()
+        self._xmlSettings = XmlSettings(settings)
 
-        ## Ture if server is running
+        ## Tells us if the server is running
         self.is_running = False
         # Start server
         if start:

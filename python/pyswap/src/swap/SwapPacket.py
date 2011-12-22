@@ -66,7 +66,7 @@ class SwapPacket(CcPacket):
         ## Destination address
         self.destAddress = destAddr
         ## Source address
-        self.srcAddress = None
+        self.srcAddress = regAddr
         ## Hop count for repeating purposes
         self.hop = hop
         ## Security option
@@ -116,7 +116,7 @@ class SwapPacket(CcPacket):
                 self.value = SwapValue(ccPacket.data[7:])
         else:
             self.data.append(self.destAddress)
-            self.data.append(0)     # Empty source address
+            self.data.append(self.srcAddress)
             self.data.append((self.hop << 4) | (self.security & 0x0F))
             self.data.append(self.nonce)
             self.data.append(self.function)

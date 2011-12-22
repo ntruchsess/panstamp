@@ -184,7 +184,7 @@ class SwapMote(object):
         """
         Update time stamp
         """
-        self.timeStamp = time.time()
+        self.timestamp = time.time()
     
     
     def getRegister(self, regId):
@@ -196,11 +196,11 @@ class SwapMote(object):
         @return SwapRegister object
         """
         # Regular registers
-        for reg in self.lstRegRegs:
+        for reg in self.lstregregs:
             if reg.id == regId:
                 return reg            
         # Configuration registers
-        for reg in self.lstCfgRegs:
+        for reg in self.lstcfgregs:
             if reg.id == regId:
                 return reg
 
@@ -216,12 +216,12 @@ class SwapMote(object):
         @return: SwapParam object
         """
         # Regular registers
-        for reg in self.lstRegRegs:
+        for reg in self.lstregregs:
             for param in reg.lstItems:
                 if param.name == name:
                     return param
         # Configuration registers
-        for reg in self.lstCfgRegs:
+        for reg in self.lstcfgregs:
             for param in reg.lstItems:
                 if param.name == name:
                     return param
@@ -229,12 +229,12 @@ class SwapMote(object):
         return None
             
         
-    def __init__(self, server=None, productCode=None, address=0xFF):
+    def __init__(self, server=None, product_code=None, address=0xFF, security=0, nonce=0):
         """
         Class constructor
         
         @param server: SWAP server object
-        @param productCode: Product Code
+        @param product_code: Product Code
         @param address: Mote address
         """
         if server is None:
@@ -242,17 +242,17 @@ class SwapMote(object):
         ## Swap server object
         self.server = server
         ## Product ID
-        self.productId = 0
+        self.product_id = 0
         ## Manufacturer ID
-        self.manufacturerId = 0
+        self.manufacturer_id = 0
         ## Definition settings
         self.config = None
 
         # Get manufacturer and product id from product code
-        if productCode is not None:
+        if product_code is not None:
             for i in range(4):
-                self.manufacturerId = self.manufacturerId | (productCode[i] << 8 * (3-i))
-                self.productId = self.productId | (productCode[i + 4] << 8 * (3-i))
+                self.manufacturer_id = self.manufacturer_id | (product_code[i] << 8 * (3-i))
+                self.product_id = self.product_id | (product_code[i + 4] << 8 * (3-i))
 
         # Definition file
         ## Definition settings
@@ -260,21 +260,23 @@ class SwapMote(object):
 
         ## Device address
         self.address = address
+        ## Security option
+        self.security = security
         ## Current mote's security nonce
-        self.nonce = 0
+        self.nonce = nonce
         ## State of the mote
-        self.state = SwapState.RXON
+        self.state = SwapState.RXOFF
         ## List of regular registers provided by this mote
-        self.lstRegRegs = None
+        self.lstregregs = None
         ## List of config registers provided by this mote
-        self.lstCfgRegs = None
+        self.lstcfgregs = None
         if self.definition is not None:
             # List of regular registers
-            self.lstRegRegs = self.definition.getRegList()
+            self.lstregregs = self.definition.getRegList()
             # List of config registers
-            self.lstCfgRegs = self.definition.getRegList(config=True)
+            self.lstcfgregs = self.definition.getRegList(config=True)
         ## Time stamp of the last update received from mote
-        self.timeStamp = time.time()
+        self.timestamp = time.time()
         ## Powerdown mode
         self.pwrdownmode = self.definition.pwrdownmode
         ## Interval between periodic transmissions

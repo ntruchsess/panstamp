@@ -74,7 +74,17 @@ class SerialPort(threading.Thread):
                                 serbuf.append(ch)
                     except OSError:
                         raise SwapException(str(sys.exc_type) + ": " + str(sys.exc_info()))
-
+           
+                    # Anything to be sent?                   
+                    #self._send_lock.acquire()
+                    if self._strtosend is not None:                  
+                        # Send serial packet
+                        self._serport.write(self._strtosend)                        
+                        # Enable for debug only
+                        if self._verbose == True:
+                            print "Sent: " + self._strtosend
+                        self._strtosend = None
+                    #self._send_lock.release()
             else:
                 raise SwapException("Unable to read serial port " + self.portname + " since it is not open")
         else:
@@ -99,11 +109,9 @@ class SerialPort(threading.Thread):
         
         @param buf: Packet to be transmitted
         """
-        # Send serial packet
-        self._serport.write(buf)
-        # Enable for debug only
-        if self._verbose == True:
-            print "Sent: " + buf
+        #self._send_lock.acquire()
+        self._strtosend = buf
+        #self._send_lock.release()
 
 
     def setRxCallback(self, cb_function):
@@ -144,11 +152,14 @@ class SerialPort(threading.Thread):
         self._serport = None
         ## Callback Rx function
         self.serial_received = None
+        # Strint to send
+        self._strtosend = None
+        self._send_lock = threading.Lock()
         # Verbose network traffic
         self._verbose = verbose
         try:
             # Open serial port in blocking mode
-            self._serport = serial.Serial(self.portname, self.portspeed, timeout=1)
+            self._serport = serial.Serial(self.portname, self.portspeed, timeout=0)
             if self._serport is None:
                 raise SwapException("Unable to open serial port" + self.portname)
             elif not self._serport.isOpen():

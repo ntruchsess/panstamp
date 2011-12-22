@@ -42,16 +42,16 @@ class DeviceEntry:
     """
     Class representing a device entry in a device directory
     """
-    def __init__(self, id, option, label):
+    def __init__(self, pid, option, label):
         """
         Class constructor
         
-        @param id: Product ID
+        @param pid: Product ID
         @param option: Command-line alias
         @param label: GUI label
         """
         ## Product ID
-        self.id = id
+        self.id = pid
         ## Command-line alias
         self.option = option
         ## GUI label
@@ -70,7 +70,7 @@ class DeveloperEntry:
         """
         self.devices.append(device)
         
-    def __init__(self, id, name):
+    def __init__(self, did, name):
         """
         Class constructor
         
@@ -78,7 +78,7 @@ class DeveloperEntry:
         @param name: Name of the developer or manufacturer
         """
         ## Developer ID
-        self.id = id
+        self.id = did
         ## Developer or manufacturer name
         self.name = name
         ## List of device entries for the current developer
@@ -129,8 +129,8 @@ class XmlDeviceDir(object):
                             raise SwapException("Device section needs a valid ID in " + __xmldirfile__)
                             return
                         prodId = int(strProdId)
-                        # Get command-line option
-                        strOption = dev.get("option")
+                        # Get folder name / command-line option
+                        strOption = dev.get("name")
                         if strOption is None:
                             raise SwapException("Device section needs a comman-line option in " + __xmldirfile__)
                             return
@@ -160,6 +160,23 @@ class XmlDeviceDir(object):
             for dev in devel.devices:
                 if option.lower() == dev.option:
                     return XmlDevice(manufId=devel.id, prodId=dev.id)
+        return None
+    
+    
+    def getDevicePath(self, devel_id, prod_id):
+        """
+        Get path to the device definition file
+        
+        @param devel_id: Developer ID
+        @param prod_id: Product ID
+        
+        @return Path (string) to the XML definition file. Return None in case of device not found
+        """
+        for developer in self.developers:
+            if devel_id == developer.id:
+                for device in developer.devices:
+                    if prod_id == device.id:
+                        return XmlSettings.deviceDir + os.sep + developer.name + os.sep + device.option + ".xml"
         return None
 
 
@@ -342,20 +359,23 @@ class XmlDevice(object):
             return lstRegs
 
 
-    def __init__(self, mote=None, manufId=None, prodId=None):
+    def __init__(self, mote=None, devel_id=None, prod_id=None):
         """
         Class constructor
         
         @param mote: Real mote object
-        @param manufId: Manufacturer ID
-        @param prodId: Product ID
+        @param devel_id: Manufacturer ID
+        @param prod_id: Product ID
         """
         ## Device (mote)
         self.mote = mote
+        
+        device_dir = XmlDeviceDir()
+        
         ## Name/path of the current configuration file
         self.fileName = None
-        if manufId is not None and prodId is not None:
-            self.fileName = XmlSettings.deviceDir + os.sep + "{0:X}".format(manufId) + os.sep + "{0:X}".format(prodId) + ".xml"
+        if devel_id is not None and prod_id is not None:
+            self.fileName = device_dir.getDevicePath(devel_id, prod_id)
         ## Name of the Manufacturer
         self.manufacturer = None
         ## Name of the Product
@@ -366,7 +386,7 @@ class XmlDevice(object):
         self.txinterval = 0
 
         if self.mote is not None:
-            self.fileName = XmlSettings.deviceDir + os.sep + "{0:X}".format(self.mote.manufacturerId) + os.sep + "{0:X}".format(self.mote.productId) + ".xml"
+            self.fileName = device_dir.getDevicePath(self.mote.manufacturer_id, self.mote.product_id)
 
         # Read definition parameters from XML file
         self.getDefinition()
