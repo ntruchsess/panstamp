@@ -63,11 +63,10 @@ class SwapManager(SwapInterface):
 
         # Set param units for this endpoint
         values = self.cfgdevices.getValues(endpoint.getRegAddress())
-        if values is not None:
-            if endpoint.name in values:
-                endpoint.display = True
-                if values[endpoint.name] != "":
-                    endpoint.setUnit(values[endpoint.name])
+        if endpoint.name in values:
+            endpoint.display = True
+            if values[endpoint.name] != "":
+                endpoint.setUnit(values[endpoint.name])
 
 
     def moteStateChanged(self, mote):
@@ -80,7 +79,7 @@ class SwapManager(SwapInterface):
             print "Mote with address " + str(mote.address) + " switched to \"" + \
             SwapState.toString(mote.state) + "\""
         # SYNC mode entered?
-        if mote.state == SwapState.RXON:
+        if mote.state == SwapState.SYNC:
             self._addrInSyncMode = mote.address        
 
 
@@ -184,7 +183,7 @@ class SwapManager(SwapInterface):
                             "manufacturer": mote.definition.manufacturer,
                             "product": mote.definition.product,
                             "sleeping": mote.definition.pwrdownmode,
-                            "lastupdate": datetime.datetime.fromtimestamp(mote.timeStamp).strftime("%d-%m-%Y %H:%M:%S")}
+                            "lastupdate": datetime.datetime.fromtimestamp(mote.timestamp).strftime("%d-%m-%Y %H:%M:%S")}
                 
                 motes[index] = moteInfo
            
@@ -199,7 +198,7 @@ class SwapManager(SwapInterface):
             devaddress = int(parameters["mote"])
             mote = self.server.getMote(address=devaddress)
             i = 0
-            for reg in mote.lstRegRegs:
+            for reg in mote.lstregregs:
                 for endp in reg.lstItems:                               
                     valueinfo = {"type": endp.type + " " + SwapType.toString(endp.direction),
                                  "name": endp.name,
@@ -241,7 +240,7 @@ class SwapManager(SwapInterface):
             report_values = {}
             i = 0
             mote = self.getMote(address=address)
-            for reg in mote.lstRegRegs:
+            for reg in mote.lstregregs:
                 for endp in reg.lstItems:
                     if endp.name in values:
                         report_values[endp.name] = endp.getValueInAscii()
@@ -272,16 +271,17 @@ class SwapManager(SwapInterface):
         self.cfgdevices = XmlDevices()
 
 
-    def __init__(self, verbose=False, monitor=False):
+    def __init__(self, settings=None, verbose=False, monitor=False):
         """
         Class constructor
         
+        @param settings: path to the main configuration file
         @param verbose: Print out SWAP frames or not
         @param monitor: Print out network events or not
         """
         try:
             # Superclass call
-            SwapInterface.__init__(self, verbose)
+            SwapInterface.__init__(self, settings, verbose)
         except:
             raise
 

@@ -37,11 +37,17 @@ if __name__ == "__main__":
     """
     Run SWAP daemon for HouseAgent"
     """
-       
+    
+    settings_file = None
+    
+    if len(sys.argv) > 1:
+        if sys.argv[1] == '-f':
+            settings_file = sys.argv[2]
+    
     # SWAP stuff here...
     try:
         # Start SWAP manager tool
-        manager = SwapManager(True, True)
+        manager = SwapManager(settings_file, True, True)
     except SwapException as ex:
         ex.display()
         ex.log()
