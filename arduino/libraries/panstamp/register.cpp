@@ -68,20 +68,6 @@ void REGISTER::setData(byte *data)
 void REGISTER::sendSwapStatus(void) 
 {
   SWSTATUS packet = SWSTATUS(id, value, length);
-
   packet.send();
 }
 
-/**
- * sendPriorSwapStatus
- * 
- * Send SWAP status message before applying the new value
- *
- * 'newVal'  New value
- */
-void REGISTER::sendPriorSwapStatus(byte *newVal) 
-{
-  SWSTATUS packet = SWSTATUS(id, newVal, length);
-
-  packet.send();
-}

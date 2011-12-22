@@ -106,15 +106,6 @@ class REGISTER
      * Send SWAP status message
      */
     void sendSwapStatus(void);
-
-    /**
-     * sendPriorSwapStatus
-     * 
-     * Send SWAP status message before applying the new value
-     *
-     * 'newVal'  New value
-     */
-    void sendPriorSwapStatus(byte *newVal);
 };
 
 /**

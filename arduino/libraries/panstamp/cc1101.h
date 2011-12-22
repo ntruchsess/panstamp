@@ -199,7 +199,7 @@ enum CFREQ
 #define CC1101_DEFVAL_PKTLEN     0xFF        // Packet Length
 #define CC1101_DEFVAL_PKTCTRL1   0x07        // Packet Automation Control
 #define CC1101_DEFVAL_PKTCTRL0   0x05        // Packet Automation Control
-#define CC1101_DEFVAL_ADDR       0x01        // Device Address
+#define CC1101_DEFVAL_ADDR       0xFF        // Device Address
 #define CC1101_DEFVAL_CHANNR     0x00        // Channel Number
 #define CC1101_DEFVAL_FSCTRL1    0x08        // Frequency Synthesizer Control
 #define CC1101_DEFVAL_FSCTRL0    0x00        // Frequency Synthesizer Control
@@ -401,9 +401,8 @@ class CC1101
      * Set carrier frequency
      * 
      * 'freq'	New carrier frequency
-     * 'save' If TRUE, save parameter in EEPROM
      */
-    void setCarrierFreq(byte freq, bool save);
+    void setCarrierFreq(byte freq);
     
     /**
      * setChannel

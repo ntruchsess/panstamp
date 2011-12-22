@@ -85,6 +85,15 @@ boolean SWPACKET::send(void)
   for(i=0 ; i<value.length ; i++)
     packet.data[i+7] = value.data[i];
 
+
+for(i=0 ; i<packet.length ; i++)
+{
+  Serial.print(packet.data[i], HEX);
+  Serial.print(" ");
+}
+Serial.println("");
+
+
   i = SWAP_NB_TX_TRIES;
   while(!(res = panstamp.cc1101.sendData(packet)) && i>0)
   {

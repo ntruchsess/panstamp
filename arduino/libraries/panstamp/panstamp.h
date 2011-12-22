@@ -30,6 +30,7 @@
 #include "Arduino.h"
 #include "EEPROM.h"
 #include "cc1101.h"
+#include "nvolat.h"
 #include "register.h"
 #include "swpacket.h"
 #include <avr/wdt.h>
@@ -42,6 +43,15 @@
  */
 #define setSwapStatusCallBack(ptrFunc)   statusReceived = ptrFunc
 
+#define eepromToFactoryDefaults()                             \
+  EEPROM.write(EEPROM_SYNC_WORD, CC1101_DEFVAL_SYNC1);        \
+  EEPROM.write(EEPROM_SYNC_WORD + 1, CC1101_DEFVAL_SYNC0);    \
+  EEPROM.write(EEPROM_DEVICE_ADDR, CC1101_DEFVAL_ADDR);       \
+  EEPROM.write(EEPROM_FREQ_CHANNEL, CC1101_DEFVAL_CHANNR);    \
+  EEPROM.write(EEPROM_SECU_OPTION, 0);                        \
+  EEPROM.write(EEPROM_TX_INTERVAL, 0xFF);                     \
+  EEPROM.write(EEPROM_TX_INTERVAL + 1, 0xFF);
+
 /**
  * System states
  */
@@ -49,7 +59,9 @@ enum SYSTATE
 {
   SYSTATE_RESTART = 0,
   SYSTATE_RXON,
-  SYSTATE_RXOFF
+  SYSTATE_RXOFF,
+  SYSTATE_SYNC,
+  SYSTATE_LOWBAT
 };
 
 /**

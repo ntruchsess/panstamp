@@ -26,7 +26,7 @@
 
 #ifndef _COMMONREGS_H
 #define _COMMONREGS_H
-
+#include "swstatus.h"
 /**
  * Macros for the definition of common register indexes
  */
@@ -46,6 +46,9 @@ enum CUSTOM_REGINDEX                    \
   REGI_TXINTERVAL,
 
 #define DEFINE_COMMON_REGINDEX_END()    };
+
+#define DEFINE_REGINDEX_START()   DEFINE_COMMON_REGINDEX_START()
+#define DEFINE_REGINDEX_END()     DEFINE_COMMON_REGINDEX_END();
 
 /**
  * Macro for the definition of registers common to all SWAP devices
@@ -150,9 +153,10 @@ const void setFreqChannel(byte id, byte *channel)           \
 {                                                           \
   if (channel[0] != regFreqChannel.value[0])                \
   {                                                         \
-    /* Send status message before entering the new            \
+    /* Send status message before entering the new          \
     frequency channel */                                    \
-    regFreqChannel.sendPriorSwapStatus(channel);              \
+    SWSTATUS packet = SWSTATUS(regFreqChannel.id, channel, regFreqChannel.length); \
+    packet.send();                                          \
     /* Update register value */                             \
     panstamp.cc1101.setChannel(channel[0], true);           \
     /* Restart device */                                    \
@@ -172,9 +176,10 @@ const void setSecuOption(byte id, byte *secu)               \
 {                                                           \
   if (secu[0] != regSecuOption.value[0])                    \
   {                                                         \
-    /* Send status message before applying the new            \
+    /* Send status message before applying the new          \
     security option*/                                       \
-    regSecuOption.sendPriorSwapStatus(secu);                  \
+    SWSTATUS packet = SWSTATUS(regSecuOption.id, secu, regSecuOption.length); \
+    packet.send();                                          \
     /* Update register value */                             \
     panstamp.setSecurity(secu[0] & 0x0F, true);             \
   }                                                         \
@@ -192,12 +197,11 @@ const void setDevAddress(byte id, byte *addr)               \
 {                                                           \
   if ((addr[0] > 0) && (addr[0] != regDevAddress.value[0])) \
   {                                                         \
-    /* Send status before taking the new address */         \
-    regDevAddress.sendPriorSwapStatus(addr);                \
+    /* Send status before setting the new address */        \
+    SWSTATUS packet = SWSTATUS(regDevAddress.id, addr, regDevAddress.length); \
+    packet.send();                                          \
     /* Update register value */                             \
     panstamp.cc1101.setDevAddress(addr[0], true);           \
-    /* Restart device */                                    \
-    panstamp.reset();                                       \
   }                                                         \
 }                                                           \
                                                             \
@@ -215,11 +219,10 @@ const void setNetworkId(byte rId, byte *nId)                \
       (nId[1] != regNetworkId.value[1]))                    \
   {                                                         \
     /* Send status before taking the new network ID */      \
-    regNetworkId.sendPriorSwapStatus(nId);                  \
+    SWSTATUS packet = SWSTATUS(regNetworkId.id, nId, regNetworkId.length); \
+    packet.send();                                          \
     /* Update register value */                             \
     panstamp.cc1101.setSyncWord(nId, true);                 \
-    /* Restart device */                                    \
-    panstamp.reset();                                       \
   }                                                         \
 }                                                           \
 /**                                                         \

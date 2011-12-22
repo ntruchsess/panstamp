@@ -25,11 +25,14 @@
  */
 
 #include "panstamp.h"
-#include "nvolat.h"
+#include "commonregs.h"
 
 #define enableIRQ_GDO0()        attachInterrupt(0, isrGDO0event, FALLING);
 #define disableIRQ_GDO0()       detachInterrupt(0);
-#define REGI_SYSSTATE           3
+//#define REGI_PRODUCTCODE        0
+//#define REGI_SYSSTATE           3
+DEFINE_COMMON_REGINDEX_START()
+DEFINE_COMMON_REGINDEX_END()
 
 /**
  * Array of registers
@@ -80,11 +83,17 @@ void isrGDO0event(void)
     if (ccPacket.crc_ok)
     {
       swPacket = SWPACKET(ccPacket);
-
       // Function
       switch(swPacket.function)
       {
         case SWAPFUNCT_CMD:
+          // Broadcasted commands are not allowed
+          if (swPacket.destAddr == SWAP_BCAST_ADDR)
+            break;
+          // Current version does not support data recording mode
+          // so destination address and register address must be the same
+          if (swPacket.destAddr != swPacket.regAddr)
+            break;
           // Valid register?
           if ((reg = getRegister(swPacket.regId)) == NULL)
             break;
@@ -95,6 +104,16 @@ void isrGDO0event(void)
             reg->sendSwapStatus();
           break;
         case SWAPFUNCT_QRY:
+          // Only Product Code can be broadcasted
+          if (swPacket.destAddr == SWAP_BCAST_ADDR)
+          {
+            if (swPacket.regId != REGI_PRODUCTCODE)
+              break;
+          }
+          // Current version does not support data recording mode
+          // so destination address and register address must be the same
+          if (swPacket.destAddr != swPacket.regAddr)
+            break;
           // Valid register?
           if ((reg = getRegister(swPacket.regId)) == NULL)
             break;
@@ -184,8 +203,8 @@ void PANSTAMP::init()
 void PANSTAMP::reset() 
 {
   // Tell the network that our panStamp is restarting
-  byte state[] = {SYSTATE_RESTART};
-  getRegister(3)->sendPriorSwapStatus(state);
+  systemState = SYSTATE_RESTART;
+  getRegister(REGI_SYSSTATE)->sendSwapStatus();
 
   // Reset panStamp
   wdt_disable();  

@@ -207,8 +207,7 @@ void CC1101::setDefaultRegs(void)
   writeReg(CC1101_FSCTRL0,  CC1101_DEFVAL_FSCTRL0);
 
   // Set default carrier frequency = 868 MHz
-  carrierFreq = CFREQ_LAST;
-  setCarrierFreq(CFREQ_868, false);
+  setCarrierFreq(CFREQ_868);
 
   writeReg(CC1101_MDMCFG4,  CC1101_DEFVAL_MDMCFG4);
   writeReg(CC1101_MDMCFG3,  CC1101_DEFVAL_MDMCFG3);
@@ -254,8 +253,6 @@ void CC1101::init(void)
   pinMode(GDO0, INPUT);                 // Config GDO0 as input
 
   reset();                              // Reset CC1101
-//  setDefaultRegs();                     // Configure CC1101 registers
-//  setRegsFromEeprom();                  // Take user settings from EEPROM
 
   // Configure PATABLE
   writeBurstReg(CC1101_PATABLE, (byte*)paTable, 8);
@@ -331,32 +328,24 @@ void CC1101::setChannel(byte chnl, bool save)
  * Set carrier frequency
  * 
  * 'freq'	New carrier frequency
- * 'save' If TRUE, save parameter in EEPROM
  */
-void CC1101::setCarrierFreq(byte freq, bool save) 
+void CC1101::setCarrierFreq(byte freq)
 {
-  if (carrierFreq != freq)
+  switch(freq)
   {
-    switch(freq)
-    {
-      case CFREQ_915:
-        writeReg(CC1101_FREQ2,  CC1101_DEFVAL_FREQ2_915);
-        writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_915);
-        writeReg(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_915);
-        break;
-      default:
-        writeReg(CC1101_FREQ2,  CC1101_DEFVAL_FREQ2_868);
-        writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_868);
-        writeReg(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_868);
-        break;
-    }
-    
-    carrierFreq = freq;
-    
-    // Save in EEPROM
-    if (save)
-      EEPROM.write(EEPROM_CARRIER_FREQ, freq);
+    case CFREQ_915:
+      writeReg(CC1101_FREQ2,  CC1101_DEFVAL_FREQ2_915);
+      writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_915);
+      writeReg(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_915);
+      break;
+    default:
+      writeReg(CC1101_FREQ2,  CC1101_DEFVAL_FREQ2_868);
+      writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_868);
+      writeReg(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_868);
+      break;
   }
+   
+  carrierFreq = freq;  
 }
 
 /**
@@ -369,11 +358,6 @@ void CC1101::setRegsFromEeprom(void)
   byte bVal;
   byte arrV[2];
 
-  // Read Carrier Frequency from EEPROM
-  bVal = EEPROM.read(EEPROM_CARRIER_FREQ);
-  // Set carrier frequency
-  if (bVal < CFREQ_LAST)
-    setCarrierFreq(bVal, false);
   // Read RF channel from EEPROM
   bVal = EEPROM.read(EEPROM_FREQ_CHANNEL);
   // Set RF channel
@@ -382,7 +366,7 @@ void CC1101::setRegsFromEeprom(void)
   // Read Sync word from EEPROM
   arrV[0] = EEPROM.read(EEPROM_SYNC_WORD);
   arrV[1] = EEPROM.read(EEPROM_SYNC_WORD + 1);
-  // Set Sync word
+  // Set Sync word. 0x00 and 0xFF values are not allowed
   if (((arrV[0] != 0x00) && (arrV[0] != 0xFF)) || ((arrV[1] != 0x00) && (arrV[1] != 0xFF)))
     setSyncWord(arrV, false);
   // Read device address from EEPROM
@@ -494,8 +478,8 @@ byte CC1101::receiveData(CCPACKET * packet)
   else
     packet->length = 0;
 
-  // Flush RX FIFO
-  cmdStrobe(CC1101_SFRX);
+  // Flush RX FIFO. Don't uncomment
+  //cmdStrobe(CC1101_SFRX);
 
   // Enter back into RX state
   setRxState(); 
