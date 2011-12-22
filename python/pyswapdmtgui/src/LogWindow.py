@@ -27,7 +27,8 @@ __date__  = "$Sep 23, 2011 10:28:31 AM$"
 #########################################################################
 
 import wx
-import sys, time
+import wx.aui
+import time
 
 
 class LogFrame(wx.Frame):
@@ -152,6 +153,152 @@ class LogFrame(wx.Frame):
         dialog.Destroy()
         
         
+
+        
+
+    def __init__(self, tittle):
+        """
+        Class constructor
+        """
+        wx.Frame.__init__(self, None, -1, tittle)    
+
+        favicon = wx.Icon("images/swap.ico", wx.BITMAP_TYPE_ICO, 16, 16)
+        self.SetIcon(favicon)
+        
+        # Create list box
+        self.log = wx.ListCtrl(self, -1, style=wx.LC_REPORT, size=wx.Size(590,490))
+        self.log.ScrollList(10, 10)
+        self.log.InsertColumn(0, "Timestamp")
+        self.log.InsertColumn(1, "Type")
+        self.log.InsertColumn(2, "Message")
+        self.log.SetColumnWidth(0, 140)
+        self.log.SetColumnWidth(1, 60)
+        self.log.SetColumnWidth(2, 400)
+       
+        """
+        # Create sizer
+        logsizer = wx.BoxSizer(wx.HORIZONTAL)
+        logsizer.Add(self.log, 0, wx.EXPAND)
+        
+        #self.SetSizer(logsizer)
+        #self.SetSize((600, 500))
+        
+        # Redirect stdout to the LogCtrl widget
+        #sys.stdout = RedirectText(self)
+        # Run function before closing
+        self.Bind(wx.EVT_CLOSE, self._OnClose)
+
+        # create the image list:
+        il = wx.ImageList(16, 16)
+        self.arrow_left_icon = il.Add(wx.Bitmap("images/arrow_left.ico", wx.BITMAP_TYPE_ICO))
+        self.arrow_right_icon = il.Add(wx.Bitmap("images/arrow_right.ico", wx.BITMAP_TYPE_ICO))
+        self.warning_icon = il.Add(wx.Bitmap("images/warning.ico", wx.BITMAP_TYPE_ICO))
+        self.log.AssignImageList(il, wx.IMAGE_LIST_SMALL)
+        
+        # Right-click event
+        wx.EVT_LIST_ITEM_RIGHT_CLICK(self.log, -1, self._cb_right_click)
+        
+        # Main sizer
+        self.gridSizer = wx.FlexGridSizer(rows=2, cols=1, vgap=3, hgap=3)
+        self.gridSizer.Add(logsizer, 0, wx.EXPAND)
+        
+        self.eventarea = wx.TextCtrl(self, style=wx.TE_MULTILINE)
+        
+        eventsizer = wx.BoxSizer(wx.HORIZONTAL)
+        eventsizer.Add(self.eventarea, 0, wx.EXPAND)
+        
+        self.gridSizer.Add(eventsizer, 0, wx.EXPAND)
+        
+        self.SetSizer(self.gridSizer)
+        self.SetSize((600, 800))
+        """
+        self.mgr = wx.aui.AuiManager(self)
+
+        browser_panel = BrowserPanel(self, (200, 150), None, None)
+        sniffer_panel = SnifferPanel(self, (200, 150))
+        bottompanel = wx.Panel(self, -1, size = (200, 150))
+
+        self.mgr.AddPane(browser_panel, wx.aui.AuiPaneInfo().Bottom())
+        self.mgr.AddPane(sniffer_panel, wx.aui.AuiPaneInfo().Left().Layer(1))
+        self.mgr.AddPane(bottompanel, wx.aui.AuiPaneInfo().Center().Layer(2))
+
+        self.mgr.Update()
+
+        
+
+
+class RedirectText(object):
+    """
+    Class for redirecting text to a given widget
+    """
+    def __init__(self, widget):
+        self.out = widget
+ 
+    def write(self, string):
+        if self.out is not None:
+            wx.CallAfter(self.out.write, string)
+
+
+
+class BrowserPanel(wx.Panel):
+    """
+    SWAP browser panel
+    """
+    def __init__(self, server, monitor, parent, size):
+        """
+        Class constructor
+        
+        @param parent: parent object
+        @param server: SWAP server
+        @param monitor: monitor dialog
+        @param size: panel size
+        """
+        wx.Panel.__init__(self, parent, id=wx.ID_ANY, size=size)
+        # Parent
+        self.parent = parent
+        # SWAP server
+        self.server = server
+        # SWAP monitor
+        self.monitor = monitor
+        # Server startup dialog
+        self._waitfor_startdialog = None
+        
+        # Sync dialog
+        self._waitfor_syncdialog = None
+        # Mote in SYNC mode
+        self._moteinsync = None
+               
+        # SWAP browsing tree
+        self.tree = wx.TreeCtrl(self, -1, style=wx.TR_HAS_BUTTONS|wx.TR_DEFAULT_STYLE|wx.SUNKEN_BORDER)
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(self.tree, 1, wx.EXPAND, 0)
+
+        self.SetAutoLayout(True)
+        self.SetSizer(sizer)
+        sizer.Fit(self)
+        sizer.SetSizeHints(self)
+        self.SetSize((800, 500))
+        self.Layout()        
+
+        # create the image list:
+        il = wx.ImageList(16, 16)
+        self.rootIcon = il.Add(wx.Bitmap("images/network.ico", wx.BITMAP_TYPE_ICO))
+        self.moteIcon = il.Add(wx.Bitmap("images/swap.ico", wx.BITMAP_TYPE_ICO))
+        self.regRegIcon = il.Add(wx.Bitmap("images/database.ico", wx.BITMAP_TYPE_ICO))
+        self.cfgRegIcon = il.Add(wx.Bitmap("images/cfgreg.ico", wx.BITMAP_TYPE_ICO))
+        self.cfgParamIcon = il.Add(wx.Bitmap("images/cfgparam.ico", wx.BITMAP_TYPE_ICO))
+        self.inputIcon = il.Add(wx.Bitmap("images/input.ico", wx.BITMAP_TYPE_ICO))
+        self.outputIcon = il.Add(wx.Bitmap("images/output.ico", wx.BITMAP_TYPE_ICO))
+        self.tree.AssignImageList(il)
+        
+        # Right-click event
+        wx.EVT_LIST_ITEM_RIGHT_CLICK(self.log, -1, self._cb_right_click)
+        
+
+class SnifferPanel(wx.Panel):
+    """
+    Packet sniffer panel
+    """
     def _cb_right_click(self, evn):
         """
         Mouse right click on log list
@@ -177,18 +324,16 @@ class LogFrame(wx.Frame):
         """
         self._display_info()
         
-
-    def __init__(self, tittle):
+        
+    def __init__(self, parent, size):
         """
         Class constructor
-        """
-        wx.Frame.__init__(self, None, -1, tittle)    
-
-        favicon = wx.Icon("images/swap.ico", wx.BITMAP_TYPE_ICO, 16, 16)
-        self.SetIcon(favicon)
         
+        @param parent: parent object
+        @param size: panel size
+        """
+        wx.Panel.__init__(self, parent, id=wx.ID_ANY, size=size)
         # Create list box
-        #self.log = wx.ListCtrl(self, -1, style=wx.LC_REPORT, size=wx.Size(590,490))
         self.log = wx.ListCtrl(self, -1, style=wx.LC_REPORT, size=wx.Size(590,490))
         self.log.ScrollList(10, 10)
         self.log.InsertColumn(0, "Timestamp")
@@ -197,18 +342,7 @@ class LogFrame(wx.Frame):
         self.log.SetColumnWidth(0, 140)
         self.log.SetColumnWidth(1, 60)
         self.log.SetColumnWidth(2, 400)
-
-        # Create sizer
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.log, 0, wx.EXPAND)
-        self.SetSizer(sizer)
-        self.SetSize((600, 500))
-        
-        # Redirect stdout to the LogCtrl widget
-        sys.stdout = RedirectText(self)
-        # Run function before closing
-        self.Bind(wx.EVT_CLOSE, self._OnClose)
-
+       
         # create the image list:
         il = wx.ImageList(16, 16)
         self.arrow_left_icon = il.Add(wx.Bitmap("images/arrow_left.ico", wx.BITMAP_TYPE_ICO))
@@ -219,14 +353,6 @@ class LogFrame(wx.Frame):
         # Right-click event
         wx.EVT_LIST_ITEM_RIGHT_CLICK(self.log, -1, self._cb_right_click)
         
-
-class RedirectText(object):
-    """
-    Class for redirecting text to a given widget
-    """
-    def __init__(self, widget):
-        self.out = widget
- 
-    def write(self, string):
-        if self.out is not None:
-            wx.CallAfter(self.out.write, string)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.log, 0, wx.ALL, 5)
+        self.SetSizer(sizer)

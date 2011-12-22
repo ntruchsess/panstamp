@@ -29,11 +29,15 @@ __date__ ="$Aug 21, 2011 4:30:47 PM$"
 from SwapBrowser import SwapBrowser
 from LogWindow import LogFrame
 
+from MainFrame import MainFrame
+
 from SwapInterface import SwapInterface
 from swap.SwapDefs import SwapState
 from SwapException import SwapException
 
 import wx
+from wx.lib.pubsub import Publisher
+
 
 class SwapManager(SwapInterface):
     """
@@ -43,7 +47,7 @@ class SwapManager(SwapInterface):
         """
         SWAP server started successfully
         """
-        self.browser.build_tree()
+        self.dmtframe.cbServerStarted()
 
     
     def newMoteDetected(self, mote):
@@ -52,13 +56,13 @@ class SwapManager(SwapInterface):
         
         'mote'  Mote object
         """
-        if self.browser is not None:
-            if self._printSWAP == True:
-                print "New mote with address " + str(mote.address) + " : " + mote.definition.product + \
-                " (by " + mote.definition.manufacturer + ")"
-                
+        if self.dmtframe is not None:               
+            # Display event
+            evntext = "New mote with address " + str(mote.address) + " : " + mote.definition.product + \
+            " (by " + mote.definition.manufacturer + ")"
+            self.dmtframe.event_panel.print_event(evntext)
             # Append mote to the browsing tree
-            self.browser.addMote(mote)
+            wx.CallAfter(Publisher().sendMessage, "add_mote")
 
 
     def newEndpointDetected(self, endpoint):
@@ -67,8 +71,10 @@ class SwapManager(SwapInterface):
         
         'endpoint'  Endpoint object
         """
-        if self._printSWAP == True:
-            print "New endpoint with Reg ID = " + str(endpoint.getRegId()) + " : " + endpoint.name
+        if self.dmtframe is not None:
+            # Display event
+            evntext = "New endpoint with Reg ID = " + str(endpoint.getRegId()) + " : " + endpoint.name
+            self.dmtframe.event_panel.print_event(evntext)
 
 
     def moteStateChanged(self, mote):
@@ -77,13 +83,16 @@ class SwapManager(SwapInterface):
         
         'mote' Mote object
         """
-        if self._printSWAP == True:
-            print "Mote with address " + str(mote.address) + " switched to \"" + \
-            SwapState.toString(mote.state) + "\""
-        # SYNC mode entered?
-        if mote.state == SwapState.RXON:
-            if self.browser is not None:
-                self.browser.syncReceived(mote)
+        if self.dmtframe is not None:
+            # Display event
+            evntext = "Mote with address " + str(mote.address) + " switched to \"" + \
+                SwapState.toString(mote.state) + "\""
+            self.dmtframe.event_panel.print_event(evntext)
+            
+            # SYNC mode entered?
+            if mote.state == SwapState.SYNC:
+                if self.dmtframe is not None:
+                    self.dmtframe.syncReceived(mote)
 
 
     def moteAddressChanged(self, mote):
@@ -92,8 +101,13 @@ class SwapManager(SwapInterface):
         
         'mote'  Mote object
         """
-        if self._printSWAP == True:
-            print "Mote changed address to " + str(mote.address)
+        if self.dmtframe is not None:
+            # Display event
+            evntext = "Mote changed address to " + str(mote.address)
+            self.dmtframe.event_panel.print_event(evntext)
+                
+            # Update address in tree
+            self.dmtframe.browser_panel.updateAddressInTree(mote)
 
 
     def endpointValueChanged(self, endpoint):
@@ -102,12 +116,13 @@ class SwapManager(SwapInterface):
         
         'endpoint' Endpoint object
         """
-        if self._printSWAP == True:
-            print endpoint.name + " in address " + str(endpoint.getRegAddress()) + " changed to " + endpoint.getValueInAscii()
-            
-        # Update value in SWAP browser
-        if self.browser is not None:
-            self.browser.updateEndpointInTree(endpoint)
+        if self.dmtframe is not None:
+            # Display event
+            evntext = endpoint.name + " in address " + str(endpoint.getRegAddress()) + " changed to " + endpoint.getValueInAscii()
+            self.dmtframe.event_panel.print_event(evntext)
+
+            # Update value in SWAP dmtframe            
+            self.dmtframe.browser_panel.updateEndpointInTree(endpoint)
 
 
     def paramValueChanged(self, param):
@@ -116,11 +131,13 @@ class SwapManager(SwapInterface):
         
         'param' Config parameter object
         """
-        if self._printSWAP == True:
-            print param.name + " in address " + str(param.getRegAddress()) + " changed to " + param.getValueInAscii()
-            
-        # Update value in SWAP browser
-        self.browser.updateEndpointInTree(param)
+        if self.dmtframe is not None:
+            # Display event
+            evntext = param.name + " in address " + str(param.getRegAddress()) + " changed to " + param.getValueInAscii()
+            self.dmtframe.event_panel.print_event(evntext)
+                
+            # Update value in SWAP dmtframe
+            self.dmtframe.browser_panel.updateEndpointInTree(param)
         
 
     def terminate(self):
@@ -138,7 +155,7 @@ class SwapManager(SwapInterface):
         'verbose'  Print out SWAP frames or not
         'monitor'  Print out network events or not
         """
-        self.browser = None
+        self.dmtframe = None
         # Print SWAP activity
         self._printSWAP = monitor
         # Callbacks not being used
@@ -152,7 +169,7 @@ class SwapManager(SwapInterface):
         # Start SWAP server
         try:
             # Superclass call
-            SwapInterface.__init__(self, verbose, False)  
+            SwapInterface.__init__(self, None, verbose, False)  
             # Clear error file
             SwapException.clear()         
         except SwapException as ex:
@@ -160,18 +177,21 @@ class SwapManager(SwapInterface):
             ex.log()
 
         # Create SWAP Network Monitor window
-        net_monitor = LogFrame("SWAP Network Monitor")
+        #net_monitor = LogFrame("SWAP Network Monitor")
         # Open SWAP browser
-        self.browser = SwapBrowser(self, server=self.server, monitor=net_monitor)
-        self.browser.SetSize(wx.Size(370,500))
-        self.app.SetTopWindow(self.browser)
-        self.browser.CenterOnScreen()
-        self.browser.Show()
+        #self.browser = SwapBrowser(self, server=self.server, monitor=net_monitor)
+        self.dmtframe = MainFrame("SWAP Device Management Tool", self, server=self.server)
+        #self.dmtframe.SetSize(wx.Size(370,500))
+        #self.app.SetTopWindow(self.dmtframe)
+        #self.dmtframe.CenterOnScreen()
+        self.dmtframe.Show(True)
         # Open monitor window
-        position = self.browser.GetPosition()
-        size = self.browser.GetSize()
+        """
+        position = self.dmtframe.GetPosition()
+        size = self.dmtframe.GetSize()
         position += (size[0]+200, 0)
         net_monitor.SetPosition(position)
         net_monitor.Show(True)
+        """
 
         self.app.MainLoop()

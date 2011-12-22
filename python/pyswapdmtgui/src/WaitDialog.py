@@ -40,30 +40,61 @@ class WaitDialog(ConfigDialog):
         """
         # Add control for every parameter contained in the register
         self.addToLayout(None, self.message)
-        # Add cancel button
-        self.addCancelButton()
+        
+        if self.wait_time is None:
+            # Add cancel button
+            self.addCancelButton()
 
 
     def close(self):
         """
         Close dialog
         """
-        self.EndModal(wx.ID_OK) 
+        self.EndModal(wx.ID_OK)
+        self.Destroy()
         
-                
-    def __init__(self, parent=None, message=None):
+    
+    def show(self):
+        """
+        Show dialog during wait_time seconds only
+                                
+        @return False in case of timeout. Return True otherwise
+        """
+        if self.wait_time is not None:
+            self.timer.Start(self.wait_time * 1000, True)
+        res = self.ShowModal()
+        self.Destroy
+           
+        return res == wx.ID_OK
+        
+    
+    def _cb_timedout(self, event):
+        """
+        Callback function called when timer expires
+        """
+        self.EndModal(wx.ID_CANCEL)
+        self.Destroy()
+        
+        
+    def __init__(self, parent=None, message=None, wait_time=None):
         """
         Class constructor
 
-        'parent'     Parent object
-        'message'    Message to be displayed
+        @param parent    Parent object
+        @param message   Message to be displayed
+        @param wait_time Max time to wait for a response (in seconds)
         """
         ConfigDialog.__init__(self, parent, title="Waiting...")
-        # Message to be displayed
+        ## Message to be displayed
         self.message = message
-        # Create widgets
+        ## Max time to wait for a response (in seconds)
+        self.wait_time = wait_time
+        ## Timer
+        self.timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self._cb_timedout, self.timer)
+        ## Create widgets
         self._createControls()
-        # Layout widgets
+        ## Layout widgets
         self.doLayout()
-        # Fit dialog size to its contents
+        ## Fit dialog size to its contents
         self.Fit()

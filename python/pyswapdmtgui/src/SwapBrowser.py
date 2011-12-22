@@ -69,47 +69,50 @@ class SwapBrowser(wx.Frame):
         self.server = server
         # SWAP monitor
         self.monitor = monitor
+        # Server startup dialog
+        self._waitfor_startdialog = None
+        
         # Sync dialog
-        self._waitForSyncDialog = None
+        self._waitfor_syncdialog = None
         # Mote in SYNC mode
-        self._moteInSync = None
+        self._moteinsync = None
                
         # Create menu bar
-        menubar = wx.MenuBar()
+        self.menubar = wx.MenuBar()
         # Create menus
-        menuFile = wx.Menu()
-        self.menuGateway = wx.Menu()
-        menuDevices = wx.Menu()
-        menuView = wx.Menu()
-        menuHelp = wx.Menu()
+        menufile = wx.Menu()
+        self.menugateway = wx.Menu()
+        menudevices = wx.Menu()
+        menuview = wx.Menu()
+        menuhelp = wx.Menu()
         # Append items into the menus
         # File menu
-        menuFile.Append(101, "&Close", "Close SWAP Browser")
+        menufile.Append(101, "&Close", "Close SWAP Browser")
         
         # Gateway menu
-        self.menuGateway.Append(201, "&Connect", "Connect serial gateway")
-        self.menuGateway.Append(202, "&Disconnect", "Disconnect serial gateway")
-        self.menuGateway.Append(203, "&Serial port", "Configure gateway\'s serial port")
-        self.menuGateway.Append(204, "&Network", "Configure gateway\'s network settings")
+        self.menugateway.Append(201, "&Connect", "Connect serial gateway")
+        self.menugateway.Append(202, "&Disconnect", "Disconnect serial gateway")
+        self.menugateway.Append(203, "&Serial port", "Configure gateway\'s serial port")
+        self.menugateway.Append(204, "&Network", "Configure gateway\'s network settings")
         
         # Devices menu
-        menuDevices.Append(301, "&Network settings", "Configure network settings")
-        menuDevices.Append(302, "&Custom settings", "Configure custom settings")
+        menudevices.Append(301, "&Network settings", "Configure network settings")
+        menudevices.Append(302, "&Custom settings", "Configure custom settings")
         
         # Devices menu
-        menuView.Append(401, "&Network monitor", "SWAP network monitor")
+        menuview.Append(401, "&Network monitor", "SWAP network monitor")
         
         # Help menu
-        menuHelp.Append(501, "&About", "About this application")
+        menuhelp.Append(501, "&About", "About this application")
 
-        menubar.Append(menuFile, "&File")
-        menubar.Append(self.menuGateway, "&Gateway")
-        menubar.Append(menuDevices, "&Devices")
-        menubar.Append(menuView, "&View")
-        menubar.Append(menuHelp, "&Help")
+        self.menubar.Append(menufile, "&File")
+        self.menubar.Append(self.menugateway, "&Gateway")
+        self.menubar.Append(menudevices, "&Devices")
+        self.menubar.Append(menuview, "&View")
+        self.menubar.Append(menuhelp, "&Help")
         
         # Set menubar
-        self.SetMenuBar(menubar)
+        self.SetMenuBar(self.menubar)
         
         # Attach event handlers
         wx.EVT_MENU(self, 201, self._OnConnect)
@@ -146,18 +149,13 @@ class SwapBrowser(wx.Frame):
         self.outputIcon = il.Add(wx.Bitmap("images/output.ico", wx.BITMAP_TYPE_ICO))
         self.tree.AssignImageList(il)
 
-        if self.server.is_running:
-            # Build SWAP tree
-            self.build_tree()
-            # Disable Connect item. Enable Disconnect item
-            self.menuGateway.Enable(201, enable=False)
-            self.menuGateway.Enable(202, enable=True)
-        else:
-            # Disable Disconnect item. Enable Connect item
-            self.menuGateway.Enable(202, enable=False)
-            self.menuGateway.Enable(201, enable=True)
-
-
+        # Disable Disconnect item. Enable Connect item
+        self.menugateway.Enable(202, enable=False)
+        self.menugateway.Enable(201, enable=True)
+        # Disable Device menu
+        self.menubar.EnableTop(2, enable=False)      
+            
+            
     def _OnViewMonitor(self, evn):
         """
         View->SWAP Network Monitor pressed
@@ -220,12 +218,12 @@ class SwapBrowser(wx.Frame):
                 address = mote.address
                 netid = config.network_id
                 freqChann = config.freq_channel
-                secu = config.security
+                secu = mote.security
                 if mote.pwrdownmode == True:
-                    mote = None
-                    txinterval = None
-                else:
                     txinterval = mote.txinterval
+                    mote = None
+                else:
+                    txinterval = None
                 paramsOk = True
 
         # No mote selected from the tree?
@@ -234,7 +232,7 @@ class SwapBrowser(wx.Frame):
             netid = config.network_id
             freqChann = config.freq_channel
             secu = config.security
-            txinterval = 0
+            txinterval = ""
         
         # Open network config dialog
         dialog = NetworkDialog(self, address, hex(netid), freqChann, secu, txinterval)
@@ -249,34 +247,50 @@ class SwapBrowser(wx.Frame):
             res = self._WaitForSync()
             if not res:
                 return
-            mote = self._moteInSync  
+            mote = self._moteinsync  
         
         # Send new config to mote
-        if not mote.setAddress(int(dialog.devaddress)):
-            self._Warning("Unable to set mote's address")
-        if not mote.setNetworkId(int(dialog.netid, 16)):
-            self._Warning("Unable to set mote's Network ID")
-        if not mote.setFreqChannel(int(dialog.freq_channel)):
-            self._Warning("Unable to set mote's frequency channel")
-        if not mote.setSecurity(int(dialog.security)):
-            self._Warning("Unable to set mote's security option")
-        if not mote.setTxInterval(int(dialog.interval)):
-            self._Warning("Unable to set mote's Tx interval")
-    
+        if int(dialog.devaddress) != address:
+            if not mote.setAddress(int(dialog.devaddress)):
+                self._Warning("Unable to set mote's address")
+        if dialog.netid != hex(netid):
+            if not mote.setNetworkId(int(dialog.netid, 16)):
+                self._Warning("Unable to set mote's Network ID")
+        if int(dialog.security) != secu:
+            if not mote.setSecurity(int(dialog.security)):
+                self._Warning("Unable to set mote's security option")
+        if dialog.interval is not None:
+            if dialog.interval != txinterval:
+                if not mote.setTxInterval(int(dialog.interval)):
+                    self._Warning("Unable to set mote's Tx interval")
+        if int(dialog.freq_channel) != freqChann:
+            if not mote.setFreqChannel(int(dialog.freq_channel)):
+                self._Warning("Unable to set mote's frequency channel")
+                    
        
     def _OnConnect(self, evn=None):
         """
         Connect option pressed
         """        
         try:
-            if self.server is None:
-                # Create new SWAP server
-                self.server = self.parent.create_server() 
-            else:
-                # Restart existing SWAP server
-                self.server._start()
-                self.menuGateway.Enable(201, enable=False)
-                self.menuGateway.Enable(202, enable=True)
+            # Start SWAP server
+            self.server.start()
+            
+            self._waitfor_startdialog = WaitDialog(self, "Connecting to SWAP network...", 10)
+            if not self._waitfor_startdialog.show():
+                # Stop SWAP server
+                if self.server is not None:
+                    self.server.stop()
+                self._Warning("Unable to start SWAP server. Please check connection and try again.")
+                return
+
+            # Build tree
+            self._build_tree()
+            
+            self.menugateway.Enable(201, enable=False)
+            self.menugateway.Enable(202, enable=True)
+            self.menubar.EnableTop(2, enable=True)
+            
         except SwapException as ex:
             self._Warning(ex.description)
             ex.log()
@@ -289,10 +303,16 @@ class SwapBrowser(wx.Frame):
         # Stop SWAP server
         if self.server is not None:
             self.server.stop()
-        self.menuGateway.Enable(201, enable=True)
-        self.menuGateway.Enable(202, enable=False)
-              
+            
+        WaitDialog(self, "Disconnecting from SWAP network...", 3).show()    
         
+        self.menugateway.Enable(201, enable=True)
+        self.menugateway.Enable(202, enable=False)
+        self.menubar.EnableTop(2, enable=False)
+        
+        self._Info("Server stopped and disconnected from SWAP network", caption = "Disconnected")
+
+
     def _OnConfigDevice(self, evn):
         """
         Devices->Custom settings pressed. Callback function
@@ -338,23 +358,23 @@ class SwapBrowser(wx.Frame):
         obj = self.tree.GetPyData(itemID)
         menu = None
         if obj.__class__.__name__ == "SwapMote":
-            if obj.lstCfgRegs is not None:
-                menu = wx.Menu()                
-                menu.Append(0, "Custom settings")
-                menu.Append(1, "Network settings")
+            menu = wx.Menu()                
+            menu.Append(0, "Network settings")
+            wx.EVT_MENU(menu, 0, self._OnMoteNetworkConfig)
+            if obj.lstcfgregs is not None:
+                menu.Append(1, "Custom settings")
+                wx.EVT_MENU(menu, 1, self._OnConfigDevice)
         elif obj.__class__.__name__ == "SwapRegister":
             if obj.isConfig():
                 menu = wx.Menu()
                 menu.Append(0, "Configure")
         
         if menu is not None:
-            wx.EVT_MENU(menu, 0, self._OnConfigDevice)
-            wx.EVT_MENU(menu, 1, self._OnMoteNetworkConfig)
             self.PopupMenu(menu, evn.GetPoint())
             menu.Destroy()   
         
         
-    def build_tree(self):
+    def _build_tree(self):
         '''
         Build SWAP tree
         '''
@@ -363,8 +383,9 @@ class SwapBrowser(wx.Frame):
 
         if self.server.is_running:
             # Disable Connect item. Enable Disconnect item
-            self.menuGateway.Enable(201, enable=False)
-            self.menuGateway.Enable(202, enable=True)
+            self.menugateway.Enable(201, enable=False)
+            self.menugateway.Enable(202, enable=True)
+            self.menubar.EnableTop(2, enable=True)
             
         netid = self.server.getNetId()
         
@@ -390,6 +411,15 @@ class SwapBrowser(wx.Frame):
         wx.EVT_TREE_ITEM_RIGHT_CLICK(self.tree, -1, self._RightClickCb)
 
 
+    def cbServerStarted(self):
+        """
+        Callback function called from SwapManager when the SWAP sever has been
+        successfully started
+        """
+        if self._waitfor_startdialog is not None:
+            self._waitfor_startdialog.close()
+
+
     def addMote(self, mote):
         """
         Add mote to the tree
@@ -402,9 +432,9 @@ class SwapBrowser(wx.Frame):
         # Associate mote with its tree entry
         self.tree.SetPyData(moteID, mote)
 
-        if mote.lstCfgRegs is not None:
+        if mote.lstcfgregs is not None:
             # Append associated config registers
-            for reg in mote.lstCfgRegs:
+            for reg in mote.lstcfgregs:
                 # Add register to the mote item
                 regID = self.tree.AppendItem(moteID, "Register " + str(reg.id) + ": " + reg.name)
                 self.tree.SetItemImage(regID, self.cfgRegIcon, wx.TreeItemIcon_Normal)
@@ -417,9 +447,9 @@ class SwapBrowser(wx.Frame):
                     self.tree.SetItemImage(paramID, self.cfgParamIcon, wx.TreeItemIcon_Normal)
                     # Associate register with its tree entry
                     self.tree.SetPyData(paramID, param)
-        if mote.lstRegRegs is not None:
+        if mote.lstregregs is not None:
             # Append associated regular registers
-            for reg in mote.lstRegRegs:
+            for reg in mote.lstregregs:
                 # Add register to the mote item
                 regID = self.tree.AppendItem(moteID, "Register " + str(reg.id) + ": " + reg.name)
                 self.tree.SetItemImage(regID, self.regRegIcon, wx.TreeItemIcon_Normal)
@@ -441,7 +471,7 @@ class SwapBrowser(wx.Frame):
         """
         Update endpoint value in tree
         
-        'endpoint'  Endpoint to be updated in the tree
+        @param endpoint:  Endpoint to be updated in the tree
         """
         moteID, moteCookie = self.tree.GetFirstChild(self.rootID)
         
@@ -475,7 +505,7 @@ class SwapBrowser(wx.Frame):
         """
         Update mote address in tree
         
-        'mote'  Mote to be updated in the tree
+        @param mote  Mote to be updated in the tree
         """
         # Try with first mote in tree
         moteID, moteCookie = self.tree.GetFirstChild(self.rootID)
@@ -500,7 +530,7 @@ class SwapBrowser(wx.Frame):
         """
         Configure registers in mote
         
-        'obj'  Mote or parameter to be configured
+        @param obj:  Mote or parameter to be configured
         """
         if obj is not None:
             if obj.__class__.__name__ == "XmlDevice":
@@ -515,7 +545,7 @@ class SwapBrowser(wx.Frame):
                         res = self._WaitForSync()
                         if not res:
                             return
-                        mote = self._moteInSync           
+                        mote = self._moteinsync           
                     # Send new configuration to mote
                     if mote is not None:
                         for reg in regs:
@@ -524,8 +554,8 @@ class SwapBrowser(wx.Frame):
                                 break
             elif obj.__class__.__name__ == "SwapMote":
                 mote = obj
-                if mote.lstCfgRegs is not None:
-                    for reg in mote.lstCfgRegs:
+                if mote.lstcfgregs is not None:
+                    for reg in mote.lstcfgregs:
                         dialog = ParamDialog(self, reg)
                         dialog.Destroy()
                     # Does this device need to enter SYNC mode first?
@@ -533,10 +563,10 @@ class SwapBrowser(wx.Frame):
                         res = self._WaitForSync()
                         if not res:
                             return
-                        mote = self._moteInSync           
+                        mote = self._moteinsync           
                     # Send new configuration to mote
                     if mote is not None:
-                        for reg in mote.lstCfgRegs:
+                        for reg in mote.lstcfgregs:
                             if mote.cmdRegisterWack(reg.id, reg.value) == False:
                                 self._Warning("Unable to set register \"" + reg.name + "\" in device " + str(reg.getAddress()))
                                 break              
@@ -549,7 +579,7 @@ class SwapBrowser(wx.Frame):
                     res = self._WaitForSync()
                     if not res:
                         return
-                    mote = self._moteInSync
+                    mote = self._moteinsync
                     
                 # Send new configuration to mote
                 if mote is not None:
@@ -557,22 +587,22 @@ class SwapBrowser(wx.Frame):
                         self._Warning("Unable to set register \"" + obj.name + "\" in device " + str(obj.getAddress()))
             
             # Mote still in SYNC mode?
-            if self._moteInSync is not None:
-                if self._moteInSync.state == SwapState.RXON:
+            if self._moteinsync is not None:
+                if self._moteinsync.state == SwapState.SYNC:
                     # Leave SYNC mode
-                    self._moteInSync.leaveSync()
-                    self._moteInSync = None
+                    self._moteinsync.leaveSync()
+                    self._moteinsync = None
                                 
         
     def syncReceived(self, mote):
         """
         SYNC signal received
         
-        'mote'  Mote having entered the SYNC mode
+        @param mote  Mote having entered the SYNC mode
         """
-        if self._waitForSyncDialog is not None:
-            self._moteInSync = mote
-            self._waitForSyncDialog.close()
+        if self._waitfor_syncdialog is not None:
+            self._moteinsync = mote
+            self._waitfor_syncdialog.close()
              
     
     def _Warning(self, message, caption = "Warning!"):
@@ -595,14 +625,14 @@ class SwapBrowser(wx.Frame):
 
     def _WaitForSync(self):
         """
-        Show Waiting dialog
+        Show Waiting dialog and wait until a SYNC message is received
         """
-        self._waitForSyncDialog = WaitDialog(self, "Please, put your device into SYNC mode")
-        result = self._waitForSyncDialog.ShowModal() == wx.ID_OK
-        self._waitForSyncDialog.Destroy()
-        self._waitForSyncDialog = None
+        self._waitfor_syncdialog = WaitDialog(self, "Please, put your device in SYNC mode")
+        result = self._waitfor_syncdialog.ShowModal() != wx.ID_CANCEL
+        self._waitfor_syncdialog.Destroy()
+        self._waitfor_syncdialog = None
         return result
-        
+           
 
     def _YesNo(self, question, caption = 'Yes or no?'):
         """
@@ -647,3 +677,4 @@ class SwapBrowser(wx.Frame):
             self.server.stop()
         self.Destroy()
         self.parent.terminate()
+
