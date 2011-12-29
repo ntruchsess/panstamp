@@ -13,6 +13,7 @@
       <param name="Current temperature in Celsious (NN.D format)" type="num">
         <position>1</position>
         <size>2</size>
+        <default>20.0</default>
         <verif>[-+]?[0-9]*\.[0-9]{1}</verif>
       </param>
       <param name="Current altitude in mts" type="num">
@@ -68,6 +69,254 @@
         <position>0</position>
         <size>5</size>
         <default>PAGE0</default>
+        <verif>^([A-Z0-9_-]){5}$</verif>
+      </param>
+      <param name="Device address (1-255)" type="num">
+        <position>5</position>
+        <size>1</size>
+        <default>255</default>
+        <verif>RANGE(1,255)</verif>
+      </param>
+      <param name="Register address (1-255)" type="num">
+        <position>6</position>
+        <size>1</size>
+        <default>255</default>
+        <verif>RANGE(1,255)</verif>
+      </param>
+      <param name="Register ID (10-255)" type="num">
+        <position>7</position>
+        <size>1</size>
+        <default>10</default>
+        <verif>RANGE(10,255)</verif>
+      </param>
+      <param name="Type of endpoint (1=num 0=bin)" type="bin">
+        <position>8.7</position>
+        <size>0.1</size>
+      </param>
+      <param name="Direction of endpoint (1=Output 0=Input)" type="bin">
+        <position>8.6</position>
+        <size>0.1</size>
+      </param>
+      <param name="Enable decimals (1=Enable 0=Disable)" type="bin">
+        <position>8.5</position>
+        <size>0.1</size>
+      </param>
+      <param name="Value's signess (1=Signed 0=Unsigned)" type="bin">
+        <position>8.4</position>
+        <size>0.1</size>
+      </param>
+      <param name="Value in register (1=Combined 0=Alone)" type="bin">
+        <position>8.3</position>
+        <size>0.1</size>
+      </param>
+      <param name="Step up/down delta" type="num">
+        <position>9</position>
+        <size>1</size>
+        <verif>^(\d*)$</verif>
+      </param>
+      <param name="Size in bytes (0-3)" type="num">
+        <position>10.0</position>
+        <size>0.2</size>
+        <default>1</default>
+        <verif>^([0-3])$</verif>
+      </param>
+      <param name="Position in register" type="num">
+        <position>10.2</position>
+        <size>0.6</size>
+        <verif>^(\d*)$</verif>
+      </param>
+    </reg>
+    <reg name="Browser page 1" id="17">
+      <param name="Label (5 chars)" type="str">
+        <position>0</position>
+        <size>5</size>
+        <default>PAGE1</default>
+        <verif>^([A-Z0-9_-]){5}$</verif>
+      </param>
+      <param name="Device address (1-255)" type="num">
+        <position>5</position>
+        <size>1</size>
+        <default>255</default>
+        <verif>RANGE(1,255)</verif>
+      </param>
+      <param name="Register address (1-255)" type="num">
+        <position>6</position>
+        <size>1</size>
+        <default>255</default>
+        <verif>RANGE(1,255)</verif>
+      </param>
+      <param name="Register ID (10-255)" type="num">
+        <position>7</position>
+        <size>1</size>
+        <default>10</default>
+        <verif>RANGE(10,255)</verif>
+      </param>
+      <param name="Type of endpoint (1=num 0=bin)" type="bin">
+        <position>8.7</position>
+        <size>0.1</size>
+      </param>
+      <param name="Direction of endpoint (1=Output 0=Input)" type="bin">
+        <position>8.6</position>
+        <size>0.1</size>
+      </param>
+      <param name="Enable decimals (1=Enable 0=Disable)" type="bin">
+        <position>8.5</position>
+        <size>0.1</size>
+      </param>
+      <param name="Value's signess (1=Signed 0=Unsigned)" type="bin">
+        <position>8.4</position>
+        <size>0.1</size>
+      </param>
+      <param name="Value in register (1=Combined 0=Alone)" type="bin">
+        <position>8.3</position>
+        <size>0.1</size>
+      </param>
+      <param name="Step up/down delta" type="num">
+        <position>9</position>
+        <size>1</size>
+        <verif>^(\d*)$</verif>
+      </param>
+      <param name="Size in bytes (0-3)" type="num">
+        <position>10.0</position>
+        <size>0.2</size>
+        <default>1</default>
+        <verif>^([0-3])$</verif>
+      </param>
+      <param name="Position in register" type="num">
+        <position>10.2</position>
+        <size>0.6</size>
+        <verif>^(\d*)$</verif>
+      </param>
+    </reg>
+    <reg name="Browser page 2" id="17">
+      <param name="Label (5 chars)" type="str">
+        <position>0</position>
+        <size>5</size>
+        <default>PAGE2</default>
+        <verif>^([A-Z0-9_-]){5}$</verif>
+      </param>
+      <param name="Device address (1-255)" type="num">
+        <position>5</position>
+        <size>1</size>
+        <default>255</default>
+        <verif>RANGE(1,255)</verif>
+      </param>
+      <param name="Register address (1-255)" type="num">
+        <position>6</position>
+        <size>1</size>
+        <default>255</default>
+        <verif>RANGE(1,255)</verif>
+      </param>
+      <param name="Register ID (10-255)" type="num">
+        <position>7</position>
+        <size>1</size>
+        <default>10</default>
+        <verif>RANGE(10,255)</verif>
+      </param>
+      <param name="Type of endpoint (1=num 0=bin)" type="bin">
+        <position>8.7</position>
+        <size>0.1</size>
+      </param>
+      <param name="Direction of endpoint (1=Output 0=Input)" type="bin">
+        <position>8.6</position>
+        <size>0.1</size>
+      </param>
+      <param name="Enable decimals (1=Enable 0=Disable)" type="bin">
+        <position>8.5</position>
+        <size>0.1</size>
+      </param>
+      <param name="Value's signess (1=Signed 0=Unsigned)" type="bin">
+        <position>8.4</position>
+        <size>0.1</size>
+      </param>
+      <param name="Value in register (1=Combined 0=Alone)" type="bin">
+        <position>8.3</position>
+        <size>0.1</size>
+      </param>
+      <param name="Step up/down delta" type="num">
+        <position>9</position>
+        <size>1</size>
+        <verif>^(\d*)$</verif>
+      </param>
+      <param name="Size in bytes (0-3)" type="num">
+        <position>10.0</position>
+        <size>0.2</size>
+        <default>1</default>
+        <verif>^([0-3])$</verif>
+      </param>
+      <param name="Position in register" type="num">
+        <position>10.2</position>
+        <size>0.6</size>
+        <verif>^(\d*)$</verif>
+      </param>
+    </reg>
+    <reg name="Browser page 3" id="17">
+      <param name="Label (5 chars)" type="str">
+        <position>0</position>
+        <size>5</size>
+        <default>PAGE3</default>
+        <verif>^([A-Z0-9_-]){5}$</verif>
+      </param>
+      <param name="Device address (1-255)" type="num">
+        <position>5</position>
+        <size>1</size>
+        <default>255</default>
+        <verif>RANGE(1,255)</verif>
+      </param>
+      <param name="Register address (1-255)" type="num">
+        <position>6</position>
+        <size>1</size>
+        <default>255</default>
+        <verif>RANGE(1,255)</verif>
+      </param>
+      <param name="Register ID (10-255)" type="num">
+        <position>7</position>
+        <size>1</size>
+        <default>10</default>
+        <verif>RANGE(10,255)</verif>
+      </param>
+      <param name="Type of endpoint (1=num 0=bin)" type="bin">
+        <position>8.7</position>
+        <size>0.1</size>
+      </param>
+      <param name="Direction of endpoint (1=Output 0=Input)" type="bin">
+        <position>8.6</position>
+        <size>0.1</size>
+      </param>
+      <param name="Enable decimals (1=Enable 0=Disable)" type="bin">
+        <position>8.5</position>
+        <size>0.1</size>
+      </param>
+      <param name="Value's signess (1=Signed 0=Unsigned)" type="bin">
+        <position>8.4</position>
+        <size>0.1</size>
+      </param>
+      <param name="Value in register (1=Combined 0=Alone)" type="bin">
+        <position>8.3</position>
+        <size>0.1</size>
+      </param>
+      <param name="Step up/down delta" type="num">
+        <position>9</position>
+        <size>1</size>
+        <verif>^(\d*)$</verif>
+      </param>
+      <param name="Size in bytes (0-3)" type="num">
+        <position>10.0</position>
+        <size>0.2</size>
+        <default>1</default>
+        <verif>^([0-3])$</verif>
+      </param>
+      <param name="Position in register" type="num">
+        <position>10.2</position>
+        <size>0.6</size>
+        <verif>^(\d*)$</verif>
+      </param>
+    </reg>
+    <reg name="Browser page 4" id="17">
+      <param name="Label (5 chars)" type="str">
+        <position>0</position>
+        <size>5</size>
+        <default>PAGE4</default>
         <verif>^([A-Z0-9_-]){5}$</verif>
       </param>
       <param name="Device address (1-255)" type="num">

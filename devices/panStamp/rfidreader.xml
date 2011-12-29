@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<device>
+  <developer>panStamp</developer>
+  <product>RFID reader</product>
+  <pwrdownmode>false</pwrdownmode>
+  <regular>
+    <reg name="RFID tag address" id="11">
+      <endpoint name="Address" type="num" dir="inp">
+        <size>1</size>
+      </endpoint>
+    </reg>
+  </regular>
+</device>
