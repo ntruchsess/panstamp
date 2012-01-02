@@ -48,7 +48,7 @@ enum CUSTOM_REGINDEX                    \
 #define DEFINE_COMMON_REGINDEX_END()    };
 
 #define DEFINE_REGINDEX_START()   DEFINE_COMMON_REGINDEX_START()
-#define DEFINE_REGINDEX_END()     DEFINE_COMMON_REGINDEX_END();
+#define DEFINE_REGINDEX_END()     DEFINE_COMMON_REGINDEX_END()
 
 /**
  * Macro for the definition of registers common to all SWAP devices

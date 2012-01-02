@@ -29,8 +29,7 @@
 
 #define enableIRQ_GDO0()        attachInterrupt(0, isrGDO0event, FALLING);
 #define disableIRQ_GDO0()       detachInterrupt(0);
-//#define REGI_PRODUCTCODE        0
-//#define REGI_SYSSTATE           3
+
 DEFINE_COMMON_REGINDEX_START()
 DEFINE_COMMON_REGINDEX_END()
 
@@ -270,6 +269,9 @@ void PANSTAMP::wakeUp(void)
   power_all_enable();
   // Enable ADC
   ADCSRA |= (1 << ADEN);
+
+  // Reset CC1101 IC
+  cc1101.wakeUp();
 }
 
 /**
@@ -313,7 +315,7 @@ void PANSTAMP::goToSleep(void)
 
   // Sleep
   for (i=0 ; i<loops ; i++)
-    panstamp.sleepWd(minTime);
+    sleepWd(minTime);
 }
 
 /**

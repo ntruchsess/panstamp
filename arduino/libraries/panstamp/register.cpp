@@ -39,6 +39,7 @@ void REGISTER::getData(void)
   // Update register value
   if (updateValue != NULL)
     updateValue(id);
+
   // Send SWAP status message about the new value
   sendSwapStatus();
 }

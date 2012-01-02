@@ -28,6 +28,10 @@
 /**
  * Macros
  */
+// Select (SPI) CC1101
+#define cc1101_Select()  bitClear(PORT_SPI_SS, BIT_SPI_SS)
+// Deselect (SPI) CC1101
+#define cc1101_Deselect()  bitSet(PORT_SPI_SS, BIT_SPI_SS)
 // Wait until SPI MISO line goes low
 #define wait_Miso()  while(bitRead(PORT_SPI_MISO, BIT_SPI_MISO))
 // Get GDO0 pin state
@@ -36,10 +40,6 @@
 #define wait_GDO0_high()  while(!getGDO0state())
 // Wait until GDO0 line goes low
 #define wait_GDO0_low()  while(getGDO0state())
-// Select (SPI) CC1101
-#define cc1101_Select()  bitClear(PORT_SPI_SS, BIT_SPI_SS)
-// Deselect (SPI) CC1101
-#define cc1101_Deselect()  bitSet(PORT_SPI_SS, BIT_SPI_SS)
 // Read CC1101 Config register
 #define readConfigReg(regAddr)    readReg(regAddr, CC1101_CONFIG_REGISTER)
 // Read CC1101 Status register
@@ -49,6 +49,18 @@
   * PATABLE
   */
 const byte paTable[8] = {0x60, 0x60, 0x60, 0x60, 0x60, 0x60, 0x60, 0x60};
+
+/**
+ * wakeUp
+ * 
+ * Wake up CC1101 from Power Down state
+ */
+void CC1101::wakeUp(void)
+{
+  cc1101_Select();                      // Select CC1101
+  wait_Miso();                          // Wait until MISO goes low
+  cc1101_Deselect();                    // Deselect CC1101
+}
 
 /**
  * writeReg
@@ -406,7 +418,7 @@ boolean CC1101::sendData(CCPACKET packet)
   setRxState();
 
   // Check that the RX state has been entered
-  while (readStatusReg(CC1101_MARCSTATE) != 0x0D)
+  while ((readStatusReg(CC1101_MARCSTATE) & 0x1F) != 0x0D)
     delay(1);
   delayMicroseconds(500);
 
@@ -419,7 +431,7 @@ boolean CC1101::sendData(CCPACKET packet)
   cmdStrobe(CC1101_STX);
 
   // Check that TX state is being entered (state = RXTX_SETTLING)
-  if(readStatusReg(CC1101_MARCSTATE) != 0x15)
+  if((readStatusReg(CC1101_MARCSTATE) & 0x1F) != 0x15)
     return false;
 
   // Wait for the sync word to be transmitted
@@ -454,13 +466,19 @@ byte CC1101::receiveData(CCPACKET * packet)
 {
   byte val;
 
+  // Rx FIFO overflow?
+  if ((readStatusReg(CC1101_MARCSTATE) & 0x1F) == 0x11)
+  {
+    // Flush Rx FIFO
+    cmdStrobe(CC1101_SFRX);
+    packet->length = 0;
+  }
   // Any byte waiting to be read?
-  if (readStatusReg(CC1101_RXBYTES) & 0x7F)
+  else if (readStatusReg(CC1101_RXBYTES) & 0x7F)
   {
     // Read data length
     packet->length = readConfigReg(CC1101_RXFIFO);
-
-    // If packewt is too long
+    // If packet is too long
     if (packet->length > CC1101_DATA_LEN)
       packet->length = 0;   // Discard packet
     else
@@ -482,7 +500,7 @@ byte CC1101::receiveData(CCPACKET * packet)
   //cmdStrobe(CC1101_SFRX);
 
   // Enter back into RX state
-  setRxState(); 
+  setRxState();
 
   return packet->length;
 }

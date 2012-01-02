@@ -343,6 +343,13 @@ class CC1101
     byte devAddress;
 
     /**
+     * wakeUp
+     * 
+     * Wake up CC1101 from Power Down state
+     */
+    void wakeUp(void);
+
+    /**
      * writeReg
      * 
      * Write single register into the CC1101 IC via SPI
