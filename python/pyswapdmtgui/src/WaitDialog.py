@@ -63,7 +63,6 @@ class WaitDialog(ConfigDialog):
         if self.wait_time is not None:
             self.timer.Start(self.wait_time * 1000, True)
         res = self.ShowModal()
-        self.Destroy
            
         return res == wx.ID_OK
         

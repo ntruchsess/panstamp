@@ -26,9 +26,6 @@ __author__="Daniel Berenguer"
 __date__ ="$Aug 21, 2011 4:30:47 PM$"
 #########################################################################
 
-from SwapBrowser import SwapBrowser
-from LogWindow import LogFrame
-
 from MainFrame import MainFrame
 
 from SwapInterface import SwapInterface
@@ -49,6 +46,8 @@ class SwapManager(SwapInterface):
         """
         self.dmtframe.cbServerStarted()
 
+        # Display event
+        wx.CallAfter(Publisher().sendMessage, "add_event", "SWAP server started")
     
     def newMoteDetected(self, mote):
         """
@@ -60,9 +59,10 @@ class SwapManager(SwapInterface):
             # Display event
             evntext = "New mote with address " + str(mote.address) + " : " + mote.definition.product + \
             " (by " + mote.definition.manufacturer + ")"
-            self.dmtframe.event_panel.print_event(evntext)
+            wx.CallAfter(Publisher().sendMessage, "add_event", evntext)
+            
             # Append mote to the browsing tree
-            wx.CallAfter(Publisher().sendMessage, "add_mote")
+            wx.CallAfter(Publisher().sendMessage, "add_mote", mote)
 
 
     def newEndpointDetected(self, endpoint):
@@ -74,7 +74,7 @@ class SwapManager(SwapInterface):
         if self.dmtframe is not None:
             # Display event
             evntext = "New endpoint with Reg ID = " + str(endpoint.getRegId()) + " : " + endpoint.name
-            self.dmtframe.event_panel.print_event(evntext)
+            wx.CallAfter(Publisher().sendMessage, "add_event", evntext)
 
 
     def moteStateChanged(self, mote):
@@ -87,7 +87,7 @@ class SwapManager(SwapInterface):
             # Display event
             evntext = "Mote with address " + str(mote.address) + " switched to \"" + \
                 SwapState.toString(mote.state) + "\""
-            self.dmtframe.event_panel.print_event(evntext)
+            wx.CallAfter(Publisher().sendMessage, "add_event", evntext)
             
             # SYNC mode entered?
             if mote.state == SwapState.SYNC:
@@ -104,10 +104,10 @@ class SwapManager(SwapInterface):
         if self.dmtframe is not None:
             # Display event
             evntext = "Mote changed address to " + str(mote.address)
-            self.dmtframe.event_panel.print_event(evntext)
+            wx.CallAfter(Publisher().sendMessage, "add_event", evntext)
                 
             # Update address in tree
-            self.dmtframe.browser_panel.updateAddressInTree(mote)
+            wx.CallAfter(Publisher().sendMessage, "changed_addr", mote)
 
 
     def endpointValueChanged(self, endpoint):
@@ -119,10 +119,10 @@ class SwapManager(SwapInterface):
         if self.dmtframe is not None:
             # Display event
             evntext = endpoint.name + " in address " + str(endpoint.getRegAddress()) + " changed to " + endpoint.getValueInAscii()
-            self.dmtframe.event_panel.print_event(evntext)
+            wx.CallAfter(Publisher().sendMessage, "add_event", evntext)
 
-            # Update value in SWAP dmtframe            
-            self.dmtframe.browser_panel.updateEndpointInTree(endpoint)
+            # Update value in SWAP dmtframe
+            wx.CallAfter(Publisher().sendMessage, "changed_val", endpoint)    
 
 
     def paramValueChanged(self, param):
@@ -134,10 +134,10 @@ class SwapManager(SwapInterface):
         if self.dmtframe is not None:
             # Display event
             evntext = param.name + " in address " + str(param.getRegAddress()) + " changed to " + param.getValueInAscii()
-            self.dmtframe.event_panel.print_event(evntext)
+            wx.CallAfter(Publisher().sendMessage, "add_event", evntext)
                 
             # Update value in SWAP dmtframe
-            self.dmtframe.browser_panel.updateEndpointInTree(param)
+            wx.CallAfter(Publisher().sendMessage, "changed_val", param) 
         
 
     def terminate(self):
@@ -148,19 +148,14 @@ class SwapManager(SwapInterface):
         self.app.ExitMainLoop()
 
 
-    def __init__(self, verbose=False, monitor=False):
+    def __init__(self, verbose=False):
         """
         Class constructor
         
         'verbose'  Print out SWAP frames or not
-        'monitor'  Print out network events or not
         """
-        self.dmtframe = None
-        # Print SWAP activity
-        self._printSWAP = monitor
         # Callbacks not being used
         self.registerValueChanged = None
-
 
         # wxPython app
         self.app = wx.PySimpleApp(0)
@@ -176,22 +171,11 @@ class SwapManager(SwapInterface):
             ex.display()
             ex.log()
 
-        # Create SWAP Network Monitor window
-        #net_monitor = LogFrame("SWAP Network Monitor")
-        # Open SWAP browser
-        #self.browser = SwapBrowser(self, server=self.server, monitor=net_monitor)
+        # Open SWAP Device Management Tool
         self.dmtframe = MainFrame("SWAP Device Management Tool", self, server=self.server)
         #self.dmtframe.SetSize(wx.Size(370,500))
-        #self.app.SetTopWindow(self.dmtframe)
-        #self.dmtframe.CenterOnScreen()
+        self.app.SetTopWindow(self.dmtframe)
+        self.dmtframe.CenterOnScreen()
         self.dmtframe.Show(True)
-        # Open monitor window
-        """
-        position = self.dmtframe.GetPosition()
-        size = self.dmtframe.GetSize()
-        position += (size[0]+200, 0)
-        net_monitor.SetPosition(position)
-        net_monitor.Show(True)
-        """
 
         self.app.MainLoop()

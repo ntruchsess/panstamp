@@ -40,7 +40,7 @@ from xmltools.XmlDevice import XmlDeviceDir
 from xmltools.XmlSettings import XmlSettings
 from xmltools.XmlNetwork import XmlNetwork
 
-import time
+import time, sys
 
 import wx.lib.agw.aui as aui
 from wx.lib.pubsub import Publisher
@@ -139,18 +139,21 @@ class MainFrame(wx.Frame):
         wx.EVT_MENU(self, 302, self.onConfigDevice)
         wx.EVT_MENU(self, 501, self._OnAbout)
         wx.EVT_MENU(self, 101, self._OnClose)
-        self.Bind(wx.EVT_CLOSE, self._OnCloseBrowser)
+        self.Bind(wx.EVT_CLOSE, self._OnCloseWindow)
   
         self.mgr.Update()
         self.SetAutoLayout(True)
         self.SetSize((800, 600))
         self.Layout()   
 
-        # Create a pubsub receiver
-        Publisher().subscribe(self.add_mote, "add_mote")
+        # Create a pubsub receivers
+        Publisher().subscribe(self.cb_add_event, "add_event")
+        Publisher().subscribe(self.cb_add_mote, "add_mote")
+        Publisher().subscribe(self.cb_changed_addr, "changed_addr")
+        Publisher().subscribe(self.cb_changed_val, "changed_val")
 
 
-    def add_event(self, msg):
+    def cb_add_event(self, msg):
         """
         Request from SWAP server thread to add event to the event display
         
@@ -158,10 +161,10 @@ class MainFrame(wx.Frame):
         """
         event = msg.data
         if isinstance(event, str):
-            self.browser_panel.addMote(event)
+            self.event_panel.print_event(event)
             
             
-    def add_mote(self, msg):
+    def cb_add_mote(self, msg):
         """
         Request from SWAP server thread to add mote to the browser tree
         
@@ -170,6 +173,28 @@ class MainFrame(wx.Frame):
         mote = msg.data
         if mote.__class__.__name__ == "SwapMote":
             self.browser_panel.addMote(mote)
+            
+            
+    def cb_changed_addr(self, msg):
+        """
+        Request from SWAP server thread to change a mote address from the browser tree
+        
+        @param msg: message containing the mote to be modified from the tree
+        """
+        mote = msg.data
+        if mote.__class__.__name__ == "SwapMote":
+            self.browser_panel.updateAddressInTree(mote)
+            
+            
+    def cb_changed_val(self, msg):
+        """
+        Request from SWAP server thread to change an endpoint value from the browser tree
+        
+        @param msg: message containing the mote to be modified from the tree
+        """
+        endpoint = msg.data
+        if endpoint.__class__.__name__ == "SwapEndpoint":
+            self.browser_panel.updateEndpointInTree(endpoint)
 
 
     def _OnSerialConfig(self, evn):
@@ -337,18 +362,16 @@ class MainFrame(wx.Frame):
         self.Close(True)
 
 
-    def _OnCloseBrowser(self, evn):
+    def _OnCloseWindow(self, evn):
         """
-        Callback function called whenever the browser is closed
+        Callback function called whenever the window is closed
         """
-        if self.monitor is not None:
-            self.monitor.Destroy()
         if self.server is not None:
             self.server.stop()
         self.Destroy()
         self.parent.terminate()
-
-
+        
+        
     def onMoteNetworkConfig(self, evn):
         """
         Devices->Network settings pressed. Callback function
@@ -471,7 +494,7 @@ class MainFrame(wx.Frame):
                         dialog.Destroy()
                     # Does this device need to enter SYNC mode first?
                     if obj.pwrdownmode == True:
-                        res = self._WaitForSync()
+                        res = self.waitForSync()                        
                         if not res:
                             return
                         mote = self._moteinsync           
@@ -489,7 +512,7 @@ class MainFrame(wx.Frame):
                         dialog.Destroy()
                     # Does this device need to enter SYNC mode first?
                     if mote.definition.pwrdownmode == True:
-                        res = self._WaitForSync()
+                        res = self.waitForSync()
                         if not res:
                             return
                         mote = self._moteinsync           
@@ -505,7 +528,7 @@ class MainFrame(wx.Frame):
                 mote = obj.mote
                 # Does this device need to enter SYNC mode first?
                 if mote.definition.pwrdownmode == True:
-                    res = self._WaitForSync()
+                    res = self.waitForSync()
                     if not res:
                         return
                     mote = self._moteinsync
@@ -722,16 +745,83 @@ class SnifferPanel(wx.Panel):
     """
     GUI panel displaying the SWAP network traffic
     """
+    def write(self, text):
+        """
+        Add new line into the log window
+        
+        @param text: Text string to be displayed in the log window
+        """
+        if text:
+            if len(text) > 1: # Condition added to avoid printing single white spaces
+                if text.startswith("Rved: "):                    
+                    msg = text[6:]
+                    msgtype = self.get_message_type(msg)
+                    if msgtype is None:
+                        return
+                    image = self.arrow_left_icon
+                elif text.startswith("Sent: "):
+                    msgtype = "sent"
+                    msg = text[6:-1]
+                    msgtype = self.get_message_type(msg)
+                    if msgtype is None:
+                        return
+                    image = self.arrow_right_icon
+                elif text.startswith("SwapException occurred: "):
+                    msgtype = "ERROR"
+                    msg = text[24:]
+                    image = self.warning_icon
+                else:
+                    return
+
+                index = self.log_list.GetItemCount()
+                self.log_list.InsertStringItem(index, str(time.time()))
+                self.log_list.SetStringItem(index, 1, msgtype)
+                self.log_list.SetStringItem(index, 2, msg)
+                self.log_list.SetItemImage(index, image)
+                self.log_list.EnsureVisible(index)
+
+    
+    def get_message_type(self, msg):
+        """
+        Get the type of message received or being sent
+        
+        @param msg: SWAP message
+        
+        @return Type of message in string format
+        """
+        if len(msg) < 14:
+            return None
+
+        if msg[0] == '(':
+            if msg[5] == ')':
+                shift = 6
+            else:
+                return None
+        else:
+            shift = 0
+            
+        msgtype = msg[8+shift:10+shift]
+
+        if msgtype == "00":
+            return "status"
+        elif msgtype == "01":
+            return "query"
+        elif msgtype == "02":
+            return "command"
+
+        return None
+    
+    
     def _display_info(self):
         """
         Show Information dialog about the selected line
         """
         err = False
         # Get current selection from list
-        index = self.log.GetFirstSelected()
-        timestamp = self.log.GetItem(index, 0).GetText()
-        msgtype = self.log.GetItem(index, 1).GetText()
-        packet = self.log.GetItem(index, 2).GetText()
+        index = self.log_list.GetFirstSelected()
+        timestamp = self.log_list.GetItem(index, 0).GetText()
+        msgtype = self.log_list.GetItem(index, 1).GetText()
+        packet = self.log_list.GetItem(index, 2).GetText()
                
         text = "Time: " + timestamp + "\n"
         text += "Type of packet: " + msgtype + "\n"
@@ -823,6 +913,9 @@ class SnifferPanel(wx.Panel):
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.log_list, 1, wx.EXPAND)
         self.SetSizer(sizer)
+        
+        # Redirect stdout to the LogCtrl widget
+        sys.stdout = RedirectText(self)
 
 
 class EventPanel(wx.Panel):
@@ -854,7 +947,19 @@ class EventPanel(wx.Panel):
         sizer.Add(self.event_area, 1, wx.EXPAND)
         self.SetSizer(sizer)
         
-        
+
+class RedirectText(object):
+    """
+    Class for redirecting text to a given widget
+    """
+    def __init__(self, widget):
+        self.out = widget
+ 
+    def write(self, string):
+        if self.out is not None:
+            wx.CallAfter(self.out.write, string)
+
+                    
 if __name__ == "__main__":
     app = wx.PySimpleApp()
     frame = MainFrame("SWAP Device Management Tool")
