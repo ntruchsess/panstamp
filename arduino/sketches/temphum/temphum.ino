@@ -40,7 +40,6 @@
 void setup()
 {
   int i;
-  byte ledState = LOW;
 
   pinMode(LEDPIN, OUTPUT);
   digitalWrite(LEDPIN, LOW);
@@ -77,17 +76,12 @@ void setup()
  */
 void loop()
 {
-  wdt_enable(WDTO_4S);
-  
-  // Enable the following block of code if you want the panStamp to send Vcc and blink the LED
-  /*
-  digitalWrite(LEDPIN, HIGH);
-  getRegister(REGI_VOLTSUPPLY)->getData();
-  digitalWrite(LEDPIN, LOW);
-  */
-  
+//  digitalWrite(LEDPIN, HIGH);
+  // Transmit sensor data
   getRegister(REGI_TEMPHUM)->getData();
-  wdt_disable();
+//  digitalWrite(LEDPIN, LOW);
+
+  // Sleep
   panstamp.goToSleep();
 }
 

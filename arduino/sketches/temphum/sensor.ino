@@ -74,6 +74,7 @@ byte sensor_ReadByte(void)
       result |=(1<<(7-i));
 
     count = 20000;
+
     while(getDataPin())
     {
       if (--count == 0)
@@ -99,7 +100,7 @@ int sensor_ReadTempHum(void)
   // Power ON sensor
   setPwrOutput();
   sensorON();
-  delay(250);
+  delay(400);
   
   setDataOutput();
   setDataPin();
@@ -111,15 +112,17 @@ int sensor_ReadTempHum(void)
   delayMicroseconds(40);	
   setDataInput();
   delayMicroseconds(40);
-	
+  
   if ((dht11_in = getDataPin()))
     return -1;  // Start condition not met
+
   delayMicroseconds(80);	
   if (!(dht11_in = getDataPin()))
     return -1;  // Start condition not met
   delayMicroseconds(80);
 
-  // now ready for data reception
+  // Now ready for data reception
+  
   for (i=0; i<5; i++)
     dht11Data[i] = sensor_ReadByte();
 

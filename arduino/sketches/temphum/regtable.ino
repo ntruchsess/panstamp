@@ -86,7 +86,7 @@ const void updtVoltSupply(byte rId)
   result = 1126400L / result; // Back-calculate AVcc in mV
 
   /**
-   * register[eId]->member can be replaced by regVoltSupply.member in this case since
+   * register[eId]->member can be replaced by regVoltSupply in this case since
    * no other register is going to use "updtVoltSupply" as "updater" function
    */
 
