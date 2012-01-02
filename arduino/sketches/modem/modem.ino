@@ -24,26 +24,10 @@
  * Creation date: 15/02/2011
  */
 
-#include "modem.h"
 #include "cc1101.h"
 #include "TimerOne.h"
 #include "EEPROM.h"
-
-
-#define enableINT0irq()    attachInterrupt(0, isrINT0event, FALLING);
-#define disableINT0irq()   detachInterrupt(0);
-#define resetTimer()      t1Ticks = 0
-
-char strSerial[SERIAL_BUF_LEN];          // Serial buffer
-byte ch;
-int len = 0;
-SERMODE serMode = SERMODE_DATA;          // Serial mode (data or command mode)
-byte t1Ticks = 0;                        // Timer 1 ticks
-
-/**
- * CC1101 object
- */
-CC1101 cc1101;
+#include "modem.h"
 
 /**
  * isrINT0event
@@ -52,36 +36,7 @@ CC1101 cc1101;
  */
 void isrINT0event(void)
 {
-  byte i;
-  CCPACKET packet;
-  
-  // Disable interrupt
-  disableINT0irq();
-  
-  if (cc1101.receiveData(&packet) > 0)
-  {
-    if (packet.crc_ok && packet.length > 5 && serMode == SERMODE_DATA)
-    {
-      Serial.print("(");
-      if (packet.rssi < 0x10)
-        Serial.print("0");
-      Serial.print(packet.rssi, HEX);
-      if (packet.lqi < 0x10)
-        Serial.print("0");
-      Serial.print(packet.lqi, HEX);
-      Serial.print(")");
-      for(i=0 ; i<packet.length ; i++)
-      {
-        if (packet.data[i] < 0x10)
-          Serial.print(0, HEX);    // Leading zero
-        Serial.print(packet.data[i], HEX);
-      }
-      Serial.println("");
-    }
-  }
-  
-  // Enable interrupt
-  enableINT0irq();
+  packetAvailable = true;
 }
 
 /*
@@ -93,6 +48,8 @@ void isrT1event(void)
 {
   if (t1Ticks == MAX_SERIAL_SILENCE_TK)
   {
+    // Detach Timer1 interrupt
+    Timer1.detachInterrupt();
     Timer1.stop();
     resetTimer();
     // Pending "+++" command?
@@ -270,27 +227,27 @@ void setup()
   // Reset serial buffer
   memset(strSerial, 0, sizeof(strSerial));
   
-  // Init Timer1
-  Timer1.initialize(TIMER1_TICK_PERIOD_US);
-  // Attach interrupt function to Timer1
-  Timer1.attachInterrupt(isrT1event);
-
   // Default mode is COMMAND
   Serial.println("Modem ready!");
-   
+
   // Setup CC1101
   cc1101.init();
 
   // Disable address check from the CC1101 IC
   cc1101.disableAddressCheck();
 
-  delayMicroseconds(50);  
+  delay(100);  
 
   // Enter RX state
   cc1101.setRxState();
 
   // Attach callback function for GDO0 (INT0)
   enableINT0irq();
+  
+  // Init Timer1
+  Timer1.initialize(TIMER1_TICK_PERIOD_US);
+  // Attach interrupt function to Timer1
+  //Timer1.attachInterrupt(isrT1event);
 }
 
 /**
@@ -300,13 +257,43 @@ void setup()
  */
 void loop()
 {
+  // Read wireless packet?
+  if (packetAvailable)
+  {
+    byte i;
+    CCPACKET packet;
+    
+    packetAvailable = false;
+
+    if (cc1101.receiveData(&packet) > 0)
+    {
+      if (packet.crc_ok && packet.length > 5 && serMode == SERMODE_DATA)
+      {
+        Serial.print("(");
+        if (packet.rssi < 0x10)
+          Serial.print("0");
+        Serial.print(packet.rssi, HEX);
+        if (packet.lqi < 0x10)
+          Serial.print("0");
+        Serial.print(packet.lqi, HEX);
+        Serial.print(")");
+        for(i=0 ; i<packet.length ; i++)
+        {
+          if (packet.data[i] < 0x10)
+            Serial.print(0, HEX);    // Leading zero
+          Serial.print(packet.data[i], HEX);
+        }
+        Serial.println("");
+      }
+    }  
+  }
+
   // Read serial command
   if (Serial.available() > 0)
   {
     // Disable wireless reception interrupt
-    disableINT0irq();
-    
-    resetTimer();
+    //disableINT0irq();
+         
     ch = Serial.read();
 
     if (len >= SERIAL_BUF_LEN-1)
@@ -316,6 +303,7 @@ void loop()
     }
     else if (ch == 0x0D) 
     {
+      Timer1.detachInterrupt();
       strSerial[len] = 0;
       handleSerialCmd(strSerial);
       memset(strSerial, 0, sizeof(strSerial));
@@ -325,10 +313,49 @@ void loop()
     {
       strSerial[len] = ch; 
       len++;
+      resetTimer();
+      // Attach interrupt function to Timer1
+      Timer1.attachInterrupt(isrT1event);
     }
     
     // Enable wireless reception interrupt
-    enableINT0irq();
+    //enableINT0irq();
   }
+}
+
+/**
+ * charToHex
+ *
+ * 'ch'    Character to be converted to hexadecimal
+ *
+ * Returns:
+ *  Hex value
+ */
+byte charToHex(byte ch)
+{
+  byte val;
+  
+  if (ch >= 'A' && ch <= 'F')
+    val = ch - 55;
+  else if (ch >= 'a' && ch <= 'f')
+    val = ch - 87;
+  else if (ch >= '0' && ch <= '9')
+    val = ch - 48;
+  else
+    val = 0x00;
+
+  return val;  
+}
+
+/**
+ * swReset
+ * 
+ * Software reset
+ */
+void swReset(void) 
+{
+  wdt_disable();  
+  wdt_enable(WDTO_15MS);
+  while (1) {}
 }
 

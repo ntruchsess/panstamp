@@ -28,8 +28,9 @@
 #define _MODEM_H
 
 #include "Arduino.h"
-#include "tools.h"
 #include "version.h"
+#include <avr/wdt.h>
+
 
 #define SERIAL_BUF_LEN           128     // Maximum length for any serial string
 #define TIMER1_TICK_PERIOD_US    500000  // Timer1 tick = 500 ms
@@ -51,6 +52,13 @@
 #define AT_ADDRCHECK             "ATAC"      // Address check
 
 /**
+ * Macros
+ */
+#define enableINT0irq()    attachInterrupt(0, isrINT0event, FALLING)
+#define disableINT0irq()   detachInterrupt(0)
+#define resetTimer()       t1Ticks = 0
+
+/**
  * Serial modes
  */
 enum SERMODE
@@ -67,5 +75,20 @@ enum ATQUERY
   ATQUERY_COMMAND = 0,
   ATQUERY_REQUEST
 };
+
+/**
+ * Global variables
+ */
+char strSerial[SERIAL_BUF_LEN];          // Serial buffer
+byte ch;
+int len = 0;
+SERMODE serMode = SERMODE_DATA;          // Serial mode (data or command mode)
+byte t1Ticks = 0;                        // Timer 1 ticks
+boolean packetAvailable = false;         // Wireless packet received when true
+
+/**
+ * CC1101 object
+ */
+CC1101 cc1101;
 
 #endif    // _MODEM_H
