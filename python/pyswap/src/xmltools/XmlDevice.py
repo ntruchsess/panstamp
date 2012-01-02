@@ -159,7 +159,7 @@ class XmlDeviceDir(object):
         for devel in self.developers:
             for dev in devel.devices:
                 if option.lower() == dev.option:
-                    return XmlDevice(manufId=devel.id, prodId=dev.id)
+                    return XmlDevice(devel_id=devel.id, prod_id=dev.id)
         return None
     
     

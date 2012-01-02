@@ -116,6 +116,8 @@ class SwapServer(threading.Thread):
         if self.modem is not None:
             self.modem.stop()
         self.is_running = False
+        
+        threading.Thread.__init__(self)
 
 
     def resetNetwork(self):
@@ -325,11 +327,10 @@ class SwapServer(threading.Thread):
         @param status: SWAP packet to extract the information from
         """
         # Check possible command ACK
-        self._packetAcked = False
         if (self._expectedAck is not None) and (status.function == SwapFunction.STATUS):
             if status.regAddress == self._expectedAck.regAddress:
                 if status.regId == self._expectedAck.regId:
-                    self._packetAcked = self._expectedAck.value.isEqual(status.value)
+                    self._packetAcked = self._expectedAck.value.isEqual(status.value) 
 
         # Check possible response to a precedent query
         self._valueReceived = None
@@ -394,7 +395,7 @@ class SwapServer(threading.Thread):
         """
         # Send command multiple times if necessary
         for i in range(SwapServer._MAX_SWAP_COMMAND_TRIES):
-            # Send command
+            # Send command            
             ack = mote.cmdRegister(regId, value);
             #print "Expected ACK:", ack.toString()
             # Wait for aknowledgement from mote
@@ -426,18 +427,19 @@ class SwapServer(threading.Thread):
         return regVal
 
 
-    def _waitForAck(self, ackPacket, wait_time):
+    def _waitForAck(self, ackpacket, wait_time):
         """
         Wait for ACK (SWAP status packet)
         Non re-entrant method!!
 
-        @param ackPacket: SWAP status packet to expect as a valid ACK
+        @param ackpacket: SWAP status packet to expect as a valid ACK
         @param wait_time: Max waiting time in milliseconds
         
         @return True if the ACK is received. False otherwise
         """
+        self._packetAcked = False
         # Expected ACK packet (SWAP status)
-        self._expectedAck = ackPacket
+        self._expectedAck = ackpacket
         
         #loops = wait_time / 10
         start = time.time()

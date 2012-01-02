@@ -70,6 +70,9 @@ class CcPacket(object):
         ## LQI in case of packet received
         self.lqi = 0
         if strPacket is not None:
+            # Check packet length
+            if (len(strPacket) < 20):
+                raise SwapException("Incomplete packet received.")
             # Check the existence of the (RSSI/LQI) pair
             if (strPacket[0], strPacket[5]) != ('(', ')'):
                 raise SwapException("Incorrect packet format for incoming data. Lack of (RSSI,LQI).")
@@ -83,6 +86,3 @@ class CcPacket(object):
             for i in range(6, len(strPacket), 2):
                 byte = int(strPacket[i:i + 2], 16)
                 self.data.append(byte)
-
-
-  
