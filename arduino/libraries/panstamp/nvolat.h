@@ -38,4 +38,6 @@
 #define EEPROM_DEVICE_ADDR       0x04   // 1-byte register
 #define EEPROM_TX_INTERVAL       0x05   // 2-byte register
 
+#define EEPROM_FIRST_CUSTOM      0x20
+
 #endif
