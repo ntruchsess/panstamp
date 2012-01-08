@@ -42,7 +42,13 @@ DEFINE_REGINDEX_END()
 /**
  * Sensor values
  */
-byte dtTempHum[4];
+#ifdef TEMP
+  byte dtSensor[2];
+#elif TEMPHUM
+  byte dtSensor[4];
+#else
+  byte dtSensor[6];
+#endif
 
 #endif
 

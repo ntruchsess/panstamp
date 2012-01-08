@@ -27,6 +27,10 @@
 #include "regtable.h"
 #include "panstamp.h"
 
+//#define TEMP
+#define TEMPHUM
+//#define TEMPHUMPRESS
+
 /**
  * LED pin
  */

@@ -45,15 +45,15 @@ DEFINE_COMMON_REGISTERS()
 // Voltage supply
 static byte dtVoltSupply[2];
 REGISTER regVoltSupply(dtVoltSupply, sizeof(dtVoltSupply), &updtVoltSupply, NULL);
-// Temperature and humidity from the DHT11 sensor
-REGISTER regTempHum(dtTempHum, sizeof(dtTempHum), &updtTempHum, NULL);
+// Sensor value register
+REGISTER regSensor(dtSensor, sizeof(dtSensor), &updtSensor, NULL);
 
 /**
  * Initialize table of registers
  */
 DECLARE_REGISTERS_START()
   &regVoltSupply,
-  &regTempHum
+  &regSensor
 DECLARE_REGISTERS_END()
 
 /**
@@ -96,14 +96,16 @@ const void updtVoltSupply(byte rId)
 }
 
 /**
- * updtTempHum
+ * updtSensor
  *
- * Measure humidity and temperature and update register
+ * Measure sensor data and update register
  *
  * 'rId'  Register ID
  */
-const void updtTempHum(byte rId)
+const void updtSensor(byte rId)
 {
-  // Read temperature and humidity from sensor
-  sensor_ReadTempHum();
+  #ifdef TEMPHUM
+    // Read temperature and humidity from sensor
+    sensor_ReadTempHum();
+  #endif
 }

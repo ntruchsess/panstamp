@@ -30,21 +30,23 @@
 /**
  * Pin definitions
  */
-#define PORTW_DHT11_DATA  PORTD
-#define PORTR_DHT11_DATA  PIND
-#define PORTD_DHT11_DATA  DDRD
-#define PORTW_DHT11_PWR   PORTD
-#define PORTD_DHT11_PWR   DDRD
-#define BIT_DHT11_DATA    6
-#define BIT_DHT11_PWR     5
-#define setDataPin()      bitSet(PORTW_DHT11_DATA, BIT_DHT11_DATA)
-#define clearDataPin()    bitClear(PORTW_DHT11_DATA, BIT_DHT11_DATA)
-#define getDataPin()      bitRead(PORTR_DHT11_DATA, BIT_DHT11_DATA)
-#define setDataInput()    bitClear(PORTD_DHT11_DATA, BIT_DHT11_DATA)
-#define setDataOutput()   bitSet(PORTD_DHT11_DATA, BIT_DHT11_DATA)
-#define sensorON()        bitSet(PORTW_DHT11_PWR, BIT_DHT11_PWR)
-#define sensorOFF()       bitClear(PORTW_DHT11_PWR, BIT_DHT11_PWR)
-#define setPwrOutput()    bitSet(PORTD_DHT11_PWR, BIT_DHT11_PWR)
+#define PORTW_DHT_DATA    PORTD
+#define PORTR_DHT_DATA    PIND
+#define PORTD_DHT_DATA    DDRD
+#define BIT_DHT_DATA      6
+
+#define setDataPin()      bitSet(PORTW_DHT_DATA, BIT_DHT_DATA)
+#define clearDataPin()    bitClear(PORTW_DHT_DATA, BIT_DHT_DATA)
+#define getDataPin()      bitRead(PORTR_DHT_DATA, BIT_DHT_DATA)
+#define setDataInput()    bitClear(PORTD_DHT_DATA, BIT_DHT_DATA)
+#define setDataOutput()   bitSet(PORTD_DHT_DATA, BIT_DHT_DATA)
+
+#define PORTW_SENSOR_PWR  PORTD
+#define PORTD_SENSOR_PWR  DDRD
+#define BIT_SENSOR_PWR    5
+#define sensorON()        bitSet(PORTW_SENSOR_PWR, BIT_SENSOR_PWR)
+#define sensorOFF()       bitClear(PORTW_SENSOR_PWR, BIT_SENSOR_PWR)
+#define setPwrOutput()    bitSet(PORTD_SENSOR_PWR, BIT_SENSOR_PWR)
 
 /**
  * Local functions
@@ -141,10 +143,10 @@ int sensor_ReadTempHum(void)
   temperature = dht11Data[2] * 100;  // Temperature
   humidity = dht11Data[0] * 100;     // Humidity
   
-  dtTempHum[0] = (temperature >> 8) & 0xFF;
-  dtTempHum[1] = temperature & 0xFF;
-  dtTempHum[2] = (humidity >> 8) & 0xFF;
-  dtTempHum[3] = humidity & 0xFF;
+  dtSensor[0] = (temperature >> 8) & 0xFF;
+  dtSensor[1] = temperature & 0xFF;
+  dtSensor[2] = (humidity >> 8) & 0xFF;
+  dtSensor[3] = humidity & 0xFF;
   
   return 0;
 }
