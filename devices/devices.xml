@@ -6,7 +6,5 @@
     <dev id="3" name="rgbdriver" label="RGB driver board"/>
     <dev id="4" name="temp" label="Temperature sensor"/>
     <dev id="5" name="temphumpress" label="Temperature/Humidity/Barometric sensor"/>
-    <dev id="6" name="rfidtag" label="RFID tag"/>
-    <dev id="7" name="rfidreader" label="RFID reader"/>
   </developer>
 </devices>
