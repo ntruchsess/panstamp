@@ -315,8 +315,11 @@ class XmlDevice(object):
                             try:
                                 defVal = int(paramDef)
                             except ValueError:
-                                raise SwapException("Default value " + str(paramDef) + " is not an integer")
-                                return
+                                try:
+                                  defVal = float(paramDef)
+                                except ValueError:
+                                  raise SwapException("Default value " + str(paramDef) + " is not a number")
+                                  return
                         else:
                             defVal = paramDef
                         verif = None

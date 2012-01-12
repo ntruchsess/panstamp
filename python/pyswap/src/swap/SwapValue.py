@@ -169,3 +169,4 @@ class SwapValue(object):
                 for i in range(length):
                     val = (res >> (8 * (length-1-i))) & 0xFF
                     self._data.append(val)
+
