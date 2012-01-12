@@ -151,6 +151,7 @@ class MainFrame(wx.Frame):
         Publisher().subscribe(self.cb_add_mote, "add_mote")
         Publisher().subscribe(self.cb_changed_addr, "changed_addr")
         Publisher().subscribe(self.cb_changed_val, "changed_val")
+        Publisher().subscribe(self.cb_sync_received, "sync_received")
 
 
     def cb_add_event(self, msg):
@@ -197,6 +198,19 @@ class MainFrame(wx.Frame):
             self.browser_panel.updateEndpointInTree(endpoint)
 
 
+    def cb_sync_received(self, msg):
+        """
+        SYNC state received from mote
+        
+        @param mote  Mote having entered the SYNC mode
+        """
+        mote = msg.data
+        if mote.__class__.__name__ == "SwapMote":
+            if self._waitfor_syncdialog is not None:
+                self._moteinsync = mote
+                self._waitfor_syncdialog.close()
+            
+            
     def _OnSerialConfig(self, evn):
         """
         Config serial port pressed
@@ -324,7 +338,7 @@ class MainFrame(wx.Frame):
         """
         self._waitfor_syncdialog = WaitDialog(self, "Please, put your device in SYNC mode")
         result = self._waitfor_syncdialog.ShowModal() != wx.ID_CANCEL
-        self._waitfor_syncdialog.Destroy()
+        #self._waitfor_syncdialog.Destroy()
         self._waitfor_syncdialog = None
         return result
            
@@ -502,7 +516,7 @@ class MainFrame(wx.Frame):
                     if mote is not None:
                         for reg in regs:
                             if mote.cmdRegisterWack(reg.id, reg.value) == False:
-                                self._Warning("Unable to set register \"" + reg.name + "\" in device " + str(reg.getAddress()))
+                                self._Warning("Unable to set register \"" + reg.name + "\" in device " + str(mote.address))
                                 break
             elif obj.__class__.__name__ == "SwapMote":
                 mote = obj
@@ -667,12 +681,15 @@ class BrowserPanel(wx.Panel):
         
         while moteid.IsOk():
             m = self.tree.GetPyData(moteid)
-            if m == mote:                
-                # Add mote to the root
+            if m == mote:
+                self.addMote(mote)
+                """   
+                # Add mote to the root                
                 new_moteid = self.tree.AppendItem(self.rootid, "Mote " + str(mote.address) + ": " + mote.definition.product)
                 self.tree.SetItemImage(new_moteid, self.moteIcon, wx.TreeItemIcon_Normal)
                 # Associate mote with its tree entry
-                self.tree.SetPyData(new_moteid, mote)                
+                self.tree.SetPyData(new_moteid, mote)
+                """                
                 # Remove old mote
                 self.tree.Delete(moteid)
                 return

@@ -91,8 +91,7 @@ class SwapManager(SwapInterface):
             
             # SYNC mode entered?
             if mote.state == SwapState.SYNC:
-                if self.dmtframe is not None:
-                    self.dmtframe.syncReceived(mote)
+                wx.CallAfter(Publisher().sendMessage, "sync_received", mote)
 
 
     def moteAddressChanged(self, mote):
