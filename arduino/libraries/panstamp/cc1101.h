@@ -197,7 +197,7 @@ enum CFREQ
 #define CC1101_DEFVAL_SYNC1      0xB5        // Synchronization word, high byte
 #define CC1101_DEFVAL_SYNC0      0x47        // Synchronization word, low byte
 #define CC1101_DEFVAL_PKTLEN     0xFF        // Packet Length
-#define CC1101_DEFVAL_PKTCTRL1   0x07        // Packet Automation Control
+#define CC1101_DEFVAL_PKTCTRL1   0x06        // Packet Automation Control
 #define CC1101_DEFVAL_PKTCTRL0   0x05        // Packet Automation Control
 #define CC1101_DEFVAL_ADDR       0xFF        // Device Address
 #define CC1101_DEFVAL_CHANNR     0x00        // Channel Number

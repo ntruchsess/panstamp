@@ -50,7 +50,7 @@
   EEPROM.write(EEPROM_FREQ_CHANNEL, CC1101_DEFVAL_CHANNR);    \
   EEPROM.write(EEPROM_SECU_OPTION, 0);                        \
   EEPROM.write(EEPROM_TX_INTERVAL, 0xFF);                     \
-  EEPROM.write(EEPROM_TX_INTERVAL + 1, 0xFF);
+  EEPROM.write(EEPROM_TX_INTERVAL + 1, 0xFF)
 
 /**
  * System states
@@ -79,27 +79,6 @@ class PANSTAMP
      * 'time'	Watchdog timer value
      */
     void setup_watchdog(byte time);
-
-    /**
-     * sleepWd
-     * 
-     * Put panStamp into Power-down state during "time".
-     * This function uses the internal watchdog timer in order to exit (interrupt)
-     * from the power-doen state
-     * 
-     * 'time'	Sleeping time:
-     *  WDTO_15MS  = 15 ms
-     *  WDTO_30MS  = 30 ms
-     *  WDTO_60MS  = 60 ms
-     *  WDTO_120MS  = 120 ms
-     *  WDTO_250MS  = 250 ms
-     *  WDTO_500MS  = 500 ms
-     *  WDTO_1S = 1 s
-     *  WDTO_2S = 2 s
-     *  WDTO_4S = 4 s
-     *  WDTO_8S = 8 s
-     */
-    void sleepWd(byte time);
 
   public:
     /**
@@ -154,6 +133,35 @@ class PANSTAMP
     void reset(void);
 
     /**
+     * sleep
+     * 
+     * Put panStamp into Power-down state indefinitely, until de reception of an
+     * external interruption
+     */
+    void sleep(void);
+
+    /**
+     * sleepWd
+     * 
+     * Put panStamp into Power-down state during "time".
+     * This function uses the internal watchdog timer in order to exit (interrupt)
+     * from the power-doen state
+     * 
+     * 'time'	Sleeping time:
+     *  WDTO_15MS  = 15 ms
+     *  WDTO_30MS  = 30 ms
+     *  WDTO_60MS  = 60 ms
+     *  WDTO_120MS  = 120 ms
+     *  WDTO_250MS  = 250 ms
+     *  WDTO_500MS  = 500 ms
+     *  WDTO_1S = 1 s
+     *  WDTO_2S = 2 s
+     *  WDTO_4S = 4 s
+     *  WDTO_8S = 8 s
+     */
+    void sleepWd(byte time);
+
+    /**
      * wakeUp
      *
      * Wake from sleep mode
@@ -164,8 +172,10 @@ class PANSTAMP
      * goToSleep
      *
      * Sleep whilst in power-down mode. This function currently uses sleepWd in a loop
+     *
+     * 'timed'  If true, wake-up after txInterval seconds. Otherwise, sleep indefinitely
      */
-    void goToSleep(void);
+    void goToSleep(bool timed);
 
     /**
      * enterSystemState

@@ -212,6 +212,30 @@ void PANSTAMP::reset()
 }
 
 /**
+ * sleep
+ * 
+ * Put panStamp into Power-down state indefinitely, until de reception of an
+ * external interruption
+ */
+void PANSTAMP::sleep(void) 
+{
+  // Power-down CC1101
+  cc1101.setPowerDownState();
+  // Power-down panStamp
+  set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+  sleep_enable();
+  delayMicroseconds(10);
+  // Disable ADC
+  ADCSRA &= ~(1 << ADEN);
+  // Unpower functions
+  PRR = 0xFF;
+  // Enter sleep mode
+  sleep_mode();
+
+  // ZZZZZZZZ...
+}
+
+/**
  * sleepWd
  * 
  * Put panStamp into Power-down state during "time".
@@ -278,8 +302,10 @@ void PANSTAMP::wakeUp(void)
  * goToSleep
  *
  * Sleep whilst in power-down mode. This function currently uses sleepWd in a loop
+ *
+ * 'timed'  If true, wake-up after txInterval seconds. Otherwise, sleep indefinitely
  */
-void PANSTAMP::goToSleep(void)
+void PANSTAMP::goToSleep(bool timed = true)
 {
   // Get the amount of seconds to sleep from the internal register
   int intInterval = txInterval[0] * 0x100 + txInterval[1];
