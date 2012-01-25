@@ -22,6 +22,18 @@
  * 
  * Author: Daniel Berenguer
  * Creation date: 15/02/2011
+ *
+ * Device:
+ * Serial gateway or modem
+ *
+ * Description:
+ * This is not a proper SWAP gateway but a simple transparent UART-RF
+ * interface. This device can be used from a serial console as hyperterminal
+ * or minicom. Wireless packets are passed to/from the host computer in ASCII
+ * format whilst configuration is done via AT commands.
+ *
+ * Visit our wiki for details about the protocol in case you want to develop
+ * your own PC library for this device.
  */
 
 #include "cc1101.h"
