@@ -36,19 +36,8 @@
  */
 DEFINE_REGINDEX_START()
   REGI_VOLTSUPPLY,
-  REGI_TEMPHUM
+  REGI_SENSOR
 DEFINE_REGINDEX_END()
-
-/**
- * Sensor values
- */
-#ifdef TEMP
-  byte dtSensor[2];
-#elif TEMPHUM
-  byte dtSensor[4];
-#else
-  byte dtSensor[6];
-#endif
 
 #endif
 

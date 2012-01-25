@@ -28,6 +28,7 @@
 #include "product.h"
 #include "panstamp.h"
 #include "regtable.h"
+#include "sensor.h"
 
 /**
  * Declaration of common callback functions
@@ -105,7 +106,13 @@ const void updtVoltSupply(byte rId)
 const void updtSensor(byte rId)
 {
   #ifdef TEMPHUM
-    // Read temperature and humidity from sensor
-    sensor_ReadTempHum();
+  // Read temperature and humidity from sensor
+  sensor_ReadTempHum();
+  #elif TEMP
+  // Read temperature from sensor
+  sensor_ReadTemp();
+  #elif TEMPPRESS
+  // Read temperature and pressure from sensor
+  sensor_ReadTempPress();
   #endif
 }

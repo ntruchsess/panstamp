@@ -22,14 +22,42 @@
  * 
  * Author: Daniel Berenguer
  * Creation date: 11/31/2011
+ *
+ * Device:
+ * Temperature sensor
+ * Dual Temperature + Humidity sensor
+ * Dual Pressure + Temperature sensor
+ *
+ * Description:
+ * This sketch can generate three different devices depending on the
+ * definition of a pre-compiler contstant in sensor.h (only enable one
+ * of these options):
+ *
+ * TEMP: Device measuring temperature from a TMP36 sensor.
+ * Pins: PIN_ADCTEMP (ADC input) and PIN_PWRTEMP (power pin)
+ *
+ * TEMPHUM: Device measuring temperature and humidity from a DHT11/DHT22
+ * sensor.
+ * Pins: DHT_DATA (digital I/O) and PIN_PWRDHT (power pin)
+ *
+ * TEMPPRESS: Device measuring temperature and barometric pressure from
+ * an I2C BMP085 sensor.
+ * Pins: I2C port and PIN_PWRPRESS (Power pin)
+ *
+ * These devices are low-power enabled so they will enter low-power mode
+ * just after reading the sensor values and transmitting them over the
+ * SWAP network.
+ * Edit sensor.h for your sensor settings (type of sensor and pins)
+ *
+ * Associated Device Definition Files, defining registers, endpoints and
+ * configuration parameters:
+ * temp.xml (Temperature sensor)
+ * temphum.xml (Dual Humidity + Temperature sensor)
+ * temppress.xml (Dual Pressure + Temperature sensor)
  */
  
 #include "regtable.h"
 #include "panstamp.h"
-
-//#define TEMP
-#define TEMPHUM
-//#define TEMPHUMPRESS
 
 /**
  * LED pin
@@ -47,6 +75,9 @@ void setup()
 
   pinMode(LEDPIN, OUTPUT);
   digitalWrite(LEDPIN, LOW);
+
+  // Initialize sensor pins
+  initSensor();
 
   // Init panStamp
   panstamp.init();
@@ -82,7 +113,7 @@ void loop()
 {
 //  digitalWrite(LEDPIN, HIGH);
   // Transmit sensor data
-  getRegister(REGI_TEMPHUM)->getData();
+  getRegister(REGI_SENSOR)->getData();
 //  digitalWrite(LEDPIN, LOW);
 
   // Sleep

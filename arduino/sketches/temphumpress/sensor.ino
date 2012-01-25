@@ -25,32 +25,18 @@
  */
 
 #include "Arduino.h"
-#include "regtable.h"
+#include "sensor.h"
 
-/**
- * Pin definitions
- */
-#define PORTW_DHT_DATA    PORTD
-#define PORTR_DHT_DATA    PIND
-#define PORTD_DHT_DATA    DDRD
-#define BIT_DHT_DATA      6
-
-#define setDataPin()      bitSet(PORTW_DHT_DATA, BIT_DHT_DATA)
-#define clearDataPin()    bitClear(PORTW_DHT_DATA, BIT_DHT_DATA)
-#define getDataPin()      bitRead(PORTR_DHT_DATA, BIT_DHT_DATA)
-#define setDataInput()    bitClear(PORTD_DHT_DATA, BIT_DHT_DATA)
-#define setDataOutput()   bitSet(PORTD_DHT_DATA, BIT_DHT_DATA)
-
-#define PORTW_SENSOR_PWR  PORTD
-#define PORTD_SENSOR_PWR  DDRD
-#define BIT_SENSOR_PWR    5
-#define sensorON()        bitSet(PORTW_SENSOR_PWR, BIT_SENSOR_PWR)
-#define sensorOFF()       bitClear(PORTW_SENSOR_PWR, BIT_SENSOR_PWR)
-#define setPwrOutput()    bitSet(PORTD_SENSOR_PWR, BIT_SENSOR_PWR)
+#ifdef TEMPPRESS
+#include "Wire.h"
+#include "BMP085.h"
+BMP085 bmp;
+#endif
 
 /**
  * Local functions
  */
+#ifdef TEMPHUM
 byte sensor_ReadByte(void);
 
 /**
@@ -95,18 +81,17 @@ byte sensor_ReadByte(void)
  */
 int sensor_ReadTempHum(void)
 {
-  byte dht11Data[5];
-  byte dht11_in, i, dht11Crc;
+  byte dhtData[5];
+  byte dht_in, i, dhtCrc;
   int result, temperature, humidity;
   
   // Power ON sensor
-  setPwrOutput();
-  sensorON();
+  dhtSensorON();
   delay(400);
   
   setDataOutput();
   setDataPin();
-  
+   
   // Start condition
   clearDataPin();
   delay(18);
@@ -114,35 +99,46 @@ int sensor_ReadTempHum(void)
   delayMicroseconds(40);	
   setDataInput();
   delayMicroseconds(40);
-  
-  if ((dht11_in = getDataPin()))
+
+  if ((dht_in = getDataPin()))
     return -1;  // Start condition not met
 
   delayMicroseconds(80);	
-  if (!(dht11_in = getDataPin()))
+  if (!(dht_in = getDataPin()))
     return -1;  // Start condition not met
   delayMicroseconds(80);
 
-  // Now ready for data reception
-  
-  for (i=0; i<5; i++)
-    dht11Data[i] = sensor_ReadByte();
+  // Now ready for data reception 
+  for (i=0; i<5; i++)  
+    dhtData[i] = sensor_ReadByte();
 
   setDataOutput();
   setDataPin();
   
   // Power OFF sensor
-  sensorOFF();
+  dhtSensorOFF();
   
-  dht11Crc = dht11Data[0] + dht11Data[1] + dht11Data[2] + dht11Data[3];
+  dhtCrc = dhtData[0] + dhtData[1] + dhtData[2] + dhtData[3];
+
   // check check_sum
-  if(dht11Data[4]!= dht11Crc)
+  if(dhtData[4]!= dhtCrc)
     return -1;  // CRC error
 
   // Prepare values for 2-decimal format:
-  temperature = dht11Data[2] * 100;  // Temperature
-  humidity = dht11Data[0] * 100;     // Humidity
-  
+  #ifdef DHT11
+  temperature = dhtData[2] * 10 + 500;  // Apply same format as for the DHT22
+  humidity = dhtData[0] * 10;
+  #elif DHT22
+  int sign = 1;
+  if (dhtData[2] & 0x80)
+  {
+    sign = -1;
+    dhtData[2] &= 0x7F; 
+  }
+  temperature = sign * word(dhtData[2], dhtData[3]) + 500;  // 50.0 ºC offset in order to accept negative temperatures
+  humidity = word(dhtData[0], dhtData[1]);
+  #endif
+
   dtSensor[0] = (temperature >> 8) & 0xFF;
   dtSensor[1] = temperature & 0xFF;
   dtSensor[2] = (humidity >> 8) & 0xFF;
@@ -150,3 +146,83 @@ int sensor_ReadTempHum(void)
   
   return 0;
 }
+
+#elif TEMP
+/**
+ * sensor_ReadTemp
+ *
+ * Read temperature from TMP36 sensor
+ *
+ * Return -1 in case of error. Return 0 otherwise
+ */
+int sensor_ReadTemp(void)
+{ 
+  // Switch on sensor
+  tempSensorON();
+  delay(200);
+  
+  // Read voltage from ADC pin
+  unsigned int reading = analogRead(PIN_ADCTEMP);  
+
+  // Switch off sensor
+  tempSensorOFF();
+
+  // Convert reading to voltage
+  float fVolt = ((reading * 1.1) / 1024.0) * 100;
+  unsigned int voltage = fVolt * 10;
+
+  // Fill register
+  dtSensor[0] = (voltage >> 8) & 0xFF;
+  dtSensor[1] = voltage & 0xFF;
+  
+  return 0;
+}
+
+#elif TEMPPRESS
+/**
+ * sensor_ReadTempPress
+ *
+ * Read temperature and pressure from BMP085 sensor
+ *
+ * Return -1 in case of error. Return 0 otherwise
+ */
+int sensor_ReadTempPress(void)
+{
+  pressSensorON();
+  delay(400);
+  unsigned int temperature = bmp.readTemperature() * 10 + 500;
+  unsigned int pressure = bmp.readPressure() / 100;  // mbar
+
+  dtSensor[0] = (temperature >> 8) & 0xFF;
+  dtSensor[1] = temperature & 0xFF;
+  dtSensor[2] = (pressure >> 8) & 0xFF;
+  dtSensor[3] = pressure & 0xFF;
+
+  pressSensorOFF();
+
+  return 0;
+}
+
+#endif
+
+/**
+ * initSensor
+ *
+ * Initialize sensor pins
+ */
+void initSensor(void)
+{
+#ifdef TEMP
+  pinMode(PIN_PWRTEMP, OUTPUT);   // Configure Power pin as output
+  tempSensorOFF();
+  analogReference(INTERNAL);      // Use internal 1.1 V reference fro ADC conversions
+#elif TEMPHUM
+  pinMode(PIN_PWRDHT, OUTPUT);    // Configure Power pin as output
+  dhtSensorOFF();
+#elif TEMPPRESS
+  pinMode(PIN_PWRPRESS, OUTPUT);  // Configure Power pin as output
+  pressSensorOFF();
+  bmp.begin();
+#endif
+}
+

@@ -27,6 +27,8 @@
 #ifndef _PRODUCT_H
 #define _PRODUCT_H
 
+#include "sensor.h"
+
 /**
  * Hardware version
  */
@@ -45,7 +47,13 @@
 /**
  * Product SWAP ID
  */
+#ifdef TEMPHUM
 #define SWAP_PRODUCT_ID         0x00000001
+#elif TEMP
+#define SWAP_PRODUCT_ID         0x00000004
+#elif TEMPPRESS
+#define SWAP_PRODUCT_ID         0x00000005
+#endif
 
 #endif
 
