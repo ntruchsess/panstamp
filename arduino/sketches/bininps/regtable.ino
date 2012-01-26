@@ -46,8 +46,11 @@ DEFINE_COMMON_REGISTERS()
 static byte dtVoltSupply[2];
 REGISTER regVoltSupply(dtVoltSupply, sizeof(dtVoltSupply), &updtVoltSupply, NULL);
 // Binary input register
-static byte dtBinInputs[2];
+byte dtBinInputs[2];    // Binary input states
 REGISTER regBinInputs(dtBinInputs, sizeof(dtBinInputs), &updtBinInputs, NULL);
+// 4-byte counter registers (4 regs)
+byte dtCounters[16];    // Pulse counters
+REGISTER regCounters(dtCounters, sizeof(dtCounters), &updtCounters, NULL);
 
 /**
  * Initialize table of registers
@@ -55,6 +58,7 @@ REGISTER regBinInputs(dtBinInputs, sizeof(dtBinInputs), &updtBinInputs, NULL);
 DECLARE_REGISTERS_START()
   &regVoltSupply,
   &regBinInputs,
+  &regCounters
 DECLARE_REGISTERS_END()
 
 /**
@@ -105,23 +109,27 @@ const void updtVoltSupply(byte rId)
  */
 const void updtBinInputs(byte rId)
 {
-  byte highByte = 0, lowByte = 0;
+  // Update register
+  dtBinInputs[0] = stateHighByte;
+  dtBinInputs[1] = stateLowByte;
+}
 
-  lowByte = bitRead(PINB, 0);
-  lowByte |= bitRead(PINB, 1) << 1;
-  lowByte |= bitRead(PINC, 0) << 2;
-  lowByte |= bitRead(PINC, 1) << 3;
-  lowByte |= bitRead(PINC, 2) << 4;
-  lowByte |= bitRead(PINC, 3) << 5;
-  lowByte |= bitRead(PINC, 4) << 6;
-  lowByte |= bitRead(PINC, 5) << 7;
-
-  highByte |= bitRead(PIND, 3);
-  highByte |= bitRead(PIND, 5) << 1;
-  highByte |= bitRead(PIND, 6) << 2;
-  highByte |= bitRead(PIND, 7) << 3;
-
-  dtBinInputs[0] = highByte;
-  dtBinInputs[1] = lowByte;
+/**
+ * updtCounters
+ *
+ * Update counters
+ *
+ * 'rId'  Register ID
+ */
+const void updtCounters(byte rId)
+{
+  byte i, j;
+  
+  // Update register
+  for(i=0 ; i<4 ; i++)
+  {
+    for(j=0 ; j<4 ; j++)
+      dtCounters[i*4 + j] = (counter[3-i] >> 8 * (3-j)) & 0xFF;
+  }
 }
 

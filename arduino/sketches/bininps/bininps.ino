@@ -27,12 +27,19 @@
  * Binary inputs
  *
  * Description:
- * Device that reports the binary state of 12 digital inputs.
+ * Device that reports the binary state of 12 digital inputs, 4 of them being
+ * used as pulse counters as well.
+ *
+ * Binary inputs only: pins 2, 3, 4, 5, 6, 8, 9 and 10
+ * Binary/counter inputs: pins 18, 20, 21 and 22
+ *
  * This sketch can be used to detect key/switch presses, binary alarms or
- * any other binary sensor.
- * Inputs are not debounced in any way so the user may decide whether to
- * debounce them via software or simply add an external capacitor, depending
- * on the application and type of binary signal.
+ * any other binary sensor. It can also be used to count pulses from a vaste
+ * variety of devices such as energy meters, water meters, gas meters, etc.
+ * You may want to add some delays in updateValues in order to better debounce
+ * the binary states. We suggest to add external capacitors to the inputs as well.
+ * Capacitor values and delays should depend on the nature and frequence of the
+ * input signals.
  *
  * This device is low-power enabled so it will enter low-power mode just
  * after reading the binary states and transmitting them over the SWAP
@@ -51,7 +58,7 @@
  */
 #define PCINTMASK0    0x03  // PB[0:1]
 #define PCINTMASK1    0x3F  // PC[0:5]
-#define PCINTMASK2    0xE8  // PD[3], PD[5:7]
+#define PCINTMASK2    0xE8  // PD[3], PD[5:7]. These are counter inputs too
 
 /**
  * Macros
@@ -68,6 +75,26 @@
  * Pin Change Interrupt flag
  */
 boolean pcIRQ = false;
+
+/**
+ * Binary states
+ */
+byte stateLowByte = 0, stateHighByte = 0;
+
+/**
+ * Pure Binary inputs
+ */
+uint8_t binaryPin[] = {0, 1, 0, 1, 2, 3, 4, 5};                                              // Binary pins (Atmega port bits)
+volatile uint8_t *binaryPort[] = {&PINB, &PINB, &PINC, &PINC, &PINC, &PINC, &PINC, &PINC};   // Binary ports (Atmega port)
+int lastStateBinary[] = {-1, -1, -1, -1, -1, -1, -1, -1};                                    // Initial pin states
+
+/**
+ * Counters
+ */
+uint8_t counterPin[] = {3, 5, 6, 7};                                // Counter pins (Atmega port bits)
+volatile uint8_t *counterPort[] = {&PIND, &PIND, &PIND, &PIND};     // Counter ports (Atmega port)
+unsigned long counter[] = {0, 0, 0, 0};                             // Initial counter values
+int lastStateCount[] = {-1, -1, -1, -1};                            // Initial pin states
 
 /**
  * Pin Change Interrupt vectors
@@ -89,6 +116,55 @@ SIGNAL(PCINT2_vect)
 }
 
 /**
+ * updateValues
+ *
+ * Update binary state registers and counters
+ *
+ * Return:
+ * 0 -> No binary state change
+ * 1 -> Only binary states changed
+ * 2 -> Binary states and counters changed
+ */
+byte updateValues(void)
+{
+  byte state, i, res = 0;
+
+  stateLowByte = 0;
+  for(i=0 ; i<sizeof(binaryPin) ; i++)
+  {
+    state = bitRead(*binaryPort[i], binaryPin[i]);
+    stateLowByte |= state << i;
+    if (lastStateBinary[i] != state)
+    {
+      lastStateBinary[i] = state;
+      res = 1;
+    }
+  }
+
+  stateHighByte = 0;
+  for(i=0 ; i<sizeof(counterPin) ; i++)
+  {
+    state = bitRead(*counterPort[i], counterPin[i]);
+    stateHighByte |= state << i;
+    if (lastStateCount[i] != state)
+    {
+      if (res == 0)
+        res = 1;
+        
+      lastStateCount[i] = state;
+    
+      if (state == HIGH)
+      {
+        counter[i]++;
+        res = 2;
+      }
+    }
+  }
+
+  return res;
+}
+
+/**
  * setup
  *
  * Arduino setup function
@@ -99,30 +175,6 @@ void setup()
 
   pinMode(LEDPIN, OUTPUT);
   digitalWrite(LEDPIN, LOW);
-
-  // Init panStamp
-  panstamp.init();
-
-  // Transmit product code
-  getRegister(REGI_PRODUCTCODE)->getData();
-
-  // Enter SYNC state
-  panstamp.enterSystemState(SYSTATE_SYNC);
-
-  // During 3 seconds, listen the network for possible commands whilst the LED blinks
-  for(i=0 ; i<6 ; i++)
-  {
-    digitalWrite(LEDPIN, HIGH);
-    delay(100);
-    digitalWrite(LEDPIN, LOW);
-    delay(400);
-  }
-  // Transmit periodic Tx interval
-  getRegister(REGI_TXINTERVAL)->getData();
-  // Transmit power voltage
-  getRegister(REGI_VOLTSUPPLY)->getData();
-  // Switch to Rx OFF state
-  panstamp.enterSystemState(SYSTATE_RXOFF);
 
   // PCINT2 group
   pinMode(3, INPUT);
@@ -145,6 +197,34 @@ void setup()
   pinMode(19, INPUT);
   PCMSK1 = PCINTMASK1;
 
+  // Init panStamp
+  panstamp.init();
+
+  // Transmit product code
+  getRegister(REGI_PRODUCTCODE)->getData();
+
+  // Enter SYNC state
+  panstamp.enterSystemState(SYSTATE_SYNC);
+
+  // During 3 seconds, listen the network for possible commands whilst the LED blinks
+  for(i=0 ; i<6 ; i++)
+  {
+    digitalWrite(LEDPIN, HIGH);
+    delay(100);
+    digitalWrite(LEDPIN, LOW);
+    delay(400);
+  }
+  // Transmit periodic Tx interval
+  getRegister(REGI_TXINTERVAL)->getData();
+  // Transmit power voltage
+  getRegister(REGI_VOLTSUPPLY)->getData();
+  // Transmit initial binary states
+  getRegister(REGI_BININPUTS)->getData();
+  // Transmit initial counter values
+  getRegister(REGI_COUNTERS)->getData();
+  // Switch to Rx OFF state
+  panstamp.enterSystemState(SYSTATE_RXOFF);
+
   // Enable Pin Change Interrupts
   pcEnableInterrupt();
 }
@@ -158,13 +238,22 @@ void loop()
 {
   // Sleep indefinitely
   panstamp.goToSleep(false);
-  //panstamp.sleepWd(WDTO_8S);
   
   if (pcIRQ)
   {
     pcDisableInterrupt();
-    // Transmit binary states
-    getRegister(REGI_BININPUTS)->getData();
+    switch(updateValues())
+    {
+      case 2:
+        // Transmit counter values
+        getRegister(REGI_COUNTERS)->getData();
+      case 1:
+        // Transmit binary states
+        getRegister(REGI_BININPUTS)->getData();
+        break;
+      default:
+        break;
+    }
     //Ready to receive new PC interrupts
     pcIRQ = false;
     pcEnableInterrupt();
