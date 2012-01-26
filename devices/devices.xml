@@ -6,6 +6,7 @@
     <dev id="3" name="rgbdriver" label="RGB driver board"/>
     <dev id="4" name="temp" label="Temperature sensor"/>
     <dev id="5" name="temppress" label="Dual Temperature/Barometric sensor"/>
-    <dev id="6" name="bininps" label="Binary input module"/>
+    <dev id="6" name="bininps" label="Binary/Counter input module"/>
+    <dev id="7" name="binouts" label="Binary/PWM output module"/>
   </developer>
 </devices>
