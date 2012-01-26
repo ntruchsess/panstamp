@@ -13,7 +13,7 @@
       <param name="Current temperature in Celsious (NN.D format)" type="num">
         <position>1</position>
         <size>2</size>
-        <default>20.0</default>
+        <default>0</default>
         <verif>[-+]?[0-9]*\.[0-9]{1}</verif>
       </param>
       <param name="Current altitude in mts" type="num">
@@ -22,7 +22,7 @@
       <verif>^(\d*)$</verif>
       </param>
     </reg>
-    <reg name="Date/Time" id="13">
+    <reg name="Date/Time" id="12">
       <param name="Hour (24h format)" type="num">
         <position>0</position>
         <size>1</size>
@@ -52,7 +52,7 @@
         <verif>MDAY</verif>
       </param>
     </reg>
-    <reg name="Time alarm" id="14">
+    <reg name="Time alarm" id="13">
       <param name="Hour" type="num">
         <position>0</position>
         <size>1</size>
@@ -64,7 +64,7 @@
         <verif>MINUTE</verif>
       </param>
     </reg>
-    <reg name="Browser page 0" id="17">
+    <reg name="Browser page 0" id="16">
       <param name="Label (5 chars)" type="str">
         <position>0</position>
         <size>5</size>
@@ -188,7 +188,7 @@
         <verif>^(\d*)$</verif>
       </param>
     </reg>
-    <reg name="Browser page 2" id="17">
+    <reg name="Browser page 2" id="18">
       <param name="Label (5 chars)" type="str">
         <position>0</position>
         <size>5</size>
@@ -250,7 +250,7 @@
         <verif>^(\d*)$</verif>
       </param>
     </reg>
-    <reg name="Browser page 3" id="17">
+    <reg name="Browser page 3" id="19">
       <param name="Label (5 chars)" type="str">
         <position>0</position>
         <size>5</size>
@@ -312,7 +312,7 @@
         <verif>^(\d*)$</verif>
       </param>
     </reg>
-    <reg name="Browser page 4" id="17">
+    <reg name="Browser page 4" id="20">
       <param name="Label (5 chars)" type="str">
         <position>0</position>
         <size>5</size>
@@ -376,7 +376,7 @@
     </reg>
   </config>
   <regular>
-    <reg name="Environmental sensors" id="15">
+    <reg name="Environmental sensors" id="14">
       <endpoint name="Temperature" type="num" dir="inp">
         <position>0</position>
         <size>2</size>
