@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <device>
   <developer>panStamp</developer>
-  <product>Binary input module</product>
+  <product>Binary/Counter input module</product>
   <pwrdownmode>true</pwrdownmode>
   <regular>
     <reg name="Voltage supply" id="11">
