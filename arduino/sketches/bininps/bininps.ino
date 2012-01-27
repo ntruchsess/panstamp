@@ -47,7 +47,7 @@
  *
  * Associated Device Definition File, defining registers, endpoints and
  * configuration parameters:
- * bininp.xml (Binary input device)
+ * bininps.xml (Binary/Counter input module)
  */
  
 #include "regtable.h"
@@ -74,7 +74,7 @@
 /**
  * Pin Change Interrupt flag
  */
-boolean pcIRQ = false;
+volatile boolean pcIRQ = false;
 
 /**
  * Binary states
@@ -127,7 +127,8 @@ SIGNAL(PCINT2_vect)
  */
 byte updateValues(void)
 {
-  byte state, i, res = 0;
+  byte i, res = 0;
+  int state;
 
   stateLowByte = 0;
   for(i=0 ; i<sizeof(binaryPin) ; i++)
@@ -175,28 +176,17 @@ void setup()
 
   pinMode(LEDPIN, OUTPUT);
   digitalWrite(LEDPIN, LOW);
+Serial.begin(38400);
+  // Set pins as inputs
+  DDRB &= ~PCINTMASK0;
+  DDRC &= ~PCINTMASK1;  
+  DDRD &= ~PCINTMASK2;
 
-  // PCINT2 group
-  pinMode(3, INPUT);
-  pinMode(5, INPUT);
-  pinMode(6, INPUT);
-  pinMode(7, INPUT);
-  PCMSK2 = PCINTMASK2;
-
-  // PCINT0 group
-  pinMode(8, INPUT);
-  pinMode(9, INPUT);
+  // Set PC interrupt masks
   PCMSK0 = PCINTMASK0;
-
-  // PCINT1 group
-  pinMode(14, INPUT);
-  pinMode(15, INPUT);
-  pinMode(16, INPUT);
-  pinMode(17, INPUT);
-  pinMode(18, INPUT);
-  pinMode(19, INPUT);
   PCMSK1 = PCINTMASK1;
-
+  PCMSK2 = PCINTMASK2;
+  
   // Init panStamp
   panstamp.init();
 
@@ -218,10 +208,13 @@ void setup()
   getRegister(REGI_TXINTERVAL)->getData();
   // Transmit power voltage
   getRegister(REGI_VOLTSUPPLY)->getData();
+  
+  updateValues();
   // Transmit initial binary states
   getRegister(REGI_BININPUTS)->getData();
   // Transmit initial counter values
   getRegister(REGI_COUNTERS)->getData();
+  
   // Switch to Rx OFF state
   panstamp.enterSystemState(SYSTATE_RXOFF);
 
@@ -236,12 +229,13 @@ void setup()
  */
 void loop()
 {
-  // Sleep indefinitely
-  panstamp.goToSleep(false);
-  
+  // Sleep for panstamp.txInterval (register 10) seconds
+  panstamp.goToSleep();
+
+  pcDisableInterrupt();
+
   if (pcIRQ)
   {
-    pcDisableInterrupt();
     switch(updateValues())
     {
       case 2:
@@ -256,7 +250,15 @@ void loop()
     }
     //Ready to receive new PC interrupts
     pcIRQ = false;
-    pcEnableInterrupt();
   }
+  else
+  {    
+    // Just send states and counter values periodically, according to the value
+    // of panstamp.txInterval (register 10)
+    getRegister(REGI_COUNTERS)->getData();
+    getRegister(REGI_BININPUTS)->getData();
+  }
+
+  pcEnableInterrupt();
 }
 
