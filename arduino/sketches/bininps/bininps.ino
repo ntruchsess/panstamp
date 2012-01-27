@@ -176,7 +176,7 @@ void setup()
 
   pinMode(LEDPIN, OUTPUT);
   digitalWrite(LEDPIN, LOW);
-Serial.begin(38400);
+
   // Set pins as inputs
   DDRB &= ~PCINTMASK0;
   DDRC &= ~PCINTMASK1;  
