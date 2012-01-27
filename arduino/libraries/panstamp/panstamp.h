@@ -133,14 +133,6 @@ class PANSTAMP
     void reset(void);
 
     /**
-     * sleep
-     * 
-     * Put panStamp into Power-down state indefinitely, until de reception of an
-     * external interruption
-     */
-    void sleep(void);
-
-    /**
      * sleepWd
      * 
      * Put panStamp into Power-down state during "time".
@@ -172,10 +164,8 @@ class PANSTAMP
      * goToSleep
      *
      * Sleep whilst in power-down mode. This function currently uses sleepWd in a loop
-     *
-     * 'timed'  If true, wake-up after txInterval seconds. Otherwise, sleep indefinitely
      */
-    void goToSleep(bool timed);
+    void goToSleep(void);
 
     /**
      * enterSystemState
