@@ -8,5 +8,6 @@
     <dev id="5" name="temppress" label="Dual Temperature/Barometric sensor"/>
     <dev id="6" name="bininps" label="Binary/Counter input module"/>
     <dev id="7" name="binouts" label="Binary/PWM output module"/>
+    <dev id="8" name="lcddriver" label="Alphanumeric LCD driver"/>
   </developer>
 </devices>
