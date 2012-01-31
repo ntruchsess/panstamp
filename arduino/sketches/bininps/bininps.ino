@@ -24,7 +24,7 @@
  * Creation date: 01/18/2012
  *
  * Device:
- * Binary inputs
+ * Binary input + counter module
  *
  * Description:
  * Device that reports the binary state of 12 digital inputs, 4 of them being
@@ -229,7 +229,7 @@ void setup()
  */
 void loop()
 {
-  // Sleep for panstamp.txInterval (register 10) seconds
+  // Sleep for panstamp.txInterval seconds (register 10)
   panstamp.goToSleep();
 
   pcDisableInterrupt();
