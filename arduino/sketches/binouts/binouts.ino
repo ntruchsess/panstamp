@@ -24,7 +24,7 @@
  * Creation date: 01/26/2012
  *
  * Device:
- * Binary outputs
+ * Binary output + PWM module
  *
  * Description:
  * Device that provides 8 controllable binary (ON/OFF) outputs and 4 PWM
