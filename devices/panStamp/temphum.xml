@@ -26,7 +26,7 @@
         <position>2</position>
         <size>2</size>
         <units>
-          <unit name="%" factor="0.01" offset="0"/>
+          <unit name="%" factor="0.1" offset="0"/>
         </units>
       </endpoint>
     </reg>
