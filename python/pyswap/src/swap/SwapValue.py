@@ -122,8 +122,9 @@ class SwapValue(object):
     def __init__(self, value=None, length=0):
         """
         Class constructor
-        
+
         @param value: Raw value in form of list, boolean, integer, long, string or unicode
+        @param length: byte length of the value
         """
         ## Raw value in form of list
         self._data = []
@@ -132,6 +133,7 @@ class SwapValue(object):
             # In case of list passed in the constructor
             if type(value) is list:
                 self._data = value
+            # Boolean
             elif type(value) is bool:
                 res = int(value)
             # In case a string is passed in the constructor

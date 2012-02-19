@@ -176,7 +176,8 @@ class XmlDeviceDir(object):
             if devel_id == developer.id:
                 for device in developer.devices:
                     if prod_id == device.id:
-                        return XmlSettings.deviceDir + os.sep + developer.name + os.sep + device.option + ".xml"
+                        return os.path.join(XmlSettings.device_localdir, developer.name, device.option + ".xml")
+                    
         return None
 
 
@@ -185,7 +186,7 @@ class XmlDeviceDir(object):
         Class constructor
         """
         ## Path to the configuration file
-        self.fileName = XmlSettings.deviceDir + os.sep + __xmldirfile__
+        self.fileName = XmlSettings.device_localdir + os.sep +__xmldirfile__
         ## List of devices
         self.developers = []
         # Parse document
@@ -316,10 +317,10 @@ class XmlDevice(object):
                                 defVal = int(paramDef)
                             except ValueError:
                                 try:
-                                  defVal = float(paramDef)
+                                    defVal = float(paramDef)
                                 except ValueError:
-                                  raise SwapException("Default value " + str(paramDef) + " is not a number")
-                                  return
+                                    raise SwapException("Default value " + str(paramDef) + " is not a number")
+                                    return
                         else:
                             defVal = paramDef
                         verif = None

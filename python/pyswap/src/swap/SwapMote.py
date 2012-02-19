@@ -196,11 +196,11 @@ class SwapMote(object):
         @return SwapRegister object
         """
         # Regular registers
-        for reg in self.lstregregs:
+        for reg in self.regular_registers:
             if reg.id == regId:
                 return reg            
         # Configuration registers
-        for reg in self.lstcfgregs:
+        for reg in self.config_registers:
             if reg.id == regId:
                 return reg
 
@@ -216,18 +216,40 @@ class SwapMote(object):
         @return: SwapParam object
         """
         # Regular registers
-        for reg in self.lstregregs:
-            for param in reg.lstItems:
+        for reg in self.regular_registers:
+            for param in reg.parameters:
                 if param.name == name:
                     return param
         # Configuration registers
-        for reg in self.lstcfgregs:
-            for param in reg.lstItems:
+        for reg in self.config_registers:
+            for param in reg.parameters:
                 if param.name == name:
                     return param
                 
         return None
+    
+    
+    def dumps(self, include_units=False):
+        """
+        Serialize mote data to a JSON formatted string
+        
+        @param include_units: if True, include list of units for each endpoint
+        within the serialized output
+        """
+        data = {}
+        data["pcode"] = self.product_code
+        data["manufacturer"] = self.definition.manufacturer 
+        data["name"] = self.definition.product
+        data["address"] = self.address
+        
+        regs = []
+        for reg in self.regular_registers:
+            regs.append(reg.dumps(include_units))
             
+        data["registers"] = regs
+        
+        return data
+    
         
     def __init__(self, server=None, product_code=None, address=0xFF, security=0, nonce=0):
         """
@@ -241,6 +263,8 @@ class SwapMote(object):
             raise SwapException("SwapMote constructor needs a valid SwapServer object")
         ## Swap server object
         self.server = server
+        ## Product code
+        self.product_code = product_code
         ## Product ID
         self.product_id = 0
         ## Manufacturer ID
@@ -249,10 +273,14 @@ class SwapMote(object):
         self.config = None
 
         # Get manufacturer and product id from product code
+        """
         if product_code is not None:
             for i in range(4):
                 self.manufacturer_id = self.manufacturer_id | (product_code[i] << 8 * (3-i))
                 self.product_id = self.product_id | (product_code[i + 4] << 8 * (3-i))
+        """
+        self.manufacturer_id = long(product_code[0:4], 16)
+        self.product_id = long(product_code[4:], 16)
 
         # Definition file
         ## Definition settings
@@ -267,14 +295,14 @@ class SwapMote(object):
         ## State of the mote
         self.state = SwapState.RXOFF
         ## List of regular registers provided by this mote
-        self.lstregregs = None
+        self.regular_registers = None
         ## List of config registers provided by this mote
-        self.lstcfgregs = None
+        self.config_registers = None
         if self.definition is not None:
             # List of regular registers
-            self.lstregregs = self.definition.getRegList()
+            self.regular_registers = self.definition.getRegList()
             # List of config registers
-            self.lstcfgregs = self.definition.getRegList(config=True)
+            self.config_registers = self.definition.getRegList(config=True)
         ## Time stamp of the last update received from mote
         self.timestamp = time.time()
         ## Powerdown mode

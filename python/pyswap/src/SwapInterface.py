@@ -24,9 +24,11 @@
 #########################################################################
 __author__="Daniel Berenguer"
 __date__  ="Sep 28, 2011 1:09:12 PM$"
+__version__ = "0.1.2"
 #########################################################################
 
 from SwapServer import SwapServer
+from xmltools.XmlSettings import XmlSettings
 
 
 class SwapInterface:
@@ -114,9 +116,9 @@ class SwapInterface:
 
     def getNbOfMotes(self):
         """
-        @return the amounf of motes available in lstMotes
+        @return the amount of motes available in lstMotes
         """
-        return self.server.getNbOfMotes()
+        return self.network.get_nbof_motes()
 
 
     def getMote(self, index=None, address=None):
@@ -128,7 +130,7 @@ class SwapInterface:
         
         @return mote
         """
-        return self.server.getMote(index, address)
+        return self.server.network.get_mote(index, address)
 
 
     def setMoteRegister(self, mote, regId, value):
@@ -165,7 +167,7 @@ class SwapInterface:
         return self.server
         
 
-    def start(self):
+    def start_server(self):
         """
         Start SWAP server
         """
@@ -179,7 +181,33 @@ class SwapInterface:
         self.server.stop()
 
 
-    def __init__(self, settings=None, verbose=False, start=True):
+    def get_endpoint(self, endpid=None, location=None, name=None):
+        """
+        Get endpoint given its unique id
+        
+        @param endpid: endpoint id
+        
+        @return endpoint object
+        """       
+        for mote in self.network.motes:
+            for register in mote.regular_registers:
+                for endpoint in register.parameters:
+                    if endpid is not None:
+                        if endpid == endpoint.id:
+                            return endpoint
+                    elif name == endpoint.name and location == endpoint.location:
+                        return endpoint
+        return None
+
+
+    def update_definition_files(self):
+        """
+        Update Device Definition Files from Internet server
+        """
+        self.server.update_definition_files()
+
+
+    def __init__(self, settings=None, start=True):
         """
         Class constructor
 
@@ -187,16 +215,14 @@ class SwapInterface:
         @param verbose: Print out SWAP frames
         @param start: Start SWAP server if True
         """
-        ## Verbose option
-        self.verbose = verbose
         ## SWAP server
         self.server = None
-        ## List of motes
-        self.lstMotes = None
+        ## Network data
+        self.network = None
                        
         if start:
             print "SWAP server starting... "
-        self.server = SwapServer(self, settings, self.verbose, start)
-        self.lstMotes = self.server.lstMotes
+        self.server = SwapServer(self, settings, start)
+        self.network = self.server.network
         if start:
             print "SWAP server is now running... "

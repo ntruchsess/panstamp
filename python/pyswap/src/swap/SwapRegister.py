@@ -86,7 +86,7 @@ class SwapRegister(object):
         
         @param item: Item to be added to the list
         """
-        self.lstItems.append(item)
+        self.parameters.append(item)
 
 
     def getNbOfItems(self):
@@ -95,7 +95,7 @@ class SwapRegister(object):
         
         @return Amount of items (endpoints or parameters) contained into the current register
         """
-        return len(self.lstItems)
+        return len(self.parameters)
 
 
     def getLength(self):
@@ -109,7 +109,7 @@ class SwapRegister(object):
         maxBitSize = 0
         maxBitPos = 0
         # Iterate along the contained parameters
-        for param in self.lstItems:
+        for param in self.parameters:
             if param.bytePos > maxBytePos:
                 maxBytePos = param.bytePos
                 maxBitPos = param.bitPos
@@ -141,7 +141,7 @@ class SwapRegister(object):
         lstRegVal = self.value.toList()
 
         # For every parameter contained in this register
-        for param in self.lstItems:
+        for param in self.parameters:
             indexReg = param.bytePos
             shiftReg = 7 - param.bitPos
             # Total bits to be copied from this parameter
@@ -196,7 +196,7 @@ class SwapRegister(object):
         self.mote.updateTimeStamp()
         
         # Now update the value in every endpoint or parameter contained in this register
-        for param in self.lstItems:
+        for param in self.parameters:
             param.update()
                
                
@@ -206,12 +206,35 @@ class SwapRegister(object):
         
         @return True if this register contains configuration parameters. Return False otherwise
         """
-        if len(self.lstItems) > 0:
-            if self.lstItems[0].__class__.__name__ == "SwapCfgParam":
+        if len(self.parameters) > 0:
+            if self.parameters[0].__class__.__name__ == "SwapCfgParam":
                 return True
         return False
     
     
+    def dumps(self, include_units=False):
+        """
+        Serialize register data to a JSON formatted string
+        
+        @param include_units: if True, include list of units for each endpoint
+        within the serialized output
+        """
+        if self.isConfig():
+            return None
+        
+        data = {}
+        data["id"] = self.id
+        data["name"] = self.name
+        
+        endpoints_data = []
+        for item in self.parameters:
+            endpoints_data.append(item.dumps(include_units))
+            
+        data["endpoints"] = endpoints_data
+        
+        return data
+        
+        
     def __init__(self, mote=None, id=None, description=None):
         """
         Class constructor
@@ -229,5 +252,5 @@ class SwapRegister(object):
         ## Brief name
         self.name = description
         ## List of endpoints or configuration parameters belonging to the current register
-        self.lstItems = []
+        self.parameters = []
 

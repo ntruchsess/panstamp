@@ -27,6 +27,8 @@ __date__ ="$Aug 20, 2011 10:36:00 AM$"
 #########################################################################
 
 import xml.etree.ElementTree as xml
+import os
+
 
 class XmlSettings(object):
     """
@@ -34,12 +36,21 @@ class XmlSettings(object):
     """
     ## Name/path of the current configuration file
     file_name = "settings.xml"
+    ## Debug level (0: no debug, 1: print SWAP packets, 2: print SWAP packets and network events)
+    debug = 0
     ## Name/path of the serial configuration file
     serial_file = "serial.xml"
     ## Name/path of the wireless network configuration file
     network_file = "network.xml"
+    ## Name/path of the SWAP net status/config file
+    swap_file = "swapnet.json"
     ## Directory where all device config files are stored
-    deviceDir = "devices"
+    device_localdir = None
+    ## Remote Devide Definition folder for updates
+    device_remote = "http://panstamp.googlecode.com/files/devices.tar.gz"
+    ## Automatic udate of local Device Definition folder from internet server
+    ## on start-up
+    updatedef = False
     ## Name/path of the error log file
     error_file = "error.log"
 
@@ -53,18 +64,34 @@ class XmlSettings(object):
             return
         # Get the root node
         root = tree.getroot()
-        # Get "devices" folder
-        elem = root.find("devices")
+        # Debug flag
+        elem = root.find("debug")
         if elem is not None:
-            XmlSettings.deviceDir = elem.text
+            XmlSettings.debug = int(elem.text)
+        # Get "devices" folder
+        devices = root.find("devices")
+        if devices is not None:
+            local = devices.find("local")
+            if local is not None:
+                XmlSettings.device_localdir = local.text
+            remote = devices.find("remote")
+            if remote is not None:
+                XmlSettings.device_remote = remote.text
+                update = devices.find("update")
+                if update is not None:
+                    XmlSettings.updatedef = update.text.lower() in ["true", "enabled", "yes"]
         # Get serial config file
         elem = root.find("serial")
         if elem is not None:
             XmlSettings.serial_file = elem.text
-        # Get serial config file
+        # Get network config file
         elem = root.find("network")
         if elem is not None:
             XmlSettings.network_file = elem.text
+        # Get SWAP network file
+        elem = root.find("swapnet")
+        if elem is not None:
+            XmlSettings.swap_file = elem.text
         # Get path name of the error log file
         elem = root.find("errlog")
         if elem is not None:
@@ -73,29 +100,24 @@ class XmlSettings(object):
 
     def save(self):
         """
-        Save current configuration file in disk
+        Save serial port settings in disk
         """
-        # XML root
-        root = xml.Element("settings")
-        # "devices" element
-        elem = xml.Element("devices", text=XmlSettings.deviceDir)
-        root.append(elem)
-        # "serial" element
-        elem = xml.Element("serial", text=XmlSettings.serial_file)
-        root.append(elem)
-        # "network" element
-        elem = xml.Element("network", text=XmlSettings.network_file)
-        root.append(elem)
-        # "network" element
-        elem = xml.Element("errlog", text=XmlSettings.error_file)
-        root.append(elem)
-        # XML doc
-        doc = xml.ElementTree(root)
-        # Write XML doc
-        file = open(XmlSettings.file_name, 'w')
-        doc.write(file)
-        file.close()
-        
+        f = open(self.file_name, 'w')
+        f.write("<?xml version=\"1.0\"?>\n")
+        f.write("<settings>\n")
+        f.write("\t<debug>" + str(self.debug) + "</debug>\n")
+        f.write("\t<devices>\n")
+        f.write("\t\t<local>" + self.device_localdir + "</local>\n")
+        f.write("\t\t<remote>" + self.device_remote + "</remote>\n")
+        f.write("\t\t<update>" + str(self.updatedef) + "</update>\n")
+        f.write("\t</devices>\n")
+        f.write("\t<serial>" + self.serial_file + "</serial>\n")
+        f.write("\t<network>" + self.network_file + "</network>\n")
+        f.write("\t<swapnet>" + self.swap_file + "</swapnet>\n")
+        f.write("</settings>\n")
+        f.close()
+
+
     def __init__(self, file_name=None):
         """
         Class constructor
@@ -108,5 +130,17 @@ class XmlSettings(object):
         XmlSettings.file_name = file_name
         # Read XML file
         self.read()
+        
+        direc = os.path.dirname(XmlSettings.file_name)
+        
+        # Convert to absolute paths
+        if XmlSettings.device_localdir is None:
+            XmlSettings.device_localdir = direc
+        else:
+            XmlSettings.device_localdir = os.path.join(direc, self.device_localdir)
 
-  
+        XmlSettings.serial_file = os.path.join(direc, self.serial_file)
+            
+        XmlSettings.network_file = os.path.join(direc, self.network_file)
+
+        XmlSettings.swap_file = os.path.join(direc, self.swap_file)
