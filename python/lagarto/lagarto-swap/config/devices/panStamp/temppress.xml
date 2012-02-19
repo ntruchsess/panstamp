@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<device>
+  <developer>panStamp</developer>
+  <product>Triple Temperature-Humidity-Barometric sensor</product>
+  <pwrdownmode>true</pwrdownmode>
+  <regular>
+    <reg name="Voltage supply" id="11">
+      <endpoint name="Voltage" type="num" dir="inp">
+        <size>2</size>
+        <units>
+          <unit name="V" factor="0.001" offset="0"/>
+        </units>
+      </endpoint>
+    </reg>
+    <reg name="Temperature, Humidity and Pressure" id="12">
+      <endpoint name="Temperature" type="num" dir="inp">
+        <position>0</position>
+        <size>2</size>
+        <units>
+          <unit name="C" factor="0.01" offset="0"/>
+          <unit name="F" factor="0.018" offset="32"/>
+          <unit name="K" factor="0.01" offset="273.15"/>
+        </units>
+      <endpoint name="Pressure" type="num" dir="inp">
+        <position>4</position>
+        <size>2</size>
+        <units>
+          <unit name="mbar" factor="1" offset="0"/>
+          <unit name="bar" factor="0.001" offset="0"/>
+          <unit name="Pa" factor="100" offset="0"/>
+        </units>
+      </endpoint>
+    </reg>
+  </regular>
+</device>
