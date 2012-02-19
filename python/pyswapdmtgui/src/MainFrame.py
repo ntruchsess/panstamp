@@ -25,7 +25,7 @@
 __author__="Daniel Berenguer (dberenguer@usapiens.com)"
 __date__ ="$Sep 16, 2011 10:46:15 AM$"
 __appname__ = "SWAPdmt (GUI version)"
-__version__ = "1.0"
+__version__ = "0.1.2"
 #########################################################################
 
 from DeviceSelector import DeviceSelector
@@ -97,6 +97,7 @@ class MainFrame(wx.Frame):
         # Devices menu
         menudevices.Append(301, "&Network settings", "Configure network settings")
         menudevices.Append(302, "&Custom settings", "Configure custom settings")
+        menudevices.Append(303, "C&lear devices", "Clear devices from tree")
         
         # Devices menu
         menuview.Append(401, "&Network monitor", "SWAP network monitor")
@@ -122,7 +123,7 @@ class MainFrame(wx.Frame):
         self.mgr = aui.AuiManager()
         # tell AuiManager to manage this frame
         self.mgr.SetManagedWindow(self)
-        self.browser_panel = BrowserPanel(self, self.server.lstMotes)
+        self.browser_panel = BrowserPanel(self, self.server.network.motes)
         self.sniffer_panel = SnifferPanel(self)
         self.event_panel = EventPanel(self)
 
@@ -137,6 +138,7 @@ class MainFrame(wx.Frame):
         wx.EVT_MENU(self, 204, self._OnGatewayNetworkConfig)
         wx.EVT_MENU(self, 301, self.onMoteNetworkConfig)
         wx.EVT_MENU(self, 302, self.onConfigDevice)
+        wx.EVT_MENU(self, 303, self.onClearDevices)
         wx.EVT_MENU(self, 501, self._OnAbout)
         wx.EVT_MENU(self, 101, self._OnClose)
         self.Bind(wx.EVT_CLOSE, self._OnCloseWindow)
@@ -149,6 +151,7 @@ class MainFrame(wx.Frame):
         # Create a pubsub receivers
         Publisher().subscribe(self.cb_add_event, "add_event")
         Publisher().subscribe(self.cb_add_mote, "add_mote")
+        Publisher().subscribe(self.cb_server_started, "server_started")
         Publisher().subscribe(self.cb_changed_addr, "changed_addr")
         Publisher().subscribe(self.cb_changed_val, "changed_val")
         Publisher().subscribe(self.cb_sync_received, "sync_received")
@@ -175,6 +178,19 @@ class MainFrame(wx.Frame):
         if mote.__class__.__name__ == "SwapMote":
             self.browser_panel.addMote(mote)
             
+
+    def cb_server_started(self, msg):
+        """
+        SWAP server started and running
+        
+        @param msg: not used
+        """     
+        if self._waitfor_startdialog is not None:
+            self._waitfor_startdialog.close()
+            
+        #netid = self.server.getNetId()
+        #self.browser_panel.build_tree(netid)
+
             
     def cb_changed_addr(self, msg):
         """
@@ -292,16 +308,7 @@ class MainFrame(wx.Frame):
         self.menubar.EnableTop(2, enable=False)
         
         self._Info("Server stopped and disconnected from SWAP network", caption = "Disconnected")
-
-
-    def cbServerStarted(self):
-        """
-        Callback function called from SwapManager when the SWAP sever has been
-        successfully started
-        """
-        if self._waitfor_startdialog is not None:
-            self._waitfor_startdialog.close()
-              
+             
         
     def syncReceived(self, mote):
         """
@@ -492,6 +499,19 @@ class MainFrame(wx.Frame):
         self._configReg(obj)
 
 
+    def onClearDevices(self, evn):
+        """
+        Devices->Clear devices pressed. Callback function
+        """
+        res = self._YesNo("This action will clear all saved devices from the SWAP network tree\n" +
+                    "Do you want to continue?", caption = 'Clear devices')
+        
+        if res:
+            self.browser_panel.clear()
+            self.server.network.clear()
+            self.server.network.save()
+
+
     def _configReg(self, obj):
         """
         Configure registers in mote
@@ -520,8 +540,8 @@ class MainFrame(wx.Frame):
                                 break
             elif obj.__class__.__name__ == "SwapMote":
                 mote = obj
-                if mote.lstcfgregs is not None:
-                    for reg in mote.lstcfgregs:
+                if mote.config_registers is not None:
+                    for reg in mote.config_registers:
                         dialog = ParamDialog(self, reg)
                         dialog.Destroy()
                     # Does this device need to enter SYNC mode first?
@@ -532,7 +552,7 @@ class MainFrame(wx.Frame):
                         mote = self._moteinsync           
                     # Send new configuration to mote
                     if mote is not None:
-                        for reg in mote.lstcfgregs:
+                        for reg in mote.config_registers:
                             if mote.cmdRegisterWack(reg.id, reg.value) == False:
                                 self._Warning("Unable to set register \"" + reg.name + "\" in device " + str(reg.getAddress()))
                                 break              
@@ -576,7 +596,7 @@ class BrowserPanel(wx.Panel):
             menu = wx.Menu()                
             menu.Append(0, "Network settings")
             wx.EVT_MENU(menu, 0, self.parent.onMoteNetworkConfig)
-            if obj.lstcfgregs is not None:
+            if obj.config_registers is not None:
                 menu.Append(1, "Custom settings")
                 wx.EVT_MENU(menu, 1, self.parent.onConfigDevice)
         elif obj.__class__.__name__ == "SwapRegister":
@@ -601,33 +621,36 @@ class BrowserPanel(wx.Panel):
         # Associate mote with its tree entry
         self.tree.SetPyData(moteid, mote)
 
-        if mote.lstcfgregs is not None:
+        if mote.config_registers is not None:
             # Append associated config registers
-            for reg in mote.lstcfgregs:
+            for reg in mote.config_registers:
                 # Add register to the mote item
                 regID = self.tree.AppendItem(moteid, "Register " + str(reg.id) + ": " + reg.name)
                 self.tree.SetItemImage(regID, self.cfgRegIcon, wx.TreeItemIcon_Normal)
                 # Associate register with its tree entry
                 self.tree.SetPyData(regID, reg)
                 # Append associated parameters
-                for param in reg.lstItems:
+                for param in reg.parameters:
                     # Add register to the mote item
                     paramID = self.tree.AppendItem(regID, param.name + " = " + param.getValueInAscii())
                     self.tree.SetItemImage(paramID, self.cfgParamIcon, wx.TreeItemIcon_Normal)
                     # Associate register with its tree entry
                     self.tree.SetPyData(paramID, param)
-        if mote.lstregregs is not None:
+        if mote.regular_registers is not None:
             # Append associated regular registers
-            for reg in mote.lstregregs:
+            for reg in mote.regular_registers:
                 # Add register to the mote item
                 regID = self.tree.AppendItem(moteid, "Register " + str(reg.id) + ": " + reg.name)
                 self.tree.SetItemImage(regID, self.regRegIcon, wx.TreeItemIcon_Normal)
                 # Associate register with its tree entry
                 self.tree.SetPyData(regID, reg)
                 # Append associated endpoints
-                for endp in reg.lstItems:
+                for endp in reg.parameters:
                     # Add register to the mote item
-                    endpID = self.tree.AppendItem(regID, endp.name + " = " + endp.getValueInAscii())
+                    val = endp.getValueInAscii()
+                    if endp.unit is not None:
+                        val += " " + endp.unit.name
+                    endpID = self.tree.AppendItem(regID, endp.name + " = " + val)
                     if endp.direction == SwapType.OUTPUT:
                         self.tree.SetItemImage(endpID, self.outputIcon, wx.TreeItemIcon_Normal)
                     else:
@@ -658,7 +681,10 @@ class BrowserPanel(wx.Panel):
                                 # Get endpoint icon
                                 icon = self.tree.GetItemImage(endpid)
                                 # Append new endpoint to the tree
-                                new_endpid = self.tree.InsertItem(regid, endpid, text=endpoint.name + " = " + endpoint.getValueInAscii(), image=icon)
+                                val = endpoint.getValueInAscii()
+                                if endpoint.unit is not None:
+                                    val += " " + endpoint.unit.name
+                                new_endpid = self.tree.InsertItem(regid, endpid, text=endpoint.name + " = " + val, image=icon)
                                 self.tree.SetPyData(new_endpid, endp)
                                 # Remove old endpoint
                                 self.tree.Delete(endpid)
@@ -723,6 +749,13 @@ class BrowserPanel(wx.Panel):
         
         # Right-click event
         wx.EVT_TREE_ITEM_RIGHT_CLICK(self.tree, -1, self._RightClickCb)
+        
+    
+    def clear(self):
+        """
+        Clear browsing tree
+        """
+        self.tree.DeleteAllItems()
         
         
     def __init__(self, parent, lstmotes):
@@ -977,9 +1010,9 @@ class RedirectText(object):
             wx.CallAfter(self.out.write, string)
 
                     
-if __name__ == "__main__":
-    app = wx.PySimpleApp()
-    frame = MainFrame("SWAP Device Management Tool")
-    frame.Show()
-    app.MainLoop()
+#if __name__ == "__main__":
+#    app = wx.PySimpleApp()
+#    frame = MainFrame("SWAP Device Management Tool")
+#    frame.Show()
+#    app.MainLoop()
 

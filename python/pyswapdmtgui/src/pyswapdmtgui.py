@@ -1,7 +1,5 @@
 #########################################################################
 #
-# pyswapdmt
-#
 # Copyright (c) 2011 Daniel Berenguer <dberenguer@usapiens.com>
 #
 # This file is part of the panStamp project.
@@ -23,13 +21,18 @@
 #
 #########################################################################
 __author__  = "Daniel Berenguer"
-__date__    = "$Aug 25, 2011 11:50:27 PM$"
+__date__    = "$Aug 25, 2011$"
 #########################################################################
 
 from SwapManager import SwapManager
 
+import os
 
-if __name__ == "__main__":  
+
+if __name__ == "__main__":     
+    # Path to the SWAP config file
+    settings = os.path.join(os.path.dirname(__file__), "config", "settings.xml")
 
     # Start SWAP manager tool
-    manager = SwapManager(True)
+    manager = SwapManager(settings)
+

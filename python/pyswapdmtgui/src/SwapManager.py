@@ -44,11 +44,12 @@ class SwapManager(SwapInterface):
         """
         SWAP server started successfully
         """
-        self.dmtframe.cbServerStarted()
+        wx.CallAfter(Publisher().sendMessage, "server_started", None)
 
         # Display event
         wx.CallAfter(Publisher().sendMessage, "add_event", "SWAP server started")
-    
+        
+   
     def newMoteDetected(self, mote):
         """
         New mote detected by SWAP server
@@ -147,11 +148,11 @@ class SwapManager(SwapInterface):
         self.app.ExitMainLoop()
 
 
-    def __init__(self, verbose=False):
+    def __init__(self, settings=None):
         """
         Class constructor
         
-        'verbose'  Print out SWAP frames or not
+        @param settings: path to the main configuration file
         """
         # Callbacks not being used
         self.registerValueChanged = None
@@ -163,7 +164,7 @@ class SwapManager(SwapInterface):
         # Start SWAP server
         try:
             # Superclass call
-            SwapInterface.__init__(self, None, verbose, False)  
+            SwapInterface.__init__(self, settings, False)  
             # Clear error file
             SwapException.clear()         
         except SwapException as ex:
@@ -178,3 +179,4 @@ class SwapManager(SwapInterface):
         self.dmtframe.Show(True)
 
         self.app.MainLoop()
+

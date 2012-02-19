@@ -112,7 +112,7 @@ class ParamDialog(ConfigDialog):
         """
         ConfigDialog.__init__(self, parent, title=register.name)
         # Register to be configured
-        self.parameters = register.lstItems               
+        self.parameters = register.parameters               
         # Create widgets
         self._createControls()
         # Layout widgets
