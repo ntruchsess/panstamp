@@ -33,23 +33,11 @@ from swapmanager import SwapManager
 
 from lagartoresources import LagartoException
 
-from optik import OptionParser
 import sys
 import os
 
 
 if __name__ == '__main__':
-    # Command-line parser
-    parser = OptionParser()
-    # Print version
-    parser.add_option("-v", "--version", type="string", dest="version",
-                      help="Print version number")    
-       
-    (options, args) = parser.parse_args()
-    
-    if options.version is not None:
-        print __appname__, "version:", __version__
-        sys.exit(0)
   
     settings = os.path.join(os.path.dirname(__file__), "config", "settings.xml")
 
