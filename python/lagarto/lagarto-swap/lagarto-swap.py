@@ -25,10 +25,10 @@
 __author__="Daniel Berenguer"
 __date__  ="$Jan 29, 2012$"
 __appname__= "lagarto-swap"
-__version__= "0.0.1"
+__version__= "0.0.2"
 #########################################################################
 
-from SwapException import SwapException
+from swap.SwapException import SwapException
 from swapmanager import SwapManager
 
 from lagartoresources import LagartoException

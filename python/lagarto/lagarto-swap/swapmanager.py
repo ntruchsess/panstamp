@@ -26,11 +26,11 @@ __author__="Daniel Berenguer"
 __date__  ="$Jan 23, 2012$"
 #########################################################################
 
-from SwapInterface import SwapInterface
-from swap.SwapDefs import SwapState
-from xmltools.XmlSettings import XmlSettings
-from xmltools.XmlSerial import XmlSerial
-from xmltools.XmlNetwork import XmlNetwork
+from swap.SwapInterface import SwapInterface
+from swap.protocol.SwapDefs import SwapState
+from swap.xmltools.XmlSettings import XmlSettings
+from swap.xmltools.XmlSerial import XmlSerial
+from swap.xmltools.XmlNetwork import XmlNetwork
 
 import os
 import sys
