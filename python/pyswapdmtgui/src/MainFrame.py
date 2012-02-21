@@ -25,7 +25,7 @@
 __author__="Daniel Berenguer (dberenguer@usapiens.com)"
 __date__ ="$Sep 16, 2011 10:46:15 AM$"
 __appname__ = "SWAPdmt (GUI version)"
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 #########################################################################
 
 from DeviceSelector import DeviceSelector
