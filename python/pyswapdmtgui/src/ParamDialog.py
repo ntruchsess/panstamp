@@ -29,7 +29,7 @@ __date__  = "$Sep 1, 2011 10:39:23 AM$"
 from ConfigDialog import ConfigDialog
 from validators import TextValidator, ListValidator, BoolValidator
 
-from swap.SwapDefs import SwapType
+from swap.protocol.SwapDefs import SwapType
 
 import wx
 

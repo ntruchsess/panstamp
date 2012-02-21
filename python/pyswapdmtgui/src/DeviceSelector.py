@@ -28,7 +28,7 @@ __date__    ="$Sep 20, 2011 4:38:12 PM$"
 
 from ConfigDialog import ConfigDialog
 
-from xmltools.XmlDevice import XmlDeviceDir 
+from swap.xmltools.XmlDevice import XmlDeviceDir 
 
 import wx
 

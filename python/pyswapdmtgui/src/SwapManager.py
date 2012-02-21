@@ -28,9 +28,9 @@ __date__ ="$Aug 21, 2011 4:30:47 PM$"
 
 from MainFrame import MainFrame
 
-from SwapInterface import SwapInterface
-from swap.SwapDefs import SwapState
-from SwapException import SwapException
+from swap.SwapInterface import SwapInterface
+from swap.protocol.SwapDefs import SwapState
+from swap.SwapException import SwapException
 
 import wx
 from wx.lib.pubsub import Publisher

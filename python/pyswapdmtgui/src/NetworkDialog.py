@@ -26,8 +26,8 @@ __author__= "Daniel Berenguer"
 __date__  = "$Sep 22, 2011 5:02:58 PM$"
 #########################################################################
 
-from xmltools.XmlSettings import XmlSettings
-from xmltools.XmlNetwork import XmlNetwork
+from swap.xmltools.XmlSettings import XmlSettings
+from swap.xmltools.XmlNetwork import XmlNetwork
 
 from ConfigDialog import ConfigDialog
 from validators import TextValidator

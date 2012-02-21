@@ -34,11 +34,11 @@ from WaitDialog import WaitDialog
 from SerialDialog import SerialDialog
 from NetworkDialog import NetworkDialog
 
-from swap.SwapDefs import SwapType, SwapState
-from SwapException import SwapException
-from xmltools.XmlDevice import XmlDeviceDir
-from xmltools.XmlSettings import XmlSettings
-from xmltools.XmlNetwork import XmlNetwork
+from swap.protocol.SwapDefs import SwapType, SwapState
+from swap.SwapException import SwapException
+from swap.xmltools.XmlDevice import XmlDeviceDir
+from swap.xmltools.XmlSettings import XmlSettings
+from swap.xmltools.XmlNetwork import XmlNetwork
 
 import time, sys
 
