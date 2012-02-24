@@ -27,11 +27,12 @@ __date__    = "$Aug 25, 2011$"
 from SwapManager import SwapManager
 
 import os
+import sys
 
 
-if __name__ == "__main__":     
+if __name__ == "__main__":
     # Path to the SWAP config file
-    settings = os.path.join(os.path.dirname(__file__), "config", "settings.xml")
+    settings = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "config", "settings.xml")
 
     # Start SWAP manager tool
     manager = SwapManager(settings)
