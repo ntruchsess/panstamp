@@ -488,7 +488,7 @@ class SwapServer(threading.Thread):
         Update Device Definition Files from remote server
         """
         print "Downloading Device Definition Files"
-        local_tar = XmlSettings.device_localdir + ".tar.gz"
+        local_tar = XmlSettings.device_localdir + ".tar"
         
         try:
             remote = urllib2.urlopen(XmlSettings.device_remote)
@@ -497,13 +497,13 @@ class SwapServer(threading.Thread):
             local.close()
             
             tar = tarfile.open(local_tar)
-            direc = (XmlSettings.device_localdir).rpartition("/")[0]
+            direc = os.path.dirname(XmlSettings.device_localdir)
             tar.extractall(path=direc)
             tar.close()
             
             os.remove(local_tar)
         except:
-            raise SwapException("Unable to update Device Definition Files")
+            print "Unable to update Device Definition Files"
         
         
     def __init__(self, eventHandler, settings=None, start=True):
