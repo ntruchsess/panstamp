@@ -253,7 +253,7 @@ class LagartoHttpServer(threading.Thread):
 
 
     @staticmethod
-    @auth.lagartoauth()
+    @auth.lagartoauth
     def _process_request(environ, start_response):
         """
         Process http request

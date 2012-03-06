@@ -216,9 +216,12 @@ class LagartoAuth(BasicAuth):
 
 # Decorators
 def auth_disabled(func):
-    "This decorator doesn't add any behavior"
+    """
+    This decorator doesn't add any behavior
+    """
     return func
+
 
 auth_enabled = cooper.decorize(LagartoAuth)
 
-lagartoauth = auth_enabled if LagartoAuth.is_security_enabled() else auth_disabled
+lagartoauth = auth_enabled() if LagartoAuth.is_security_enabled() else auth_disabled
