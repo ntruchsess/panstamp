@@ -158,14 +158,17 @@ class SwapValue(object):
 
             if isAsciiString:
                 # OK, treat value as a pure ASCII string
-                # Leading zeros
-                strLen = len(value)
-                if length > strLen:
-                    for i in range(length - strLen):
-                        self._data.append(0)
+                strlen = len(value)
+                # Truncate string
+                if strlen > length:                    
+                    value = value[:length]
                 # Copy string
                 for ch in value:
                     self._data.append(ord(ch))
+                # Trailing zeros
+                if length > strlen:
+                    for i in range(length - strlen):
+                        self._data.append(0)
             # In case of integer or long
             elif length > 0 and length <= 4:
                 for i in range(length):
