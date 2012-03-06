@@ -75,8 +75,7 @@ height:25px;
 text-align:center;
 }
 
-.cellhead1,
-.cellhead2,
+.cellhead,
 .cellitem{
 height:25px;
 text-align:left;
@@ -87,15 +86,11 @@ font-size:14px;
 cursor: default;
 }
 
-.cellhead1{
+.cellhead{
 color:#FFFFFF;
 background-color:#223d22;
 border-bottom-style:solid;
 border-bottom-width:0px;
-}
-
-.cellhead1,
-.cellhead2{
 border-left-style:solid;
 border-left-color:#223d22;
 border-left-width:1px;
@@ -104,12 +99,9 @@ border-right-color:#223d22;
 border-right-width:1px;
 }
 
-.cellhead2{
-color:#000000;
-}
-
 .button_a,
-.button_b{
+.button_b,
+.button_c{
 font-family: sans-serif;
 font-size:14px;
 color:#FFFFFF;
@@ -128,6 +120,11 @@ background-image: url(images/purple.gif);
 
 .button_b{
 width:40px;
+background-image: url(images/green.gif);
+}
+
+.button_c{
+width:120px;
 background-image: url(images/green.gif);
 }
 

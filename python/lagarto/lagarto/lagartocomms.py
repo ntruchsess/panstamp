@@ -36,10 +36,10 @@ import socket
 import os
 
 
-class LagartoServer(object):
-    '''
-    Lagarto server class
-    '''
+class LagartoProcess(object):
+    """
+    Geenric Lagarto process class
+    """
     def get_status(self, endpoints):
         """
         Return network status as a list of endpoints in JSON format
@@ -79,19 +79,7 @@ class LagartoServer(object):
         """
         print "http_command_received needs to be overriden"
         return False
-
-
-    def publish_status(self, status_data):
-        """
-        Broadcast network status (collection of endpoint data)
-        
-        @param status_data network status to be transmitted
-        """
-        http_server = self.config.address + ":" + str(self.config.httpport)
-        lagarto_msg = LagartoMessage(proc_name=self.config.procname, http_server=http_server, status=status_data)
-        msg = json.dumps(lagarto_msg.dumps())
-        self.pub_socket.send(msg)
-                
+    
 
     def _get_local_ip_address(self):
         """
@@ -109,7 +97,7 @@ class LagartoServer(object):
             except:
                 pass
  
-        return ipaddr 
+        return ipaddr
 
 
     def __init__(self, working_dir):
@@ -126,16 +114,42 @@ class LagartoServer(object):
         address = self._get_local_ip_address()
         # Save IP address in config file
         if self.config.address != address:
-            self.config.address = self.address
+            self.config.address = address
             self.config.save()
 
         # HTTP server
         http_server = LagartoHttpServer(self, self.config, working_dir)
         http_server.start()
 
+
+class LagartoServer(LagartoProcess):
+    """
+    Lagarto server class
+    """
+    def publish_status(self, status_data):
+        """
+        Broadcast network status (collection of endpoint data)
+        
+        @param status_data network status to be transmitted
+        """
+        http_server = self.config.address + ":" + str(self.config.httpport)
+        lagarto_msg = LagartoMessage(proc_name=self.config.procname, http_server=http_server, status=status_data)
+        msg = json.dumps(lagarto_msg.dumps())
+        self.pub_socket.send(msg)
+                
+
+    def __init__(self, working_dir):
+        '''
+        Constructor
+        
+        @param working_dir: Working directory
+        '''
+        LagartoProcess.__init__(self, working_dir)
+        
         context = zmq.Context()
         
         # Publisher socket
+        self.pub_socket = None
         if self.config.broadcast is not None:
             self.pub_socket = context.socket(zmq.PUB)
             
@@ -146,7 +160,7 @@ class LagartoServer(object):
             print "Publishing through", self.config.broadcast
                 
 
-class LagartoClient(threading.Thread):
+class LagartoClient(threading.Thread, LagartoProcess):
     '''
     Lagarto client class
     ''' 
@@ -217,22 +231,20 @@ class LagartoClient(threading.Thread):
                 if response.reason == "OK":
                     status_msg = LagartoMessage(response.read())
      
-                    return status_msg.endpoints
+                    return status_msg.status
 
         return None
 
           
-    def __init__(self, cfg_path):
+    def __init__(self, working_dir):
         '''
         Constructor
         
-        @param cfg_path: Path to the lagarto config file
+        @param working_dir: Working directory
         '''
         threading.Thread.__init__(self)
+        LagartoProcess.__init__(self, working_dir)
                
-        # Read configuration file
-        self.config = XmlLagarto(cfg_path)
-            
         # ZMQ PULL socket
         self.sub_socket = None
         

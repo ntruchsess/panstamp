@@ -409,7 +409,6 @@ class LagartoHttpServer(threading.Thread):
         return (status, headers, body)
 
 
-    #@webauth
     @staticmethod
     def _send_command(query_string, path):
         """
@@ -431,15 +430,18 @@ class LagartoHttpServer(threading.Thread):
  
         res = LagartoHttpServer.data_server.http_command_received(command, params)
  
-        if res:
-            response_page = "lagarto/command_ok.html"
+        if res == True:
+            return LagartoHttpServer._serve_file("lagarto/command_ok.html")
+        elif res == False:
+            return LagartoHttpServer._serve_file("lagarto/command_nok.html")
         else:
-            response_page = "lagarto/command_nok.html"
-        
-        return LagartoHttpServer._serve_file(response_page)
+            mtype = "application/json"
+            status = "200 OK"
+            body = json.dumps(res)
+            headers = [("Content-Type", mtype), ("Content-Length", str(len(body)))]
+            return (status, headers, body)
     
 
-    #@webauth
     @staticmethod
     def _request_core(query_string, path):
         """

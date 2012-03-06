@@ -35,11 +35,14 @@ function addMote(mote)
   cell.className = "cellitem";
   label = document.createTextNode(mote.name);
   cell.appendChild(label);
-  // Link to config page
+  // Action
   cell = row.insertCell(3);
   cell.className = "cellaction";
   cfglink = document.createElement("a");
   cfglink.setAttribute("href", "/command/delete_mote/?address=" + mote.address);
+  cfglink.onclick = function() {return confirm("Delete mote?");};
+  cfglink.setAttribute("alt", "delete");
+  cfglink.style.pointer = "cursor";
   cell.appendChild(cfglink);
   img = document.createElement("img");
   img.setAttribute("src","/lagarto/images/delete.png");

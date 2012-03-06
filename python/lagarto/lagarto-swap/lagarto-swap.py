@@ -39,7 +39,7 @@ import os
 
 if __name__ == '__main__':
   
-    settings = os.path.join(os.path.dirname(__file__), "config", "settings.xml")
+    settings = os.path.join(os.path.dirname(sys.argv[0]), "config", "settings.xml")
 
     try:      
         # SWAP manager

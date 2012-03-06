@@ -190,7 +190,7 @@ class SwapManager(SwapInterface, LagartoServer):
             else:
                 # Save gateway's wireless settings
                 if command == "modem_network":
-                    main_settings = XmlSettings()
+                    main_settings = XmlSettings(self.swap_settings)
                     # Open network configuration
                     config = XmlNetwork(main_settings.network_file)
                     # Change parameters
@@ -200,7 +200,7 @@ class SwapManager(SwapInterface, LagartoServer):
                     config.security = int(params["security"])
                 # Save gateway's port settings
                 elif command == "modem_serial":
-                    main_settings = XmlSettings()
+                    main_settings = XmlSettings(self.swap_settings)
                     # Open network configuration
                     config = XmlSerial(main_settings.serial_file)
                     # Change parameters
@@ -208,7 +208,7 @@ class SwapManager(SwapInterface, LagartoServer):
                     config.speed = int(params["speed"])   
                 # Configure general settings
                 elif command == "general_settings":
-                    config = XmlSettings()
+                    config = XmlSettings(self.swap_settings)
                     config.debug = int(params["debug"])
                     config.device_localdir = params["local"]
                     config.device_remote = params["remote"]
@@ -240,6 +240,8 @@ class SwapManager(SwapInterface, LagartoServer):
         @param verbose: Print out SWAP frames or not
         @param monitor: Print out network events or not
         """
+        # MAin configuration file
+        self.swap_settings = swap_settings
         # Print SWAP activity
         self._print_swap = False
         

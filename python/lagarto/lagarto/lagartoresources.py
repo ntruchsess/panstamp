@@ -92,6 +92,51 @@ class LagartoEndpoint:
     """
     Lagarto endpoint class
     """
+    # Lagarto client (if any)
+    lagarto_client = None
+    
+
+    def get_value(self):
+        """
+        Request endpoint value from remote process
+        
+        @param value: new endpoint value
+        
+        @return actual endpoint value, returned by the associated lagarto server
+        """
+        self.value = value
+        status = LagartoEndpoint.lagarto_client.request_status(self.procname, [self.dumps()])
+        if status is not None:
+            if len(status) > 0:
+                if "value" in status[0]:
+                    self.value = status[0]["value"]
+                    if "unit" in status[0]:
+                        self.unit = status[0]["unit"]
+                    if self.name != status[0]["name"]:
+                        self.name = status[0]["name"]
+                    if self.location != status[0]["location"]:
+                        self.location = status[0]["location"]
+                    return status[0]["value"]
+        return None
+
+
+    def set_value(self, value):
+        """
+        Set endpoint value on remote process
+        
+        @param value: new endpoint value
+        
+        @return actual endpoint value, returned by the associated lagarto server
+        """
+        self.value = value
+        status = LagartoEndpoint.lagarto_client.request_status(self.procname, [self.dumps()])
+        if status is not None:
+            if len(status) > 0:
+                if "value" in status[0]:
+                    return status[0]["value"]
+        return None
+        
+
     def dumps(self):
         """
         Serialize address in form of JSON string
@@ -108,8 +153,8 @@ class LagartoEndpoint:
                 
         return endpoint
 
-        
-    def __init__(self, endpstr=None, endp_id=None, location=None, name=None, direction=None, value=None, unit=None):
+
+    def __init__(self, endpstr=None, endp_id=None, location=None, name=None, direction=None, value=None, unit=None, procname=None):
         """
         Constructor
         
@@ -120,6 +165,7 @@ class LagartoEndpoint:
         @param direction: endpoint direction
         @param value: endpoint value
         @param unit: optional unit
+        @param procname: process name
         """
         
         ## Endpoint id
@@ -134,6 +180,8 @@ class LagartoEndpoint:
         self.value = value
         ## Unit
         self.unit = unit
+        ## Process name
+        self.procname = procname
         
         if endpstr is not None:
             if "id" not in endpstr:

@@ -31,7 +31,7 @@ function addAccount(user)
   cell.className = "cellaction";
   cfglink = document.createElement("a");
   cfglink.setAttribute("href", "/core/delete_account/?user=" + user);
-  cfglink.onclick = function() {return deleteAccount(user);};
+  cfglink.onclick = function() {return confirm("Delete user?");};
   cfglink.setAttribute("alt", "delete");
   cfglink.style.pointer = "cursor";
   cell.appendChild(cfglink);
