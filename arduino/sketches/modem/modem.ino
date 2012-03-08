@@ -89,7 +89,6 @@ void isrT1event(void)
 void handleSerialCmd(char* command)
 {
   byte i, len;
-  //unsigned short val = 0;
   byte arrV[2];
   CCPACKET packet;
   ATQUERY atQuery = ATQUERY_REQUEST;  
@@ -98,14 +97,18 @@ void handleSerialCmd(char* command)
   if (serMode == SERMODE_DATA)
   {
     packet.length = strlen(command)/2;
-    // Convert ASCII string into array of bytes
-    for(i=0 ; i<packet.length ; i++)
-    {     
-      packet.data[i] = charToHex(command[i*2]) << 4;
-      packet.data[i] |= charToHex(command[i*2 + 1]);
+    
+    if (packet.length > 0)
+    {
+      // Convert ASCII string into array of bytes
+      for(i=0 ; i<packet.length ; i++)
+      {     
+        packet.data[i] = charToHex(command[i*2]) << 4;
+        packet.data[i] |= charToHex(command[i*2 + 1]);
+      }    
+      // Send packet via RF
+      cc1101.sendData(packet);
     }
-    // Send packet via RF
-    cc1101.sendData(packet);
   }
   // Command mode?
   else  // serMode = SERMODE_COMMAND
