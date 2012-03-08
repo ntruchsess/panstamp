@@ -102,7 +102,7 @@ REGISTER *regTable[] = {             \
 #define DECLARE_REGISTERS_END()      \
 };                                   \
 /* Size of regTable */               \
-byte regTableSize = sizeof(regTable);
+byte regTableSize = sizeof(regTable)/sizeof(*regTable);
 
 /**
  * Macro for the declaration of getter/setter functions related to all common registers

@@ -35,10 +35,10 @@
  * SWAP definitions
  */
 #define SWAP_DATA_HEAD_LEN     6
-#define SWAP_REG_VAL_LEN      CC1101_DATA_LEN - SWAP_DATA_HEAD_LEN    // SWAP data payload - max length
+#define SWAP_REG_VAL_LEN       CC1101_DATA_LEN - SWAP_DATA_HEAD_LEN   // SWAP data payload - max length
 #define SWAP_BCAST_ADDR        0x00                                   // SWAP broadcast address
-#define SWAP_NB_TX_TRIES       5                                      // Number of transmission retries
-#define SWAP_DY_TX_TRIES       100                                    // Delay between Tx retries in ms
+#define SWAP_NB_TX_TRIES       3                                      // Number of transmission retries
+#define SWAP_DY_TX_TRIES       50                                     // Delay between Tx retries in ms
 #define SWAP_PRODUCT_ID        0                                      // Product ID - Index of the register
 
 /**

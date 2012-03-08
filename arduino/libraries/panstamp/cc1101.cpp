@@ -414,6 +414,8 @@ void CC1101::setPowerDownState()
  */
 boolean CC1101::sendData(CCPACKET packet)
 {
+  byte marcState;
+
   // Enter RX state
   setRxState();
 
@@ -428,11 +430,18 @@ boolean CC1101::sendData(CCPACKET packet)
   writeBurstReg(CC1101_TXFIFO, packet.data, packet.length);
 
   // CCA enabled: will enter TX state only if the channel is clear
-  cmdStrobe(CC1101_STX);
+  //cmdStrobe(CC1101_STX);
+  setTxState();
 
   // Check that TX state is being entered (state = RXTX_SETTLING)
-  if((readStatusReg(CC1101_MARCSTATE) & 0x1F) != 0x15)
+  marcState = readStatusReg(CC1101_MARCSTATE) & 0x1F;
+  if((marcState != 0x13) && (marcState != 0x14) && (marcState != 0x15))
+  {
+    setIdleState();       // Enter IDLE state
+    flushTxFifo();        // Flush Tx FIFO
+    setRxState();         // Back to RX state
     return false;
+  }
 
   // Wait for the sync word to be transmitted
   wait_GDO0_high();
@@ -440,9 +449,6 @@ boolean CC1101::sendData(CCPACKET packet)
   // Wait until the end of the packet transmission
   wait_GDO0_low();
 
-  // Flush TX FIFO. Don't uncomment
-  // cmdStrobe(CC1101_SFTX);
-  
   // Enter back into RX state
   setRxState();
 
@@ -469,8 +475,8 @@ byte CC1101::receiveData(CCPACKET * packet)
   // Rx FIFO overflow?
   if ((readStatusReg(CC1101_MARCSTATE) & 0x1F) == 0x11)
   {
-    // Flush Rx FIFO
-    cmdStrobe(CC1101_SFRX);
+    setIdleState();       // Enter IDLE state
+    flushRxFifo();        // Flush Rx FIFO
     packet->length = 0;
   }
   // Any byte waiting to be read?
@@ -496,10 +502,7 @@ byte CC1101::receiveData(CCPACKET * packet)
   else
     packet->length = 0;
 
-  // Flush RX FIFO. Don't uncomment
-  //cmdStrobe(CC1101_SFRX);
-
-  // Enter back into RX state
+  // Back to RX state
   setRxState();
 
   return packet->length;

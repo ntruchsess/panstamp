@@ -219,7 +219,8 @@ enum CFREQ
 #define CC1101_DEFVAL_MDMCFG0    0xF8        // Modem Configuration
 #define CC1101_DEFVAL_DEVIATN    0x35        // Modem Deviation Setting
 #define CC1101_DEFVAL_MCSM2      0x07        // Main Radio Control State Machine Configuration
-#define CC1101_DEFVAL_MCSM1      0x30        // Main Radio Control State Machine Configuration
+//#define CC1101_DEFVAL_MCSM1      0x30        // Main Radio Control State Machine Configuration
+#define CC1101_DEFVAL_MCSM1      0x20        // Main Radio Control State Machine Configuration
 #define CC1101_DEFVAL_MCSM0      0x18        // Main Radio Control State Machine Configuration
 #define CC1101_DEFVAL_FOCCFG     0x16        // Frequency Offset Compensation Configuration
 #define CC1101_DEFVAL_BSCFG      0x6C        // Bit Synchronization Configuration
@@ -249,6 +250,14 @@ enum CFREQ
  */
 // Enter Rx state
 #define setRxState()              cmdStrobe(CC1101_SRX)
+// Enter Tx state
+#define setTxState()              cmdStrobe(CC1101_STX)
+// Enter IDLE state
+#define setIdleState()            cmdStrobe(CC1101_SIDLE)
+// Flush Rx FIFO
+#define flushRxFifo()             cmdStrobe(CC1101_SFRX)
+// Flush Tx FIFO
+#define flushTxFifo()             cmdStrobe(CC1101_SFTX)
 // Disable address check
 #define disableAddressCheck()     writeReg(CC1101_PKTCTRL1, 0x04)
 // Enable address check

@@ -86,7 +86,7 @@ boolean SWPACKET::send(void)
     packet.data[i+7] = value.data[i];
 
   i = SWAP_NB_TX_TRIES;
-  while(!(res = panstamp.cc1101.sendData(packet)) && i>0)
+  while(!(res = panstamp.cc1101.sendData(packet)) && i>1)
   {
     i--;
     delay(SWAP_DY_TX_TRIES);
