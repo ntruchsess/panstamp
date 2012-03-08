@@ -43,19 +43,19 @@ DEFINE_COMMON_REGISTERS()
  * Definition of custom registers
  */
 // LCD line 0
-static byte dtLcdLine0[20];
+static byte dtLcdLine0[] = {0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20};
 REGISTER regLcdLine0(dtLcdLine0, sizeof(dtLcdLine0), NULL, &setLcdLine);
-// LCD line 0
-static byte dtLcdLine1[20];
+// LCD line 1
+static byte dtLcdLine1[] = {0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20};;
 REGISTER regLcdLine1(dtLcdLine1, sizeof(dtLcdLine1), NULL, &setLcdLine);
-// LCD line 0
-static byte dtLcdLine2[20];
+// LCD line 2
+static byte dtLcdLine2[] = {0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20};;
 REGISTER regLcdLine2(dtLcdLine2, sizeof(dtLcdLine2), NULL, &setLcdLine);
-// LCD line 0
-static byte dtLcdLine3[20];
+// LCD line 3
+static byte dtLcdLine3[] = {0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20};;
 REGISTER regLcdLine3(dtLcdLine3, sizeof(dtLcdLine3), NULL, &setLcdLine);
 // LCD backlight
-static byte dtBackLight[1];
+static byte dtBackLight[1] = {0};
 REGISTER regBackLight(dtBackLight, sizeof(dtBackLight), NULL, &setBackLight);
 // Binary input register
 REGISTER regBinInputs(&states, sizeof(states), NULL, NULL);
@@ -80,7 +80,7 @@ DEFINE_COMMON_CALLBACKS()
 /**
  * Definition of custom getter/setter callback functions
  */
- 
+
 /**
  * setLcdLine
  *
@@ -91,14 +91,19 @@ DEFINE_COMMON_CALLBACKS()
  */
 const void setLcdLine(byte rId, byte *text)
 {
+  byte line = rId - REGI_LCDLINE0;
+  
+  // Update register
+  memcpy(regTable[rId]->value, text, regTable[rId]->length);
+
   // Place cursor at the beginning of the line
-  lcd.setCursor(0, rId - REGI_LCDLINE0);
+  lcd.setCursor(0, line);
+
+  if (line == 0)
+    lcd.clear();
 
   // Write text
-  lcd.print((char*)text);
-
-  // Update register
-  memcpy(regTable[rId]->value, text, sizeof(regTable[rId]->value));
+  lcd.print((char*)regTable[rId]->value);
 }
 
 /**

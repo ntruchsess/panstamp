@@ -1,5 +1,5 @@
 /*
- * bininps
+ * lcddriver
  *
  * Copyright (c) 2012 Daniel Berenguer <dberenguer@usapiens.com>
  * 
@@ -32,7 +32,7 @@
  * and a LED pin.
  *
  * Binary inputs : pins 16, 17, 18, 19, 20, 21 and 22
- * LCD pins : pins 4, 5, 6, 8, 9 and 10. Pin 3 for backlight control
+ * LCD pins : pins 4(RS), 5(E), 6(D4), 8(D5), 9(D6) and 10(D7). Pin 3 for backlight control
  * LED pin : pin 2
  *
  * Important, backlight control needs an external transistor.
@@ -145,15 +145,15 @@ byte updateValues(void)
  */
 void setup()
 {
-  int i;
-
   pinMode(LEDPIN, OUTPUT);
   digitalWrite(LEDPIN, LOW);
 
   // Set up the LCD's number of columns and rows:
   lcd.begin(16, 2);
   // Print a message to the LCD.
-  lcd.print("hello, world!");
+  lcd.print("    panStamp    ");
+  lcd.setCursor(0, 1);
+  lcd.print("   LCD driver   ");
 
   // Configure binary pins as inputs
   DDRD &= ~PCINTMASK;
@@ -173,7 +173,7 @@ void setup()
   // Enter SYNC state
   panstamp.enterSystemState(SYSTATE_RXON);
   
-  updateValues();
+  //updateValues();
   // Transmit initial binary states
   getRegister(REGI_BININPUTS)->getData();
   
@@ -188,6 +188,17 @@ void setup()
  */
 void loop()
 {
-  delay(1000);
+  if (pcIRQ)
+  {
+    pcDisableInterrupt();
+    if(updateValues())
+    {
+      // Transmit binary states
+      getRegister(REGI_BININPUTS)->getData();
+    }
+    //Ready to receive new PC interrupts
+    pcIRQ = false;
+    pcEnableInterrupt();
+  }
 }
 
