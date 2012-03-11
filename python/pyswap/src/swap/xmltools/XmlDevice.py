@@ -330,7 +330,7 @@ class XmlDevice(object):
                         # Get list of units
                         units = param.findall("units/unit")
                         lstUnits = None
-                        if units is not None:
+                        if units is not None and len(units) > 0:
                             lstUnits = []
                             for unit in units:
                                 name = unit.get("name", default=None)

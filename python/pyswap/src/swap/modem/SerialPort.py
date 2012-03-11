@@ -30,7 +30,7 @@ from swap.SwapException import SwapException
 
 import threading
 import serial
-import time, sys
+import time, datetime, sys
 
 class SerialPort(threading.Thread):
     """
@@ -128,11 +128,15 @@ class SerialPort(threading.Thread):
         """
         Hardware reset serial modem
         """
-        # Set DTR line
-        self._serport.setDTR(True)
-        time.sleep(0.1)
-        # Clear DTR line
+        # Clear DTR/RTS lines
         self._serport.setDTR(False)
+        self._serport.setRTS(False)
+
+        time.sleep(0.001)
+
+        # Set DTR/R lines
+        self._serport.setDTR(True)
+        self._serport.setRTS(True)
 
            
     def __init__(self, portname="/dev/ttyUSB0", speed=38400, verbose=False):
@@ -166,8 +170,8 @@ class SerialPort(threading.Thread):
                 raise SwapException("Unable to open serial port" + self.portname)
             # Set to >0 in order to avoid blocking at Tx forever
             self._serport.writeTimeout = 1
-            # Set DTR line to LOW
-            self._serport.setDTR(False)
+            # Reset modem
+            self.reset()
             
         except serial.SerialException as ex:
             raise SwapException(str(ex))

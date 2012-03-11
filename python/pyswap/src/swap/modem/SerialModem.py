@@ -140,7 +140,12 @@ class SerialModem:
         response = self.runAtCommand("ATZ\r")
         if response is None:
             return False
-        return response[0:2] == "OK"
+        
+        if response[0:2] == "OK":
+            self._sermode = SerialModem.Mode.DATA
+            return True
+        
+        return False
 
 
     def runAtCommand(self, cmd="AT\r", timeout=1000):
@@ -163,7 +168,7 @@ class SerialModem:
         self._serport.send(cmd)
         
         # Wait for response from modem
-        while self._atresponse[0] == '(':
+        while len(self._atresponse) == 0 or self._atresponse[0] == '(':
             if not self._waitForResponse(timeout):
                 return None
         # Return response received from gateway
@@ -290,18 +295,23 @@ class SerialModem:
         try:
             # Open serial port
             self._serport = SerialPort(self.portname, self.portspeed, verbose)
-            # Reset serial mode
-            self._serport.reset()
             # Define callback function for incoming serial packets
             self._serport.setRxCallback(self._serialPacketReceived)
             # Run serial port thread
             self._serport.start()
-    
+               
             # This flags switches to True when the serial modem is ready
             self._wait_modem_start = False
+            start = time.time()
+            soft_reset = False
             while self._wait_modem_start == False:
-                pass
-    
+                elapsed = time.time() - start
+                if not soft_reset and elapsed > 5:
+                    self.reset()
+                    soft_reset = True
+                elif soft_reset and elapsed > 10:
+                    raise SwapException("Unable to reset serial modem")
+
             # Retrieve modem settings
             # Switch to command mode
             if not self.goToCommandMode():
