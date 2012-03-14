@@ -153,7 +153,7 @@ class SwapServer(threading.Thread):
             # Product code received
             if swPacket.regId == SwapRegId.ID_PRODUCT_CODE:
                 try:
-                    mote = SwapMote(self, swPacket.value.toAscii(), swPacket.srcAddress, swPacket.security, swPacket.nonce)
+                    mote = SwapMote(self, swPacket.value.toAsciiHex(), swPacket.srcAddress, swPacket.security, swPacket.nonce)
                     mote.nonce = swPacket.nonce
                     self._checkMote(mote)
                 except IOError as ex:
