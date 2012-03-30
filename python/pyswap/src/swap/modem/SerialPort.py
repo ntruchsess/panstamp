@@ -30,7 +30,7 @@ from swap.SwapException import SwapException
 
 import threading
 import serial
-import time, datetime, sys
+import time, sys
 
 class SerialPort(threading.Thread):
     """
@@ -53,7 +53,7 @@ class SerialPort(threading.Thread):
                     try:
                         # Read single byte (non blocking function)
                         ch = self._serport.read()
-                        if len(ch) > 0:                    
+                        if len(ch) > 0: 
                             # End of serial packet?
                             if ch == '\r' or ((ch == '(') and (len(serbuf) > 0)):
                                 strBuf = "".join(serbuf)
@@ -72,6 +72,8 @@ class SerialPort(threading.Thread):
                             elif ch != '\n':
                                 # Append char at the end of the buffer (list)
                                 serbuf.append(ch)
+                        else:
+                            time.sleep(0.01)
                     except OSError:
                         raise SwapException(str(sys.exc_type) + ": " + str(sys.exc_info()))
            
