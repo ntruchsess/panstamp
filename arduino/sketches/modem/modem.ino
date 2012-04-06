@@ -51,7 +51,7 @@ void isrINT0event(void)
   packetAvailable = true;
 }
 
-/*
+/**
  * isrT1event
  *
  * Timer1 interrupt routine
@@ -79,7 +79,7 @@ void isrT1event(void)
     t1Ticks++;
 }
 
-/*
+/**
  * handleSerialCmd
  *
  * Handle serial command received
