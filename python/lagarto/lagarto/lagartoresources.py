@@ -71,7 +71,7 @@ class LagartoMessage:
             if "lagarto" not in msg:
                 raise LagartoException("Incorrect packet header")
             
-            data = msg["lagarto-status"]
+            data = msg["lagarto"]
             
             if "procname" not in data:
                 raise LagartoException("Status message must contain a proces name")
@@ -82,10 +82,13 @@ class LagartoMessage:
                 self.http_server = data["httpserver"]
             
             if "status" in data:
+                """
                 self.status = []
                 for endp_data in data["status"]:
                     endp = LagartoEndpoint(endp_data)
                     self.status.append(endp)
+                """
+                self.status = data["status"]
 
         
 class LagartoEndpoint:
@@ -142,7 +145,7 @@ class LagartoEndpoint:
         Serialize address in form of JSON string
         """
         endpoint = {}
-        endpoint["id"] = self.endp_id
+        endpoint["id"] = self.id
         endpoint["name"] = self.name
         endpoint["location"] = self.location
         endpoint["direction"] = self.direction
@@ -169,7 +172,7 @@ class LagartoEndpoint:
         """
         
         ## Endpoint id
-        self.endp_id = endp_id
+        self.id = endp_id
         ## Endpoint name
         self.name = name
         ## Endpoint location
@@ -191,7 +194,7 @@ class LagartoEndpoint:
             if "name" not in endpstr:
                 raise LagartoException("Lacking name information in endpoint")
             
-            self.endp_id = endpstr["id"]
+            self.id = endpstr["id"]
             self.location = endpstr["location"]
             self.name = endpstr["name"]
             

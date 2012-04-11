@@ -51,6 +51,9 @@ class LagartoHttpServer(threading.Thread):
     ## Lagarto directory
     lagarto_dir = os.path.dirname(__file__)
     
+    path_info = None
+    query_string = None
+    
     mime_types = {
                   "htm" : "text/html",
                   "html" : "text/html",
@@ -65,28 +68,6 @@ class LagartoHttpServer(threading.Thread):
                   }
    
     
-    @staticmethod
-    def  _get_password(user):
-        """
-        Get password from file given the user name
-        
-        @param user: user name
-        
-        @return corresponding password
-        """
-        print "USER:", user
-        try:
-            f = open(LagartoHttpServer.auth_file)   
-            auth_data = json.load(network_file)["network"]
-            f.close()
-            #if user in auth_dada:
-            #    crypted_passwd = auth_data[user]
-        except IOError as ex:
-            # Auth file not found
-            pass
-        
-        
-        
     @staticmethod
     def _http_simple_get_value(uid, location, name):
         """
@@ -253,12 +234,11 @@ class LagartoHttpServer(threading.Thread):
 
 
     @staticmethod
-    @auth.lagartoauth
     def _process_request(environ, start_response):
         """
         Process http request
         """
-        # Ehe environment variable CONTENT_LENGTH may be empty or missing
+        # The environment variable CONTENT_LENGTH may be empty or missing
         request_method = "POST"
         try:
             request_body_size = int(environ.get('CONTENT_LENGTH', 0))
@@ -268,34 +248,50 @@ class LagartoHttpServer(threading.Thread):
             request_method = "GET"
  
         # Read PATH_INFO string
-        path_info = environ["PATH_INFO"] 
+        LagartoHttpServer.path_info = environ["PATH_INFO"] 
         
         # HTTP POST request?
         if request_method == "POST":
             # When the method is POST the query string will be sent
             # in the HTTP request body which is passed by the WSGI server
             # in the file like wsgi.input environment variable.
-            query_string = environ['wsgi.input'].read(request_body_size)
+            LagartoHttpServer.query_string = environ['wsgi.input'].read(request_body_size)
         # HTTP GET request?
         else:
-            query_string = environ["QUERY_STRING"]
+            LagartoHttpServer.query_string = environ["QUERY_STRING"]
+
+        path = escape(LagartoHttpServer.path_info).split('/')
+        path = path[1:]
         
-        path = escape(path_info).split('/')
+        # Read/Write endpoint?
+        if path[0] == "values":
+            (status, response_headers, response_body) = LagartoHttpServer._serve_values(LagartoHttpServer.query_string, path)
+            start_response(status, response_headers)
+            return [response_body]
+
+        # Process request with basic auth enabled
+        return LagartoHttpServer._process_request_secu(environ, start_response)
+        
+
+    @staticmethod
+    @auth.lagartoauth
+    def _process_request_secu(environ, start_response):
+        """
+        Process http request
+        """       
+        path = escape(LagartoHttpServer.path_info).split('/')
         path = path[1:]
             
         response_body = ""
         
-        # Read/Write endpoint?
-        if path[0] == "values":
-            (status, response_headers, response_body) = LagartoHttpServer._serve_values(query_string, path)
         # Save config?
-        elif path[0] == "command":
-            (status, response_headers, response_body) = LagartoHttpServer._send_command(query_string, path)
+        if path[0] == "command":
+            (status, response_headers, response_body) = LagartoHttpServer._send_command(LagartoHttpServer.query_string, path)
         elif path[0] == "core":
-            (status, response_headers, response_body) = LagartoHttpServer._request_core(query_string, path)
+            (status, response_headers, response_body) = LagartoHttpServer._request_core(LagartoHttpServer.query_string, path)
         # Serve static file
         else:
-            (status, response_headers, response_body) = LagartoHttpServer._serve_file(path_info)
+            (status, response_headers, response_body) = LagartoHttpServer._serve_file(LagartoHttpServer.path_info)
           
         start_response(status, response_headers)
     
@@ -371,7 +367,7 @@ class LagartoHttpServer(threading.Thread):
         @return response (status, headers, body) tuple
         """
         file_path = file_path.strip('/')      
-        fpath = file_path.split("/")       
+        fpath = file_path.split("/")
         
         # Redirect to the corrrect path
         if fpath[0] == "lagarto":
@@ -434,6 +430,8 @@ class LagartoHttpServer(threading.Thread):
             return LagartoHttpServer._serve_file("lagarto/command_ok.html")
         elif res == False:
             return LagartoHttpServer._serve_file("lagarto/command_nok.html")
+        elif type(res) == str:
+            return LagartoHttpServer._serve_file(res)
         else:
             mtype = "application/json"
             status = "200 OK"

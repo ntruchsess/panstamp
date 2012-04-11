@@ -34,6 +34,8 @@ import threading
 import json
 import socket
 import os
+import base64
+import urllib
 
 
 class LagartoProcess(object):
@@ -163,7 +165,7 @@ class LagartoServer(LagartoProcess):
 class LagartoClient(threading.Thread, LagartoProcess):
     '''
     Lagarto client class
-    ''' 
+    '''
     def notify_status(self, event):
         """
         Notify status to the master application (callback)
@@ -194,13 +196,13 @@ class LagartoClient(threading.Thread, LagartoProcess):
         event_data = json.loads(event)
         if "lagarto" in event_data:
             event_data = event_data["lagarto"]
-            if "httpserver" in event:
+            if "httpserver" in event_data:
                 # HTTP server not in list?
                 if event_data["procname"] not in self.http_servers:
                     self.http_servers[event_data["procname"]] = event_data["httpserver"]
                 
             if "status" in event_data:
-                self.notify_status(event_data["status"])
+                self.notify_status(event_data)
                                              
         
     def request_status(self, procname, req):
@@ -211,7 +213,7 @@ class LagartoClient(threading.Thread, LagartoProcess):
         @param req: queried/controlled endpoints
         
         @return status
-        """        
+        """
         if len(req) > 0:
             control = False
             if "value" in req[0]:
@@ -225,17 +227,70 @@ class LagartoClient(threading.Thread, LagartoProcess):
                 cmd_list.append(cmd)
 
             if procname in self.http_servers:
-                conn = httplib.HTTPConnection(self.http_servers["procname"], timeout=5)
-                conn.request("GET", "&".join(cmd_list))
+                conn = httplib.HTTPConnection(self.http_servers[procname], timeout=5)
+                conn.request("GET", "/values/?" + "&".join(cmd_list))
                 response = conn.getresponse()
                 if response.reason == "OK":
-                    status_msg = LagartoMessage(response.read())
+                    status_response = json.loads(response.read())
+                    status_msg = LagartoMessage(status_response)
      
                     return status_msg.status
 
         return None
 
-          
+
+    def get_servers(self):
+        """
+        Serialize list of lagarto servers in JSON format
+        """
+        return {"http_servers": self.http_servers}
+            
+
+    def get_endpoints(self, server):
+        """
+        Serialize network data from lagarto server
+        
+        @param server: lagarto http address:port
+        
+        @return network data in JSON format
+        """        
+        conn = httplib.HTTPConnection(server, timeout=5)
+        conn.request("GET", "/values")
+        response = conn.getresponse()
+        if response.reason == "OK":
+            return json.loads(response.read())
+
+        return None
+
+
+    def set_endpoint(self, endpoint):
+        """
+        Set endpoint value
+        
+        @param endpoint: lagarto endpoint
+        
+        @return network data in JSON format
+        """
+        if endpoint.procname is None:
+            return None
+
+        if endpoint.procname not in self.http_servers:
+            return None
+
+        server = self.http_servers[endpoint.procname]
+        
+        conn = httplib.HTTPConnection(server, timeout=20)
+        if endpoint.id is not None:
+            conn.request("GET", "/values/?id=" + endpoint.id + "&value=" + str(endpoint.value))
+        elif endpoint.location is not None and endpoint.name is not None:
+            conn.request("GET", "/values/?location=" + endpoint.location + "&name=" + endpoint.name + "&value=" + str(endpoint.value))
+        response = conn.getresponse()
+        if response.reason == "OK":
+            return json.loads(response.read())
+
+        return None
+
+
     def __init__(self, working_dir):
         '''
         Constructor
