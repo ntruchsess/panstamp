@@ -47,7 +47,7 @@ class XmlSettings(object):
     ## Directory where all device config files are stored
     device_localdir = None
     ## Remote Devide Definition folder for updates
-    device_remote = "http://panstamp.googlecode.com/files/devices.tar.gz"
+    device_remote = "http://panstamp.googlecode.com/files/devices.tar"
     ## Automatic udate of local Device Definition folder from internet server
     ## on start-up
     updatedef = False
