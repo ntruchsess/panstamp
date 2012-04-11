@@ -3,7 +3,7 @@
   <debug>2</debug>
   <devices>
     <local>devices</local>
-    <remote>http://panstamp.googlecode.com/files/devices.tar</remote>
+    <remote>http://www.panstamp.com/downloads/devices.tar</remote>
     <update>true</update>
   </devices>
   <serial>serial.xml</serial>
