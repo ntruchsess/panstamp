@@ -183,7 +183,8 @@ class SwapManager(SwapInterface, LagartoServer):
                 endp = self.get_endpoint(endpid=params["id"])
                 endp.name = params["name"]
                 endp.location = params["location"]
-                endp.setUnit(params["unit"])
+                if "unit" in params:
+                    endp.setUnit(params["unit"])
                 self.network.save()
             elif command == "delete_mote":
                 self.network.delete_mote(int(params["address"]))
