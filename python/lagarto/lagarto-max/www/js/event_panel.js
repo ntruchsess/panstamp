@@ -1,6 +1,6 @@
 /* Copyright (c) Daniel Berenguer (panStamp) 2012 */
 
-var newEvnid;
+var newEvnid = "evn_00000001"
 
 /**
  * Create values

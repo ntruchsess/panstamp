@@ -24,8 +24,6 @@ __author__="Daniel Berenguer"
 __date__  ="$Feb 26, 2012$"
 #########################################################################
 
-import webscripts
-
 import inspect
 import os
 
@@ -75,6 +73,7 @@ class WebEvent:
         @return list of events
         """
         events = []
+        import webscripts
         reload(webscripts)
         attributes = dir(webscripts.WebScripts)
         for attr in attributes:
@@ -92,7 +91,19 @@ class WebEvent:
         
         return {"events": events}
         
-        
+    
+    @staticmethod
+    def create_empty():
+        try:
+            f = open(WebEvent.script_file, 'w')
+            f.write(WebEvent.template_str)
+            f.write("\n    pass\n")
+        except IOError:
+            raise MaxException("Unable to create " + WebEvent.script_file)
+        finally:
+            f.close()
+
+          
     def delete(self):
         """
         Delete current event from script file
@@ -117,7 +128,7 @@ class WebEvent:
             except IOError:
                 if target is not None:
                     target.close()
-                raise MaxException("Unable to create temporary file")
+                raise MaxException("Unable to create " + WebEvent.tmp_file)
 
         
     def dumps(self):
@@ -254,6 +265,7 @@ class WebEvent:
         """
         Read event from script
         """
+        import webscripts
         reload(webscripts)
         # Get method
         method = getattr(webscripts.WebScripts, self.id)

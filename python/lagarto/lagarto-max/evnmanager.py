@@ -40,7 +40,17 @@ from lagartocomms import LagartoClient
 from lagartoresources import LagartoEndpoint
 
 from api import TimeAPI, NetworkAPI
-import webscripts
+
+try:
+    import webscripts
+except ImportError:
+    from webevents import WebEvent
+    try:
+        WebEvent.create_empty()
+        import webscripts
+    except:
+        raise
+
 from webevents import WebEvent
 import scripts.events
 
@@ -90,7 +100,6 @@ class TimeEvent(threading.Thread):
         for attr in attributes:
             if attr.startswith("evn_"):
                 event = getattr(webscripts.WebScripts, attr)
-                #print "Event 1 :", time.strftime("%A %d/%m/%Y %H:%M:%S", TimeAPI.current_time)
                 event()
         TimeAPI.event = False
 

@@ -159,10 +159,14 @@ class LagartoServer(LagartoProcess):
         
         @param status_data network status to be transmitted
         """
-        http_server = self.config.address + ":" + str(self.config.httpport)
-        lagarto_msg = LagartoMessage(proc_name=self.config.procname, http_server=http_server, status=status_data)
-        msg = json.dumps(lagarto_msg.dumps())
-        self.pub_socket.send(msg)
+        self.publish_lock.acquire()
+        try:
+            http_server = self.config.address + ":" + str(self.config.httpport)
+            lagarto_msg = LagartoMessage(proc_name=self.config.procname, http_server=http_server, status=status_data)
+            msg = json.dumps(lagarto_msg.dumps())
+            self.pub_socket.send(msg)
+        finally:
+            self.publish_lock.release()
                 
 
     def __init__(self, working_dir):
@@ -185,7 +189,9 @@ class LagartoServer(LagartoProcess):
             raise LagartoException("Unable to bind publisher socket")
         else:
             print "Publishing through", self.config.broadcast
-                
+        
+        self.publish_lock = threading.Lock()
+        
         # Heart beat transmission thread
         hbeat_process = PeriodicHeartBeat(self.publish_status)
         hbeat_process.start()

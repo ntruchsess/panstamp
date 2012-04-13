@@ -82,12 +82,6 @@ class LagartoMessage:
                 self.http_server = data["httpserver"]
             
             if "status" in data:
-                """
-                self.status = []
-                for endp_data in data["status"]:
-                    endp = LagartoEndpoint(endp_data)
-                    self.status.append(endp)
-                """
                 self.status = data["status"]
 
         
@@ -98,7 +92,35 @@ class LagartoEndpoint:
     # Lagarto client (if any)
     lagarto_client = None
     
+    @staticmethod
+    def strtovalue(strval, vtype):
+        """
+        Return value in native format given its string representation and type
+        
+        @param strval: value in string format
+        @param vtype: type of value ("str", "num", "bin")
+        
+        @return value in native format
+        """
+        res = strval
+        
+        if vtype == "num":
+            try:
+                res = int(strval)
+            except ValueError:
+                try:
+                   res = float(strval)
+                except ValueError:
+                    raise LagartoException(value + " is not a valid numeric value for " + self.strval)
+        elif vtype == "bin":
+            if strval.lower() in ["on", "open", "1", "true", "enabled"]:
+                res = True
+            else:
+                res = False
+                
+        return res
 
+        
     def get_value(self):
         """
         Request endpoint value from remote process
@@ -119,7 +141,7 @@ class LagartoEndpoint:
                         self.name = status[0]["name"]
                     if self.location != status[0]["location"]:
                         self.location = status[0]["location"]
-                    return status[0]["value"]
+                    return LagartoEndpoint.strtovalue(status[0]["value"], status[0]["type"])
         return None
 
 
@@ -131,13 +153,17 @@ class LagartoEndpoint:
         
         @return actual endpoint value, returned by the associated lagarto server
         """
-        self.value = value
+        res = None
         status = LagartoEndpoint.lagarto_client.request_status(self.procname, [self.dumps()])
         if status is not None:
             if len(status) > 0:
                 if "value" in status[0]:
-                    return status[0]["value"]
-        return None
+                    res = LagartoEndpoint.strtovalue(status[0]["value"], status[0]["type"])
+        
+        if res is not None:
+            self.value = res
+            
+        return res
         
 
     def dumps(self):
@@ -148,16 +174,20 @@ class LagartoEndpoint:
         endpoint["id"] = self.id
         endpoint["name"] = self.name
         endpoint["location"] = self.location
-        endpoint["direction"] = self.direction
+        
+        if self.direction is not None:
+            endpoint["direction"] = self.direction
+        if self.type is not None:
+            endpoint["type"] = self.type
         if self.value is not None:
-            endpoint["value"] = self.value
+            endpoint["value"] = str(self.value)
             if self.unit is not None:
                 endpoint["unit"] = self.unit
                 
         return endpoint
 
 
-    def __init__(self, endpstr=None, endp_id=None, location=None, name=None, direction=None, value=None, unit=None, procname=None):
+    def __init__(self, endpstr=None, endp_id=None, location=None, name=None, vtype=None, direction=None, value=None, unit=None, procname=None):
         """
         Constructor
         
@@ -165,6 +195,7 @@ class LagartoEndpoint:
         @param endp_id: endpoint unique id
         @param location: endpoint location
         @param name: endpoint name
+        @param type: type of endpoint ("num", "bin", "str")
         @param direction: endpoint direction
         @param value: endpoint value
         @param unit: optional unit
@@ -177,10 +208,16 @@ class LagartoEndpoint:
         self.name = name
         ## Endpoint location
         self.location = location
+        ## Type of value
+        self.type = vtype
         ## Direction (input or output)
         self.direction = direction
         ## Endpoint value
-        self.value = value
+        if value is not None and type(value) in ["str", "unicode"] and vtype is not None:
+            self.value = LagartoEndpoint.strtovalue(value, vtype)
+        else:
+            self.value = value
+
         ## Unit
         self.unit = unit
         ## Process name
@@ -197,17 +234,23 @@ class LagartoEndpoint:
             self.id = endpstr["id"]
             self.location = endpstr["location"]
             self.name = endpstr["name"]
-            
-            if "value" in endpstr:
-                self.value = endpstr["value"]
-                
+                           
             if "unit" in endpstr:
                 self.unit = endpstr["unit"]
 
+            if "type" in endpstr:
+                self.type = endpstr["type"]
+                
             if "direction" in endpstr:
                 self.direction = endpstr["direction"]
 
-
+            if "value" in endpstr:
+                if self.type is not None:
+                    self.value = LagartoEndpoint.strtovalue(endpstr["value"], self.type)
+                else:
+                    self.value = endpstr["value"]
+                
+                
 class LagartoException(Exception):
     """
     Main exception class for lagarto comms
