@@ -441,32 +441,17 @@ class SwapEndpoint(SwapParam):
         Serialize endpoint data to a JSON formatted string
         
         @param include_units: if True, include list of units within the serialized output
-        """
-        if self.type == SwapType.NUMBER:
-            # Add units
-            if self.unit is not None:
-                val = self.value.toInteger() * self.unit.factor + self.unit.offset
-            else:
-                val = self.value.toInteger()
-        elif self.type == SwapType.BINARY:
-            if self.value.toInteger():
-                val = "ON"
-            else:
-                val = "OFF"
-        else:
-            val = self.value.toAsciiStr()
-
+        """       
+        val = self.getValueInAscii()
+        
         data = {}
-        data["id"] = self.id
-        data["name"] = self.name
-        data["location"] = self.location
+        data["id"] = self.id.replace(" ", "_")
+        data["name"] = self.name.replace(" ", "_")
+        data["location"] = self.location.replace(" ", "_")
         data["type"] = self.type
         data["direction"] = self.direction
         
         if self.lastupdate is not None:
-            #d = datetime.date.fromtimestamp(self.lastupdate)
-            #t = datetime.time.fromtimestamp(self.lastupdate)
-            #data["timestamp"] = datetime.combine(d, t)
             data["timestamp"] = time.strftime("%d %b %Y %H:%M:%S", time.localtime(self.lastupdate))
             
         data["value"] = val
