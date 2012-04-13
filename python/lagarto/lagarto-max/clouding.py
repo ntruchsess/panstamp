@@ -41,13 +41,19 @@ class PachubePacket:
         """
         header = {'X-PachubeApiKey': self.sharing_key}
         url = "api.pachube.com"
+        res = None
 
-        conn = httplib.HTTPConnection(url, timeout=8)
-        conn.request('PUT', "/v2/feeds/" + self.feed_id, json.dumps(self.packet), header)
-        response = conn.getresponse()
+        try:
+            conn = httplib.HTTPConnection(url, timeout=8)
+            conn.request('PUT', "/v2/feeds/" + self.feed_id, json.dumps(self.packet), header)
+            response = conn.getresponse()
+            res = response.reason
+        except:
+            pass
+        
         conn.close()
 
-        return response.reason
+        return res
 
 
     def __init__(self, sharing_key, feed_id, endpoints):
@@ -71,32 +77,38 @@ class PachubePacket:
         self.packet = {"version": "1.0.0", "datastreams": datastreams}
 
 
-class ThinkSpeakPacket:
+class ThingSpeakPacket:
     """
-    Generic ThinkSpeak packet class
+    Generic ThingSpeak packet class
     """
     def push(self):
         """
-        Push values to ThinkSpeak
+        Push values to ThingSpeak
         
-        @return response from ThinkSpeak
+        @return response from ThingSpeak
         """
         headers = {"Content-type": "application/x-www-form-urlencoded","Accept": "text/plain"}
-        
         url = "api.thingspeak.com"
-        conn = httplib.HTTPConnection(url, timeout=5)
-        conn.request("POST", "/update", self.params, headers)       
-        response = conn.getresponse()
+        res = None
+        
+        try:
+            conn = httplib.HTTPConnection(url, timeout=5)
+            conn.request("POST", "/update", self.params, headers)       
+            response = conn.getresponse()
+            res = response.reason
+        except:
+            pass
+        
         conn.close()
 
-        return response.reason
+        return res
 
 
     def __init__(self, api_key, endpoints):
         """
         Constructor
         
-        @param api_key: ThinkSpeak write API key
+        @param api_key: ThingSpeak write API key
         @param endpoints: list of (field ID, value) pairs
         """
         params_dict = {'key': api_key}
@@ -106,3 +118,4 @@ class ThinkSpeakPacket:
         
         # Parameters
         self.params = urllib.urlencode(params_dict)
+

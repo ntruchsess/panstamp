@@ -36,6 +36,7 @@ import socket
 import os
 import base64
 import urllib
+import time
 
 
 class LagartoProcess(object):
@@ -124,11 +125,35 @@ class LagartoProcess(object):
         http_server.start()
 
 
+class PeriodicHeartBeat(threading.Thread):
+    """
+    Periodic transmission of Lagarto server heart beat
+    """
+    def run(self):
+        """
+        Start timer
+        """
+        while True:
+            self.send_hbeat()
+            time.sleep(60.0)
+    
+    
+    def __init__(self, send_hbeat):
+        """
+        Constructor
+        
+        @param send_hbeat: Heart beat transmission method
+        """
+        threading.Thread.__init__(self)
+        # Heart beat transmission method
+        self.send_hbeat = send_hbeat
+
+
 class LagartoServer(LagartoProcess):
     """
     Lagarto server class
     """
-    def publish_status(self, status_data):
+    def publish_status(self, status_data=None):
         """
         Broadcast network status (collection of endpoint data)
         
@@ -161,6 +186,10 @@ class LagartoServer(LagartoProcess):
         else:
             print "Publishing through", self.config.broadcast
                 
+        # Heart beat transmission thread
+        hbeat_process = PeriodicHeartBeat(self.publish_status)
+        hbeat_process.start()
+
 
 class LagartoClient(threading.Thread, LagartoProcess):
     '''
@@ -202,7 +231,10 @@ class LagartoClient(threading.Thread, LagartoProcess):
                     self.http_servers[event_data["procname"]] = event_data["httpserver"]
                 
             if "status" in event_data:
+                print time.strftime("%d %b %Y %H:%M:%S", time.localtime()), "STATUS received from", event_data["procname"]
                 self.notify_status(event_data)
+            else:
+                print time.strftime("%d %b %Y %H:%M:%S", time.localtime()), "HBEAT received from", event_data["procname"]
                                              
         
     def request_status(self, procname, req):

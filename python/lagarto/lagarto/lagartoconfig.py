@@ -47,7 +47,7 @@ class XmlLagarto(object):
         # Read process name
         procname = root.find("procname")
         if procname is not None:
-            self.procname = procname.text
+            self.procname = procname.text.replace(" ", "_")
         # Enter comms section
         comms = root.find("comms")
         if comms is not None:

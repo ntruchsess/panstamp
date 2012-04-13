@@ -1,5 +1,4 @@
-<!-- HTML template for editevent.cgi -->
-
+<!-- Copyright (c) Daniel Berenguer (panStamp) 2012 -->
 <html>
 	<head>
     <link rel="stylesheet" type="text/css" href="/lagarto/styles.css">
@@ -29,7 +28,7 @@
       <tr>
         <td class="celltitle">Operator</td>
 				<td>
-					<select id="operator" class="inputdatashort">
+					<select id="operator" class="inputdatalong" onchange="onchangeOperator()">
 						<option value="==">Equal to</option>
 						<option value="!=">Different than</option>
 						<option value="<">Less than</option>

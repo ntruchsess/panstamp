@@ -15,13 +15,19 @@ function updateValues()
   var dot = item2.indexOf(".");
   var currVal = item2.substring(0, dot);
   var currValFound = false;
-
   var servers = window.parent.getServers();
+
+  if (currVal == "")
+    currValFound = true;
+
   fldServer.options.length = 0;
   for(var i=0 ; i < servers.length ; i++)
   {
-    if (servers[i].text == currVal)
-      currValFound = true;
+    if (!currValFound)
+    {
+      if (servers[i].text == currVal)
+        currValFound = true;
+    }
 
     fldServer.options[i] = new Option(servers[i].text, servers[i].value);
   }
@@ -38,11 +44,12 @@ function updateValues()
 function onchangeServer()
 {
   var server = document.getElementById("server").value;
+  var dot = item2.indexOf('.');
+
   if (server != "")
     loadJSONdata("/command/get_endpoint_list/?server=" + server, fillEndpoints);
-  else
+  else if (dot == -1)
   {
-    var dot = item2.indexOf(".");
     var currVal = item2.substring(dot+1);
     var fldEndp = document.getElementById("endp");
     fldEndp.options.length = 0;
@@ -65,13 +72,20 @@ function fillEndpoints()
   var jsonDoc = getJsonDoc();
   var swapnet = jsonDoc.lagarto;
 
+  if (currVal.indexOf('.') == -1)
+    currValFound = true;
+
   fldEndp.options.length = 0;
 
   swapnet.status.forEach(function(endpoint)
   {
     var endp = endpoint.location + "." + endpoint.name;
-    if (endp == currVal)
-      currValFound = true;
+
+    if (!currValFound)
+    {
+      if (endp == currVal)
+        currValFound = true;
+    }
     fldEndp.options[fldEndp.options.length] = new Option(endp, endp);
   });
 

@@ -35,10 +35,11 @@ from lagartoresources import LagartoException
 
 import sys
 import os
+import time
 
 
 if __name__ == '__main__':
-  
+   
     settings = os.path.join(os.path.dirname(sys.argv[0]), "config", "settings.xml")
 
     try:      

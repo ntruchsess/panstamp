@@ -231,8 +231,8 @@ class SwapManager(SwapInterface, LagartoServer):
             return False
         
         return True
-
-
+  
+    
     def __init__(self, swap_settings=None):
         """
         Class constructor

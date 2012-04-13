@@ -30,7 +30,7 @@ import time
 from lagartoresources import LagartoEndpoint
 from xmltools import XmlSettings
 
-from clouding import PachubePacket, ThinkSpeakPacket
+from clouding import PachubePacket, ThingSpeakPacket
 
 
 class TimeAPI:
@@ -172,13 +172,13 @@ class NetworkAPI:
     @staticmethod
     def get_endpoint(endp):
         """
-        Get endpoint data
+        Get Lagarto endpoint
         
         @param endp: endpoint identification string
         format 1: process.location.name
         format 2: process.id
         
-        @return endpoint data
+        @return lagarto endpoint object
         """
         epd = endp.split('.')
         length = len(epd)
@@ -246,26 +246,6 @@ class NetworkAPI:
         return None
 
 
-    @staticmethod
-    def push_pachube(sharing_key, feed_id, datastream_id, endp):
-        """
-        Push data to pachube
-        
-        @param sharing_key: Pachube sharing key
-        @param feed_id: Pachube feed ID
-        @param datastream_id: Pachube datastream ID
-        @param endp: endpoint identification string
-        format 1: process.location.name
-        format 2: process.id
-        
-        @return response from Pachube
-        """
-        endpoint = NetworkAPI.get_endpoint(endp)
-        if endpoint is not None:
-            packet = PachubePacket(sharing_key, feed_id, [(datastream_id, endpoint.value)])
-            packet.push()
-
-
     def __init__(self, lagarto_client):
         """
         Constructor
@@ -292,7 +272,7 @@ class CloudAPI:
         @param feed_id: Pachube feed ID
         @param datastream_id: Pachube datastream ID
         
-        @return response from Pachube
+        @return HTTP response from Pachube
         """
         endpoint = NetworkAPI.get_endpoint(endp)
         if endpoint is not None:
@@ -302,20 +282,21 @@ class CloudAPI:
 
 
     @staticmethod
-    def push_thinkspeak(endp, api_key, field_id):
+    def push_thingspeak(endp, api_key, field_id):
         """
-        Push data to ThinkSpeak
+        Push data to ThingSpeak
 
         @param endp: endpoint identification string
         format 1: process.location.name
         format 2: process.id        
-        @param api_key: ThinkSpeak API key
-        @param field_id: ThinkSpeak field ID
+        @param api_key: ThingSpeak API key
+        @param field_id: ThingSpeak field ID
         
-        @return response from ThinkSpeak
+        @return HTTP response from ThingSpeak
         """
         endpoint = NetworkAPI.get_endpoint(endp)
         if endpoint is not None:
-            packet = ThinkSpeakPacket(api_key, [(field_id, endpoint.value)])
+            packet = ThingSpeakPacket(api_key, [(field_id, endpoint.value)])
             return packet.push()
         return None
+

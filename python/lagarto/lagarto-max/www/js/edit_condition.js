@@ -69,9 +69,13 @@ function onchangeOption()
 	switch(option)
 	{
 		case "clock":
+      if (statement[0] != "clock")
+        statement = ["clock", "time", "==" , "00:00"];
 			document.getElementById("itemeditor").src = "/edit_cond_clock.html";
 			break;
 		case "network":
+      if (statement[0] != "network")
+        statement = ["network", "", "==" , ""];
 			document.getElementById("itemeditor").src = "/edit_cond_network.html";
       break;
     default:

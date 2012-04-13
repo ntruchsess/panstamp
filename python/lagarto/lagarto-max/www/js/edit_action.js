@@ -32,9 +32,10 @@ function updateValues()
   {
     codeLine = event.code[lineNb-1];
     statement = actionToWeb(codeLine);
-    document.getElementById("source").value = statement[0];
-    onchangeOption();
   }
+
+  document.getElementById("source").value = statement[0];
+  onchangeOption();
 }
 
 /**
@@ -48,9 +49,13 @@ function onchangeOption()
 	switch(option)
 	{
 		case "network":
+      if (statement[0] != "network")
+        statement = ["network", "", "=" , ""];
 			document.getElementById("itemeditor").src = "/edit_act_network.html";
       break;
 		case "cloud":
+      if (statement[0] != "cloud")
+        statement = ["cloud", "", "=" , ""];
 			document.getElementById("itemeditor").src = "/edit_act_cloud.html";
 			break;
     default:

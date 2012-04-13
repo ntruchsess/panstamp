@@ -162,11 +162,21 @@ function conditionToWeb(line)
   }
   else if (line.substring(0, 21) == "network.event[0] == \"")
   {
-    end = line.indexOf("\" and network.event[1]", 21);
+    start = 21;
+    end = line.indexOf("\" and network.event[1]", start);
     if (end > -1)
     {
-      item1 =  line.substring(21, end);
+      item1 =  line.substring(start, end);
       line = line.substring(end + 22);
+    }
+    else
+    {
+      end = line.indexOf('"', start);
+      if (end > -1)
+      {
+        item1 =  line.substring(start, end);
+        return [type, item1, "on change", ""];
+      }
     }
   }
 

@@ -21,6 +21,7 @@ function updateValues()
   var jsonDoc = getJsonDoc();
   var event = jsonDoc.event;
   var lineNb = 0, start, end;
+  var commentCnt = 0;
 
   document.getElementById("evnid").value = event.id;
   document.getElementById("evnname").value = event.name;
@@ -29,7 +30,9 @@ function updateValues()
   {
     lineNb++;
 
-    if (line.substring(0, 5) === "elif ")
+    if (line == '"""')
+      commentCnt++;
+    else if (line.substring(0, 5) === "elif ")
     {
       start = 5;
       if (line.substring(start, 21) === "clock.event and ")
@@ -45,7 +48,7 @@ function updateValues()
       if (end > -1)
         createCondition(line.substring(start, end), lineNb);
     }
-    else if (line != "return" && line != "pass" && line != "if False:" && line != "else:" && start > 0)
+    else if (line != "return" && line != "pass" && line != "if False:" && line != "else:" && commentCnt > 1)
       createAction(line, lineNb);
   });
 }

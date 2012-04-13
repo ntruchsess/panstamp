@@ -42,7 +42,7 @@ from lagartoresources import LagartoEndpoint
 from api import TimeAPI, NetworkAPI
 import webscripts
 from webevents import WebEvent
-from scripts.events import event_handler
+import scripts.events
 
 
 class PeriodicTrigger(threading.Thread):
@@ -257,7 +257,8 @@ class EventScript(threading.Thread):
         """
         Run thread
         """
-        event_handler(self.evnsrc, self.evnobj)
+        reload(scripts.events)
+        scripts.events.event_handler(self.evnsrc, self.evnobj)
 
         
     def __init__(self, evnsrc, evnobj):

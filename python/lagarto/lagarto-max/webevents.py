@@ -185,11 +185,9 @@ class WebEvent:
         Set event line
         
         @param line: new line of code
-        @param linenb: line number to be modified. None in case of new line
+        @param linenb: line number to be modified. 0 in case of new line
         @param ltype: type of statement ("trigger", "condition", "action")
-        """
-        print "Event:", self.id, "linenb:", linenb, "line:", line
-                   
+        """                  
         linenb = int(linenb)        
         # Add new line?
         if linenb == 0:
@@ -220,7 +218,7 @@ class WebEvent:
                 statement = " " * 12 + "return\n"
                 self.source_code.insert(new_condition_line + 1, statement)
             else:
-                statement = line + "\n"
+                statement = " " * 8 + line + "\n"
                 self.source_code.append(statement)
         # Modify existing line?
         else:
@@ -274,15 +272,15 @@ class WebEvent:
         Create new event
         """
         self.source_code = []
-        self.source_code.append(" " * 4 + "@staticmethod")
-        self.source_code.append(" " * 4 + "def " + self.id + "():")
-        self.source_code.append(" " * 8 + "\"\"\"")
-        self.source_code.append(" " * 8 + self.name)
-        self.source_code.append(" " * 8 + "\"\"\"")
-        self.source_code.append(" " * 8 + "if False:")
-        self.source_code.append(" " * 12 + "pass")
-        self.source_code.append(" " * 8 + "else:")
-        self.source_code.append(" " * 12 + "return")
+        self.source_code.append(" " * 4 + "@staticmethod\n")
+        self.source_code.append(" " * 4 + "def " + self.id + "():\n")
+        self.source_code.append(" " * 8 + "\"\"\"\n")
+        self.source_code.append(" " * 8 + self.name + "\n")
+        self.source_code.append(" " * 8 + "\"\"\"\n")
+        self.source_code.append(" " * 8 + "if False:\n")
+        self.source_code.append(" " * 12 + "pass\n")
+        self.source_code.append(" " * 8 + "else:\n")
+        self.source_code.append(" " * 12 + "return\n")
         
 
     def __init__(self, evnid):

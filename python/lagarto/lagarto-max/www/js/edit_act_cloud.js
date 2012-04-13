@@ -25,7 +25,7 @@ function onchangeService()
   if (service == "pachube")
 	  document.getElementById("item2box").src = "../edit_item2_pachube.html";
   else if (service == "thinkspeak")
-    document.getElementById("item2box").src = "../edit_item2_thinkspeak.html";
+    document.getElementById("item2box").src = "../edit_item2_thingspeak.html";
 }
 
 /**

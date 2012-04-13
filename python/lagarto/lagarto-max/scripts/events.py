@@ -21,19 +21,19 @@
 #
 #########################################################################
 
-from api import TimeAPI as clock, NetworkAPI as network
+from api import TimeAPI as clock, NetworkAPI as network, CloudAPI as cloud
+import time
 
 
 def event_handler(evnsrc, evnobj):
     """
     Event handling function
     
-    @param evnsrc: event source ("network", "clock", "startup")
+    @param evnsrc: event source ("network", "clock")
     @param evnobj: event object
     
-    evnsrc = "network" -> evnobj = lagarto message
+    evnsrc = "network" -> evnobj = lagarto endpoint
     evnsrc = "clock" -> evnobj = time.localtime() object
-    evnsrc = "startup" -> evnobj = None
     """
-    print "Custom script", evnsrc, evnobj
-    pass
+    if evnsrc == "network":
+        print time.strftime("%d %b %Y %H:%M:%S", time.localtime()), evnobj.name, evnobj.value

@@ -24,11 +24,18 @@ function fillServers(servers)
   var currVal = statement[1].substring(0, dot);
   var currValFound = false;
   var fldServer = document.getElementById("server");
+
+  if (currVal == "")
+    currValFound = true;
+
   fldServer.options.length = 0;
   for(var server in servers)
   {
-    if (server == currVal)
-      currValFound = true;
+    if (!currValFound)
+    {
+      if (server == currVal)
+        currValFound = true;
+    }
 
     fldServer.options[fldServer.options.length] = new Option(server, servers[server]);
   }
@@ -52,14 +59,21 @@ function fillEndpoints()
   var jsonDoc = getJsonDoc();
   var swapnet = jsonDoc.lagarto;
 
+  if (currVal.indexOf('.') == -1)
+    currValFound = true;
+
   fldEndp.options.length = 0;
 
   endpointTypes = {};
   swapnet.status.forEach(function(endpoint)
   {
     var endp = endpoint.location + "." + endpoint.name;
-    if (endp == currVal)
-      currValFound = true;
+
+    if (!currValFound)
+    {
+      if (endp == currVal)
+        currValFound = true;
+    }
     fldEndp.options[fldEndp.options.length] = new Option(endp, endp);
     
     endpointTypes[endp] = endpoint.type;
@@ -82,17 +96,16 @@ function fillEndpoints()
 function onchangeServer()
 {
   var server = document.getElementById("server").value;
+  var dot = statement[3].indexOf('.');
+
   if (server != "")
     loadJSONdata("/command/get_endpoint_list/?server=" + server, fillEndpoints);
-  else
+  else if (dot == -1)
   {
-    var dot = statement[1].indexOf(".");
-    var currVal = statement[1].substring(dot+1);
+    var currVal = statement[3].substring(dot+1);
     var fldEndp = document.getElementById("endp");
     fldEndp.options.length = 0;
     fldEndp.options[fldEndp.options.length] = new Option(currVal, "");
-    endpointTypes[currVal] = "num";
-    onchangeEndp();
   }
 }
 

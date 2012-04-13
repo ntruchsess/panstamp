@@ -26,7 +26,10 @@ function addNetwork()
   procnameParag.setAttribute("class", "netlabel");
   procnameParag.setAttribute("align", "center");
   procname = document.createTextNode("Network: " + swapnet.procname);
-  procnameParag.appendChild(procname);
+  proclink = document.createElement("a");
+  proclink.setAttribute("href", "http://" + servers[swapnet.procname]);
+  proclink.appendChild(procname);
+  procnameParag.appendChild(proclink);
 
   // Endpoint table
   tableNet = document.createElement('table');
@@ -92,9 +95,8 @@ function addEndpoint(endpoint)
 {
   var row, cell, label, command, val;
 
-  var procName = this.getAttribute("id");
-  var httpAddr = servers[procname];
-
+  var procName = this.id;
+  var httpAddr = servers[this.id];
   row = this.insertRow(this.rows.length);
 
   // Link to config page
