@@ -40,6 +40,8 @@ from lagartocomms import LagartoClient
 from lagartoresources import LagartoEndpoint
 
 from api import TimeAPI, NetworkAPI
+from clouding import OpenSense
+
 
 try:
     import webscripts
@@ -183,6 +185,33 @@ class EvnManager(LagartoClient):
                     name = params["name"]
             try:
                 endpoint = LagartoEndpoint(endp_id = endp_id, location=location, name=name, value=params["value"], procname=params["procname"])
+            except:
+                return None
+            
+            return self.set_endpoint(endpoint)
+
+        elif command == "set_from_opensense":
+            if "feed_id" not in params:
+                return None
+
+            endp = None
+            endp = [key for key, value in OpenSense.feed_ids.iteritems() if value == params["feed_id"]][0]
+            if endp is None:
+                return None
+            endp_data = endp.split(".")
+            if len(endp_data) != 3:
+                return None
+                   
+            """
+            {
+            "timetag": "2011-01-28T13:39:11.428513+00:00",
+            "feed_id": 123,
+            "device_id": 456,
+            "value": 45
+            }
+            """
+            try:
+                endpoint = LagartoEndpoint(location=endp_data[1], name=endp_data[2], value=params["value"], procname=endp_data[0])
             except:
                 return None
             

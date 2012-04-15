@@ -19,8 +19,7 @@ function updateValues()
   for (elem in servers)
     elemCount++;
 
-  if (elemCount > 0)
-    fillServers(servers);
+  fillServers(servers);
 
   if (statementType == "trigger")
     operator.options[operator.options.length] = new Option("On Change", "on change");
@@ -52,8 +51,16 @@ function fillServers(servers)
 
     fldServer.options[fldServer.options.length] = new Option(server, servers[server]);
   }
+
   if (!currValFound)
+  {
     fldServer.options[fldServer.options.length] = new Option(currVal, "");
+
+    var fldEndp = document.getElementById("endp");
+    var endp = statement[1].substring(dot+1);
+    fldEndp.options.length = 0;
+    fldEndp.options[fldEndp.options.length] = new Option(endp, endp);
+  }
 
   document.getElementById("server").value = currVal;
 
@@ -109,17 +116,9 @@ function fillEndpoints()
 function onchangeServer()
 {
   var server = document.getElementById("server").value;
-  var dot = statement[3].indexOf('.');
 
   if (server != "")
     loadJSONdata("/command/get_endpoint_list/?server=" + server, fillEndpoints);
-  else if (dot == -1)
-  {
-    var currVal = statement[3].substring(dot+1);
-    var fldEndp = document.getElementById("endp");
-    fldEndp.options.length = 0;
-    fldEndp.options[fldEndp.options.length] = new Option(currVal, "");
-  }
 }
 
 /**
@@ -182,7 +181,12 @@ function getCondition()
     if (operator == "on change")
       pythonString = "network.event[0] == " + item1;
     else if (item2 != null)
-      pythonString = "network.event[0] == " + item1 + " and network.event[1] " + operator + " " + item2;
+    {
+      if (document.getElementById("item2box").src.indexOf("edit_item2_network.html") != -1)
+        pythonString = "network.event[0] == " + item1 + " and network.event[1] " + operator + " network.get_value(" + item2 + ")";
+      else
+        pythonString = "network.event[0] == " + item1 + " and network.event[1] " + operator + " " + item2;
+    }
   }
   else if (item2 != null)
     pythonString = "network.get_value(" +  item1 + ") " + operator + " " + item2;

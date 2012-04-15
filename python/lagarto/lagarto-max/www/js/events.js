@@ -193,7 +193,18 @@ function conditionToWeb(line)
       start = end + 1;
       item2 = line.substring(start);
 
-      if (item1 == "time")
+      if (type == "network")
+      {
+        start = item2.indexOf("network.get_value(\"");
+        if (start > -1)
+        {
+          start += 19;
+          end = item2.indexOf("\")", start);
+          if (end > -1)
+            item2 = item2.substring(start, end);
+        }
+      }
+      else if (item1 == "time")
       {
         if (item2.substring(0, 6) == "clock.")
         {

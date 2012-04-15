@@ -26,6 +26,8 @@ function onchangeService()
 	  document.getElementById("item2box").src = "../edit_item2_pachube.html";
   else if (service == "thinkspeak")
     document.getElementById("item2box").src = "../edit_item2_thingspeak.html";
+  else if (service == "opensense")
+    document.getElementById("item2box").src = "../edit_item2_opensense.html";
 }
 
 /**

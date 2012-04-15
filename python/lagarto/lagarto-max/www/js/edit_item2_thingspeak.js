@@ -94,9 +94,9 @@ function getItem2()
   var server = document.getElementById("server").options[i].text;
   var endp = document.getElementById("endp").value;
   var apiKey = document.getElementById("apikey").value;
-  var fieldId = document.getElementById("fieldId").value;
+  var fieldId = document.getElementById("fieldid").value;
 
-  var item2 = "\"" + server + "." + endp + "\", \"" + apiKei + "\", \"" + fieldId + "\"";
+  var item2 = "\"" + server + "." + endp + "\", \"" + apiKey + "\", \"" + fieldId + "\"";
 
   return item2;
 }

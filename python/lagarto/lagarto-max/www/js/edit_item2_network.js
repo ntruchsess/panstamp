@@ -32,7 +32,14 @@ function updateValues()
     fldServer.options[i] = new Option(servers[i].text, servers[i].value);
   }
   if (!currValFound)
+  {
     fldServer.options[fldServer.options.length] = new Option(currVal, "");
+
+    var fldEndp = document.getElementById("endp");
+    var endp = item2.substring(dot+1);
+    fldEndp.options.length = 0;
+    fldEndp.options[fldEndp.options.length] = new Option(endp, endp);
+  }
 
   fldServer.value = currVal;
   onchangeServer();
@@ -44,17 +51,9 @@ function updateValues()
 function onchangeServer()
 {
   var server = document.getElementById("server").value;
-  var dot = item2.indexOf('.');
 
   if (server != "")
     loadJSONdata("/command/get_endpoint_list/?server=" + server, fillEndpoints);
-  else if (dot == -1)
-  {
-    var currVal = item2.substring(dot+1);
-    var fldEndp = document.getElementById("endp");
-    fldEndp.options.length = 0;
-    fldEndp.options[fldEndp.options.length] = new Option(currVal, "");
-  }
 }
 
 /**

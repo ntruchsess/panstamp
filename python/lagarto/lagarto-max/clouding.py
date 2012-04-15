@@ -119,3 +119,54 @@ class ThingSpeakPacket:
         # Parameters
         self.params = urllib.urlencode(params_dict)
 
+
+class OpenSense:
+    """
+    open.sen.se static data
+    """
+    # List of feed id's
+    feed_ids = {}
+
+
+class OpenSensePacket:
+    """
+    Generic open.sen.se packet class
+    """
+    def push(self):
+        """
+        Push values to open.sen.se
+        
+        @return response from open.sen.se
+        """
+        headers = {"Content-type": "application/json", "sense_key": self.sense_key}
+        url = "api.sen.se"
+        res = None
+
+        try:
+            conn = httplib.HTTPConnection(url, timeout=8)
+            conn.request('POST', "/events/", json.dumps(self.events), headers)
+            response = conn.getresponse()
+            res = response.reason
+        except:
+            pass
+        
+        conn.close()
+
+        return res
+
+
+    def __init__(self, sense_key, endpoints):
+        """
+        Constructor
+        
+        @param sense_key: open.sen.se authentication key
+        @param endpoints: list of (feed_ID, value) pairs
+        """
+        # Sense key
+        self.sense_key = sense_key
+
+        self.events = []
+        for endp in endpoints:
+            event = {"feed_id": endp[0], "value": endp[1]}
+            self.events.append(event)
+

@@ -30,7 +30,7 @@ import time
 from lagartoresources import LagartoEndpoint
 from xmltools import XmlSettings
 
-from clouding import PachubePacket, ThingSpeakPacket
+from clouding import PachubePacket, ThingSpeakPacket, OpenSensePacket, OpenSense
 
 
 class TimeAPI:
@@ -297,6 +297,29 @@ class CloudAPI:
         endpoint = NetworkAPI.get_endpoint(endp)
         if endpoint is not None:
             packet = ThingSpeakPacket(api_key, [(field_id, endpoint.value)])
+            return packet.push()
+        return None
+
+
+    @staticmethod
+    def push_opensense(endp, sense_key, feed_id):
+        """
+        Push data to open.sen.se
+
+        @param endp: endpoint identification string
+        format 1: process.location.name
+        format 2: process.id        
+        @param sense_key: open.sen.se API key
+        @param feed_id: open.sen.se feed ID
+        
+        @return HTTP response from open.sen.se
+        """
+        endpoint = NetworkAPI.get_endpoint(endp)
+        if endpoint is not None:
+            endpstr = endpoint.procname + "." + endpoint.location + "." + endpoint.name
+            if endpstr not in OpenSense.feed_ids:
+                OpenSense.feed_ids[endpstr] = feed_id
+            packet = OpenSensePacket(sense_key, [(feed_id, endpoint.value)])
             return packet.push()
         return None
 

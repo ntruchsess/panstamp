@@ -266,12 +266,15 @@ class LagartoHttpServer(threading.Thread):
         # Read/Write endpoint?
         if path[0] == "values":
             (status, response_headers, response_body) = LagartoHttpServer._serve_values(LagartoHttpServer.query_string, path)
-            start_response(status, response_headers)
-            return [response_body]
+        elif path[0] == "command":
+            (status, response_headers, response_body) = LagartoHttpServer._send_command(LagartoHttpServer.query_string, path)
+        else:
+            # Process request with basic auth enabled
+            return LagartoHttpServer._process_request_secu(environ, start_response)
+            
+        start_response(status, response_headers)
+        return [response_body]
 
-        # Process request with basic auth enabled
-        return LagartoHttpServer._process_request_secu(environ, start_response)
-        
 
     @staticmethod
     @auth.lagartoauth
@@ -284,7 +287,6 @@ class LagartoHttpServer(threading.Thread):
             
         response_body = ""
         
-        # Save config?
         if path[0] == "command":
             (status, response_headers, response_body) = LagartoHttpServer._send_command(LagartoHttpServer.query_string, path)
         elif path[0] == "core":

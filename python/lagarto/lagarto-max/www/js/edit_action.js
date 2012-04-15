@@ -44,7 +44,6 @@ function updateValues()
 function onchangeOption()
 {
 	var option = document.getElementById("source").value;
-  statement[0] = option;
 
 	switch(option)
 	{
@@ -61,6 +60,7 @@ function onchangeOption()
     default:
       break;
   }
+  statement[0] = option;
 }
 
 /**
