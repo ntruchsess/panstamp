@@ -284,8 +284,11 @@ class SwapMote(object):
 
         # Definition file
         ## Definition settings
-        self.definition = XmlDevice(self)
-
+        try:
+            self.definition = XmlDevice(self)
+        except:
+            raise
+            
         ## Device address
         self.address = address
         ## Security option

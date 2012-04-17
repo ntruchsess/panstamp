@@ -230,28 +230,29 @@ class XmlDevice(object):
         """
         Read current configuration file
         """
-        # Parse XML file
-        tree = xml.parse(self.fileName)
-        if tree is None:
-            raise IOError(self.fileName  + " does not exist")
-        # Get the root node
-        root = tree.getroot()
-        # Get manufacturer
-        elem = root.find("developer")
-        if elem is not None:
-            self.manufacturer = elem.text
-        # Get product name
-        elem = root.find("product")
-        if elem is not None:
-            self.product = elem.text
-        # Get Power Down flag
-        elem = root.find("pwrdownmode")
-        if elem is not None:
-            self.pwrdownmode = (elem.text.lower() == "true")
-        # Get periodic tx interval
-        elem = root.find("txinterval")
-        if elem is not None:
-            self.txinterval = int(elem.text)
+        if self.fileName is not None:
+            # Parse XML file
+            tree = xml.parse(self.fileName)
+            if tree is None:
+                raise IOError(self.fileName  + " does not exist")
+            # Get the root node
+            root = tree.getroot()
+            # Get manufacturer
+            elem = root.find("developer")
+            if elem is not None:
+                self.manufacturer = elem.text
+            # Get product name
+            elem = root.find("product")
+            if elem is not None:
+                self.product = elem.text
+            # Get Power Down flag
+            elem = root.find("pwrdownmode")
+            if elem is not None:
+                self.pwrdownmode = (elem.text.lower() == "true")
+            # Get periodic tx interval
+            elem = root.find("txinterval")
+            if elem is not None:
+                self.txinterval = int(elem.text)
 
 
     def getRegList(self, config=False):
@@ -262,6 +263,9 @@ class XmlDevice(object):
 
         @return List of registers
         """
+        if self.fileName is None:
+            return None
+
         # List of config registers belonging to the current device
         lstRegs = []
 
@@ -380,6 +384,8 @@ class XmlDevice(object):
         self.fileName = None
         if devel_id is not None and prod_id is not None:
             self.fileName = device_dir.getDevicePath(devel_id, prod_id)
+            if self.fileName is None:
+                raise SwapException("Definition file not found for mote")
         ## Name of the Manufacturer
         self.manufacturer = None
         ## Name of the Product
@@ -391,6 +397,8 @@ class XmlDevice(object):
 
         if self.mote is not None:
             self.fileName = device_dir.getDevicePath(self.mote.manufacturer_id, self.mote.product_id)
+            if self.fileName is None:
+                raise SwapException("Definition file not found for mote")
 
         # Read definition parameters from XML file
         self.getDefinition()
