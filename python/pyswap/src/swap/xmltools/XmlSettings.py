@@ -52,7 +52,7 @@ class XmlSettings(object):
     ## on start-up
     updatedef = False
     ## Name/path of the error log file
-    error_file = "error.log"
+    error_file = "swap.err"
 
     def read(self):
         """
