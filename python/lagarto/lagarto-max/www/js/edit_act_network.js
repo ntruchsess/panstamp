@@ -41,7 +41,7 @@ function fillServers(servers)
   }
   if (!currValFound)
   {
-    fldServer.options[fldServer.options.length] = new Option(currVal, currVal);
+    fldServer.options[fldServer.options.length] = new Option(currVal, "");
 
     var fldEndp = document.getElementById("endp");
     var endp = statement[1].substring(dot+1);
