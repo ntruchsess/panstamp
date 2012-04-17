@@ -52,6 +52,8 @@
   EEPROM.write(EEPROM_TX_INTERVAL, 0xFF);                     \
   EEPROM.write(EEPROM_TX_INTERVAL + 1, 0xFF)
 
+#define setHighTxPower()    cc1101.setTxPowerAmp(PA_LongDistance)
+
 /**
  * System states
  */

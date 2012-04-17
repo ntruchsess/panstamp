@@ -48,7 +48,17 @@
  /**
   * PATABLE
   */
-const byte paTable[8] = {0x60, 0x60, 0x60, 0x60, 0x60, 0x60, 0x60, 0x60};
+//const byte paTable[8] = {0x60, 0x60, 0x60, 0x60, 0x60, 0x60, 0x60, 0x60};
+
+/**
+ * CC1101
+ * 
+ * Class constructor
+ */
+CC1101::CC1101(void)
+{
+  paTableByte = PA_LowPower;            // Priority = Low power
+}
 
 /**
  * wakeUp
@@ -267,7 +277,8 @@ void CC1101::init(void)
   reset();                              // Reset CC1101
 
   // Configure PATABLE
-  writeBurstReg(CC1101_PATABLE, (byte*)paTable, 8);
+  //writeBurstReg(CC1101_PATABLE, (byte*)paTable, 8);
+  writeReg(CC1101_PATABLE, paTableByte);
 }
 
 /**
