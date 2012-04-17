@@ -39,6 +39,7 @@ function getAction()
 
   var item2box = document.getElementById("item2box").contentWindow;
   var item2 = item2box.getItem2();
+
   if (item2 == null)
     return null;
   var pythonString = "cloud.push_" + item1 + "(" + item2 + ")";

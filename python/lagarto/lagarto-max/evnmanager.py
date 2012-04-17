@@ -195,7 +195,10 @@ class EvnManager(LagartoClient):
                 return None
 
             endp = None
-            endp = [key for key, value in OpenSense.feed_ids.iteritems() if value == params["feed_id"]][0]
+            for key, value in OpenSense.feed_ids.iteritems():
+                if value == params["feed_id"]:
+                    endp = value
+
             if endp is None:
                 return None
             endp_data = endp.split(".")

@@ -45,6 +45,7 @@ function updateValues()
  */
 function fillServers(servers)
 {
+/*
   var fldServer = document.getElementById("server");
   fldServer.options.length = 0;
   for(var server in servers)
@@ -52,6 +53,40 @@ function fillServers(servers)
 
   var dot = statement[3].indexOf(".");
   document.getElementById("server").value = statement[3].substring(0, dot);
+
+  onchangeServer();
+*/
+
+  var dot = statement[3].indexOf(".");
+  var currVal = statement[3].substring(0, dot);
+  var currValFound = false;
+  var fldServer = document.getElementById("server");
+
+  if (currVal == "")
+    currValFound = true;
+
+  fldServer.options.length = 0;
+  for(var server in servers)
+  {
+    if (!currValFound)
+    {
+      if (server == currVal)
+        currValFound = true;
+    }
+
+    fldServer.options[fldServer.options.length] = new Option(server, servers[server]);
+  }
+  if (!currValFound)
+  {
+    fldServer.options[fldServer.options.length] = new Option(currVal, "");
+
+    var fldEndp = document.getElementById("endp");
+    var endp = statement[3].substring(dot+1);
+    fldEndp.options.length = 0;
+    fldEndp.options[fldEndp.options.length] = new Option(endp, endp);
+  }
+
+  document.getElementById("server").value = currVal;
 
   onchangeServer();
 }
@@ -71,6 +106,7 @@ function onchangeServer()
  */
 function fillEndpoints()
 {
+/*
   var fldEndp = document.getElementById("endp");
   var jsonDoc = getJsonDoc();
   var swapnet = jsonDoc.lagarto;
@@ -88,6 +124,44 @@ function fillEndpoints()
 
   var dot = statement[3].indexOf(".");
   fldEndp.value = statement[3].substring(dot+1);
+*/
+
+  var dot = statement[3].indexOf(".");
+  var currVal = statement[3].substring(dot+1);
+  var currValFound = false;
+  var fldEndp = document.getElementById("endp");
+  var jsonDoc = getJsonDoc();
+  var swapnet = jsonDoc.lagarto;
+
+  if (currVal.indexOf('.') == -1)
+    currValFound = true;
+
+  fldEndp.options.length = 0;
+
+  endpointTypes = {};
+  swapnet.status.forEach(function(endpoint)
+  {
+    var endp = endpoint.location + "." + endpoint.name;
+
+    if (!currValFound)
+    {
+      if (endp == currVal)
+        currValFound = true;
+    }
+    fldEndp.options[fldEndp.options.length] = new Option(endp, endp);
+    
+    endpointTypes[endp] = endpoint.type;
+  });
+
+  if (!currValFound)
+  {
+    fldEndp.options[fldEndp.options.length] = new Option(currVal, "");
+    endpointTypes[currVal] = "num";
+  }
+
+  fldEndp.value = currVal;
+
+  onchangeEndp();
 }
 
 /**
