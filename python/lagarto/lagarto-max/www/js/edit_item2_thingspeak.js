@@ -59,7 +59,7 @@ function fillServers(servers)
   }
   if (!currValFound)
   {
-    fldServer.options[fldServer.options.length] = new Option(currVal, "");
+    fldServer.options[fldServer.options.length] = new Option(currVal, currVal);
 
     var fldEndp = document.getElementById("endp");
     var endp = statement[3].substring(dot+1);
@@ -88,26 +88,6 @@ function onchangeServer()
  */
 function fillEndpoints()
 {
-/*
-  var fldEndp = document.getElementById("endp");
-  var jsonDoc = getJsonDoc();
-  var swapnet = jsonDoc.lagarto;
-
-  fldEndp.options.length = 0;
-
-  endpointTypes = {};
-  swapnet.status.forEach(function(endpoint)
-  {
-    var endp = endpoint.location + "." + endpoint.name;
-    fldEndp.options[fldEndp.options.length] = new Option(endp, endp);
-    
-    endpointTypes[endp] = endpoint.type;
-  });
-
-  var dot = statement[3].indexOf(".");
-  fldEndp.value = statement[3].substring(dot+1);
-*/
-
   var dot = statement[3].indexOf(".");
   var currVal = statement[3].substring(dot+1);
   var currValFound = false;
@@ -137,7 +117,7 @@ function fillEndpoints()
 
   if (!currValFound)
   {
-    fldEndp.options[fldEndp.options.length] = new Option(currVal, "");
+    fldEndp.options[fldEndp.options.length] = new Option(currVal, currVal);
     endpointTypes[currVal] = "num";
   }
 

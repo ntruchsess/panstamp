@@ -255,6 +255,8 @@ class LagartoException(Exception):
     """
     Main exception class for lagarto comms
     """
+    error_file = "lagarto.err"
+    
     def display(self):
         """
         Print exception description
@@ -267,6 +269,15 @@ class LagartoException(Exception):
         String representation of the exception
         """
         return repr(self.description)
+
+
+    def log(self):
+        """
+        Write exception in log file
+        """
+        f = open(LagartoException.error_file, 'a')
+        f.write(datetime.datetime.fromtimestamp(self.timestamp).strftime("%d-%m-%Y %H:%M:%S") + ": " + self.description + "\n")
+        f.close()
 
 
     def __init__(self, value):

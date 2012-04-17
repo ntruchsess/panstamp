@@ -36,4 +36,4 @@ def event_handler(evnsrc, evnobj):
     evnsrc = "clock" -> evnobj = time.localtime() object
     """
     if evnsrc == "network":
-        print time.strftime("%d %b %Y %H:%M:%S", time.localtime()), evnobj.name, evnobj.value
+        print time.strftime("%d %b %Y %H:%M:%S", time.localtime()), evnobj.location + "." + evnobj.name, evnobj.value

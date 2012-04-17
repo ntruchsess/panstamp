@@ -47,5 +47,7 @@ if __name__ == '__main__':
         swap_manager = SwapManager(settings)       
     except SwapException as ex:
         ex.display()
+        ex.log()
     except LagartoException as ex:
         ex.display()
+        ex.log()

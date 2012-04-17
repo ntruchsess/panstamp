@@ -33,7 +33,7 @@ function updateValues()
   }
   if (!currValFound)
   {
-    fldServer.options[fldServer.options.length] = new Option(currVal, "");
+    fldServer.options[fldServer.options.length] = new Option(currVal, currVal);
 
     var fldEndp = document.getElementById("endp");
     var endp = item2.substring(dot+1);
@@ -89,7 +89,7 @@ function fillEndpoints()
   });
 
   if (!currValFound)
-    fldEndp.options[fldEndp.options.length] = new Option(currVal, "");
+    fldEndp.options[fldEndp.options.length] = new Option(currVal, currVal);
 
   fldEndp.value = currVal;
 
