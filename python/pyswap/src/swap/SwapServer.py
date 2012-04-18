@@ -203,7 +203,12 @@ class SwapServer(threading.Thread):
                     if  self._eventHandler.newEndpointDetected is not None:
                         self._eventHandler.newEndpointDetected(endp)
                        
-
+        if self._poll_regular_regs:
+            # Query all individual registers owned by this mote
+            for reg in mote.regular_registers:
+                self.queryMoteRegister(mote, reg.id)
+            
+            
     def _updateMoteAddress(self, oldAddr, newAddr):
         """
         Update new mote address in list
@@ -349,8 +354,17 @@ class SwapServer(threading.Thread):
         Send broadcasted query to all available (awaken) motes asking them
         to identify themselves
         """
+        self._poll_regular_regs = True
         query = SwapQueryPacket(SwapRegId.ID_PRODUCT_CODE)
         query.send(self.modem)
+        threading.Timer(20.0, self._endPollingValues)
+
+
+    def _endPollingValues(self):
+        """
+        End polling regular registers each time a product code is received
+        """
+        self._poll_regular_regs = False
 
 
     def setMoteRegister(self, mote, regId, value):
@@ -372,7 +386,7 @@ class SwapServer(threading.Thread):
             if self._waitForAck(ack, SwapServer._MAX_WAITTIME_ACK):
                 return True;    # ACK received
         return False            # Got no ACK from mote
-    
+
 
     def setEndpointValue(self, endpoint, value):
         """
@@ -560,6 +574,11 @@ class SwapServer(threading.Thread):
 
         ## Tells us if the server is running
         self.is_running = False
+        
+        ## Poll regular registers whenever a product code packet is received
+        self._poll_regular_regs = False
+        
         # Start server
         if start:
             self.start()
+
