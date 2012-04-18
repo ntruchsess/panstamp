@@ -94,9 +94,8 @@ function addNetwork()
 function addEndpoint(endpoint)
 {
   var row, cell, label, command, val;
-
   var procName = this.id;
-  var httpAddr = servers[this.id];
+  var httpAddr = servers[procName];
   row = this.insertRow(this.rows.length);
 
   // Link to config page
@@ -126,7 +125,7 @@ function addEndpoint(endpoint)
   val.type = "text";
   val.className = "inputnoedit1";
   val.readOnly = "readOnly";
-  val.id = procname + "." + endpoint.id;
+  val.id = this.id + "." + endpoint.id;
   val.value = endpoint.value
   if ("unit" in endpoint)
   val.value += " " + endpoint.unit 
@@ -144,7 +143,7 @@ function addEndpoint(endpoint)
       command.type = "button";
       command.className = "button_b";
       command.value = "on";
-      var reqOn = "/command/set_endpoint_value/?procname=" + procname + "&id=" + endpoint.id + "&value=ON"
+      var reqOn = "/command/set_endpoint_value/?procname=" + procName + "&id=" + endpoint.id + "&value=ON"
       command.onclick = function() {loadJSONdata(reqOn, updateValues);}
       cell.appendChild(command);
       // OFF button
@@ -152,7 +151,7 @@ function addEndpoint(endpoint)
       command.type = "button";
       command.className = "button_b";
       command.value = "off";
-      var reqOff = "/command/set_endpoint_value/?procname=" + procname + "&id=" + endpoint.id + "&value=OFF"
+      var reqOff = "/command/set_endpoint_value/?procname=" + procName + "&id=" + endpoint.id + "&value=OFF"
       command.onclick = function() {loadJSONdata(reqOff, updateValues);}
       cell.appendChild(command);
     }
@@ -170,7 +169,7 @@ function addEndpoint(endpoint)
       command.type = "submit";
       command.value = "set"
       command.className = "button_b";
-      command.onclick = function() {loadJSONdata("/command/set_endpoint_value/?procname=" + procname + "&id=" + endpoint.id + "&value=" + document.getElementById("cv" + endpoint.id).value, updateValues);}
+      command.onclick = function() {loadJSONdata("/command/set_endpoint_value/?procname=" + procName + "&id=" + endpoint.id + "&value=" + document.getElementById("cv" + endpoint.id).value, updateValues);}
       cell.appendChild(command);
     }
   }
