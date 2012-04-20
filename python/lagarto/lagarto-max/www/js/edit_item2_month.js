@@ -7,8 +7,7 @@ function updateValues()
 {
   var item2 = window.parent.statement[3];
   var intM = monthToInt(item2);
-  if (intM < 10)
-    intM = "0" + intM;
+
   document.getElementById("month").value = intM;
 }
 

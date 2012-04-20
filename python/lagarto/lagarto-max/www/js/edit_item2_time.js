@@ -42,12 +42,12 @@ function fillTime(item2)
 	var index1, index2, hour = 0, minute = 0;
 
   // Hours
-	for(i=0;i<=9;i++)
+	for(i=0;i<24;i++)
 	{
-		fldHour.options[i] = new Option("0" + i, "0" + i);
-		fldFreqHour.options[i] = new Option("0" + i, "0" + i);
+		fldHour.options[i] = new Option("0" + i, i);
+		fldFreqHour.options[i] = new Option("0" + i, i);
 	}
-	for(i=10;i<=23;i++)
+	for(i=10;i<24;i++)
 	{
 		fldHour.options[i] = new Option(i, i);
 		fldFreqHour.options[i] = new Option(i, i);
@@ -55,8 +55,8 @@ function fillTime(item2)
   // Minutes
 	for(i=0;i<=9;i++)
 	{
-		fldMin.options[i] = new Option("0" + i, "0" + i);
-		fldFreqMin.options[i] = new Option("0" + i, "0" + i);
+		fldMin.options[i] = new Option("0" + i, i);
+		fldFreqMin.options[i] = new Option("0" + i, i);
 	}
 	for(i=10;i<60;i++)
 	{
@@ -66,9 +66,9 @@ function fillTime(item2)
 
 	if ((index1 = item2.indexOf(":", 0)) != -1)
 	{
-    hour = item2.substring(0, index1);
+    hour = parseInt(item2.substring(0, index1));
 		index1++;
-		minute = item2.substring(index1, index1+2);
+		minute = parseInt(item2.substring(index1, index1+2));
 	}
   fldHour.value = hour;
   fldMin.value = minute;
@@ -80,8 +80,8 @@ function fillTime(item2)
 		index1 += 14;
 		if ((index2 = item2.indexOf(":", index1)) != -1)
     {
-			hour = item2.substring(index1, index2);
-      minute = item2.substring(index2+1, index2+3);
+			hour = parseInt(item2.substring(index1, index2));
+      minute = parseInt(2.substring(index2+1, index2+3));
     }
 	}
 	fldFreqHour.value = hour;

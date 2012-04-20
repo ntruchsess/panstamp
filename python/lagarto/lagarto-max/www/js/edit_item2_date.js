@@ -27,7 +27,10 @@ function fillDate(item2)
 
   if (date != null)
   {
-    fldMonth.value = date.substring(0, 2);
+    if (date.length == 3)
+      fldMonth.value = date.substring(0, 1);
+    else
+      fldMonth.value = date.substring(0, 2);
     fldDay.value = date.substring(2, 4);
   }
 }
@@ -40,6 +43,6 @@ function getItem2()
   var month = document.getElementById("month").value;
   var day = document.getElementById("day").value;
 
-  return month + day;
+  return parseInt(month) + day;
 }
 

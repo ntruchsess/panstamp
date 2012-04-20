@@ -59,7 +59,15 @@ function weekDayToInt(wday)
  */
 function dateToWeb(date)
 {
-  return intToMonth(parseInt(date.substring(0, 2))) + ", " + parseInt(date.substring(2, 4));
+  var intMonth;
+  var intDay = parseInt(date.substring(2, 4));
+
+  if (date.length == 3)
+    intMonth = parseInt(date.substring(0, 1));
+  else
+    intMonth = parseInt(date.substring(0, 2));
+
+  return intToMonth(intMonth) + ", " + intDay;
 }
 
 /**
@@ -73,8 +81,6 @@ function webToDate(strDate)
   if (end > -1)
   {
     month = monthToInt(strDate.substring(start, end));
-    if (month < 10)
-      month = "0" + month;
 
     start = end + 2;
     day = strDate.substring(start);
@@ -95,6 +101,7 @@ function timeToWeb(time)
   var ldif = 4 - time.length;
   for(var i=0 ; i<ldif ; i++)
     time = "0" + time;
+
   return time.substring(0, 2) + ":" + time.substring(2, 4);
 }
 
@@ -105,7 +112,7 @@ function webToTime(strTime)
 {
   if (strTime.indexOf(":") == 2)
   {
-    return strTime.substring(0, 2) + strTime.substring(3, 5);
+    return parseInt(strTime.substring(0, 2) + strTime.substring(3, 5));
   }
 
   return null;
