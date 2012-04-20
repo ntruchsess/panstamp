@@ -81,7 +81,7 @@ function fillTime(item2)
 		if ((index2 = item2.indexOf(":", index1)) != -1)
     {
 			hour = parseInt(item2.substring(index1, index2));
-      minute = parseInt(2.substring(index2+1, index2+3));
+      minute = parseInt(item2.substring(index2+1, index2+3));
     }
 	}
 	fldFreqHour.value = hour;
@@ -93,7 +93,7 @@ function fillTime(item2)
  */
 function getItem2()
 {
-  var pythonString = document.getElementById("hours").value + document.getElementById("minutes").value;
+  var pythonString = parseInt(document.getElementById("hours").value) * 100 + parseInt(document.getElementById("minutes").value);
   var interval = parseInt(document.getElementById("freqhour").value) * 100 + parseInt(document.getElementById("freqmin").value);
 
   if (window.parent.statement[2] == "==" && interval > 0)

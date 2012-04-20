@@ -97,7 +97,7 @@ function fillEndpoints()
     fldEndp.options[fldEndp.options.length] = new Option(endp, endp);
     
     endpointTypes[endp] = endpoint.type;
-  });
+  });endp
 
   if (!currValFound)
   {

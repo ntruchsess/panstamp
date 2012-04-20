@@ -59,13 +59,18 @@ function weekDayToInt(wday)
  */
 function dateToWeb(date)
 {
-  var intMonth;
-  var intDay = parseInt(date.substring(2, 4));
+  var intMonth, intDay;
 
   if (date.length == 3)
+  {
     intMonth = parseInt(date.substring(0, 1));
+    intDay = parseInt(date.substring(1, 3));
+  }
   else
+  {
     intMonth = parseInt(date.substring(0, 2));
+    intDay = parseInt(date.substring(2, 4));
+  }
 
   return intToMonth(intMonth) + ", " + intDay;
 }

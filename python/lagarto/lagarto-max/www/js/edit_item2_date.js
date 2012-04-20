@@ -19,7 +19,7 @@ function fillDate(item2)
 	var fldDay = document.getElementById("day");
 
 	for(i=1 ; i<=9 ; i++)
-		fldDay.options[i-1] = new Option("0" + i, "0" + i);
+		fldDay.options[i-1] = new Option("0" + i, i);
 	for(i=10 ; i<=31 ; i++)
 		fldDay.options[i-1] = new Option(i, i);
 
@@ -28,10 +28,15 @@ function fillDate(item2)
   if (date != null)
   {
     if (date.length == 3)
+    {
       fldMonth.value = date.substring(0, 1);
+      fldDay.value = date.substring(1, 3);
+    }
     else
+    {
       fldMonth.value = date.substring(0, 2);
-    fldDay.value = date.substring(2, 4);
+      fldDay.value = date.substring(2, 4);
+    }
   }
 }
 
