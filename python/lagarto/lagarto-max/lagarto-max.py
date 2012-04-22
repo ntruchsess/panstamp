@@ -42,5 +42,3 @@ if __name__ == '__main__':
         evnman = EvnManager()
     except LagartoException as ex:
         ex.display()
-        ex.log()
-

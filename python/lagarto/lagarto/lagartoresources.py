@@ -271,7 +271,7 @@ class LagartoException(Exception):
         return repr(self.description)
 
 
-    def log(self):
+    def _log(self):
         """
         Write exception in log file
         """
@@ -289,3 +289,5 @@ class LagartoException(Exception):
         self.timestamp = time.time()
         # Exception description
         self.description = "LagartoException occurred: " + value
+        # Log exception
+        self._log()

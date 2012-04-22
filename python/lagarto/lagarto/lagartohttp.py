@@ -31,6 +31,7 @@ from wsgiref.simple_server import make_server
 from cgi import parse_qs, escape
 import threading
 import json
+import sys
 import os
 
 
@@ -461,7 +462,11 @@ class LagartoHttpServer(threading.Thread):
         for key, val in query_list.iteritems():
             params[key] = val[0]
  
-        if command == "get_accounts":
+        if command == "restart_process":
+            python = sys.executable
+            os.execl(python, python, * sys.argv)
+
+        elif command == "get_accounts":
             accounts = auth.LagartoAuth.get_user_names()
             body = json.dumps({"accounts": accounts})
             mime_type = "application/json"
@@ -494,7 +499,7 @@ class LagartoHttpServer(threading.Thread):
         elif command == "delete_account":
             if auth.LagartoAuth.delete_account(params["user"]):
                 return LagartoHttpServer._serve_file("lagarto/command_ok.html")
-                   
+
         return LagartoHttpServer._serve_file("lagarto/command_nok.html")
 
 
