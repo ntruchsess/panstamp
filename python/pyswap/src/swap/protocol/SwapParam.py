@@ -181,6 +181,10 @@ class SwapParam:
                 strVal = str(self.value.toInteger())
         elif self.type == SwapType.BINARY:
             strVal = self.value.toAscii()
+            if strVal == "1":
+                strVal = "on"
+            elif strVal == "0":
+                strVal = "off"
         else:
             strVal = self.value.toAsciiStr()
         
