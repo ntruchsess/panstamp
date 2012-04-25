@@ -31,6 +31,8 @@ from swap.SwapException import SwapException
 import threading
 import serial
 import time, sys
+import Queue
+
 
 class SerialPort(threading.Thread):
     """
@@ -79,13 +81,13 @@ class SerialPort(threading.Thread):
            
                     # Anything to be sent?                   
                     #self._send_lock.acquire()
-                    if self._strtosend is not None:                  
+                    if not self._strtosend.empty():
+                        strpacket = self._strtosend.get()          
                         # Send serial packet
-                        self._serport.write(self._strtosend)                        
+                        self._serport.write(strpacket)                        
                         # Enable for debug only
                         if self._verbose == True:
-                            print "Sent: " + self._strtosend
-                        self._strtosend = None
+                            print "Sent: " + strpacket
                     #self._send_lock.release()
             else:
                 raise SwapException("Unable to read serial port " + self.portname + " since it is not open")
@@ -112,7 +114,7 @@ class SerialPort(threading.Thread):
         @param buf: Packet to be transmitted
         """
         #self._send_lock.acquire()
-        self._strtosend = buf
+        self._strtosend.put(buf)
         #self._send_lock.release()
 
 
@@ -158,9 +160,9 @@ class SerialPort(threading.Thread):
         self._serport = None
         ## Callback Rx function
         self.serial_received = None
-        # Strint to send
-        self._strtosend = None
-        self._send_lock = threading.Lock()
+        # Strint to be sent
+        self._strtosend = Queue.Queue()
+        #self._send_lock = threading.Lock()
         # Verbose network traffic
         self._verbose = verbose
         try:

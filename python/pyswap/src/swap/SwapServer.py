@@ -206,7 +206,7 @@ class SwapServer(threading.Thread):
         if self._poll_regular_regs:
             # Query all individual registers owned by this mote
             for reg in mote.regular_registers:
-                self.queryMoteRegister(mote, reg.id)
+                reg.sendSwapQuery()
             
             
     def _updateMoteAddress(self, oldAddr, newAddr):
