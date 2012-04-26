@@ -38,6 +38,9 @@ class SerialPort(threading.Thread):
     """
     Wrapper class of the pyserial package
     """
+    # Minimum delay between transmissions (in seconds)
+    txdelay = 0.05
+
 
     def run(self):
         """
@@ -82,12 +85,15 @@ class SerialPort(threading.Thread):
                     # Anything to be sent?                   
                     #self._send_lock.acquire()
                     if not self._strtosend.empty():
-                        strpacket = self._strtosend.get()          
-                        # Send serial packet
-                        self._serport.write(strpacket)                        
-                        # Enable for debug only
-                        if self._verbose == True:
-                            print "Sent: " + strpacket
+                        if time.time() - self.last_transmission_time > SerialPort.txdelay:
+                            strpacket = self._strtosend.get()          
+                            # Send serial packet
+                            self._serport.write(strpacket) 
+                            # Update time stamp
+                            self.last_transmission_time = time.time()                       
+                            # Enable for debug only
+                            if self._verbose == True:
+                                print "Sent: " + strpacket
                     #self._send_lock.release()
             else:
                 raise SwapException("Unable to read serial port " + self.portname + " since it is not open")
@@ -165,6 +171,9 @@ class SerialPort(threading.Thread):
         #self._send_lock = threading.Lock()
         # Verbose network traffic
         self._verbose = verbose
+        # Time stamp of the last transmission
+        self.last_transmission_time = 0
+        
         try:
             # Open serial port in blocking mode
             self._serport = serial.Serial(self.portname, self.portspeed, timeout=0)
