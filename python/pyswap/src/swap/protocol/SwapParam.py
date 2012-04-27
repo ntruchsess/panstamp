@@ -130,14 +130,8 @@ class SwapParam:
                 length += 1
                        
             if type(value) is list:
-                # Incorrect length?
-                if length != len(value):
-                    return
                 res = value
             elif type(value) in [str, unicode]:
-                # Incorrect length?
-                if length != len(value):
-                    return
                 if self.type == SwapType.NUMBER:
                     try:
                         # Possible integer number

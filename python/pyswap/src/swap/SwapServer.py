@@ -286,20 +286,25 @@ class SwapServer(threading.Thread):
                 for reg in mote.regular_registers:
                     # Same register ID?
                     if reg.id == packet.regId:
-                        # Did register's value change?
-                        if not reg.value.isEqual(packet.value):
-                            # Save new register value
-                            reg.setValue(packet.value)
-                            # Notify register'svalue change to event handler
-                            if self._eventHandler.registerValueChanged is not None:
-                                self._eventHandler.registerValueChanged(reg)
-                            # Notify endpoint's value change to event handler
-                            if self._eventHandler.endpointValueChanged is not None:
-                                # Has any of the endpoints changed?
-                                for endp in reg.parameters:
-                                    if endp.valueChanged == True:
-                                        self._eventHandler.endpointValueChanged(endp)
-                            return
+                        # Check if value changed and its length
+                        if reg.value is not None:
+                            if reg.value.isEqual(packet.value):
+                                return
+                            if reg.value.getLength() != packet.value.getLength():
+                                return
+
+                        # Save new register value
+                        reg.setValue(packet.value)
+                        # Notify register'svalue change to event handler
+                        if self._eventHandler.registerValueChanged is not None:
+                            self._eventHandler.registerValueChanged(reg)
+                        # Notify endpoint's value change to event handler
+                        if self._eventHandler.endpointValueChanged is not None:
+                            # Has any of the endpoints changed?
+                            for endp in reg.parameters:
+                                if endp.valueChanged == True:
+                                    self._eventHandler.endpointValueChanged(endp)
+                        return
             # Search within its list of config registers
             if mote.config_registers is not None:
                 for reg in mote.config_registers:

@@ -189,10 +189,6 @@ class SwapRegister(object):
             raise SwapException("setValue only accepts SwapValue objects")
             return
  
-        # Incorrect length
-        if self.value.getLength() != value.getLength():
-            return
- 
         # Set register value
         self.value = value
         
