@@ -165,7 +165,7 @@ class SwapRegister(object):
                 shiftParam -= 1
 
                 # Register byte over?
-                if shiftReg < 0:
+                if shiftReg < 0:                    
                     indexReg += 1
                     shiftReg = 7
 
@@ -187,6 +187,10 @@ class SwapRegister(object):
         """
         if value.__class__ is not SwapValue:
             raise SwapException("setValue only accepts SwapValue objects")
+            return
+ 
+        # Incorrect length
+        if self.value.getLength() != value.getLength():
             return
  
         # Set register value

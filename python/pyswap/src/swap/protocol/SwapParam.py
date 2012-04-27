@@ -119,16 +119,25 @@ class SwapParam:
         """
         # Convert to SwapValue
         if value.__class__ is SwapValue:
+            # Incorrect length?
+            if self.value.getLength() != value.getLength():
+                return
             self.value = value
         else:
             # Byte length
             length = self.byteSize
             if self.bitSize > 0:
                 length += 1
-                
+                       
             if type(value) is list:
+                # Incorrect length?
+                if length != len(value):
+                    return
                 res = value
             elif type(value) in [str, unicode]:
+                # Incorrect length?
+                if length != len(value):
+                    return
                 if self.type == SwapType.NUMBER:
                     try:
                         # Possible integer number
