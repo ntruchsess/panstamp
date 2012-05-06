@@ -507,10 +507,9 @@ class LagartoHttpServer(threading.Thread):
         """
         Run HTTP aserver
         """
-        while True:
-            print "Starting HTTP server"
-            httpd = make_server("", LagartoHttpServer.port, LagartoHttpServer._process_request)
-            httpd.serve_forever()
+        print "Starting HTTP server"
+        httpd = make_server("", LagartoHttpServer.port, LagartoHttpServer._process_request)
+        httpd.serve_forever()
         
 
     def __init__(self, data_server, config, working_dir):
