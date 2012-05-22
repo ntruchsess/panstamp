@@ -40,10 +40,6 @@
 #define wait_GDO0_high()  while(!getGDO0state())
 // Wait until GDO0 line goes low
 #define wait_GDO0_low()  while(getGDO0state())
-// Read CC1101 Config register
-#define readConfigReg(regAddr)    readReg(regAddr, CC1101_CONFIG_REGISTER)
-// Read CC1101 Status register
-#define readStatusReg(regAddr)    readReg(regAddr, CC1101_STATUS_REGISTER)
 
  /**
   * PATABLE
@@ -474,24 +470,19 @@ boolean CC1101::sendData(CCPACKET packet)
  * receiveData
  * 
  * Read data packet from RX FIFO
+ *
+ * 'packet'	Container for the packet received
  * 
  * Return:
- * 	Amount fo bytes received
- * 'packet'	Container for the packet received
+ * 	Amount to bytes received
  */
 byte CC1101::receiveData(CCPACKET * packet)
 {
   byte val;
+  byte rxBytes = readStatusReg(CC1101_RXBYTES);
 
-  // Rx FIFO overflow?
-  if ((readStatusReg(CC1101_MARCSTATE) & 0x1F) == 0x11)
-  {
-    setIdleState();       // Enter IDLE state
-    flushRxFifo();        // Flush Rx FIFO
-    packet->length = 0;
-  }
-  // Any byte waiting to be read?
-  else if (readStatusReg(CC1101_RXBYTES) & 0x7F)
+  // Any byte waiting to be read and no overflow?
+  if (rxBytes & 0x7F && !(rxBytes & 0x80))
   {
     // Read data length
     packet->length = readConfigReg(CC1101_RXFIFO);
@@ -512,6 +503,10 @@ byte CC1101::receiveData(CCPACKET * packet)
   }
   else
     packet->length = 0;
+
+  setIdleState();       // Enter IDLE state
+  flushRxFifo();        // Flush Rx FIFO
+  //cmdStrobe(CC1101_SCAL);
 
   // Back to RX state
   setRxState();

@@ -196,7 +196,7 @@ enum CFREQ
 #define CC1101_DEFVAL_FIFOTHR    0x07        // RX FIFO and TX FIFO Thresholds
 #define CC1101_DEFVAL_SYNC1      0xB5        // Synchronization word, high byte
 #define CC1101_DEFVAL_SYNC0      0x47        // Synchronization word, low byte
-#define CC1101_DEFVAL_PKTLEN     0xFF        // Packet Length
+#define CC1101_DEFVAL_PKTLEN     0x3D        // Packet Length
 #define CC1101_DEFVAL_PKTCTRL1   0x06        // Packet Automation Control
 #define CC1101_DEFVAL_PKTCTRL0   0x05        // Packet Automation Control
 #define CC1101_DEFVAL_ADDR       0xFF        // Device Address
@@ -248,6 +248,10 @@ enum CFREQ
 /**
  * Macros
  */
+// Read CC1101 Config register
+#define readConfigReg(regAddr)    readReg(regAddr, CC1101_CONFIG_REGISTER)
+// Read CC1101 Status register
+#define readStatusReg(regAddr)    readReg(regAddr, CC1101_STATUS_REGISTER)
 // Enter Rx state
 #define setRxState()              cmdStrobe(CC1101_SRX)
 // Enter Tx state
@@ -296,19 +300,6 @@ class CC1101
      * 'len'	Data length
      */
     void writeBurstReg(byte regAddr, byte* buffer, byte len);
-
-    /**
-     * readReg
-     * 
-     * Read CC1101 register via SPI
-     * 
-     * 'regAddr'	Register address
-     * 'regType'	Type of register: CC1101_CONFIG_REGISTER or CC1101_STATUS_REGISTER
-     * 
-     * Return:
-     * 	Data byte returned by the CC1101 IC
-     */
-    byte readReg(byte regAddr, byte regType);
 
     /**
      * readBurstReg
@@ -374,6 +365,19 @@ class CC1101
      * Wake up CC1101 from Power Down state
      */
     void wakeUp(void);
+
+    /**
+     * readReg
+     * 
+     * Read CC1101 register via SPI
+     * 
+     * 'regAddr'	Register address
+     * 'regType'	Type of register: CC1101_CONFIG_REGISTER or CC1101_STATUS_REGISTER
+     * 
+     * Return:
+     * 	Data byte returned by the CC1101 IC
+     */
+    byte readReg(byte regAddr, byte regType);
 
     /**
      * writeReg
