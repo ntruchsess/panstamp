@@ -42,6 +42,11 @@
 #include "modem.h"
 
 /**
+ * LED pin
+ */
+#define LEDPIN               4
+
+/**
  * isrINT0event
  *
  * Event on GDO0 pin (INT0)
@@ -105,7 +110,8 @@ void handleSerialCmd(char* command)
       {     
         packet.data[i] = charToHex(command[i*2]) << 4;
         packet.data[i] |= charToHex(command[i*2 + 1]);
-      }    
+      }
+
       // Send packet via RF
       cc1101.sendData(packet);
     }
@@ -235,6 +241,9 @@ void handleSerialCmd(char* command)
  */
 void setup()
 { 
+  pinMode(LEDPIN, OUTPUT);
+  digitalWrite(LEDPIN, HIGH);
+
   Serial.begin(38400);
   Serial.flush();
   Serial.println("");
@@ -275,9 +284,12 @@ void loop()
   // Read wireless packet?
   if (packetAvailable)
   {
+    // Disable wireless reception interrupt
+    disableINT0irq();
+
     byte i;
     CCPACKET packet;
-    
+   
     packetAvailable = false;
 
     if (cc1101.receiveData(&packet) > 0)
@@ -300,15 +312,18 @@ void loop()
         }
         Serial.println("");
       }
-    }  
+    }
+
+    // Enable wireless reception interrupt
+    enableINT0irq(); 
   }
 
   // Read serial command
   if (Serial.available() > 0)
   {
     // Disable wireless reception interrupt
-    //disableINT0irq();
-         
+    disableINT0irq();
+
     ch = Serial.read();
 
     if (len >= SERIAL_BUF_LEN-1)
@@ -332,9 +347,9 @@ void loop()
       // Attach interrupt function to Timer1
       Timer1.attachInterrupt(isrT1event);
     }
-    
+
     // Enable wireless reception interrupt
-    //enableINT0irq();
+    enableINT0irq();
   }
 }
 
