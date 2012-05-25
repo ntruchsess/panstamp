@@ -36,6 +36,15 @@ class SwapWizardPage(wx.wizard.WizardPageSimple):
     """
     Wizard page
     """
+    def _Warning(self, message, caption="Warning!"):
+        """
+        Display warning message
+        """
+        dialog = wx.MessageDialog(None, message, caption, wx.OK | wx.ICON_WARNING)
+        dialog.ShowModal()
+        dialog.Destroy()
+
+
     def add_to_layout(self, control, label=None, size=None):
         """
         Add control and label to the current layout
@@ -328,14 +337,6 @@ class RegRegisterPage(RegisterPage):
         """
         RegisterPage.__init__(self, parent, title="Regular registers", is_config=False, registers=registers)
 
-
-    def _Warning(self, message, caption="Warning!"):
-        """
-        Display warning message
-        """
-        dialog = wx.MessageDialog(None, message, caption, wx.OK | wx.ICON_WARNING)
-        dialog.ShowModal()
-        dialog.Destroy()
 
 class SwapWizard(wx.wizard.Wizard):
     '''
