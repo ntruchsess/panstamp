@@ -375,8 +375,9 @@ class XmlDevice(object):
                                 f.write("\t\t\t\t<position>" + strpos + "</position>\n")
                                 param["bytepos"] = pos[0]
                                 param["bitpos"] = pos[1]
-                            curr_bitpos += bitsize                        
-                            strsize = ".".join(map(str, self.get_bytebits(bitsize)))
+                            curr_bitpos += bitsize
+                            siz = self.get_bytebits(bitsize)                        
+                            strsize = ".".join(map(str, siz))
                             param["bytesize"] = siz[0]
                             param["bitsize"] = siz[1]
                             f.write("\t\t\t\t<size>" + strsize + "</size>\n")

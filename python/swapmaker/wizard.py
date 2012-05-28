@@ -159,10 +159,10 @@ class ProductInfoPage(SwapWizardPage):
 
         # Add widgets to the page
         self.add_to_layout(wx.TextCtrl(self, -1, validator=TextValidator(self, "developer_name"), size=(150, 26)), "Developer name")        
-        self.add_to_layout(wx.TextCtrl(self, -1, validator=TextValidator(self, "developer_id", regex="^[0-9]*$"), size=(70, 26)), "Developer ID number")
+        self.add_to_layout(wx.TextCtrl(self, -1, validator=TextValidator(self, "developer_id", regex="^[0-9]*$"), size=(70, 26)), "Developer ID number (DEC)")
         self.add_to_layout(wx.TextCtrl(self, -1, validator=TextValidator(self, "product_name", regex="^[a-zA-Z0-9]*$"), size=(150, 26)), "Product name (single word)")
         self.add_to_layout(wx.TextCtrl(self, -1, validator=TextValidator(self, "product_descr"), size=(250, 26)), "Product description")
-        self.add_to_layout(wx.TextCtrl(self, -1, validator=TextValidator(self, "product_id", regex="^[0-9]*$"), size=(70, 26)), "Product ID number")
+        self.add_to_layout(wx.TextCtrl(self, -1, validator=TextValidator(self, "product_id", regex="^[0-9]*$"), size=(70, 26)), "Product ID number (DEC)")
         self.add_to_layout(wx.CheckBox(self, -1, "Battery-powered device?", validator=BoolValidator(self, "low_power")))
 
         self.Bind(wx.wizard.EVT_WIZARD_PAGE_CHANGING, self.onpage_changing)
@@ -179,9 +179,9 @@ class RegisterPage(SwapWizardPage):
         # Top spacer
         self.add_to_layout(None)
         # Create "Add" button
-        button_add = wx.Button(self, -1, "New")
+        button_add = wx.Button(self, -1, "Add")
         button_add.Bind(wx.EVT_BUTTON, self.button_add_pressed)
-        button_add.SetToolTip(wx.ToolTip("New register"))
+        button_add.SetToolTip(wx.ToolTip("Add new register"))
         button_add.SetDefault()
         # Create "Edit" button
         button_edit = wx.Button(self, -1, "Edit")
@@ -229,7 +229,11 @@ class RegisterPage(SwapWizardPage):
             self.list_registers.SetStringItem(index, 1, dialog.regname)
             self.list_registers.EnsureVisible(index)
             
-            register = {"id": dialog.regid, "name": dialog.regname, "parameters": dialog.parameters}
+            register = {"id": dialog.regid, "name": dialog.regname}
+            if self.is_config:
+                register["parameters"] = dialog.parameters
+            else:
+                register["endpoints"] = dialog.parameters
             self.registers.append(register)
 
 
@@ -268,7 +272,13 @@ class RegisterPage(SwapWizardPage):
             self.list_registers.SetStringItem(index, 0, dialog.regid)
             self.list_registers.SetStringItem(index, 1, dialog.regname)
             
-            register = {"id": dialog.regid, "name": dialog.regname, "parameters": dialog.parameters}
+            register = {"id": dialog.regid, "name": dialog.regname}
+            
+            if self.is_config:
+                register["parameters"] = dialog.parameters
+            else:
+                register["endpoints"] = dialog.parameters
+                
             self.registers[index] = register
 
 

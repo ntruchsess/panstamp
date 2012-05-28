@@ -38,9 +38,9 @@ class ConfigDialog(wx.Dialog):
         # Top spacer
         self.add_to_layout(None)
         # Create "Add" button
-        button_add = wx.Button(self, -1, "New")
+        button_add = wx.Button(self, -1, "Add")
         button_add.Bind(wx.EVT_BUTTON, self.button_add_pressed)
-        button_add.SetToolTip(wx.ToolTip("New parameter"))
+        button_add.SetToolTip(wx.ToolTip("Add new parameter"))
         button_add.SetDefault()
         # Create "Edit" button
         button_edit = wx.Button(self, -1, "Edit")
@@ -239,7 +239,10 @@ class RegisterDialog(ConfigDialog):
         for index, param in enumerate(self.parameters):
             self.list_parameters.InsertStringItem(index, param["name"])
             self.list_parameters.SetStringItem(index, 1, param["type"])
-            self.list_parameters.SetStringItem(index, 2, param["dir"])
+            if "dir" not in param:
+                self.list_parameters.SetStringItem(index, 2, "out")
+            else:
+                self.list_parameters.SetStringItem(index, 2, param["dir"])
             self.list_parameters.EnsureVisible(index)
 
 
