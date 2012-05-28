@@ -136,23 +136,18 @@ class SwapValue(object):
             # Boolean
             elif type(value) is bool:
                 res = int(value)
+            # Float
+            elif type(value) is float:
+                res = int(value*10)
             # In case a string is passed in the constructor
             elif type(value) in [str, unicode]:
                 try:
+                    # Remove decimal point
+                    value = value.replace(".", "")
+                    # Convert to integer
                     res = int(value)
                 except ValueError:
-                    # Possible decimal number
-                    dot = value.find(".")
-                    if dot > -1:
-                        try:
-                            integer = int(value[:dot])
-                            numDec = len(value[dot+1:])
-                            decimal = int(value[dot+1:])
-                            res = integer * 10 ** numDec + decimal
-                        except ValueError:
-                            isAsciiString = True
-                    else:
-                        isAsciiString = True
+                    isAsciiString = True
             else:
                 res = value
 
