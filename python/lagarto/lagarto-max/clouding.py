@@ -27,6 +27,7 @@ __date__  ="$Mar 31, 2012$"
 import httplib
 import urllib
 import json
+import subprocess
 
 
 class PachubePacket:
@@ -170,3 +171,23 @@ class OpenSensePacket:
             event = {"feed_id": endp[0], "value": endp[1]}
             self.events.append(event)
 
+
+class TwitterMessage:
+    """
+    Text message ready to be sent to a Twitter account
+    """
+    def send(self):
+        """
+        Send message to Twitter
+        """
+        command = "twitter set " + self.message
+        subprocess.call(command, shell=True)
+
+
+    def __init__(self, message):
+        """
+        Constructor
+        
+        @param message: message text
+        """
+        self.message = message

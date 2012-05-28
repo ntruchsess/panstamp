@@ -23,17 +23,21 @@ function updateValues()
   fldServer.options.length = 0;
   for(var i=0 ; i < servers.length ; i++)
   {
+    fldServer.options[i] = new Option(servers[i].text, servers[i].value);
+
     if (!currValFound)
     {
       if (servers[i].text == currVal)
+      {
+        fldServer.options[i].selected = true;
         currValFound = true;
+      }
     }
-
-    fldServer.options[i] = new Option(servers[i].text, servers[i].value);
   }
   if (!currValFound)
   {
     fldServer.options[fldServer.options.length] = new Option(currVal, "");
+    fldServer.options[fldServer.options.length-1].selected = true;
 
     var fldEndp = document.getElementById("endp");
     var endp = item2.substring(dot+1);
@@ -41,7 +45,6 @@ function updateValues()
     fldEndp.options[fldEndp.options.length] = new Option(endp, endp);
   }
 
-  fldServer.value = currVal;
   onchangeServer();
 }
 

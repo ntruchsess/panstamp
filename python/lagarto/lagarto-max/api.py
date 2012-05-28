@@ -30,7 +30,7 @@ import time
 from lagartoresources import LagartoEndpoint
 from xmltools import XmlSettings
 
-from clouding import PachubePacket, ThingSpeakPacket, OpenSensePacket, OpenSense
+from clouding import PachubePacket, ThingSpeakPacket, OpenSensePacket, OpenSense, TwitterMessage
 
 
 class TimeAPI:
@@ -323,3 +323,21 @@ class CloudAPI:
             return packet.push()
         return None
 
+
+    @staticmethod
+    def push_twitter(endp):
+        """
+        Push data to open.sen.se
+
+        @param endp: endpoint identification string
+        format 1: process.location.name
+        format 2: process.id        
+        """
+        endpoint = NetworkAPI.get_endpoint(endp)
+        if endpoint is not None:
+            endpstr = endpoint.procname + "." + endpoint.location + "." + endpoint.name + " = " + str(endpoint.value)
+            if endpoint.unit is not None:
+                endpstr += " " + endpoint.unit
+            message = TwitterMessage(endpstr)
+            return message.send()
+        return None

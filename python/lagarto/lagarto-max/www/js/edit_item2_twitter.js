@@ -13,31 +13,6 @@ function updateValues()
   var jsonDoc = getJsonDoc();
   var servers = jsonDoc.http_servers;
   fillServers(servers);
-
-  var fldSharingKey = document.getElementById("sharingkey");
-  var fldFeedId = document.getElementById("feedid");
-  var fldDataStream = document.getElementById("datastreamid");
-
-  var end, start = codeLine.indexOf(", \"");
-  if (start > -1)
-  {
-    start += 3;
-    end = codeLine.indexOf("\", \"", start);
-    if (end > -1)
-    {
-      fldSharingKey.value = codeLine.substring(start, end);
-      start = end + 4;
-      end = codeLine.indexOf("\", \"", start);
-      if (end > -1)
-      {
-        fldFeedId.value = codeLine.substring(start, end);
-        start = end + 4;
-        end = codeLine.indexOf("\")", start);
-        if (end > -1)
-          fldDataStream.value = codeLine.substring(start, end);
-      }
-    }
-  }
 }
 
 /**
@@ -87,6 +62,7 @@ function fillServers(servers)
 function onchangeServer()
 {
   var server = document.getElementById("server").value;
+
   if (server != "")
     loadJSONdata("/command/get_endpoint_list/?server=" + server, fillEndpoints);
 }
@@ -131,7 +107,7 @@ function fillEndpoints()
 
   fldEndp.value = currVal;
 
-  onchangeEndp();
+  //onchangeEndp();
 }
 
 /**
@@ -144,11 +120,8 @@ function getItem2()
     return null;
   var server = document.getElementById("server").options[i].text;
   var endp = document.getElementById("endp").value;
-  var sharingKey = document.getElementById("sharingkey").value;
-  var feedId = document.getElementById("feedid").value;
-  var dataStream = document.getElementById("datastreamid").value;
 
-  var item2 = "\"" + server + "." + endp + "\", \"" + sharingKey + "\", \"" + feedId + "\", \"" + dataStream + "\"";
+  var item2 = "\"" + server + "." + endp + "\"";
 
   return item2;
 }

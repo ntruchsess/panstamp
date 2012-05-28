@@ -31,25 +31,27 @@ function fillServers(servers)
   fldServer.options.length = 0;
   for(var server in servers)
   {
+    fldServer.options[fldServer.options.length] = new Option(server, servers[server]);
+
     if (!currValFound)
     {
       if (server == currVal)
+      {
+        fldServer.options[fldServer.options.length-1].selected = true;
         currValFound = true;
+      }
     }
-
-    fldServer.options[fldServer.options.length] = new Option(server, servers[server]);
   }
   if (!currValFound)
   {
     fldServer.options[fldServer.options.length] = new Option(currVal, "");
+    fldServer.options[fldServer.options.length-1].selected = true;
 
     var fldEndp = document.getElementById("endp");
     var endp = statement[1].substring(dot+1);
     fldEndp.options.length = 0;
     fldEndp.options[fldEndp.options.length] = new Option(endp, endp);
   }
-
-  document.getElementById("server").value = currVal;
 
   onchangeServer();
 }

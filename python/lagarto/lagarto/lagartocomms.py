@@ -265,14 +265,17 @@ class LagartoClient(threading.Thread, LagartoProcess):
                 cmd_list.append(cmd)
 
             if procname in self.http_servers:
-                conn = httplib.HTTPConnection(self.http_servers[procname], timeout=5)
-                conn.request("GET", "/values/?" + "&".join(cmd_list))
-                response = conn.getresponse()
-                if response.reason == "OK":
-                    status_response = json.loads(response.read())
-                    status_msg = LagartoMessage(status_response)
-     
-                    return status_msg.status
+                try:
+                    conn = httplib.HTTPConnection(self.http_servers[procname], timeout=5)
+                    conn.request("GET", "/values/?" + "&".join(cmd_list))
+                    response = conn.getresponse()
+                    if response.reason == "OK":
+                        status_response = json.loads(response.read())
+                        status_msg = LagartoMessage(status_response)
+         
+                        return status_msg.status
+                except httplib.HTTPException as ex:
+                    raise LagartoException("Unable to get response from HTTP server")
 
         return None
 
@@ -291,12 +294,15 @@ class LagartoClient(threading.Thread, LagartoProcess):
         @param server: lagarto http address:port
         
         @return network data in JSON format
-        """        
-        conn = httplib.HTTPConnection(server, timeout=5)
-        conn.request("GET", "/values")
-        response = conn.getresponse()
-        if response.reason == "OK":
-            return json.loads(response.read())
+        """
+        try:
+            conn = httplib.HTTPConnection(server, timeout=5)
+            conn.request("GET", "/values")
+            response = conn.getresponse()
+            if response.reason == "OK":
+                return json.loads(response.read())
+        except httplib.HTTPException as ex:
+            raise LagartoException("Unable to get response from HTTP server")
 
         return None
 
@@ -317,14 +323,17 @@ class LagartoClient(threading.Thread, LagartoProcess):
 
         server = self.http_servers[endpoint.procname]
         
-        conn = httplib.HTTPConnection(server, timeout=20)
-        if endpoint.id is not None:
-            conn.request("GET", "/values/?id=" + endpoint.id + "&value=" + str(endpoint.value))
-        elif endpoint.location is not None and endpoint.name is not None:
-            conn.request("GET", "/values/?location=" + endpoint.location + "&name=" + endpoint.name + "&value=" + str(endpoint.value))
-        response = conn.getresponse()
-        if response.reason == "OK":
-            return json.loads(response.read())
+        try:
+            conn = httplib.HTTPConnection(server, timeout=20)
+            if endpoint.id is not None:
+                conn.request("GET", "/values/?id=" + endpoint.id + "&value=" + str(endpoint.value))
+            elif endpoint.location is not None and endpoint.name is not None:
+                conn.request("GET", "/values/?location=" + endpoint.location + "&name=" + endpoint.name + "&value=" + str(endpoint.value))
+            response = conn.getresponse()
+            if response.reason == "OK":
+                return json.loads(response.read())
+        except httplib.HTTPException as ex:
+            raise LagartoException("Unable to get response from HTTP server")
 
         return None
 

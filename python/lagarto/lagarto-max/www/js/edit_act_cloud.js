@@ -28,6 +28,8 @@ function onchangeService()
     document.getElementById("item2box").src = "../edit_item2_thingspeak.html";
   else if (service == "opensense")
     document.getElementById("item2box").src = "../edit_item2_opensense.html";
+  else if (service == "twitter")
+    document.getElementById("item2box").src = "../edit_item2_twitter.html";
 }
 
 /**
