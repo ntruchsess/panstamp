@@ -274,7 +274,7 @@ class LagartoClient(threading.Thread, LagartoProcess):
                         status_msg = LagartoMessage(status_response)
          
                         return status_msg.status
-                except httplib.HTTPException as ex:
+                except: #httplib.HTTPException as ex:
                     raise LagartoException("Unable to get response from HTTP server")
 
         return None
@@ -301,7 +301,7 @@ class LagartoClient(threading.Thread, LagartoProcess):
             response = conn.getresponse()
             if response.reason == "OK":
                 return json.loads(response.read())
-        except httplib.HTTPException as ex:
+        except: #httplib.HTTPException as ex:
             raise LagartoException("Unable to get response from HTTP server")
 
         return None
@@ -332,7 +332,7 @@ class LagartoClient(threading.Thread, LagartoProcess):
             response = conn.getresponse()
             if response.reason == "OK":
                 return json.loads(response.read())
-        except httplib.HTTPException as ex:
+        except:# httplib.HTTPException as ex:
             raise LagartoException("Unable to get response from HTTP server")
 
         return None
