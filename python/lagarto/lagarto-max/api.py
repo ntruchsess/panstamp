@@ -196,12 +196,15 @@ class NetworkAPI:
         procname = epd[0]
         lagarto_endp = LagartoEndpoint(endp_id=epid, location=eploc, name=epname)
 
-        status = NetworkAPI.lagarto_client.request_status(procname, [lagarto_endp.dumps()])
-        if status is not None:
-            if len(status) > 0:
-                lagarto_endp = LagartoEndpoint(endpstr=status[0], procname=procname)
-                return lagarto_endp
-        return None
+        try:
+            status = NetworkAPI.lagarto_client.request_status(procname, [lagarto_endp.dumps()])
+            if status is not None:
+                if len(status) > 0:
+                    lagarto_endp = LagartoEndpoint(endpstr=status[0], procname=procname)
+                    return lagarto_endp
+            return None
+        except:
+            raise
 
 
     @staticmethod
@@ -233,17 +236,21 @@ class NetworkAPI:
         
         @return endpoint value
         """
-        epd = NetworkAPI.get_endpoint(endp)
-        if epd is not None:
-            endp.value = value
+        try:
+            epd = NetworkAPI.get_endpoint(endp)
+            if epd is not None:
+                endp.value = value
+                
+                status = NetworkAPI.lagarto_client.request_status(procname, [lagarto_endp.dumps()])
+                if status is not None:
+                    if len(status) > 0:
+                        if "value" in status[0]:
+                            return status[0]["value"]
+    
+            return None
+        except LagartoException as ex:
+            ex.log()
             
-            status = NetworkAPI.lagarto_client.request_status(procname, [lagarto_endp.dumps()])
-            if status is not None:
-                if len(status) > 0:
-                    if "value" in status[0]:
-                        return status[0]["value"]
-
-        return None
 
 
     def __init__(self, lagarto_client):
