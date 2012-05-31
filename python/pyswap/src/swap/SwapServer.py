@@ -177,7 +177,16 @@ class SwapServer(threading.Thread):
         elif swPacket.function == SwapFunction.QUERY:
             # Query addressed to our gateway?
             if swPacket.destAddress == self.modem.devaddress:
-                # Get mote from address
+                # Get mote from register address
+                mote = self.network.get_mote(address=swPacket.regAddress)
+                if mote is not None:
+                    # Send status packet
+                    mote.staRegister(swPacket.regId)
+        # COMMAND packet received
+        elif swPacket.function == SwapFunction.COMMAND:
+            # Command addressed to our gateway?
+            if swPacket.destAddress == self.modem.devaddress:
+                # Get mote from register address
                 mote = self.network.get_mote(address=swPacket.regAddress)
                 if mote is not None:
                     # Send status packet
@@ -362,7 +371,8 @@ class SwapServer(threading.Thread):
         self._poll_regular_regs = True
         query = SwapQueryPacket(SwapRegId.ID_PRODUCT_CODE)
         query.send(self.modem)
-        threading.Timer(20.0, self._endPollingValues)
+        t = threading.Timer(20.0, self._endPollingValues)
+        t.start()
 
 
     def _endPollingValues(self):

@@ -161,13 +161,13 @@ class SwapCommandPacket(SwapPacket):
     """
     SWAP Command packet class
     """
-    def __init__(self, rAddr, rId, val, secNonce=0):
+    def __init__(self, rAddr, rId, val, nonce=0):
         """
         Class constructor
         
         @param rAddr: Register address
         @param rId: Register ID
         @param val: New value
-        @param secNonce: Security nonce
+        @param nonce: Security nonce
         """
-        SwapPacket.__init__(self, destAddr=rAddr, nonce=secNonce, function=SwapFunction.COMMAND, regAddr=rAddr, regId=rId, value=val)
+        SwapPacket.__init__(self, destAddr=rAddr, nonce=nonce, function=SwapFunction.COMMAND, regAddr=rAddr, regId=rId, value=val)
