@@ -29,9 +29,10 @@ __date__ ="$Aug 20, 2011 10:36:00 AM$"
 from modem.SerialModem import SerialModem
 from protocol.SwapRegister import SwapRegister
 from protocol.SwapDefs import SwapFunction, SwapRegId
-from protocol.SwapPacket import SwapPacket, SwapQueryPacket
+from protocol.SwapPacket import SwapPacket, SwapQueryPacket, SwapStatusPacket
 from protocol.SwapMote import SwapMote
 from protocol.SwapNetwork import SwapNetwork
+from protocol.SwapValue import SwapValue
 from SwapException import SwapException
 from xmltools.XmlSettings import XmlSettings
 from xmltools.XmlSerial import XmlSerial
@@ -147,8 +148,9 @@ class SwapServer(threading.Thread):
         # Check function code
         # STATUS packet received
         if swPacket.function == SwapFunction.STATUS:
-            # Expected response?
-            self._checkStatus(swPacket)
+            # Check status message (ecpected response, nonce, ...)?
+            if not self._checkStatus(swPacket):
+                return
             # Check type of data received
             # Product code received
             if swPacket.regId == SwapRegId.ID_PRODUCT_CODE:
@@ -181,7 +183,7 @@ class SwapServer(threading.Thread):
                 mote = self.network.get_mote(address=swPacket.regAddress)
                 if mote is not None:
                     # Send status packet
-                    mote.staRegister(swPacket.regId)
+                    self.send_status(mote, swPacket.regId)
         # COMMAND packet received
         elif swPacket.function == SwapFunction.COMMAND:
             # Command addressed to our gateway?
@@ -189,8 +191,15 @@ class SwapServer(threading.Thread):
                 # Get mote from register address
                 mote = self.network.get_mote(address=swPacket.regAddress)
                 if mote is not None:
-                    # Send status packet
-                    mote.staRegister(swPacket.regId)
+                    # Anti-playback security enabled?
+                    if self._xmlnetwork.security & 0x01:
+                        # Check nonces
+                        if mote.nonce != swPacket.nonce:
+                            # Nonce missmatch. Transmit correct nonce
+                            self.send_nonce()
+                            return               
+                    # Send command packet to target mote
+                    self.setMoteRegister(mote, swPacket.regId, swPacket.value, sendack=True)
                     
 
     def _checkMote(self, mote):
@@ -339,8 +348,12 @@ class SwapServer(threading.Thread):
     def _checkStatus(self, status):
         """
         Compare expected SWAP status against status packet received
+        Update security nonces
 
         @param status: SWAP packet to extract the information from
+        
+        @return True in case of packet corectly checked
+                False in case of nonce missmatch (if enabled) or mote not found
         """
         # Check possible command ACK
         if (self._expectedAck is not None) and (status.function == SwapFunction.STATUS):
@@ -359,8 +372,15 @@ class SwapServer(threading.Thread):
         mote = self.network.get_mote(address=status.srcAddress)
         
         if mote is not None:
+            # Check nonce?
+            if self._xmlnetwork.security & 0x01:
+                # Discard status packet in case of incorrect nonce
+                if mote.nonce > 0 and not (mote.nonce <= status.nonce <= mote.nonce + 5):
+                    return False
+                
             mote.security = status.security
             mote.nonce = status.nonce
+        return True
             
 
     def _discoverMotes(self):
@@ -382,23 +402,62 @@ class SwapServer(threading.Thread):
         self._poll_regular_regs = False
 
 
-    def setMoteRegister(self, mote, regId, value):
+    def send_status(self, mote, regid):
+        """
+        Send status message informing about a register
+
+        @param mote: Mote containing the register
+        @param regid: Register ID
+        """
+        # Get register
+        reg = mote.getRegister(regid)
+        if reg is not None:
+            # Status packet to be sent
+            status = SwapStatusPacket(mote.address, regid, reg.value)
+            status.srcAddress = self._xmlnetwork.devaddress
+            self.nonce += 1
+            if self.nonce > 0xFF:
+                self.nonce = 0
+            status.nonce = self.nonce
+            status.send(self.modem)    
+
+
+    def send_nonce(self):
+        """
+        Transmit server's current nonce
+        """
+        # Convert nonce to SWAP value
+        value = SwapValue(self.nonce)
+        # Status packet to be sent
+        status = SwapStatusPacket(self._xmlnetwork.devaddress, SwapRegId.ID_SECU_NONCE, value)
+        self.nonce += 1
+        if self.nonce > 0xFF:
+            self.nonce = 0
+        status.nonce = self.nonce
+        status.send(self.modem)
+
+
+    def setMoteRegister(self, mote, regid, value, sendack=False):
         """
         Set new register value on wireless mote
         Non re-entrant method!!
 
         @param mote: Mote containing the register
-        @param regId: Register ID
+        @param regid: Register ID
         @param value: New register value
+        @param sendack; Send status message from server
 
         @return True if the command is correctly ack'ed. Return False otherwise
         """
         # Send command multiple times if necessary
         for i in range(SwapServer._MAX_SWAP_COMMAND_TRIES):
             # Send command            
-            ack = mote.cmdRegister(regId, value)
+            ack = mote.cmdRegister(regid, value)
             # Wait for aknowledgement from mote
             if self._waitForAck(ack, SwapServer._MAX_WAITTIME_ACK):
+                if sendack:
+                    # Send status message
+                    self.send_status(mote, regid)
                 return True;    # ACK received
         return False            # Got no ACK from mote
 
@@ -550,7 +609,7 @@ class SwapServer(threading.Thread):
         ## Serial wireless gateway
         self.modem = None
         # Server's Security nonce
-        self._nonce = 0
+        self.nonce = 0
         # True if last packet was ack'ed
         self._packetAcked = False
         # Expected ACK packet (SWAP status packet containing a given endpoint data)
