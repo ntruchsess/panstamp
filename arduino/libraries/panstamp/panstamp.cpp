@@ -27,8 +27,8 @@
 #include "panstamp.h"
 #include "commonregs.h"
 
-#define enableIRQ_GDO0()        attachInterrupt(0, isrGDO0event, FALLING);
-#define disableIRQ_GDO0()       detachInterrupt(0);
+#define enableIRQ_GDO0()          attachInterrupt(0, isrGDO0event, FALLING);
+#define disableIRQ_GDO0()         detachInterrupt(0);
 
 DEFINE_COMMON_REGINDEX_START()
 DEFINE_COMMON_REGINDEX_END()
@@ -97,6 +97,18 @@ void isrGDO0event(void)
           // Valid register?
           if ((reg = getRegister(swPacket.regId)) == NULL)
             break;
+          // Anti-playback security enabled?
+          if (panstamp.security & 0x01)
+          {
+            // Check received nonce
+            if (panstamp.nonce != swPacket.nonce)
+            {
+              // Nonce missmatch. Transmit correct nonce.
+              reg = getRegister(REGI_SECUNONCE);
+              reg->sendSwapStatus();
+              break;
+            }
+          }
           // Filter incorrect data lengths
           if (swPacket.value.length == reg->length)
             reg->setData(swPacket.value.data);
@@ -190,7 +202,7 @@ void PANSTAMP::init()
   enableIRQ_GDO0();
 
   // Default values
-  nonce = 0xFF;
+  nonce = 0;
   systemState = SYSTATE_RXON;
 }
 
