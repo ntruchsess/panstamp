@@ -33,14 +33,17 @@ from ParamDialog import ParamDialog
 from WaitDialog import WaitDialog
 from SerialDialog import SerialDialog
 from NetworkDialog import NetworkDialog
+from SecurityDialog import SecurityDialog
 
-from swap.protocol.SwapDefs import SwapType, SwapState
+from swap.protocol.SwapDefs import SwapType, SwapState, SwapFunction
+from swap.protocol.SwapPacket import SwapPacket
 from swap.SwapException import SwapException
 from swap.xmltools.XmlDevice import XmlDeviceDir
 from swap.xmltools.XmlSettings import XmlSettings
 from swap.xmltools.XmlNetwork import XmlNetwork
+from swap.modem.CcPacket import CcPacket
 
-import time, sys
+import time
 
 import wx.lib.agw.aui as aui
 from wx.lib.pubsub import Publisher
@@ -93,6 +96,7 @@ class MainFrame(wx.Frame):
         self.menugateway.Append(202, "&Disconnect", "Disconnect serial gateway")
         self.menugateway.Append(203, "&Serial port", "Configure gateway\'s serial port")
         self.menugateway.Append(204, "&Network", "Configure gateway\'s network settings")
+        self.menugateway.Append(205, "&Security", "Configure gateway\'s security settings")
         
         # Devices menu
         menudevices.Append(301, "&Network settings", "Configure network settings")
@@ -136,6 +140,7 @@ class MainFrame(wx.Frame):
         wx.EVT_MENU(self, 202, self._OnDisconnect)
         wx.EVT_MENU(self, 203, self._OnSerialConfig)
         wx.EVT_MENU(self, 204, self._OnGatewayNetworkConfig)
+        wx.EVT_MENU(self, 205, self._OnSecurityConfig)
         wx.EVT_MENU(self, 301, self.onMoteNetworkConfig)
         wx.EVT_MENU(self, 302, self.onConfigDevice)
         wx.EVT_MENU(self, 303, self.onClearDevices)
@@ -184,14 +189,11 @@ class MainFrame(wx.Frame):
         SWAP server started and running
         
         @param msg: not used
-        """     
+        """ 
         if self._waitfor_startdialog is not None:
-            self._waitfor_startdialog.close()
-            
-        #netid = self.server.getNetId()
-        #self.browser_panel.build_tree(netid)
-
-            
+            wx.CallAfter(Publisher().sendMessage, "close_wait", None)
+        
+           
     def cb_changed_addr(self, msg):
         """
         Request from SWAP server thread to change a mote address from the browser tree
@@ -243,9 +245,9 @@ class MainFrame(wx.Frame):
         config = XmlNetwork(XmlSettings.network_file)
         # Open network config dialog
         if self.server.modem is None:
-            dialog = NetworkDialog(self, config.devaddress, hex(config.network_id), config.freq_channel, config.security)
+            dialog = NetworkDialog(self, config.devaddress, hex(config.network_id)[2:], config.freq_channel)
         else:
-            dialog = NetworkDialog(self, self.server.modem.devaddress, hex(self.server.modem.syncword), self.server.modem.freq_channel, config.security)
+            dialog = NetworkDialog(self, self.server.modem.devaddress, hex(self.server.modem.syncword)[2:], self.server.modem.freq_channel)
         res = dialog.ShowModal()
         
         # Save new settings in xml file
@@ -255,7 +257,32 @@ class MainFrame(wx.Frame):
         config.devaddress = int(dialog.devaddress)
         config.network_id = int(dialog.netid, 16)
         config.freq_channel = int(dialog.freq_channel)
-        config.security = int(dialog.security)
+        config.save()
+        
+        self._Info("In order to take the new settings, you need to restart the gateway", "Gateway restart required")
+        
+        
+    def _OnSecurityConfig(self, evn):
+        """
+        Gateway->Security pressed. Callback function
+        """
+        # Configuration settings
+        config = XmlNetwork(XmlSettings.network_file)
+        # Open security config dialog
+        dialog = SecurityDialog(self, config.security, config.password)
+
+        res = dialog.ShowModal()
+        
+        # Save new settings in xml file
+        if res == wx.ID_CANCEL:
+            return
+        
+        config.security = 0
+        if dialog.playbk:
+            config.security += 1
+        if dialog.smartencrypt:
+            config.security += 2
+        config.password = dialog.password
         config.save()
         
         self._Info("In order to take the new settings, you need to restart the gateway", "Gateway restart required")
@@ -271,9 +298,10 @@ class MainFrame(wx.Frame):
         try:
             # Start SWAP server
             self.server.start()
-            
-            self._waitfor_startdialog = WaitDialog(self, "Connecting to SWAP network...", 10)
-            if not self._waitfor_startdialog.show():
+
+            self._waitfor_startdialog = WaitDialog(self, "Connecting to SWAP network...", 12)
+            res = self._waitfor_startdialog.show()
+            if not res:
                 # Stop SWAP server
                 if self.server is not None:
                     self.server.stop()
@@ -413,7 +441,6 @@ class MainFrame(wx.Frame):
                 address = mote.address
                 netid = config.network_id
                 freqChann = config.freq_channel
-                secu = mote.security
                 if mote.pwrdownmode == True:
                     txinterval = mote.txinterval
                     mote = None
@@ -426,11 +453,10 @@ class MainFrame(wx.Frame):
             address = 0xFF
             netid = config.network_id
             freqChann = config.freq_channel
-            secu = config.security
             txinterval = ""
         
         # Open network config dialog
-        dialog = NetworkDialog(self, address, hex(netid), freqChann, secu, txinterval)
+        dialog = NetworkDialog(self, address, hex(netid)[2:], freqChann, txinterval)
         res = dialog.ShowModal()
 
         if res == wx.ID_CANCEL:
@@ -443,17 +469,14 @@ class MainFrame(wx.Frame):
             if not res:
                 return
             mote = self._moteinsync  
-        
+
         # Send new config to mote
         if int(dialog.devaddress) != address:
             if not mote.setAddress(int(dialog.devaddress)):
                 self._Warning("Unable to set mote's address")
-        if dialog.netid != hex(netid):
+        if dialog.netid != hex(netid)[2:]:
             if not mote.setNetworkId(int(dialog.netid, 16)):
                 self._Warning("Unable to set mote's Network ID")
-        if int(dialog.security) != secu:
-            if not mote.setSecurity(int(dialog.security)):
-                self._Warning("Unable to set mote's security option")
         if dialog.interval is not None:
             if dialog.interval != txinterval:
                 if not mote.setTxInterval(int(dialog.interval)):
@@ -461,7 +484,7 @@ class MainFrame(wx.Frame):
         if int(dialog.freq_channel) != freqChann:
             if not mote.setFreqChannel(int(dialog.freq_channel)):
                 self._Warning("Unable to set mote's frequency channel")
-                
+                                
 
     def onConfigDevice(self, evn):
         """
@@ -731,7 +754,7 @@ class BrowserPanel(wx.Panel):
         @param netid: SWAP network ID
         '''                 
         if netid is not None:
-            rootStr = "SWAP network " + hex(netid)
+            rootStr = "SWAP network " + hex(netid)[2:]
         else:
             rootStr = "SWAP network"
       
@@ -795,6 +818,64 @@ class SnifferPanel(wx.Panel):
     """
     GUI panel displaying the SWAP network traffic
     """
+    def get_message_type(self, packet):
+        """
+        Return string defining the type of message
+        
+        @param packet: SWAP packet
+        
+        @return string
+        """
+        if packet.function == SwapFunction.COMMAND:
+            msgtype = "command"
+        elif packet.function == SwapFunction.QUERY:
+            msgtype = "query"
+        elif packet.function == SwapFunction.STATUS:
+            msgtype = "status"
+        else:
+            msgtype = "?????"
+            
+        return msgtype
+            
+            
+    def cb_packet_received(self, msg):
+        """
+        SWAP packet received
+        
+        @param msg: message containing the packet received
+        """
+        packet = msg.data
+        msgtype = self.get_message_type(packet)
+        rssi = "{0:02X}".format(packet.rssi)
+        lqi = "{0:02X}".format(packet.lqi)
+        
+        msg = "(" + rssi + lqi + ")" + packet.toString()
+        
+        index = self.log_list.GetItemCount()
+        self.log_list.InsertStringItem(index, str(time.time()))
+        self.log_list.SetStringItem(index, 1, msgtype)
+        self.log_list.SetStringItem(index, 2, msg)
+        self.log_list.SetItemImage(index, self.arrow_left_icon)
+        self.log_list.EnsureVisible(index)
+        
+
+    def cb_packet_sent(self, msg):
+        """
+        SWAP packet received
+        
+        @param msg: message containing the packet sent
+        """
+        packet = msg.data
+        msgtype = self.get_message_type(packet)
+                            
+        index = self.log_list.GetItemCount()
+        self.log_list.InsertStringItem(index, str(time.time()))
+        self.log_list.SetStringItem(index, 1, msgtype)
+        self.log_list.SetStringItem(index, 2, packet.toString())
+        self.log_list.SetItemImage(index, self.arrow_right_icon)
+        self.log_list.EnsureVisible(index)
+
+    
     def write(self, text):
         """
         Add new line into the log window
@@ -803,64 +884,45 @@ class SnifferPanel(wx.Panel):
         """
         if text:
             if len(text) > 1: # Condition added to avoid printing single white spaces
-                if text.startswith("Rved: "):                    
-                    msg = text[6:]
-                    msgtype = self.get_message_type(msg)
-                    if msgtype is None:
-                        return
-                    image = self.arrow_left_icon
+                msg = None
+                image = None
+                if text.startswith("Rved: "):
+                    if len(text) > 20:
+                        if text[6] == '(' and text[12] == ')':                                                 
+                            image = self.arrow_left_icon
                 elif text.startswith("Sent: "):
-                    msgtype = "sent"
-                    msg = text[6:-1]
-                    msgtype = self.get_message_type(msg)
-                    if msgtype is None:
-                        return
                     image = self.arrow_right_icon
                 elif text.startswith("SwapException occurred: "):
                     msgtype = "ERROR"
                     msg = text[24:]
                     image = self.warning_icon
-                else:
-                    return
+                
+                if image in [self.arrow_left_icon, self.arrow_right_icon]:
+                    text = text[6:]
+                    try:       
+                        ccpacket = CcPacket(text)
+                        swpacket = SwapPacket(ccpacket)
+                        if swpacket.function == SwapFunction.COMMAND:
+                            msgtype = "command"
+                        elif swpacket.function == SwapFunction.QUERY:
+                            msgtype = "query"
+                        if swpacket.function == SwapFunction.STATUS:
+                            msgtype = "status"
+                        else:
+                            msgtype = "?????"
+                        
+                        msg = swpacket.toString()
+                    except SwapException:
+                        pass
 
-                index = self.log_list.GetItemCount()
-                self.log_list.InsertStringItem(index, str(time.time()))
-                self.log_list.SetStringItem(index, 1, msgtype)
-                self.log_list.SetStringItem(index, 2, msg)
-                self.log_list.SetItemImage(index, image)
-                self.log_list.EnsureVisible(index)
+                if msg is not None:
+                    index = self.log_list.GetItemCount()
+                    self.log_list.InsertStringItem(index, str(time.time()))
+                    self.log_list.SetStringItem(index, 1, msgtype)
+                    self.log_list.SetStringItem(index, 2, msg)
+                    self.log_list.SetItemImage(index, image)
+                    self.log_list.EnsureVisible(index)
 
-    
-    def get_message_type(self, msg):
-        """
-        Get the type of message received or being sent
-        
-        @param msg: SWAP message
-        
-        @return Type of message in string format
-        """
-        if len(msg) < 14:
-            return None
-
-        if msg[0] == '(':
-            if msg[5] == ')':
-                shift = 6
-            else:
-                return None
-        else:
-            shift = 0
-            
-        msgtype = msg[8+shift:10+shift]
-
-        if msgtype == "00":
-            return "status"
-        elif msgtype == "01":
-            return "query"
-        elif msgtype == "02":
-            return "command"
-
-        return None
-    
     
     def _display_info(self):
         """
@@ -965,7 +1027,10 @@ class SnifferPanel(wx.Panel):
         self.SetSizer(sizer)
         
         # Redirect stdout to the LogCtrl widget
-        sys.stdout = RedirectText(self)
+        #sys.stdout = RedirectText(self)
+        
+        Publisher().subscribe(self.cb_packet_received, "packet_received")
+        Publisher().subscribe(self.cb_packet_sent, "packet_sent")
 
 
 class EventPanel(wx.Panel):

@@ -29,6 +29,8 @@ __date__  ="$Sep 21, 2011 08:58:05 AM$"
 from ConfigDialog import ConfigDialog
 
 import wx
+from wx.lib.pubsub import Publisher
+
 
 class WaitDialog(ConfigDialog):
     """
@@ -51,7 +53,7 @@ class WaitDialog(ConfigDialog):
         Close dialog
         """
         self.EndModal(wx.ID_OK)
-        self.Destroy()
+        #self.Destroy()
         
     
     def show(self):
@@ -72,9 +74,16 @@ class WaitDialog(ConfigDialog):
         Callback function called when timer expires
         """
         self.EndModal(wx.ID_CANCEL)
-        self.Destroy()
+        #self.Destroy()
         
-        
+
+    def cb_close(self, msg):
+        """
+        Request from main frame to close the current waiting dialog
+        """
+        self.close()
+
+
     def __init__(self, parent=None, message=None, wait_time=None):
         """
         Class constructor
@@ -84,6 +93,9 @@ class WaitDialog(ConfigDialog):
         @param wait_time Max time to wait for a response (in seconds)
         """
         ConfigDialog.__init__(self, parent, title="Waiting...")
+        
+        Publisher().subscribe(self.cb_close, "close_wait")
+        
         ## Message to be displayed
         self.message = message
         ## Max time to wait for a response (in seconds)

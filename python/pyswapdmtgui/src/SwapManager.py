@@ -49,7 +49,25 @@ class SwapManager(SwapInterface):
         # Display event
         wx.CallAfter(Publisher().sendMessage, "add_event", "SWAP server started")
         
-   
+
+    def swapPacketReceived(self, packet):
+        """
+        New SWAP packet received
+        
+        @param packet: SWAP packet received
+        """
+        wx.CallAfter(Publisher().sendMessage, "packet_received", packet)
+    
+
+    def swapPacketSent(self, packet):
+        """
+        SWAP packet transmitted
+        
+        @param packet: SWAP packet transmitted
+        """
+        wx.CallAfter(Publisher().sendMessage, "packet_sent", packet)
+
+
     def newMoteDetected(self, mote):
         """
         New mote detected by SWAP server
