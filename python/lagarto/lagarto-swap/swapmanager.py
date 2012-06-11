@@ -199,6 +199,7 @@ class SwapManager(SwapInterface, LagartoServer):
                     config.network_id = int(params["netid"], 16)
                     config.devaddress = int(params["address"])
                     config.security = int(params["security"])
+                    config.password = params["password"]                   
                 # Save gateway's port settings
                 elif command == "modem_serial":
                     main_settings = XmlSettings(self.swap_settings)

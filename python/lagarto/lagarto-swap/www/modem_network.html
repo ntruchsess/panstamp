@@ -41,8 +41,17 @@
             <td class="celltitle">security</td>
             <td>
               <select id="security" name="security" class="inputdatashort">
-                <option value="0">0</option>
+                <option value="0">No security</option>
+                <option value="1">Anti-plaback</option>
+                <option value="2">Smart encryption</option>
+                <option value="3">Anti-playback and Smart encryption</option>
               </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="celltitle">Smart Encryption password (12 bytes, hex)</td>
+            <td>
+              <input type="text" id="password" name="password" class="inputdatalong"/>
             </td>
           </tr>
         </table>

@@ -47,6 +47,10 @@ function updateValues()
     var security = section.getElementsByTagName("security")[0];
     if (security != null)
     document.getElementById("security").value = security.childNodes[0].nodeValue;
+
+    var password = section.getElementsByTagName("password")[0];
+    if (password != null)
+    document.getElementById("password").value = password.childNodes[0].nodeValue;
   }
 }
 
