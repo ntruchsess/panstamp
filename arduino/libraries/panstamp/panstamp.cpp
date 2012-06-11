@@ -74,6 +74,7 @@ void isrGDO0event(void)
   CCPACKET ccPacket;
   SWPACKET swPacket;
   REGISTER *reg;
+  bool eval = true;
 
   // Disable interrupt
   disableIRQ_GDO0();
@@ -83,61 +84,72 @@ void isrGDO0event(void)
     if (ccPacket.crc_ok)
     {
       swPacket = SWPACKET(ccPacket);
-      // Function
-      switch(swPacket.function)
+      // Smart encryption locally enabled?
+      if (panstamp.security & 0x02)
       {
-        case SWAPFUNCT_CMD:
-          // Broadcasted commands are not allowed
-          if (swPacket.destAddr == SWAP_BCAST_ADDR)
-            break;
-          // Current version does not support data recording mode
-          // so destination address and register address must be the same
-          if (swPacket.destAddr != swPacket.regAddr)
-            break;
-          // Valid register?
-          if ((reg = getRegister(swPacket.regId)) == NULL)
-            break;
-          // Anti-playback security enabled?
-          if (panstamp.security & 0x01)
-          {
-            // Check received nonce
-            if (panstamp.nonce != swPacket.nonce)
+        // OK, then incoming packets must be encrypted too
+        if (!(swPacket.security & 0x02))
+          eval = false;
+      }
+
+      if (eval)
+      {
+        // Function
+        switch(swPacket.function)
+        {
+          case SWAPFUNCT_CMD:
+            // Broadcasted commands are not allowed
+            if (swPacket.destAddr == SWAP_BCAST_ADDR)
+              break;
+            // Current version does not support data recording mode
+            // so destination address and register address must be the same
+            if (swPacket.destAddr != swPacket.regAddr)
+              break;
+            // Valid register?
+            if ((reg = getRegister(swPacket.regId)) == NULL)
+              break;
+            // Anti-playback security enabled?
+            if (panstamp.security & 0x01)
             {
-              // Nonce missmatch. Transmit correct nonce.
-              reg = getRegister(REGI_SECUNONCE);
-              reg->sendSwapStatus();
-              break;
+              // Check received nonce
+              if (panstamp.nonce != swPacket.nonce)
+              {
+                // Nonce missmatch. Transmit correct nonce.
+                reg = getRegister(REGI_SECUNONCE);
+                reg->sendSwapStatus();
+                break;
+              }
             }
-          }
-          // Filter incorrect data lengths
-          if (swPacket.value.length == reg->length)
-            reg->setData(swPacket.value.data);
-          else
-            reg->sendSwapStatus();
-          break;
-        case SWAPFUNCT_QRY:
-          // Only Product Code can be broadcasted
-          if (swPacket.destAddr == SWAP_BCAST_ADDR)
-          {
-            if (swPacket.regId != REGI_PRODUCTCODE)
+            // Filter incorrect data lengths
+            if (swPacket.value.length == reg->length)
+              reg->setData(swPacket.value.data);
+            else
+              reg->sendSwapStatus();
+            break;
+          case SWAPFUNCT_QRY:
+            // Only Product Code can be broadcasted
+            if (swPacket.destAddr == SWAP_BCAST_ADDR)
+            {
+              if (swPacket.regId != REGI_PRODUCTCODE)
+                break;
+            }
+            // Current version does not support data recording mode
+            // so destination address and register address must be the same
+            if (swPacket.destAddr != swPacket.regAddr)
               break;
-          }
-          // Current version does not support data recording mode
-          // so destination address and register address must be the same
-          if (swPacket.destAddr != swPacket.regAddr)
+            // Valid register?
+            if ((reg = getRegister(swPacket.regId)) == NULL)
+              break;
+            reg->getData();
             break;
-          // Valid register?
-          if ((reg = getRegister(swPacket.regId)) == NULL)
+          case SWAPFUNCT_STA:
+            // User callback function declared?
+            if (panstamp.statusReceived != NULL)
+              panstamp.statusReceived(&swPacket);
             break;
-          reg->getData();
-          break;
-        case SWAPFUNCT_STA:
-          // User callback function declared?
-          if (panstamp.statusReceived != NULL)
-            panstamp.statusReceived(&swPacket);
-          break;
-        default:
-          break;
+          default:
+            break;
+        }
       }
     }
   }
@@ -184,11 +196,14 @@ void PANSTAMP::setup_watchdog(byte time)
  */
 void PANSTAMP::init() 
 {
+  byte i;
+
   // Setup CC1101
   cc1101.init();
 
-  // Read security option byte from EEPROM
-  security = EEPROM.read(EEPROM_SECU_OPTION);
+  // Security disabled by default
+  security = 0;
+
   // Read periodic Tx interval from EEPROM
   txInterval[0] = EEPROM.read(EEPROM_TX_INTERVAL);
   txInterval[1] = EEPROM.read(EEPROM_TX_INTERVAL + 1);
@@ -369,25 +384,6 @@ long PANSTAMP::getInternalTemp(void)
 }
 
 /**
- * setSecurity
- * 
- * Set security option
- * 
- * 'secu'	New option
- * 'save' If TRUE, save parameter in EEPROM
- */
-void PANSTAMP::setSecurity(byte secu, bool save)
-{
-  if (security != secu)
-  {
-    security = secu;
-    // Save in EEPROM
-    if (save)
-      EEPROM.write(EEPROM_SECU_OPTION, secu);
-  }
-}
-
-/**
  * setTxInterval
  * 
  * Set interval for periodic transmissions
@@ -405,6 +401,21 @@ void PANSTAMP::setTxInterval(byte* interval, bool save)
     EEPROM.write(EEPROM_TX_INTERVAL, interval[0]);
     EEPROM.write(EEPROM_TX_INTERVAL + 1, interval[1]);
   }
+}
+
+/**
+ * setSmartPassword
+ * 
+ * Set Smart Encryption password
+ * 
+ * 'password'	Encryption password
+ */
+void PANSTAMP::setSmartPassword(byte* password)
+{
+  // Save password
+  memcpy(encryptPwd, password, sizeof(encryptPwd));
+  // Enable Smart Encryption
+  security |= 0x02;
 }
 
 /**

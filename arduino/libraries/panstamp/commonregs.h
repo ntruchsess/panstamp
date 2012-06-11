@@ -39,7 +39,6 @@ enum CUSTOM_REGINDEX                    \
   REGI_SYSSTATE,                        \
   REGI_FREQCHANNEL,                     \
   REGI_SECUOPTION,                      \
-  REGI_SECUPASSWD,                      \
   REGI_SECUNONCE,                       \
   REGI_NETWORKID,                       \
   REGI_DEVADDRESS,                      \
@@ -69,10 +68,7 @@ REGISTER regSysState(&panstamp.systemState, sizeof(panstamp.systemState), NULL, 
 /* Frequency channel */                                                                                                      \
 REGISTER regFreqChannel(&panstamp.cc1101.channel, sizeof(panstamp.cc1101.channel), NULL, &setFreqChannel);                   \
 /* Security option */                                                                                                        \
-REGISTER regSecuOption(&panstamp.security, sizeof(panstamp.security), NULL, &setSecuOption);                                 \
-/* Security password (not implemented yet) */                                                                                \
-byte dtPasswd[1];                                                                                                            \
-REGISTER regSecuPasswd(dtPasswd, sizeof(dtPasswd), NULL, NULL);                                                              \
+REGISTER regSecuOption(&panstamp.security, sizeof(panstamp.security), NULL, NULL);                                           \
 /* Security nonce */                                                                                                         \
 REGISTER regSecuNonce(&panstamp.nonce, sizeof(panstamp.nonce), NULL, NULL);                                                  \
 /* Network Id */                                                                                                             \
@@ -93,7 +89,6 @@ REGISTER *regTable[] = {             \
         &regSysState,                \
         &regFreqChannel,             \
         &regSecuOption,              \
-        &regSecuPasswd,              \
         &regSecuNonce,               \
         &regNetworkId,               \
         &regDevAddress,              \
@@ -110,7 +105,6 @@ byte regTableSize = sizeof(regTable)/sizeof(*regTable);
 #define DECLARE_COMMON_CALLBACKS()                          \
 const void setSysState(byte id, byte *state);               \
 const void setFreqChannel(byte id, byte *channel);          \
-const void setSecuOption(byte id, byte *secu);              \
 const void setDevAddress(byte id, byte *addr);              \
 const void setNetworkId(byte rId, byte *nId);               \
 const void setTxInterval(byte id, byte *interval);
@@ -164,26 +158,6 @@ const void setFreqChannel(byte id, byte *channel)           \
   }                                                         \
 }                                                           \
                                                             \
-/**                                                         \
- * setSecuOption                                            \
- *                                                          \
- * Set security option                                      \
- *                                                          \
- * 'id'    Register ID                                      \
- * 'secu'  New security option                              \
- */                                                         \
-const void setSecuOption(byte id, byte *secu)               \
-{                                                           \
-  if (secu[0] != regSecuOption.value[0])                    \
-  {                                                         \
-    /* Send status message before applying the new          \
-    security option*/                                       \
-    SWSTATUS packet = SWSTATUS(regSecuOption.id, secu, regSecuOption.length); \
-    packet.send();                                          \
-    /* Update register value */                             \
-    panstamp.setSecurity(secu[0] & 0x0F, true);             \
-  }                                                         \
-}                                                           \
                                                             \
 /**                                                         \
  * setDevAddress                                            \
@@ -241,6 +215,5 @@ const void setTxInterval(byte id, byte *interval)           \
     panstamp.setTxInterval(interval, true);                 \
   }                                                         \
 }
-
 #endif
 

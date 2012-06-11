@@ -32,12 +32,12 @@
 /**
  * EEPROM addresses
  */
-#define EEPROM_FREQ_CHANNEL      0x00   // 1-byte register
-#define EEPROM_SECU_OPTION       0x01   // 1-byte register
-#define EEPROM_SYNC_WORD         0x02   // 2-byte register
-#define EEPROM_DEVICE_ADDR       0x04   // 1-byte register
-#define EEPROM_TX_INTERVAL       0x05   // 2-byte register
+#define EEPROM_FREQ_CHANNEL       0x00   // 1-byte register
+#define EEPROM_NOT_USED           0x01   // 1-byte register
+#define EEPROM_SYNC_WORD          0x02   // 2-byte register
+#define EEPROM_DEVICE_ADDR        0x04   // 1-byte register
+#define EEPROM_TX_INTERVAL        0x05   // 2-byte register
 
-#define EEPROM_FIRST_CUSTOM      0x20
+#define EEPROM_FIRST_CUSTOM       0x20
 
 #endif

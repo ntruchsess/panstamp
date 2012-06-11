@@ -29,7 +29,6 @@
 
 #include "Arduino.h"
 #include "ccpacket.h"
-//#include "panstamp.h"
 
 /**
  * SWAP definitions
@@ -52,6 +51,11 @@ enum SWAPFUNCT
 };
 
 /**
+ * Macros
+ */
+#define smartDecrypt()         smartEncrypt(true)
+
+/**
  * Structure: SWDATA
  * 
  * Description:
@@ -72,6 +76,16 @@ struct SWDATA
 
 class SWPACKET : public CCPACKET
 {
+  private:
+    /**
+     * smartEncrypt
+     * 
+     * Apply Smart Encryption to the SWAP packet passed as argument
+     *
+     * 'decrypt': if true, Decrypt packet. Encrypt otherwise
+     */
+    void smartEncrypt(bool decrypt=false);
+
   public:
     /**
      * Destination address

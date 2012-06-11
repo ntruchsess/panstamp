@@ -55,6 +55,8 @@
 #define setHighTxPower()    cc1101.setTxPowerAmp(PA_LongDistance)
 #define setLowTxPower()     cc1101.setTxPowerAmp(PA_LowPower)
 
+#define enableAntiPlayback()    security |= 0x01;
+
 /**
  * System states
  */
@@ -108,7 +110,12 @@ class PANSTAMP
      * Interval between periodic transmissions. 0 for asynchronous transmissions
      */
     byte txInterval[2];
- 
+
+    /**
+     * Smart encryption password
+     */
+    byte encryptPwd[12];
+
     /**
      * SWAP status packet received. Callaback function
      */
@@ -190,16 +197,6 @@ class PANSTAMP
     long getInternalTemp(void);
 
     /**
-     * setSecurity
-     * 
-     * Set security option
-     * 
-     * 'secu'	New option
-     * 'save' If TRUE, save parameter in EEPROM
-     */
-    void setSecurity(byte secu, bool save);
-
-    /**
      * setTxInterval
      * 
      * Set interval for periodic transmissions
@@ -208,6 +205,15 @@ class PANSTAMP
      * 'save'     If TRUE, save parameter in EEPROM
      */
     void setTxInterval(byte* interval, bool save);
+
+    /**
+     * setSmartPassword
+     * 
+     * Set Smart Encryption password
+     * 
+     * 'password'	Encryption password
+     */
+    void setSmartPassword(byte* password);
 };
 
 /**
