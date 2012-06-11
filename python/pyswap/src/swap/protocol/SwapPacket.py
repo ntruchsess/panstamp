@@ -34,19 +34,95 @@ from SwapValue import SwapValue
 from SwapDefs import SwapAddress, SwapFunction
 from swap.SwapException import SwapException
 
+import copy
+
+
 class SwapPacket(CcPacket):
     """
     SWAP packet class
     """
-    def send(self, ccModem):
+    smart_encrypt_pwd = None
+
+    def smart_encryption(self, password, decrypt=False):
+        """
+        Encrypt/Decrypt packet using the Smart Encryption mechanism
+        
+        @param password: Smart Encryption password
+        @param decrypt:  Decrypt packet if True. Encrypt otherwise
+        """
+        # Update password
+        SwapPacket.smart_encrypt_pwd = password
+
+        # Encryot SwapPacket and CcPacket fields               
+        if decrypt:
+            self.nonce ^= password.data[9]
+        
+        self.function ^= password.data[11] ^ self.nonce
+        self.srcAddress ^= password.data[10] ^ self.nonce
+        self.regAddress ^= password.data[8] ^ self.nonce
+        self.regId ^= password.data[7] ^ self.nonce
+        
+        if self.value is not None:
+            pos = 0
+            newarray = []
+            for byte in self.value.toList():
+                byte ^= password.data[pos] ^ self.nonce
+                newarray.append(byte)
+                pos += 1
+                if pos == 11:
+                    pos = 0
+            self.value = SwapValue(newarray)
+
+        if not decrypt:
+            self.nonce ^= password.data[9]
+
+        self._update_ccdata()
+            
+        
+    def send(self, server):
         """
         Overriden send method
         
-        @param ccModem: modem object to be used for transmission
+        @param server: SWAP server object to be used for transmission
         """
-        self.srcAddress = ccModem.devaddress
+        self.srcAddress = server.devaddress
         self.data[1] = self.srcAddress
-        CcPacket.send(self, ccModem)
+        
+        # Update security option according to server's one
+        self.security = server.security
+        self.data[2] |= self.security & 0x0F
+
+        # Keep copy of the current packet before encryption
+        packet_before_encrypt = copy.copy(self)
+        
+        # Smart encryption enabled?
+        if self.security & 0x02:
+            # Encrypt packet
+            self.smart_encryption(server.password)
+        
+        CcPacket.send(self, server.modem)
+        # Notify event        
+        server._eventHandler.swapPacketSent(packet_before_encrypt)
+        
+        
+    def _update_ccdata(self):
+        """
+        Update ccPacket data bytes
+        """
+        self.data = []
+
+        self.data.append(self.destAddress)
+        self.data.append(self.srcAddress)
+        self.data.append((self.hop << 4) | (self.security & 0x0F))
+        self.data.append(self.nonce)
+        self.data.append(self.function)
+        self.data.append(self.regAddress)
+        self.data.append(self.regId)
+
+        if self.value is not None:
+            for item in self.value.toList():
+                self.data.append(item)
+
 
     def __init__(self, ccPacket=None, destAddr=SwapAddress.BROADCAST_ADDR, hop=0, nonce=0, function=SwapFunction.STATUS, regAddr=0, regId=0, value=None):
         """
@@ -108,25 +184,17 @@ class SwapPacket(CcPacket):
             self.regAddress = ccPacket.data[5]
             # Register ID
             self.regId = ccPacket.data[6]
-            
-            if self.function != SwapFunction.QUERY:
-                if len(ccPacket.data) < 8:
-                    raise SwapException("Packet received is too short")     
-                #SWAP value
-                self.value = SwapValue(ccPacket.data[7:])
+                       
+            if len(ccPacket.data) >= 8:
+                self.value = SwapValue(ccPacket.data[7:])   
+            # Encryption enabled?
+            if self.security & 0x02 and SwapPacket.smart_encrypt_pwd is not None:
+                # Decrypt packet
+                self.smart_encryption(SwapPacket.smart_encrypt_pwd, decrypt=True)
+        
         else:
-            self.data.append(self.destAddress)
-            self.data.append(self.srcAddress)
-            self.data.append((self.hop << 4) | (self.security & 0x0F))
-            self.data.append(self.nonce)
-            self.data.append(self.function)
-            self.data.append(self.regAddress)
-            self.data.append(self.regId)
-
-            if value is not None:
-                for item in self.value.toList():
-                    self.data.append(item)
-
+            self._update_ccdata()
+            
 
 class SwapStatusPacket(SwapPacket):
     """

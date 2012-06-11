@@ -33,6 +33,7 @@ from protocol.SwapPacket import SwapPacket, SwapQueryPacket, SwapStatusPacket
 from protocol.SwapMote import SwapMote
 from protocol.SwapNetwork import SwapNetwork
 from protocol.SwapValue import SwapValue
+from protocol.SmartEncrypt import Password
 from SwapException import SwapException
 from xmltools.XmlSettings import XmlSettings
 from xmltools.XmlSerial import XmlSerial
@@ -58,13 +59,17 @@ class SwapServer(threading.Thread):
     def run(self):
         """
         Start SWAP server thread
-        """
-        # Network configuration settings
-        self._xmlnetwork = XmlNetwork(self._xmlSettings.network_file)
-        # Serial configuration settings
-        self._xmlserial = XmlSerial(self._xmlSettings.serial_file)
-        
+        """       
         try:
+            # Network configuration settings
+            self._xmlnetwork = XmlNetwork(self._xmlSettings.network_file)
+            self.devaddress = self._xmlnetwork.devaddress
+            self.security = self._xmlnetwork.security
+            self.password = Password(self._xmlnetwork.password)
+            
+            # Serial configuration settings
+            self._xmlserial = XmlSerial(self._xmlSettings.serial_file)
+        
             # Create and start serial modem object
             self.modem = SerialModem(self._xmlserial.port, self._xmlserial.speed, self.verbose)
 
@@ -142,15 +147,19 @@ class SwapServer(threading.Thread):
         try:
             # Convert CcPacket into SwapPacket
             swPacket = SwapPacket(ccPacket)
+            # Notify event
+            self._eventHandler.swapPacketReceived(swPacket)  
         except SwapException:
             return
         
         # Check function code
         # STATUS packet received
         if swPacket.function == SwapFunction.STATUS:
-            # Check status message (ecpected response, nonce, ...)?
-            if not self._checkStatus(swPacket):
-                return
+            try:
+                # Check status message (ecpected response, nonce, ...)?
+                self._checkStatus(swPacket)
+            except SwapException:
+                raise
             # Check type of data received
             # Product code received
             if swPacket.regId == SwapRegId.ID_PRODUCT_CODE:
@@ -351,9 +360,6 @@ class SwapServer(threading.Thread):
         Update security nonces
 
         @param status: SWAP packet to extract the information from
-        
-        @return True in case of packet corectly checked
-                False in case of nonce missmatch (if enabled) or mote not found
         """
         # Check possible command ACK
         if (self._expectedAck is not None) and (status.function == SwapFunction.STATUS):
@@ -371,16 +377,22 @@ class SwapServer(threading.Thread):
         # Update security option and nonce in list
         mote = self.network.get_mote(address=status.srcAddress)
         
-        if mote is not None:
+        if mote is not None:       
             # Check nonce?
             if self._xmlnetwork.security & 0x01:
                 # Discard status packet in case of incorrect nonce
-                if mote.nonce > 0 and not (mote.nonce <= status.nonce <= mote.nonce + 5):
-                    return False
+                if mote.nonce > 0 and status.nonce != 1:
+                    lower_limit = mote.nonce
+                    upper_limit = mote.nonce + 5
+                    if lower_limit > 0xFF:
+                        lower_limit -= 0x100
+                    if upper_limit > 0xFF:
+                        upper_limit -= 0x100
+                    if not (lower_limit <= status.nonce <= upper_limit):
+                        raise SwapException("Mote " + str(mote.address) + ": anti-playback nonce missmatch. Possible attack!")
                 
             mote.security = status.security
             mote.nonce = status.nonce
-        return True
             
 
     def _discoverMotes(self):
@@ -390,7 +402,7 @@ class SwapServer(threading.Thread):
         """
         self._poll_regular_regs = True
         query = SwapQueryPacket(SwapRegId.ID_PRODUCT_CODE)
-        query.send(self.modem)
+        query.send(self)
         t = threading.Timer(20.0, self._endPollingValues)
         t.start()
 
@@ -419,7 +431,7 @@ class SwapServer(threading.Thread):
             if self.nonce > 0xFF:
                 self.nonce = 0
             status.nonce = self.nonce
-            status.send(self.modem)    
+            status.send(self)    
 
 
     def send_nonce(self):
@@ -434,7 +446,7 @@ class SwapServer(threading.Thread):
         if self.nonce > 0xFF:
             self.nonce = 0
         status.nonce = self.nonce
-        status.send(self.modem)
+        status.send(self)
 
 
     def setMoteRegister(self, mote, regid, value, sendack=False):
@@ -521,12 +533,7 @@ class SwapServer(threading.Thread):
         #loops = wait_time / 10
         start = time.time()
         while not self._packetAcked:
-            """
-            time.sleep(0.01)
-            loops -= 1
-            if loops == 0:
-                break
-            """
+            time.sleep(0.1)
             if (time.time() - start)*1000 >= wait_time:
                 break
             
@@ -608,8 +615,14 @@ class SwapServer(threading.Thread):
 
         ## Serial wireless gateway
         self.modem = None
+        # Server's device address
+        self.devaddress = 1
         # Server's Security nonce
         self.nonce = 0
+        # Security option
+        self.security = 0
+        # Encryption password
+        self.password = 0
         # True if last packet was ack'ed
         self._packetAcked = False
         # Expected ACK packet (SWAP status packet containing a given endpoint data)

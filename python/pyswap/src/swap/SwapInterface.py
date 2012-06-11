@@ -41,6 +41,24 @@ class SwapInterface:
         pass
 
 
+    def swapPacketReceived(self, packet):
+        """
+        New SWAP packet received
+        
+        @param packet: SWAP packet received
+        """
+        pass
+    
+
+    def swapPacketSent(self, packet):
+        """
+        SWAP packet transmitted
+        
+        @param packet: SWAP packet transmitted
+        """
+        pass
+    
+
     def newMoteDetected(self, mote):
         """
         New mote detected by SWAP server

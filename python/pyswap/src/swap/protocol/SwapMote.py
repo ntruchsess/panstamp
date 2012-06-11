@@ -56,7 +56,7 @@ class SwapMote(object):
         # Command to be sent to the mote
         cmdPacket = SwapCommandPacket(self.address, regId, value, self.nonce)
         # Send command
-        cmdPacket.send(self.server.modem)
+        cmdPacket.send(self.server)
         # Return expected response
         return infPacket;
 
@@ -70,7 +70,7 @@ class SwapMote(object):
         # Query packet to be sent
         qryPacket = SwapQueryPacket(self.address, regId)
         # Send query
-        qryPacket.send(self.server.modem)
+        qryPacket.send(self.server)
 
 
     def staRegister(self, regId):
@@ -85,7 +85,7 @@ class SwapMote(object):
         # Status packet to be sent
         infPacket = SwapStatusPacket(self.address, regId, reg.value)
         # Send SWAP status packet
-        infPacket.send(self.server.modem)
+        infPacket.send(self.server)
 
 
     def cmdRegisterWack(self, regId, value):
@@ -146,6 +146,18 @@ class SwapMote(object):
         """
         val = SwapValue(secu, length=1)
         return self.cmdRegisterWack(SwapRegId.ID_SECU_OPTION, val)
+
+
+    def setSmartEncryptPassword(self, password):
+        """
+        Set mote's smart encryption password. Return true if ACK received from mote
+        
+        @param password: encryption password object
+        
+        @return True if this command is confirmed from the mote. Return False otherwise
+        """
+        val = SwapValue(password.data)
+        return self.cmdRegisterWack(SwapRegId.ID_SECU_PASSWD, val)
 
 
     def setTxInterval(self, interval):

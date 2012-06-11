@@ -55,10 +55,14 @@ class XmlNetwork(object):
         elem = root.find("address")
         if elem is not None:
             self.devaddress = int(elem.text)
-        # Get device address
+        # Get security option
         elem = root.find("security")
         if elem is not None:
             self.security = int(elem.text)
+        # Get wncryption password
+        elem = root.find("password")
+        if elem is not None:
+            self.password = elem.text
 
 
     def save(self):
@@ -69,9 +73,10 @@ class XmlNetwork(object):
         f.write("<?xml version=\"1.0\"?>\n")
         f.write("<network>\n")
         f.write("\t<channel>" + str(self.freq_channel) + "</channel>\n")
-        f.write("\t<netid>" + hex(self.network_id) + "</netid>\n")
+        f.write("\t<netid>" + hex(self.network_id)[2:] + "</netid>\n")
         f.write("\t<address>" + str(self.devaddress) + "</address>\n")
         f.write("\t<security>" + str(self.security) + "</security>\n")
+        f.write("\t<password>" + self.password + "</password>\n")
         f.write("</network>\n")
         f.close()
 
@@ -92,6 +97,8 @@ class XmlNetwork(object):
         self.devaddress = 1
         ## Security option
         self.security = 0
+        ## Encryption password (12 bytes)
+        self.password = ""
         # Read XML file
         self.read()
   
