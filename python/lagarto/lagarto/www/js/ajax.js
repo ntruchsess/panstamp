@@ -35,7 +35,10 @@ function loadXMLdata(filePath, callback, json)
 			if (dataDoc.readyState == 4)
 				callback();
 		}
-		dataDoc.load(dataFile);
+    if (!json)
+  		dataDoc.load(dataFile);
+    else
+      dataDoc = eval("(" + dataDoc.responseText + ")");
 	}
 	catch(e)
 	{
