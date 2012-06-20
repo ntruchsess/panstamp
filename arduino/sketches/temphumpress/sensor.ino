@@ -82,13 +82,14 @@ byte sensor_ReadByte(void)
 int sensor_ReadTempHum(void)
 {
   byte dhtData[5];
-  byte dht_in, i, dhtCrc;
-  int result, temperature, humidity;
-  
+  byte i, dhtCrc;
+  int temperature, humidity;
+  boolean success = false;
+
   // Power ON sensor
   dhtSensorON();
-  delay(400);
-  
+  delay(1500);
+
   setDataOutput();
   setDataPin();
    
@@ -100,23 +101,31 @@ int sensor_ReadTempHum(void)
   setDataInput();
   delayMicroseconds(40);
 
-  if ((dht_in = getDataPin()))
-    return -1;  // Start condition not met
+  if (!getDataPin())
+  {
+    // Start condition met
+    delayMicroseconds(80);	
+    if (getDataPin())
+    {
+      // Start condition met
+      delayMicroseconds(80);
 
-  delayMicroseconds(80);	
-  if (!(dht_in = getDataPin()))
-    return -1;  // Start condition not met
-  delayMicroseconds(80);
-
-  // Now ready for data reception 
-  for (i=0; i<5; i++)  
-    dhtData[i] = sensor_ReadByte();
+      // Now ready for data reception 
+      for (i=0; i<5; i++)  
+        dhtData[i] = sensor_ReadByte();
+      success = true;
+    }
+  }
 
   setDataOutput();
-  setDataPin();
-  
+  //setDataPin();
+  clearDataPin();
+
   // Power OFF sensor
   dhtSensorOFF();
+  
+  if (!success)
+    return -1;
   
   dhtCrc = dhtData[0] + dhtData[1] + dhtData[2] + dhtData[3];
 

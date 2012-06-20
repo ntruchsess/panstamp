@@ -89,6 +89,7 @@ void setup()
   panstamp.enterSystemState(SYSTATE_SYNC);
 
   // During 3 seconds, listen the network for possible commands whilst the LED blinks
+
   for(i=0 ; i<6 ; i++)
   {
     digitalWrite(LEDPIN, HIGH);
@@ -96,6 +97,7 @@ void setup()
     digitalWrite(LEDPIN, LOW);
     delay(400);
   }
+
   // Transmit periodic Tx interval
   getRegister(REGI_TXINTERVAL)->getData();
   // Transmit power voltage
@@ -117,6 +119,6 @@ void loop()
 //  digitalWrite(LEDPIN, LOW);
 
   // Sleep
-  panstamp.goToSleep();
+  panstamp.goToSleep(); 
 }
 
