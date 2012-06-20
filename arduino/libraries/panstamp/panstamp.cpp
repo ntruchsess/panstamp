@@ -290,7 +290,7 @@ void PANSTAMP::wakeUp(void)
 {
   // Exit from sleep
   sleep_disable();
-//  wdt_disable();
+  //wdt_disable();
   // Re-enable functions
   //clock_prescale_set(clock_div_1);
   power_all_enable();

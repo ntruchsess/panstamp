@@ -39,6 +39,7 @@ enum CUSTOM_REGINDEX                    \
   REGI_SYSSTATE,                        \
   REGI_FREQCHANNEL,                     \
   REGI_SECUOPTION,                      \
+  REGI_PASSWORD,                        \
   REGI_SECUNONCE,                       \
   REGI_NETWORKID,                       \
   REGI_DEVADDRESS,                      \
@@ -69,6 +70,9 @@ REGISTER regSysState(&panstamp.systemState, sizeof(panstamp.systemState), NULL, 
 REGISTER regFreqChannel(&panstamp.cc1101.channel, sizeof(panstamp.cc1101.channel), NULL, &setFreqChannel);                   \
 /* Security option */                                                                                                        \
 REGISTER regSecuOption(&panstamp.security, sizeof(panstamp.security), NULL, NULL);                                           \
+/* Security password (not implemented yet) */                                                                                \
+static byte dtPassword[1];                                                                                                   \
+REGISTER regPassword(dtPassword, sizeof(dtPassword), NULL, NULL);                                          \
 /* Security nonce */                                                                                                         \
 REGISTER regSecuNonce(&panstamp.nonce, sizeof(panstamp.nonce), NULL, NULL);                                                  \
 /* Network Id */                                                                                                             \
@@ -89,6 +93,7 @@ REGISTER *regTable[] = {             \
         &regSysState,                \
         &regFreqChannel,             \
         &regSecuOption,              \
+        &regPassword,                \
         &regSecuNonce,               \
         &regNetworkId,               \
         &regDevAddress,              \
