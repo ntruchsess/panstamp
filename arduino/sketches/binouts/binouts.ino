@@ -57,7 +57,7 @@ uint8_t binaryPin[] = {8, 14, 15, 16, 17, 18, 19, 7};
 /**
  * PWM output pins (Arduino pins)
  */
-uint8_t pwmPin[] = {3, 5, 6, 9};
+uint8_t pwmPin[] = {9, 6, 5, 3};
 
 /**
  * swapStatusReceived
@@ -81,7 +81,7 @@ uint8_t pwmPin[] = {3, 5, 6, 9};
 void setup()
 {
   int i;
-
+  
   pinMode(LEDPIN, OUTPUT);
   digitalWrite(LEDPIN, LOW);
 
@@ -93,6 +93,9 @@ void setup()
 
   // Init panStamp
   panstamp.init();
+
+  //byte password[] = {1,2,3,4,5,6,7,8,9,10,11,12};
+  //panstamp.setSmartPassword(password);
 
   // Transmit product code
   getRegister(REGI_PRODUCTCODE)->getData();

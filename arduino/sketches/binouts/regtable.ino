@@ -78,12 +78,15 @@ const void setBinOutputs(byte rId, byte *states)
 {
   byte i;
   
+  digitalWrite(LEDPIN, HIGH);
   // Update register
   memcpy(dtBinOutputs, states, sizeof(dtBinOutputs));
 
   // Control pins
   for(i=0 ; i<sizeof(binaryPin) ; i++)
     digitalWrite(binaryPin[i], (dtBinOutputs[0] >> i) & 0x01);
+    
+  digitalWrite(LEDPIN, LOW);
 }
 
 /**
@@ -98,11 +101,14 @@ const void setPwmOutputs(byte rId, byte *levels)
 {
   byte i;
   
+  digitalWrite(LEDPIN, HIGH);
   // Update register
   memcpy(dtPwmOutputs, levels, sizeof(dtPwmOutputs));
 
   // Control PWM outputs
   for(i=0 ; i<sizeof(pwmPin) ; i++)
     analogWrite(pwmPin[i], dtPwmOutputs[i]);
+    
+  digitalWrite(LEDPIN, LOW);
 }
 
