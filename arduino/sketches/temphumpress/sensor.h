@@ -55,10 +55,10 @@
  */
 // Temperature + Humidity (DHT11 or DHT22)
 #ifdef TEMPHUM
-#define PORTW_DHT_DATA    PORTD
-#define PORTR_DHT_DATA    PIND
-#define PORTD_DHT_DATA    DDRD
-#define BIT_DHT_DATA      6
+#define PORTW_DHT_DATA    PORTC
+#define PORTR_DHT_DATA    PINC
+#define PORTD_DHT_DATA    DDRC
+#define BIT_DHT_DATA      2
 
 #define setDataPin()      bitSet(PORTW_DHT_DATA, BIT_DHT_DATA)
 #define clearDataPin()    bitClear(PORTW_DHT_DATA, BIT_DHT_DATA)
@@ -66,7 +66,7 @@
 #define setDataInput()    bitClear(PORTD_DHT_DATA, BIT_DHT_DATA)
 #define setDataOutput()   bitSet(PORTD_DHT_DATA, BIT_DHT_DATA)
 
-#define PIN_PWRDHT        5
+#define PIN_PWRDHT        15
 #define dhtSensorON()     digitalWrite(PIN_PWRDHT, HIGH);
 #define dhtSensorOFF()    digitalWrite(PIN_PWRDHT, LOW);
 
@@ -78,8 +78,8 @@
 
 // Temperature only (TMP36)
 #elif TEMP
-#define PIN_ADCTEMP       3    // Analog pin
-#define PIN_PWRTEMP       18   // Digital pin
+#define PIN_ADCTEMP       2    // Analog pin
+#define PIN_PWRTEMP       15   // Digital pin
 #define tempSensorON();   digitalWrite(PIN_PWRTEMP, HIGH);
 #define tempSensorOFF();  digitalWrite(PIN_PWRTEMP, LOW);
 #endif
