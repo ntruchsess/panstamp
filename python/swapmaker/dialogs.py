@@ -182,7 +182,7 @@ class RegisterDialog(ConfigDialog):
     """
     Register editor dialog
     """
-    last_register_id = 10
+    last_register_id = 9
     
     def _create_controls(self):
         """
@@ -192,7 +192,7 @@ class RegisterDialog(ConfigDialog):
         self.add_to_layout(wx.TextCtrl(self, validator=TextValidator(self, "regname", regex="\S"),
                                        size=(150, 26)), "Register name")
         self.add_to_layout(wx.TextCtrl(self, validator=TextValidator(self, "regid", regex="^([1][1-9]|[2-9][0-9]|[1][0-9][0-9]|[2][0-1][0-9]|[22][0-5])$"),
-                                       size=(70, 26)), "Register ID (11-255)")
+                                       size=(70, 26)), "Register ID (10-255)")
 
         # Create list box
         self.list_parameters = wx.ListCtrl(self, -1, style=wx.LC_REPORT, size=(275, 150))
