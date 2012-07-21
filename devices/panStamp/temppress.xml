@@ -12,7 +12,7 @@
         </units>
       </endpoint>
     </reg>
-    <reg name="Temperature, Humidity and Pressure" id="12">
+    <reg name="Temperature and Pressure" id="12">
       <endpoint name="Temperature" type="num" dir="inp">
         <position>0</position>
         <size>2</size>
