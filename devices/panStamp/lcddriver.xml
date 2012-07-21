@@ -19,7 +19,7 @@
         <size>20</size>
       </endpoint>
     </reg>
-    <reg name="LCD line 0" id="14">
+    <reg name="LCD line 3" id="14">
       <endpoint name="LCD Line 3" type="str" dir="out">
         <size>20</size>
       </endpoint>
