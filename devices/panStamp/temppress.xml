@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <device>
   <developer>panStamp</developer>
-  <product>Triple Temperature-Humidity-Barometric sensor</product>
+  <product>Dual Temperature-Barometric pressure sensor</product>
   <pwrdownmode>true</pwrdownmode>
   <regular>
     <reg name="Voltage supply" id="11">
