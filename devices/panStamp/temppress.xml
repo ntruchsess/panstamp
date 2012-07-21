@@ -23,7 +23,7 @@
         </units>
       </endpoint>
       <endpoint name="Pressure" type="num" dir="inp">
-        <position>4</position>
+        <position>2</position>
         <size>4</size>
         <units>
           <unit name="Pa" factor="1" offset="0"/>
