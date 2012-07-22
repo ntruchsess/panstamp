@@ -46,8 +46,10 @@
  */
 #ifdef TEMP
   byte dtSensor[2];
-#else
+#elsif TEMPHUM
   byte dtSensor[4];
+#else
+  byte dtSensor[6];
 #endif
 
 /**

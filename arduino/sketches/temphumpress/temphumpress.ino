@@ -41,7 +41,8 @@
  * Pins: DHT_DATA (digital I/O) and PIN_PWRDHT (power pin)
  *
  * TEMPPRESS: Device measuring temperature and barometric pressure from
- * an I2C BMP085 sensor.
+ * an I2C BMP085 sensor. This sketch makes use of Adafruit's BMP085 library
+ * for Arduino: http://learn.adafruit.com/bmp085/using-the-bmp085
  * Pins: I2C port and PIN_PWRPRESS (Power pin)
  *
  * These devices are low-power enabled so they will enter low-power mode
@@ -102,7 +103,7 @@ void setup()
   getRegister(REGI_TXINTERVAL)->getData();
   // Transmit power voltage
   getRegister(REGI_VOLTSUPPLY)->getData();
-  // Switch to Rx OFF state
+   // Switch to Rx OFF state
   panstamp.enterSystemState(SYSTATE_RXOFF);
 }
 

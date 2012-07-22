@@ -29,8 +29,10 @@
 
 #ifdef TEMPPRESS
 #include "Wire.h"
-#include "BMP085.h"
-BMP085 bmp;
+//#include "BMP085.h"
+#include "Adafruit_BMP085.h"
+//BMP085 bmp;
+Adafruit_BMP085 bmp;
 #endif
 
 /**
@@ -197,17 +199,16 @@ int sensor_ReadTemp(void)
  */
 int sensor_ReadTempPress(void)
 {
-  pressSensorON();
   delay(400);
   unsigned int temperature = bmp.readTemperature() * 10 + 500;
-  unsigned int pressure = bmp.readPressure() / 100;  // mbar
+  unsigned long pressure = bmp.readPressure(); // Pa
 
   dtSensor[0] = (temperature >> 8) & 0xFF;
   dtSensor[1] = temperature & 0xFF;
-  dtSensor[2] = (pressure >> 8) & 0xFF;
-  dtSensor[3] = pressure & 0xFF;
-
-  pressSensorOFF();
+  dtSensor[2] = (pressure >> 24) & 0xFF;
+  dtSensor[3] = (pressure >> 16) & 0xFF;
+  dtSensor[4] = (pressure >> 8) & 0xFF;
+  dtSensor[5] = pressure & 0xFF;
 
   return 0;
 }
@@ -230,7 +231,7 @@ void initSensor(void)
   dhtSensorOFF();
 #elif TEMPPRESS
   pinMode(PIN_PWRPRESS, OUTPUT);  // Configure Power pin as output
-  pressSensorOFF();
+  pressSensorON();
   bmp.begin();
 #endif
 }
