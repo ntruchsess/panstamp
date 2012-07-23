@@ -115,6 +115,9 @@ void setup()
  */
 void loop()
 {
-  delay(10);
+  digitalWrite(LEDPIN, HIGH);
+  delay(100);
+  digitalWrite(LEDPIN, LOW);
+  delay(4900);
 }
 
