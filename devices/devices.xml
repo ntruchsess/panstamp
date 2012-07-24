@@ -9,5 +9,7 @@
     <dev id="6" name="bininps" label="Binary/Counter input module"/>
     <dev id="7" name="binouts" label="Binary/PWM output module"/>
     <dev id="8" name="lcddriver" label="Alphanumeric LCD driver"/>
+    <dev id="9" name="pulsegen" label="Programmable pulse generator"/>
+    <dev id="10" name="pulsecounter" label="Pulse counter"/>
   </developer>
 </devices>
