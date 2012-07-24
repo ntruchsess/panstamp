@@ -1,0 +1,108 @@
+Cmp-Mod V01 Created by CvPCB (2010-05-05 BZR 2356)-stable date = Thu 14 Jul 2011 07:33:26 PM CEST
+
+BeginCmp
+TimeStamp = /4CCA7974;
+Reference = C1;
+ValeurCmp = 15p;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4CCA7963;
+Reference = C2;
+ValeurCmp = 15p;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4CC05BEA;
+Reference = C3;
+ValeurCmp = 4.7u;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4CC05BEB;
+Reference = C4;
+ValeurCmp = 1u;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4CC05BEC;
+Reference = C5;
+ValeurCmp = 100n;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4CC05698;
+Reference = C6;
+ValeurCmp = 100n;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4CC93692;
+Reference = D1;
+ValeurCmp = LED;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4CC05810;
+Reference = D2;
+ValeurCmp = LED;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4CC057A3;
+Reference = D3;
+ValeurCmp = LED;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4CC05947;
+Reference = J1;
+ValeurCmp = USB_2;
+IdModule  = CONN_USB_A_MALE;
+EndCmp
+
+BeginCmp
+TimeStamp = /4CC9365B;
+Reference = R1;
+ValeurCmp = 470;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4CC0580F;
+Reference = R2;
+ValeurCmp = 1k;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4CC057A4;
+Reference = R3;
+ValeurCmp = 1k;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4E1F15A4;
+Reference = U1;
+ValeurCmp = PANSTAMP_02;
+IdModule  = PANSTAMP_02;
+EndCmp
+
+BeginCmp
+TimeStamp = /4CC05399;
+Reference = U2;
+ValeurCmp = FT232RL;
+IdModule  = ftdichip-3-SSOP28DB;
+EndCmp
+
+EndListe

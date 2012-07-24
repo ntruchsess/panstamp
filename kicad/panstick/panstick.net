@@ -1,0 +1,295 @@
+# EESchema Netlist Version 1.1 created  Mon 02 Jul 2012 12:41:18 PM CEST
+(
+ ( /4ECCD0D2 SM0603S  C7 100n {Lib=C}
+  (    1 +3.3V )
+  (    2 GND )
+ )
+ ( /4ECCD09F SM0603S  C8 100n {Lib=C}
+  (    1 +3.3V )
+  (    2 GND )
+ )
+ ( /4E1F15A4 PANSTAMP_02  U1 PANSTAMP_02 {Lib=PANSTAMP_02}
+  (    1 GND )
+  (    2 ? )
+  (    3 ? )
+  (    4 ? )
+  (    5 ? )
+  (    6 ? )
+  (    7 GND )
+  (    8 ? )
+  (    9 ? )
+  (   10 ? )
+  (   11 ? )
+  (   12 ? )
+  (   13 /RESET )
+  (   14 +3.3V )
+  (   15 GND )
+  (   16 /RXD )
+  (   17 /TXD )
+  (   18 ? )
+  (   19 N-000020 )
+  (   20 ? )
+  (   21 ? )
+  (   22 ? )
+  (   23 GND )
+  (   24 GND )
+  (   25 ? )
+  (   26 ? )
+  (   27 ? )
+  (   28 ? )
+  (   29 ? )
+ )
+ ( /4CCA7974 SM0603S  C1 15p {Lib=C}
+  (    1 N-000039 )
+  (    2 GND )
+ )
+ ( /4CCA7963 SM0603S  C2 15p {Lib=C}
+  (    1 N-000001 )
+  (    2 GND )
+ )
+ ( /4CC93692 SM0603S  D1 LED {Lib=LED}
+  (    1 N-000002 )
+  (    2 GND )
+ )
+ ( /4CC9365B SM0603S  R1 470 {Lib=R}
+  (    1 N-000002 )
+  (    2 N-000020 )
+ )
+ ( /4CC05BEC SM0603S  C5 100n {Lib=C}
+  (    1 /VBUS )
+  (    2 GND )
+ )
+ ( /4CC05BEB SM0603S  C4 1u {Lib=C}
+  (    1 /VBUS )
+  (    2 GND )
+ )
+ ( /4CC05BEA SM0603S  C3 4.7u {Lib=C}
+  (    1 /VBUS )
+  (    2 GND )
+ )
+ ( /4CC05947 CONN_USB_A_MALE  J1 USB_2 {Lib=USB_2}
+  (    1 /VBUS )
+  (    2 N-000039 )
+  (    3 N-000001 )
+  (    4 GND )
+ )
+ ( /4CC05810 SM0603S  D3 LED {Lib=LED}
+  (    1 /VBUS )
+  (    2 N-000034 )
+ )
+ ( /4CC0580F SM0603S  R3 1k {Lib=R}
+  (    1 N-000033 )
+  (    2 N-000034 )
+ )
+ ( /4CC057A4 SM0603S  R2 1k {Lib=R}
+  (    1 N-000035 )
+  (    2 N-000036 )
+ )
+ ( /4CC057A3 SM0603S  D2 LED {Lib=LED}
+  (    1 /VBUS )
+  (    2 N-000036 )
+ )
+ ( /4CC05698 SM0603S  C6 100n {Lib=C}
+  (    1 /RESET )
+  (    2 N-000022 )
+ )
+ ( /4CC05399 ftdichip-3-SSOP28DB  U2 FT232RL {Lib=FT232RL}
+  (    1 /RXD )
+  (    2 N-000022 )
+  (    3 ? )
+  (    4 +3.3V )
+  (    5 /TXD )
+  (    6 ? )
+  (    7 GND )
+  (    9 ? )
+  (   10 ? )
+  (   11 ? )
+  (   12 ? )
+  (   13 ? )
+  (   14 ? )
+  (   15 N-000001 )
+  (   16 N-000039 )
+  (   17 +3.3V )
+  (   18 GND )
+  (   19 /VBUS )
+  (   20 /VBUS )
+  (   21 GND )
+  (   22 N-000035 )
+  (   23 N-000033 )
+  (   25 GND )
+  (   26 GND )
+  (   27 ? )
+  (   28 ? )
+ )
+)
+*
+{ Allowed footprints by component:
+$component C7
+ SM*
+ C?
+ C1-1
+$endlist
+$component C8
+ SM*
+ C?
+ C1-1
+$endlist
+$component U1
+ PANSTAMP_02
+$endlist
+$component C1
+ SM*
+ C?
+ C1-1
+$endlist
+$component C2
+ SM*
+ C?
+ C1-1
+$endlist
+$component D1
+ LED-3MM
+ LED-5MM
+ LED-10MM
+ LED-0603
+ LED-0805
+ LED-1206
+ LEDV
+$endlist
+$component R1
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component C5
+ SM*
+ C?
+ C1-1
+$endlist
+$component C4
+ SM*
+ C?
+ C1-1
+$endlist
+$component C3
+ SM*
+ C?
+ C1-1
+$endlist
+$component D3
+ LED-3MM
+ LED-5MM
+ LED-10MM
+ LED-0603
+ LED-0805
+ LED-1206
+ LEDV
+$endlist
+$component R3
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R2
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component D2
+ LED-3MM
+ LED-5MM
+ LED-10MM
+ LED-0603
+ LED-0805
+ LED-1206
+ LEDV
+$endlist
+$component C6
+ SM*
+ C?
+ C1-1
+$endlist
+$endfootprintlist
+}
+{ Pin List by Nets
+Net 1 "" ""
+ J1 3
+ U2 15
+ C2 1
+Net 2 "" ""
+ R1 1
+ D1 1
+Net 14 "/RXD" "RXD"
+ U1 16
+ U2 1
+Net 16 "/TXD" "TXD"
+ U1 17
+ U2 5
+Net 20 "" ""
+ U1 19
+ R1 2
+Net 22 "" ""
+ C6 2
+ U2 2
+Net 24 "+3.3V" "+3.3V"
+ U2 17
+ U1 14
+ C8 1
+ C7 1
+ U2 4
+Net 32 "GND" "GND"
+ C7 2
+ C8 2
+ U1 1
+ U1 7
+ C3 2
+ C4 2
+ U2 18
+ U2 26
+ U2 25
+ U2 21
+ U2 7
+ U1 15
+ U1 24
+ U1 23
+ C5 2
+ D1 2
+ C2 2
+ C1 2
+ J1 4
+Net 33 "" ""
+ R3 1
+ U2 23
+Net 34 "" ""
+ R3 2
+ D3 2
+Net 35 "" ""
+ R2 1
+ U2 22
+Net 36 "" ""
+ R2 2
+ D2 2
+Net 37 "/RESET" "RESET"
+ C6 1
+ U1 13
+Net 38 "/VBUS" "VBUS"
+ D2 1
+ C5 1
+ C3 1
+ C4 1
+ D3 1
+ U2 19
+ J1 1
+ U2 20
+Net 39 "" ""
+ U2 16
+ C1 1
+ J1 2
+}
+#End
