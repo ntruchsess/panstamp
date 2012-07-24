@@ -78,11 +78,15 @@ class CcPacket(object):
                 raise SwapException("Incorrect packet format for incoming data. Lack of (RSSI,LQI).")
             if len(strPacket) % 2 > 0:
                 raise SwapException("Incorrect packet format. Amount of characters should not be odd.")
-            ## RSSI byte
-            self.rssi = int(strPacket[1:3], 16)
-            ## LQI byte
-            self.lqi = int(strPacket[3:5], 16)
-            # Parse data fields
-            for i in range(6, len(strPacket), 2):
-                byte = int(strPacket[i:i + 2], 16)
-                self.data.append(byte)
+            
+            try:
+                ## RSSI byte
+                self.rssi = int(strPacket[1:3], 16)
+                ## LQI byte
+                self.lqi = int(strPacket[3:5], 16)
+                # Parse data fields
+                for i in range(6, len(strPacket), 2):
+                    byte = int(strPacket[i:i + 2], 16)
+                    self.data.append(byte)
+            except ValueError:
+                SwapException("Incorrect packet format")

@@ -113,9 +113,10 @@ class SwapValue(object):
         @return True if the value passed as argument is equal to the current one. Return False
         otherwise
         """
-        if self.getLength() == value.getLength():
-            if self._data[:] == value.toList()[:]:
-                return True
+        if value is not None:       
+            if self.getLength() == value.getLength():
+                if self._data[:] == value.toList()[:]:
+                    return True
         return False
 
 
