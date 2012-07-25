@@ -1,4 +1,4 @@
-update=Fri 20 Jul 2012 07:23:55 PM CEST
+update=Tue 24 Jul 2012 06:36:28 PM CEST
 last_client=pcbnew
 [general]
 version=1
@@ -92,9 +92,9 @@ LibName46=microchip-mcp125x-xxx
 LibName47=toshiba
 [pcbnew]
 version=1
-PadDrlX=0
-PadDimH=1440
-PadDimV=800
+PadDrlX=1378
+PadDimH=1378
+PadDimV=1378
 BoardThickness=630
 SgPcb45=1
 TxtPcbV=800
@@ -107,7 +107,7 @@ DrawLar=150
 EdgeLar=150
 TxtLar=120
 MSegLar=150
-LastNetListRead=binouts.net
+LastNetListRead=output-board.net
 [pcbnew/libraries]
 LibDir=
 LibName1=sockets
