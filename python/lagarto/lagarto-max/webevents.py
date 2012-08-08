@@ -32,9 +32,10 @@ class WebEvent:
     """
     Web event
     """
+    working_dir = os.path.dirname(__file__)
     template_str = "from api import TimeAPI as clock, NetworkAPI as network, CloudAPI as cloud\n\nclass WebScripts:"
-    script_file = "webscripts.py"
-    tmp_file = "webscripts.tmp"
+    script_file = os.path.join(working_dir, "webscripts.py")
+    tmp_file = os.path.join(working_dir, "webscripts.tmp")
     
     @staticmethod
     def get_event_code(evnid):
