@@ -589,7 +589,7 @@ class SwapServer(threading.Thread):
         
         try:
             remote = urllib2.urlopen(XmlSettings.device_remote)
-            local = open(local_tar, 'w')
+            local = open(local_tar, 'wb')
             local.write(remote.read())
             local.close()
             
