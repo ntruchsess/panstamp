@@ -61,6 +61,11 @@
 #include "panstamp.h"
 
 /**
+ * Uncomment if you are reading Vcc from A7. All battery-boards do this
+ */
+//#define VOLT_SUPPLY_A7
+
+/**
  * LED pin
  */
 #define LEDPIN               4
@@ -117,6 +122,8 @@ void loop()
 //  digitalWrite(LEDPIN, HIGH);
   // Transmit sensor data
   getRegister(REGI_SENSOR)->getData();
+  // Transmit power voltage
+  getRegister(REGI_VOLTSUPPLY)->getData();
 //  digitalWrite(LEDPIN, LOW);
 
   // Sleep
