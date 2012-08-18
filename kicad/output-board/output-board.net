@@ -1,11 +1,15 @@
-# EESchema Netlist Version 1.1 created  Tue 24 Jul 2012 05:50:13 PM CEST
+# EESchema Netlist Version 1.1 created  Mon 06 Aug 2012 05:46:12 PM CEST
 (
+ ( /501FE68B SM1206  F1 FUSE {Lib=FUSE}
+  (    1 N-000009 )
+  (    2 +12V )
+ )
  ( /4FE47CB1 SM0603S  C11 100n {Lib=C}
-  (    1 VCC )
+  (    1 +3.3V )
   (    2 GND )
  )
  ( /4FE47C45 SIL-3  A6 CONN_3 {Lib=CONN_3}
-  (    1 VCC )
+  (    1 +3.3V )
   (    2 /A6 )
   (    3 GND )
  )
@@ -18,55 +22,55 @@
   (    2 GND )
  )
  ( /4F9E9A21 SM0603S  C5 100n {Lib=C}
-  (    1 N-000004 )
+  (    1 N-000007 )
   (    2 /RESET )
  )
  ( /4E2EDD72 SMA  D1 DIODESCH {Lib=DIODESCH}
-  (    1 N-000005 )
+  (    1 GND )
   (    2 +12V )
  )
  ( /4E2D91DA terminal_0.2_right_2  P1 CONN_2 {Lib=CONN_2}
   (    1 GND )
-  (    2 N-000005 )
+  (    2 N-000009 )
  )
  ( /4E2D137B PIN_ARRAY_5X1  P2 CONN_5 {Lib=CONN_5}
   (    1 /TXD )
   (    2 /RXD )
   (    3 GND )
-  (    4 VCC )
-  (    5 N-000004 )
+  (    4 +3.3V )
+  (    5 N-000007 )
  )
  ( /4E2D1265 SM0603S  D2 LED {Lib=LED}
-  (    1 N-000002 )
+  (    1 N-000005 )
   (    2 GND )
  )
  ( /4E2D1255 SM0603S  R1 470 {Lib=R}
-  (    1 N-000002 )
-  (    2 N-000012 )
+  (    1 N-000005 )
+  (    2 N-000015 )
  )
  ( /4E2D1188 PANSTAMP_02  U1 PANSTAMP_02 {Lib=PANSTAMP_02}
   (    1 GND )
-  (    2 N-000027 )
-  (    3 N-000023 )
-  (    4 N-000026 )
-  (    5 N-000013 )
-  (    6 N-000025 )
+  (    2 BINOUT0 )
+  (    3 PWMOUT0 )
+  (    4 BINOUT1 )
+  (    5 BINOUT2 )
+  (    6 BINOUT3 )
   (    7 GND )
-  (    8 N-000014 )
-  (    9 N-000024 )
-  (   10 N-000015 )
+  (    8 BINOUT4 )
+  (    9 BINOUT5 )
+  (   10 BINOUT6 )
   (   11 /A6 )
   (   12 ? )
   (   13 /RESET )
-  (   14 VCC )
+  (   14 +3.3V )
   (   15 GND )
   (   16 /RXD )
   (   17 /TXD )
-  (   18 N-000011 )
-  (   19 N-000012 )
-  (   20 N-000022 )
-  (   21 N-000017 )
-  (   22 N-000018 )
+  (   18 PWMOUT3 )
+  (   19 N-000015 )
+  (   20 PWMOUT2 )
+  (   21 PWMOUT1 )
+  (   22 BINOUT7 )
   (   23 GND )
   (   24 GND )
   (   25 ? )
@@ -78,39 +82,19 @@
  ( /4BFFD798 SOT223  U2 UA78M33 {Lib=LF33}
   (    1 +12V )
   (    2 GND )
-  (    3 VCC )
+  (    3 +3.3V )
  )
  ( /48B3CBEC SM0603S  C4 100n {Lib=C}
-  (    1 VCC )
+  (    1 +3.3V )
   (    2 GND )
  )
  ( /48B2D4E6 SMDCPOL_5  C2 22u {Lib=CP1}
-  (    1 VCC )
+  (    1 +3.3V )
   (    2 GND )
  )
  ( /48B2D401 SM0603S  C3 1u {Lib=C}
-  (    1 VCC )
+  (    1 +3.3V )
   (    2 GND )
- )
- ( /4FAD1A96/500EC2D9 SM0603S  C12 100n {Lib=C}
-  (    1 VCC )
-  (    2 GND )
- )
- ( /4FAD1A96/500EBFA8 SO14E  U12 74LS125 {Lib=74LS125}
-  (    1 GND )
-  (    2 N-000017 )
-  (    3 N-000077 )
-  (    4 GND )
-  (    5 N-000023 )
-  (    6 N-000089 )
-  (    7 GND )
-  (    8 N-000082 )
-  (    9 N-000011 )
-  (   10 GND )
-  (   11 N-000079 )
-  (   12 N-000022 )
-  (   13 GND )
-  (   14 VCC )
  )
  ( /4FAD1A96/4FD8C292 SM0603S  C10 100n {Lib=C}
   (    1 +12V )
@@ -118,156 +102,156 @@
  )
  ( /4FAD1A96/4FCC6AA0 SM0603S  R33 10k {Lib=R}
   (    1 GND )
-  (    2 N-000090 )
- )
- ( /4FAD1A96/4FCC6A9C SM0603S  R35 22k {Lib=R}
-  (    1 N-000090 )
-  (    2 N-000084 )
- )
- ( /4FAD1A96/4FCC6A9B SM0603S  R31 10K {Lib=R}
-  (    1 N-000080 )
   (    2 N-000079 )
  )
+ ( /4FAD1A96/4FCC6A9C SM0603S  R35 22k {Lib=R}
+  (    1 N-000079 )
+  (    2 N-000078 )
+ )
+ ( /4FAD1A96/4FCC6A9B SM0603S  R31 10K {Lib=R}
+  (    1 N-000083 )
+  (    2 PWMOUT2 )
+ )
  ( /4FAD1A96/4FCC6A9A SM0603S  C8 4.7u {Lib=C}
-  (    1 N-000080 )
+  (    1 N-000083 )
   (    2 GND )
  )
  ( /4FAD1A96/4FCC6A98 $noname  VOUT2 CONN_2 {Lib=CONN_2}
-  (    1 N-000084 )
+  (    1 N-000078 )
   (    2 GND )
  )
  ( /4FAD1A96/4FCC6A96 SO14E  U11 LM324 {Lib=LM324}
-  (    1 N-000088 )
-  (    2 N-000087 )
-  (    3 N-000083 )
+  (    1 N-000087 )
+  (    2 N-000086 )
+  (    3 N-000085 )
   (    4 +12V )
-  (    5 N-000078 )
-  (    6 N-000086 )
-  (    7 N-000093 )
-  (    8 N-000084 )
-  (    9 N-000090 )
-  (   10 N-000080 )
+  (    5 N-000084 )
+  (    6 N-000089 )
+  (    7 N-000088 )
+  (    8 N-000078 )
+  (    9 N-000079 )
+  (   10 N-000083 )
   (   11 GND )
-  (   12 N-000081 )
-  (   13 N-000091 )
-  (   14 N-000092 )
+  (   12 N-000082 )
+  (   13 N-000080 )
+  (   14 N-000081 )
  )
  ( /4FAD1A96/4FCC6A8F $noname  VOUT1 CONN_2 {Lib=CONN_2}
-  (    1 N-000092 )
+  (    1 N-000081 )
   (    2 GND )
  )
  ( /4FAD1A96/4FCC6A8D SM0603S  C9 4.7u {Lib=C}
-  (    1 N-000081 )
+  (    1 N-000082 )
   (    2 GND )
  )
  ( /4FAD1A96/4FCC6A8C SM0603S  R32 10K {Lib=R}
-  (    1 N-000081 )
-  (    2 N-000082 )
+  (    1 N-000082 )
+  (    2 PWMOUT3 )
  )
  ( /4FAD1A96/4FCC6A8B SM0603S  R36 22k {Lib=R}
-  (    1 N-000091 )
-  (    2 N-000092 )
+  (    1 N-000080 )
+  (    2 N-000081 )
  )
  ( /4FAD1A96/4FCC6A87 SM0603S  R34 10k {Lib=R}
   (    1 GND )
-  (    2 N-000091 )
+  (    2 N-000080 )
  )
  ( /4FAD1A96/4FCC6A86 SM0603S  R27 10k {Lib=R}
   (    1 GND )
-  (    2 N-000086 )
+  (    2 N-000089 )
  )
  ( /4FAD1A96/4FCC6A82 SM0603S  R28 22k {Lib=R}
-  (    1 N-000086 )
-  (    2 N-000093 )
+  (    1 N-000089 )
+  (    2 N-000088 )
  )
  ( /4FAD1A96/4FCC6A81 SM0603S  R26 10K {Lib=R}
-  (    1 N-000078 )
-  (    2 N-000077 )
+  (    1 N-000084 )
+  (    2 PWMOUT1 )
  )
  ( /4FAD1A96/4FCC6A80 SM0603S  C7 4.7u {Lib=C}
-  (    1 N-000078 )
+  (    1 N-000084 )
   (    2 GND )
  )
  ( /4FAD1A96/4FCC6A7E $noname  VOUT3 CONN_2 {Lib=CONN_2}
-  (    1 N-000093 )
-  (    2 GND )
- )
- ( /4FAD1A96/4FAD27A8 $noname  VOUT4 CONN_2 {Lib=CONN_2}
   (    1 N-000088 )
   (    2 GND )
  )
+ ( /4FAD1A96/4FAD27A8 $noname  VOUT4 CONN_2 {Lib=CONN_2}
+  (    1 N-000087 )
+  (    2 GND )
+ )
  ( /4FAD1A96/4FAD1E4C SM0603S  C6 4.7u {Lib=C}
-  (    1 N-000083 )
+  (    1 N-000085 )
   (    2 GND )
  )
  ( /4FAD1A96/4FAD1DDC SM0603S  R24 10K {Lib=R}
-  (    1 N-000083 )
-  (    2 N-000089 )
+  (    1 N-000085 )
+  (    2 PWMOUT0 )
  )
  ( /4FAD1A96/4FAD1D96 SM0603S  R22 22k {Lib=R}
-  (    1 N-000087 )
-  (    2 N-000088 )
+  (    1 N-000086 )
+  (    2 N-000087 )
  )
  ( /4FAD1A96/4FAD1BEA SM0603S  R20 10k {Lib=R}
   (    1 GND )
-  (    2 N-000087 )
+  (    2 N-000086 )
  )
  ( /4FACEA45/4FAD19D2 SM0603S  R10 470 {Lib=R}
-  (    1 N-000039 )
-  (    2 N-000014 )
+  (    1 N-000035 )
+  (    2 BINOUT4 )
  )
  ( /4FACEA45/4FAD19D1 SM0603_POL  D11 LED {Lib=LED}
-  (    1 N-000039 )
+  (    1 N-000035 )
   (    2 GND )
  )
  ( /4FACEA45/4FAD19CF BORNIER3  BIN5 CONN_3 {Lib=CONN_3}
-  (    1 N-000040 )
-  (    2 N-000068 )
-  (    3 N-000041 )
+  (    1 N-000074 )
+  (    2 N-000036 )
+  (    3 N-000033 )
  )
  ( /4FACEA45/4FAD19CD SMA  D15 DIODE {Lib=DIODE}
-  (    1 N-000074 )
+  (    1 N-000037 )
   (    2 +12V )
  )
  ( /4FACEA45/4FAD19CC SOT23EBC  Q5 NPN {Lib=NPN}
   (    1 GND )
-  (    2 N-000069 )
-  (    3 N-000074 )
+  (    2 N-000034 )
+  (    3 N-000037 )
  )
  ( /4FACEA45/4FAD19CB SONGLE_RELAY_10A  U7 SONGLE_RELAY_10A {Lib=SONGLE_RELAY_10A}
   (    1 +12V )
-  (    2 N-000068 )
-  (    3 N-000074 )
-  (    4 N-000040 )
-  (    5 N-000041 )
+  (    2 N-000036 )
+  (    3 N-000037 )
+  (    4 N-000074 )
+  (    5 N-000033 )
  )
  ( /4FACEA45/4FAD19CA SM0603S  R14 1k {Lib=R}
-  (    1 N-000014 )
-  (    2 N-000069 )
+  (    1 BINOUT4 )
+  (    2 N-000034 )
  )
  ( /4FACEA45/4FAD19C9 SM0603S  R15 1k {Lib=R}
-  (    1 N-000024 )
-  (    2 N-000071 )
+  (    1 BINOUT5 )
+  (    2 N-000062 )
  )
  ( /4FACEA45/4FAD19C8 SONGLE_RELAY_10A  U8 SONGLE_RELAY_10A {Lib=SONGLE_RELAY_10A}
   (    1 +12V )
-  (    2 N-000070 )
-  (    3 N-000076 )
-  (    4 N-000064 )
+  (    2 N-000064 )
+  (    3 N-000075 )
+  (    4 N-000063 )
   (    5 N-000065 )
  )
  ( /4FACEA45/4FAD19C7 SOT23EBC  Q6 NPN {Lib=NPN}
   (    1 GND )
-  (    2 N-000071 )
-  (    3 N-000076 )
+  (    2 N-000062 )
+  (    3 N-000075 )
  )
  ( /4FACEA45/4FAD19C6 SMA  D16 DIODE {Lib=DIODE}
-  (    1 N-000076 )
+  (    1 N-000075 )
   (    2 +12V )
  )
  ( /4FACEA45/4FAD19C4 BORNIER3  BIN6 CONN_3 {Lib=CONN_3}
-  (    1 N-000064 )
-  (    2 N-000070 )
+  (    1 N-000063 )
+  (    2 N-000064 )
   (    3 N-000065 )
  )
  ( /4FACEA45/4FAD19C2 SM0603_POL  D12 LED {Lib=LED}
@@ -276,86 +260,86 @@
  )
  ( /4FACEA45/4FAD19C1 SM0603S  R11 470 {Lib=R}
   (    1 N-000066 )
-  (    2 N-000024 )
+  (    2 BINOUT5 )
  )
  ( /4FACEA45/4FAD19C0 SM0603S  R13 470 {Lib=R}
-  (    1 N-000047 )
-  (    2 N-000018 )
+  (    1 N-000067 )
+  (    2 BINOUT7 )
  )
  ( /4FACEA45/4FAD19BF SM0603_POL  D14 LED {Lib=LED}
-  (    1 N-000047 )
+  (    1 N-000067 )
   (    2 GND )
  )
  ( /4FACEA45/4FAD19BD BORNIER3  BIN8 CONN_3 {Lib=CONN_3}
-  (    1 N-000046 )
-  (    2 N-000072 )
-  (    3 N-000067 )
+  (    1 N-000059 )
+  (    2 N-000061 )
+  (    3 N-000060 )
  )
  ( /4FACEA45/4FAD19BB SMA  D18 DIODE {Lib=DIODE}
-  (    1 N-000075 )
+  (    1 N-000077 )
   (    2 +12V )
  )
  ( /4FACEA45/4FAD19BA SOT23EBC  Q8 NPN {Lib=NPN}
   (    1 GND )
-  (    2 N-000073 )
-  (    3 N-000075 )
+  (    2 N-000069 )
+  (    3 N-000077 )
  )
  ( /4FACEA45/4FAD19B9 SONGLE_RELAY_10A  U10 SONGLE_RELAY_10A {Lib=SONGLE_RELAY_10A}
   (    1 +12V )
-  (    2 N-000072 )
-  (    3 N-000075 )
-  (    4 N-000046 )
-  (    5 N-000067 )
+  (    2 N-000061 )
+  (    3 N-000077 )
+  (    4 N-000059 )
+  (    5 N-000060 )
  )
  ( /4FACEA45/4FAD19B8 SM0603S  R17 1k {Lib=R}
-  (    1 N-000018 )
-  (    2 N-000073 )
+  (    1 BINOUT7 )
+  (    2 N-000069 )
  )
  ( /4FACEA45/4FAD19B7 SM0603S  R16 1k {Lib=R}
-  (    1 N-000015 )
-  (    2 N-000052 )
+  (    1 BINOUT6 )
+  (    2 N-000070 )
  )
  ( /4FACEA45/4FAD19B6 SONGLE_RELAY_10A  U9 SONGLE_RELAY_10A {Lib=SONGLE_RELAY_10A}
   (    1 +12V )
-  (    2 N-000042 )
-  (    3 N-000051 )
-  (    4 N-000049 )
-  (    5 N-000050 )
+  (    2 N-000072 )
+  (    3 N-000076 )
+  (    4 N-000071 )
+  (    5 N-000073 )
  )
  ( /4FACEA45/4FAD19B5 SOT23EBC  Q7 NPN {Lib=NPN}
   (    1 GND )
-  (    2 N-000052 )
-  (    3 N-000051 )
+  (    2 N-000070 )
+  (    3 N-000076 )
  )
  ( /4FACEA45/4FAD19B4 SMA  D17 DIODE {Lib=DIODE}
-  (    1 N-000051 )
+  (    1 N-000076 )
   (    2 +12V )
  )
  ( /4FACEA45/4FAD19B2 BORNIER3  BIN7 CONN_3 {Lib=CONN_3}
-  (    1 N-000049 )
-  (    2 N-000042 )
-  (    3 N-000050 )
+  (    1 N-000071 )
+  (    2 N-000072 )
+  (    3 N-000073 )
  )
  ( /4FACEA45/4FAD19B0 SM0603_POL  D13 LED {Lib=LED}
-  (    1 N-000048 )
+  (    1 N-000068 )
   (    2 GND )
  )
  ( /4FACEA45/4FAD19AF SM0603S  R12 470 {Lib=R}
-  (    1 N-000048 )
-  (    2 N-000015 )
+  (    1 N-000068 )
+  (    2 BINOUT6 )
  )
  ( /4FACEA45/4FAD199E SM0603S  R4 470 {Lib=R}
-  (    1 N-000059 )
-  (    2 N-000013 )
+  (    1 N-000048 )
+  (    2 BINOUT2 )
  )
  ( /4FACEA45/4FAD199D SM0603_POL  D5 LED {Lib=LED}
-  (    1 N-000059 )
+  (    1 N-000048 )
   (    2 GND )
  )
  ( /4FACEA45/4FAD199B BORNIER3  BIN3 CONN_3 {Lib=CONN_3}
-  (    1 N-000058 )
+  (    1 N-000047 )
   (    2 N-000043 )
-  (    3 N-000057 )
+  (    3 N-000046 )
  )
  ( /4FACEA45/4FAD1999 SMA  D9 DIODE {Lib=DIODE}
   (    1 N-000045 )
@@ -370,89 +354,89 @@
   (    1 +12V )
   (    2 N-000043 )
   (    3 N-000045 )
-  (    4 N-000058 )
-  (    5 N-000057 )
+  (    4 N-000047 )
+  (    5 N-000046 )
  )
  ( /4FACEA45/4FAD1996 SM0603S  R8 1k {Lib=R}
-  (    1 N-000013 )
+  (    1 BINOUT2 )
   (    2 N-000044 )
  )
  ( /4FACEA45/4FAD1995 SM0603S  R9 1k {Lib=R}
-  (    1 N-000025 )
-  (    2 N-000053 )
+  (    1 BINOUT3 )
+  (    2 N-000042 )
  )
  ( /4FACEA45/4FAD1994 SONGLE_RELAY_10A  U6 SONGLE_RELAY_10A {Lib=SONGLE_RELAY_10A}
   (    1 +12V )
-  (    2 N-000054 )
-  (    3 N-000063 )
-  (    4 N-000061 )
-  (    5 N-000062 )
+  (    2 N-000055 )
+  (    3 N-000041 )
+  (    4 N-000039 )
+  (    5 N-000040 )
  )
  ( /4FACEA45/4FAD1993 SOT23EBC  Q4 NPN {Lib=NPN}
   (    1 GND )
-  (    2 N-000053 )
-  (    3 N-000063 )
+  (    2 N-000042 )
+  (    3 N-000041 )
  )
  ( /4FACEA45/4FAD1992 SMA  D10 DIODE {Lib=DIODE}
-  (    1 N-000063 )
+  (    1 N-000041 )
   (    2 +12V )
  )
  ( /4FACEA45/4FAD1990 BORNIER3  BIN4 CONN_3 {Lib=CONN_3}
-  (    1 N-000061 )
-  (    2 N-000054 )
-  (    3 N-000062 )
+  (    1 N-000039 )
+  (    2 N-000055 )
+  (    3 N-000040 )
  )
  ( /4FACEA45/4FAD198E SM0603_POL  D6 LED {Lib=LED}
-  (    1 N-000060 )
+  (    1 N-000038 )
   (    2 GND )
  )
  ( /4FACEA45/4FAD198D SM0603S  R5 470 {Lib=R}
-  (    1 N-000060 )
-  (    2 N-000025 )
+  (    1 N-000038 )
+  (    2 BINOUT3 )
  )
  ( /4FACEA45/4FAD1988 SM0603S  R3 470 {Lib=R}
-  (    1 N-000036 )
-  (    2 N-000026 )
+  (    1 N-000051 )
+  (    2 BINOUT1 )
  )
  ( /4FACEA45/4FAD1987 SM0603_POL  D4 LED {Lib=LED}
-  (    1 N-000036 )
+  (    1 N-000051 )
   (    2 GND )
  )
  ( /4FACEA45/4FAD1985 BORNIER3  BIN2 CONN_3 {Lib=CONN_3}
-  (    1 N-000035 )
-  (    2 N-000055 )
-  (    3 N-000034 )
+  (    1 N-000050 )
+  (    2 N-000056 )
+  (    3 N-000049 )
  )
  ( /4FACEA45/4FAD1983 SMA  D8 DIODE {Lib=DIODE}
-  (    1 N-000033 )
+  (    1 N-000058 )
   (    2 +12V )
  )
  ( /4FACEA45/4FAD1982 SOT23EBC  Q2 NPN {Lib=NPN}
   (    1 GND )
-  (    2 N-000056 )
-  (    3 N-000033 )
+  (    2 N-000057 )
+  (    3 N-000058 )
  )
  ( /4FACEA45/4FAD1981 SONGLE_RELAY_10A  U4 SONGLE_RELAY_10A {Lib=SONGLE_RELAY_10A}
   (    1 +12V )
-  (    2 N-000055 )
-  (    3 N-000033 )
-  (    4 N-000035 )
-  (    5 N-000034 )
+  (    2 N-000056 )
+  (    3 N-000058 )
+  (    4 N-000050 )
+  (    5 N-000049 )
  )
  ( /4FACEA45/4FAD1980 SM0603S  R7 1k {Lib=R}
-  (    1 N-000026 )
-  (    2 N-000056 )
+  (    1 BINOUT1 )
+  (    2 N-000057 )
  )
  ( /4FACEA45/4FAD14DF SM0603S  R6 1k {Lib=R}
-  (    1 N-000027 )
+  (    1 BINOUT0 )
   (    2 N-000031 )
  )
  ( /4FACEA45/4FAD14DE SONGLE_RELAY_10A  U3 SONGLE_RELAY_10A {Lib=SONGLE_RELAY_10A}
   (    1 +12V )
   (    2 N-000032 )
   (    3 N-000030 )
-  (    4 N-000038 )
-  (    5 N-000029 )
+  (    4 N-000053 )
+  (    5 N-000054 )
  )
  ( /4FACEA45/4FAD14DD SOT23EBC  Q1 NPN {Lib=NPN}
   (    1 GND )
@@ -464,17 +448,17 @@
   (    2 +12V )
  )
  ( /4FACEA45/4FAD14DA BORNIER3  BIN1 CONN_3 {Lib=CONN_3}
-  (    1 N-000038 )
+  (    1 N-000053 )
   (    2 N-000032 )
-  (    3 N-000029 )
+  (    3 N-000054 )
  )
  ( /4FACEA45/4FAD14D8 SM0603_POL  D3 LED {Lib=LED}
-  (    1 N-000037 )
+  (    1 N-000052 )
   (    2 GND )
  )
  ( /4FACEA45/4FAD14D7 SM0603S  R2 470 {Lib=R}
-  (    1 N-000037 )
-  (    2 N-000027 )
+  (    1 N-000052 )
+  (    2 BINOUT0 )
  )
 )
 *
@@ -529,11 +513,6 @@ $component C2
  SM*
 $endlist
 $component C3
- SM*
- C?
- C1-1
-$endlist
-$component C12
  SM*
  C?
  C1-1
@@ -890,384 +869,360 @@ $endlist
 $endfootprintlist
 }
 { Pin List by Nets
-Net 1 "GND" "GND"
- Q1 1
- R27 1
- Q3 1
- D6 2
- VOUT3 2
- Q4 1
- C7 2
- D14 2
- C9 2
- D12 2
- R34 1
- Q2 1
- D4 2
- D3 2
- D11 2
- U12 4
- U12 7
- C11 2
- Q5 1
- U11 11
- U12 13
- U12 7
- U12 10
- U12 7
- U12 1
- R33 1
- C10 2
- Q8 1
- D5 2
- D13 2
- C6 2
- Q6 1
- R20 1
- U12 7
- C12 2
- U11 11
- Q7 1
- VOUT4 2
- VOUT1 2
- U1 23
- U1 7
- C3 2
- C2 2
- C4 2
- U11 11
- U2 2
- U11 11
- U1 15
- U1 24
- C1 2
- A6 3
- VOUT2 2
- P1 1
- SW1 1
- U1 1
- P2 3
- C8 2
- D2 2
-Net 2 "" ""
- R1 1
- D2 1
-Net 4 "" ""
- P2 5
- C5 1
-Net 5 "" ""
- D1 1
- P1 2
-Net 11 "" ""
- U1 18
- U12 9
-Net 12 "" ""
- R1 2
- U1 19
-Net 13 "" ""
- R4 2
- U1 5
- R8 1
-Net 14 "" ""
- R14 1
- U1 8
- R10 2
-Net 15 "" ""
- R12 2
- R16 1
- U1 10
-Net 16 "/A6" "A6"
- A6 2
- U1 11
-Net 17 "" ""
- U1 21
- U12 2
-Net 18 "" ""
- U1 22
- R17 1
- R13 2
-Net 19 "/RESET" "RESET"
- SW1 2
- U1 13
- C5 2
-Net 20 "/RXD" "RXD"
- U1 16
- P2 2
-Net 21 "/TXD" "TXD"
+Net 1 "/TXD" "TXD"
  U1 17
  P2 1
-Net 22 "" ""
- U12 12
- U1 20
-Net 23 "" ""
+Net 2 "/RXD" "RXD"
+ U1 16
+ P2 2
+Net 3 "GND" "GND"
+ C10 2
+ R33 1
+ U11 11
+ C11 2
+ A6 3
+ D14 2
+ Q2 1
+ D3 2
+ Q5 1
+ Q1 1
+ Q4 1
+ D4 2
+ D6 2
+ D11 2
+ Q7 1
+ Q3 1
+ D5 2
+ D13 2
+ D12 2
+ Q6 1
+ Q8 1
+ C8 2
+ VOUT2 2
+ U11 11
+ U2 2
+ C4 2
+ C2 2
+ C3 2
+ U1 1
+ U11 11
+ P2 3
+ VOUT1 2
+ D2 2
+ SW1 1
+ C9 2
+ C1 2
+ D1 1
+ R34 1
+ P1 1
+ R27 1
+ R20 1
+ U1 23
+ U1 24
+ U1 15
+ C7 2
+ VOUT3 2
+ C6 2
+ VOUT4 2
+ U11 11
+ U1 7
+Net 4 "+3.3V" "+3.3V"
+ C2 1
+ C3 1
+ P2 4
+ U2 3
+ U1 14
+ C4 1
+ A6 1
+ C11 1
+Net 5 "" ""
+ R1 1
+ D2 1
+Net 7 "" ""
+ P2 5
+ C5 1
+Net 8 "/RESET" "RESET"
+ U1 13
+ SW1 2
+ C5 2
+Net 9 "" ""
+ F1 1
+ P1 2
+Net 15 "" ""
+ R1 2
+ U1 19
+Net 16 "BINOUT0" "BINOUT0"
+ R2 2
+ U1 2
+ R6 1
+Net 17 "PWMOUT0" "PWMOUT0"
+ R24 2
  U1 3
- U12 5
-Net 24 "" ""
- R11 2
- R15 1
- U1 9
-Net 25 "" ""
- R5 2
- R9 1
- U1 6
-Net 26 "" ""
+Net 18 "BINOUT1" "BINOUT1"
+ R7 1
  R3 2
  U1 4
- R7 1
-Net 27 "" ""
- U1 2
- R2 2
- R6 1
-Net 28 "+12V" "+12V"
- C1 1
- D15 2
- U8 1
- D1 2
- U7 1
+Net 19 "BINOUT3" "BINOUT3"
+ U1 6
+ R9 1
+ R5 2
+Net 20 "BINOUT5" "BINOUT5"
+ R15 1
+ U1 9
+ R11 2
+Net 21 "PWMOUT2" "PWMOUT2"
+ R31 2
+ U1 20
+Net 22 "/A6" "A6"
+ A6 2
+ U1 11
+Net 23 "+12V" "+12V"
+ U4 1
+ U3 1
+ D18 2
+ U10 1
+ D16 2
+ D9 2
+ U9 1
+ D17 2
+ U11 4
+ U11 4
  U2 1
  U11 4
+ D1 2
+ C1 1
  U11 4
- U9 1
- U10 1
- D18 2
- D17 2
- D7 2
- U11 4
- U3 1
- U6 1
+ F1 2
  C10 1
- U5 1
- D9 2
- U11 4
+ D7 2
  D10 2
+ U6 1
  D8 2
- U4 1
- D16 2
-Net 29 "" ""
- U3 5
- BIN1 3
+ U5 1
+ U8 1
+ U7 1
+ D15 2
+Net 24 "PWMOUT1" "PWMOUT1"
+ U1 21
+ R26 2
+Net 25 "PWMOUT3" "PWMOUT3"
+ U1 18
+ R32 2
+Net 26 "BINOUT7" "BINOUT7"
+ R13 2
+ R17 1
+ U1 22
+Net 27 "BINOUT6" "BINOUT6"
+ R16 1
+ U1 10
+ R12 2
+Net 28 "BINOUT4" "BINOUT4"
+ R10 2
+ R14 1
+ U1 8
+Net 29 "BINOUT2" "BINOUT2"
+ R8 1
+ U1 5
+ R4 2
 Net 30 "" ""
- D7 1
  U3 3
  Q1 3
+ D7 1
 Net 31 "" ""
  R6 2
  Q1 2
 Net 32 "" ""
- BIN1 2
  U3 2
+ BIN1 2
 Net 33 "" ""
- U4 3
- D8 1
- Q2 3
-Net 34 "" ""
- BIN2 3
- U4 5
-Net 35 "" ""
- BIN2 1
- U4 4
-Net 36 "" ""
- R3 1
- D4 1
-Net 37 "" ""
- D3 1
- R2 1
-Net 38 "" ""
- BIN1 1
- U3 4
-Net 39 "" ""
- R10 1
- D11 1
-Net 40 "" ""
- U7 4
- BIN5 1
-Net 41 "" ""
- U7 5
  BIN5 3
+ U7 5
+Net 34 "" ""
+ R14 2
+ Q5 2
+Net 35 "" ""
+ D11 1
+ R10 1
+Net 36 "" ""
+ BIN5 2
+ U7 2
+Net 37 "" ""
+ D15 1
+ Q5 3
+ U7 3
+Net 38 "" ""
+ R5 1
+ D6 1
+Net 39 "" ""
+ BIN4 1
+ U6 4
+Net 40 "" ""
+ U6 5
+ BIN4 3
+Net 41 "" ""
+ U6 3
+ Q4 3
+ D10 1
 Net 42 "" ""
- U9 2
- BIN7 2
+ Q4 2
+ R9 2
 Net 43 "" ""
  BIN3 2
  U5 2
 Net 44 "" ""
- R8 2
  Q3 2
+ R8 2
 Net 45 "" ""
  Q3 3
- U5 3
  D9 1
+ U5 3
 Net 46 "" ""
- BIN8 1
- U10 4
-Net 47 "" ""
- D14 1
- R13 1
-Net 48 "" ""
- D13 1
- R12 1
-Net 49 "" ""
- U9 4
- BIN7 1
-Net 50 "" ""
- BIN7 3
- U9 5
-Net 51 "" ""
- U9 3
- Q7 3
- D17 1
-Net 52 "" ""
- Q7 2
- R16 2
-Net 53 "" ""
- R9 2
- Q4 2
-Net 54 "" ""
- BIN4 2
- U6 2
-Net 55 "" ""
- BIN2 2
- U4 2
-Net 56 "" ""
- R7 2
- Q2 2
-Net 57 "" ""
  U5 5
  BIN3 3
-Net 58 "" ""
- BIN3 1
+Net 47 "" ""
  U5 4
-Net 59 "" ""
+ BIN3 1
+Net 48 "" ""
  D5 1
  R4 1
+Net 49 "" ""
+ BIN2 3
+ U4 5
+Net 50 "" ""
+ U4 4
+ BIN2 1
+Net 51 "" ""
+ D4 1
+ R3 1
+Net 52 "" ""
+ R2 1
+ D3 1
+Net 53 "" ""
+ BIN1 1
+ U3 4
+Net 54 "" ""
+ BIN1 3
+ U3 5
+Net 55 "" ""
+ BIN4 2
+ U6 2
+Net 56 "" ""
+ BIN2 2
+ U4 2
+Net 57 "" ""
+ R7 2
+ Q2 2
+Net 58 "" ""
+ Q2 3
+ U4 3
+ D8 1
+Net 59 "" ""
+ BIN8 1
+ U10 4
 Net 60 "" ""
- R5 1
- D6 1
+ U10 5
+ BIN8 3
 Net 61 "" ""
- BIN4 1
- U6 4
+ U10 2
+ BIN8 2
 Net 62 "" ""
- BIN4 3
- U6 5
+ R15 2
+ Q6 2
 Net 63 "" ""
- U6 3
- D10 1
- Q4 3
-Net 64 "" ""
  U8 4
  BIN6 1
+Net 64 "" ""
+ U8 2
+ BIN6 2
 Net 65 "" ""
  U8 5
  BIN6 3
 Net 66 "" ""
- D12 1
  R11 1
+ D12 1
 Net 67 "" ""
- BIN8 3
- U10 5
+ R13 1
+ D14 1
 Net 68 "" ""
- U7 2
- BIN5 2
+ R12 1
+ D13 1
 Net 69 "" ""
- Q5 2
- R14 2
-Net 70 "" ""
- BIN6 2
- U8 2
-Net 71 "" ""
- Q6 2
- R15 2
-Net 72 "" ""
- U10 2
- BIN8 2
-Net 73 "" ""
- R17 2
  Q8 2
+ R17 2
+Net 70 "" ""
+ R16 2
+ Q7 2
+Net 71 "" ""
+ U9 4
+ BIN7 1
+Net 72 "" ""
+ U9 2
+ BIN7 2
+Net 73 "" ""
+ U9 5
+ BIN7 3
 Net 74 "" ""
- D15 1
- U7 3
- Q5 3
+ U7 4
+ BIN5 1
 Net 75 "" ""
- D18 1
- Q8 3
- U10 3
-Net 76 "" ""
  D16 1
  Q6 3
  U8 3
+Net 76 "" ""
+ Q7 3
+ U9 3
+ D17 1
 Net 77 "" ""
- R26 2
- U12 3
+ D18 1
+ U10 3
+ Q8 3
 Net 78 "" ""
- U11 5
- C7 1
- R26 1
-Net 79 "" ""
- R31 2
- U12 11
-Net 80 "" ""
- R31 1
- U11 10
- C8 1
-Net 81 "" ""
- U11 12
- R32 1
- C9 1
-Net 82 "" ""
- U12 8
- R32 2
-Net 83 "" ""
- U11 3
- C6 1
- R24 1
-Net 84 "" ""
+ U11 8
  R35 2
  VOUT2 1
- U11 8
-Net 85 "VCC" "VCC"
- U12 14
- C3 1
- C2 1
- C4 1
- U2 3
- P2 4
- U1 14
- A6 1
- C11 1
- U12 14
- U12 14
- U12 14
- C12 1
+Net 79 "" ""
+ U11 9
+ R33 2
+ R35 1
+Net 80 "" ""
+ U11 13
+ R36 1
+ R34 2
+Net 81 "" ""
+ R36 2
+ VOUT1 1
+ U11 14
+Net 82 "" ""
+ R32 1
+ C9 1
+ U11 12
+Net 83 "" ""
+ R31 1
+ C8 1
+ U11 10
+Net 84 "" ""
+ R26 1
+ C7 1
+ U11 5
+Net 85 "" ""
+ R24 1
+ C6 1
+ U11 3
 Net 86 "" ""
- R28 1
- R27 2
- U11 6
-Net 87 "" ""
  U11 2
  R22 1
  R20 2
-Net 88 "" ""
- R22 2
+Net 87 "" ""
  VOUT4 1
+ R22 2
  U11 1
-Net 89 "" ""
- R24 2
- U12 6
-Net 90 "" ""
- R35 1
- U11 9
- R33 2
-Net 91 "" ""
- R34 2
- U11 13
- R36 1
-Net 92 "" ""
- VOUT1 1
- U11 14
- R36 2
-Net 93 "" ""
- R28 2
- VOUT3 1
+Net 88 "" ""
  U11 7
+ VOUT3 1
+ R28 2
+Net 89 "" ""
+ R27 2
+ U11 6
+ R28 1
 }
 #End

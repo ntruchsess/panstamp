@@ -1,4 +1,4 @@
-update=Wed 25 Jul 2012 09:23:52 AM CEST
+update=Fri 10 Aug 2012 03:48:57 PM CEST
 last_client=pcbnew
 [general]
 version=1
@@ -92,9 +92,9 @@ LibName46=microchip-mcp125x-xxx
 LibName47=toshiba
 [pcbnew]
 version=1
-PadDrlX=1378
-PadDimH=1378
-PadDimV=1378
+PadDrlX=0
+PadDimH=1440
+PadDimV=800
 BoardThickness=630
 SgPcb45=1
 TxtPcbV=800
