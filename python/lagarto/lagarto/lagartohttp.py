@@ -384,7 +384,7 @@ class LagartoHttpServer(threading.Thread):
                
         try:
             # Open and read file
-            f = open(file_path, 'r')
+            f = open(file_path, 'rb')
             body = f.read()
             f.close()
         

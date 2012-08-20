@@ -184,12 +184,21 @@ class WebEvent:
                         target.write(line)                      
                     
                 target.close()
+                
+                # For Windows only
+                if os.name == "nt":
+                    # Remove webscripts.py
+                    os.remove(WebEvent.script_file)
                 # Rename to definitive file
                 os.rename(WebEvent.tmp_file, WebEvent.script_file)
             except IOError:
                 if target is not None:
                     target.close()
                 raise MaxException("Unable to create temporary file")
+            except OSError:
+                if target is not None:
+                    target.close()
+                raise MaxException("Unable to remove or rename temporary file webscripts.tmp")
             
 
     def set_line(self, line, linenb=None, ltype="trigger"):
