@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Mon 06 Aug 2012 06:14:15 PM CEST
+EESchema Schematic File Version 2  date Sat 18 Aug 2012 05:22:02 PM CEST
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -47,12 +47,12 @@ LIBS:microchip_mcp2120
 LIBS:microchip-mcp125x-xxx
 LIBS:toshiba
 LIBS:output-board-cache
-EELAYER 25  0
+EELAYER 24  0
 EELAYER END
 $Descr A4 11700 8267
 Sheet 3 3
 Title "panStamp relay and 0-10V output board"
-Date "6 aug 2012"
+Date "18 aug 2012"
 Rev "1.2"
 Comp "www.panstamp.com"
 Comment1 "Output relays"

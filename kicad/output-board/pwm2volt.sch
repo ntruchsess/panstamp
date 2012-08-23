@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Mon 06 Aug 2012 06:14:15 PM CEST
+EESchema Schematic File Version 2  date Sat 18 Aug 2012 05:22:02 PM CEST
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -47,12 +47,12 @@ LIBS:microchip_mcp2120
 LIBS:microchip-mcp125x-xxx
 LIBS:toshiba
 LIBS:output-board-cache
-EELAYER 25  0
+EELAYER 24  0
 EELAYER END
 $Descr A4 11700 8267
 Sheet 2 3
 Title "panStamp relay and 0-10V output board"
-Date "6 aug 2012"
+Date "18 aug 2012"
 Rev "1.2"
 Comp "www.panstamp.com"
 Comment1 "PWM to 0-10V conversion"
@@ -264,7 +264,7 @@ L R R35
 U 1 1 4FCC6A9C
 P 9050 1200
 F 0 "R35" V 9130 1200 50  0000 C CNN
-F 1 "22k" V 9050 1200 50  0000 C CNN
+F 1 "21k" V 9050 1200 50  0000 C CNN
 F 2 "SM0603S" H 9050 1200 60  0001 C CNN
 	1    9050 1200
 	0    -1   -1   0   
@@ -424,7 +424,7 @@ L R R36
 U 1 1 4FCC6A8B
 P 9100 3850
 F 0 "R36" V 9180 3850 50  0000 C CNN
-F 1 "22k" V 9100 3850 50  0000 C CNN
+F 1 "21k" V 9100 3850 50  0000 C CNN
 F 2 "SM0603S" H 9100 3850 60  0001 C CNN
 	1    9100 3850
 	0    -1   -1   0   
@@ -472,7 +472,7 @@ L R R28
 U 1 1 4FCC6A82
 P 3850 3850
 F 0 "R28" V 3930 3850 50  0000 C CNN
-F 1 "22k" V 3850 3850 50  0000 C CNN
+F 1 "21k" V 3850 3850 50  0000 C CNN
 F 2 "SM0603S" H 3850 3850 60  0001 C CNN
 	1    3850 3850
 	0    -1   -1   0   
@@ -632,7 +632,7 @@ L R R22
 U 1 1 4FAD1D96
 P 3800 1250
 F 0 "R22" V 3880 1250 50  0000 C CNN
-F 1 "22k" V 3800 1250 50  0000 C CNN
+F 1 "21k" V 3800 1250 50  0000 C CNN
 F 2 "SM0603S" H 3800 1250 60  0001 C CNN
 	1    3800 1250
 	0    -1   -1   0   
