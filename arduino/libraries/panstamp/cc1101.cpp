@@ -413,7 +413,7 @@ void CC1101::setPowerDownState()
  * 
  * Send data packet via RF
  * 
- * 'packet'	Packet to be transmitted
+ * 'packet'	Packet to be transmitted. First byte is the destination address
  *
  *  Return:
  *    True if the transmission succeeds
@@ -474,7 +474,7 @@ boolean CC1101::sendData(CCPACKET packet)
  * 'packet'	Container for the packet received
  * 
  * Return:
- * 	Amount to bytes received
+ * 	Amount of bytes received
  */
 byte CC1101::receiveData(CCPACKET * packet)
 {

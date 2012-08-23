@@ -463,7 +463,7 @@ class CC1101
      * 
      * Send data packet via RF
      * 
-     * 'packet'	Packet to be transmitted
+     * 'packet'	Packet to be transmitted. First byte is the destination address
      *
      *  Return:
      *    True if the transmission succeeds
@@ -478,7 +478,6 @@ class CC1101
      * 
      * Return:
      * 	Amount of bytes received
-     * 'packet'	Container for the packet received
      */
     byte receiveData(CCPACKET *packet);
 };
