@@ -176,8 +176,9 @@ class SwapManager(SwapInterface):
         self.registerValueChanged = None
 
         # wxPython app
-        self.app = wx.PySimpleApp(0)
-        wx.InitAllImageHandlers()
+        #self.app = wx.PySimpleApp(0)
+        self.app = wx.App(False)
+        #wx.InitAllImageHandlers()
                
         # Start SWAP server
         try:

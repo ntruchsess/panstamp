@@ -138,6 +138,7 @@ class ConfigDialog(wx.Dialog):
         # List of sizers
         self.lstSizers = []
         # Main sizer
-        self.gridSizer = wx.FlexGridSizer(rows=3, cols=1, vgap=3, hgap=3)
+        #self.gridSizer = wx.FlexGridSizer(rows=3, cols=1, vgap=3, hgap=3)
+        self.gridSizer = wx.FlexGridSizer(cols=1, vgap=3, hgap=3)
         # Bottom button sizer
         self.buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
