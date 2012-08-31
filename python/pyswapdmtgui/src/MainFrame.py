@@ -66,8 +66,8 @@ class MainFrame(wx.Frame):
         '''
         wx.Frame.__init__(self, None, wx.ID_ANY, title=title, size=(800,500))    
 
-        icons = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "images")
-        favicon = wx.Icon(os.path.join(icons, "swap.ico"), wx.BITMAP_TYPE_ICO, 16, 16)
+        self.icons = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "images")
+        favicon = wx.Icon(os.path.join(self.icons, "swap.ico"), wx.BITMAP_TYPE_ICO, 16, 16)
         self.SetIcon(favicon)
 
         # Parent
@@ -396,7 +396,7 @@ class MainFrame(wx.Frame):
         Show About dialog
         """
         info = wx.AboutDialogInfo()
-        info.SetIcon(wx.Icon('images/swapdmt.png', wx.BITMAP_TYPE_PNG))
+        info.SetIcon(wx.Icon(os.path.join(self.icons, 'swapdmt.png'), wx.BITMAP_TYPE_PNG))
         info.SetName(__appname__)
         info.SetVersion(__version__)
         info.SetDescription("SWAp Device Management Tool")
@@ -803,14 +803,14 @@ class BrowserPanel(wx.Panel):
         sizer.Add(self.tree, 1, wx.EXPAND)
 
         ## Create image list:
-        il = wx.ImageList(16, 16)
-        self.rootIcon = il.Add(wx.Bitmap("images/network.ico", wx.BITMAP_TYPE_ICO))
-        self.moteIcon = il.Add(wx.Bitmap("images/swap.ico", wx.BITMAP_TYPE_ICO))
-        self.regRegIcon = il.Add(wx.Bitmap("images/database.ico", wx.BITMAP_TYPE_ICO))
-        self.cfgRegIcon = il.Add(wx.Bitmap("images/cfgreg.ico", wx.BITMAP_TYPE_ICO))
-        self.cfgParamIcon = il.Add(wx.Bitmap("images/cfgparam.ico", wx.BITMAP_TYPE_ICO))
-        self.inputIcon = il.Add(wx.Bitmap("images/input.ico", wx.BITMAP_TYPE_ICO))
-        self.outputIcon = il.Add(wx.Bitmap("images/output.ico", wx.BITMAP_TYPE_ICO))
+        il = wx.ImageList(16, 16)        
+        self.rootIcon = il.Add(wx.Bitmap(os.path.join(self.icons, "network.ico"), wx.BITMAP_TYPE_ICO))
+        self.moteIcon = il.Add(wx.Bitmap(os.path.join(self.icons, "swap.ico"), wx.BITMAP_TYPE_ICO))
+        self.regRegIcon = il.Add(wx.Bitmap(os.path.join(self.icons, "database.ico"), wx.BITMAP_TYPE_ICO))
+        self.cfgRegIcon = il.Add(wx.Bitmap(os.path.join(self.icons, "cfgreg.ico"), wx.BITMAP_TYPE_ICO))
+        self.cfgParamIcon = il.Add(wx.Bitmap(os.path.join(self.icons, "cfgparam.ico"), wx.BITMAP_TYPE_ICO))
+        self.inputIcon = il.Add(wx.Bitmap(os.path.join(self.icons, "input.ico"), wx.BITMAP_TYPE_ICO))
+        self.outputIcon = il.Add(wx.Bitmap(os.path.join(self.icons, "output.ico"), wx.BITMAP_TYPE_ICO))
         self.tree.AssignImageList(il)
 
         self.SetAutoLayout(True)
@@ -1017,9 +1017,9 @@ class SnifferPanel(wx.Panel):
 
         # create the image list:
         il = wx.ImageList(16, 16)
-        self.arrow_left_icon = il.Add(wx.Bitmap("images/arrow_left.ico", wx.BITMAP_TYPE_ICO))
-        self.arrow_right_icon = il.Add(wx.Bitmap("images/arrow_right.ico", wx.BITMAP_TYPE_ICO))
-        self.warning_icon = il.Add(wx.Bitmap("images/warning.ico", wx.BITMAP_TYPE_ICO))
+        self.arrow_left_icon = il.Add(wx.Bitmap(os.path.join(self.icons, "arrow_left.ico"), wx.BITMAP_TYPE_ICO))
+        self.arrow_right_icon = il.Add(wx.Bitmap(os.path.join(self.icons, "arrow_right.ico"), wx.BITMAP_TYPE_ICO))
+        self.warning_icon = il.Add(wx.Bitmap(os.path.join(self.icons, "warning.ico"), wx.BITMAP_TYPE_ICO))
         self.log_list.AssignImageList(il, wx.IMAGE_LIST_SMALL)
         
         # Right-click event
