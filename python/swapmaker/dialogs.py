@@ -182,7 +182,7 @@ class RegisterDialog(ConfigDialog):
     """
     Register editor dialog
     """
-    last_register_id = 9
+    last_register_id = 10
     
     def _create_controls(self):
         """
