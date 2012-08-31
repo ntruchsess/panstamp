@@ -44,6 +44,8 @@ from swap.xmltools.XmlNetwork import XmlNetwork
 from swap.modem.CcPacket import CcPacket
 
 import time
+import os
+import sys
 
 import wx.lib.agw.aui as aui
 from wx.lib.pubsub import Publisher
@@ -64,7 +66,8 @@ class MainFrame(wx.Frame):
         '''
         wx.Frame.__init__(self, None, wx.ID_ANY, title=title, size=(800,500))    
 
-        favicon = wx.Icon("images/swap.ico", wx.BITMAP_TYPE_ICO, 16, 16)
+        icons = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "images")
+        favicon = wx.Icon(os.path.join(icons, "swap.ico"), wx.BITMAP_TYPE_ICO, 16, 16)
         self.SetIcon(favicon)
 
         # Parent
