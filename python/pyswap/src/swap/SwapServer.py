@@ -169,6 +169,8 @@ class SwapServer(threading.Thread):
                     self._checkMote(mote)
                 except IOError as ex:
                     raise SwapException("Unable to create mote: {0}".format(ex))
+                except SwapException:
+                    raise
             # Device address received
             elif swPacket.regId == SwapRegId.ID_DEVICE_ADDR:
                 # Check address in list of motes

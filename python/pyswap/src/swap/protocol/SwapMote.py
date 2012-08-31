@@ -291,9 +291,12 @@ class SwapMote(object):
                 self.manufacturer_id = self.manufacturer_id | (product_code[i] << 8 * (3-i))
                 self.product_id = self.product_id | (product_code[i + 4] << 8 * (3-i))
         """
-        self.manufacturer_id = long(product_code[0:8], 16)
-        self.product_id = long(product_code[8:], 16)
-
+        try:
+            self.manufacturer_id = long(product_code[0:8], 16)
+            self.product_id = long(product_code[8:], 16)
+        except:
+            raise SwapException("Incorrect product code received")
+        
         # Definition file
         ## Definition settings
         try:
