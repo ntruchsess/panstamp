@@ -803,7 +803,8 @@ class BrowserPanel(wx.Panel):
         sizer.Add(self.tree, 1, wx.EXPAND)
 
         ## Create image list:
-        il = wx.ImageList(16, 16)        
+        il = wx.ImageList(16, 16)
+        self.icons = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "images")     
         self.rootIcon = il.Add(wx.Bitmap(os.path.join(self.icons, "network.ico"), wx.BITMAP_TYPE_ICO))
         self.moteIcon = il.Add(wx.Bitmap(os.path.join(self.icons, "swap.ico"), wx.BITMAP_TYPE_ICO))
         self.regRegIcon = il.Add(wx.Bitmap(os.path.join(self.icons, "database.ico"), wx.BITMAP_TYPE_ICO))
@@ -1017,6 +1018,7 @@ class SnifferPanel(wx.Panel):
 
         # create the image list:
         il = wx.ImageList(16, 16)
+        self.icons = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "images")
         self.arrow_left_icon = il.Add(wx.Bitmap(os.path.join(self.icons, "arrow_left.ico"), wx.BITMAP_TYPE_ICO))
         self.arrow_right_icon = il.Add(wx.Bitmap(os.path.join(self.icons, "arrow_right.ico"), wx.BITMAP_TYPE_ICO))
         self.warning_icon = il.Add(wx.Bitmap(os.path.join(self.icons, "warning.ico"), wx.BITMAP_TYPE_ICO))
