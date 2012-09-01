@@ -130,7 +130,7 @@ class MainFrame(wx.Frame):
         self.mgr = aui.AuiManager()
         # tell AuiManager to manage this frame
         self.mgr.SetManagedWindow(self)
-        self.browser_panel = BrowserPanel(self, self.server.network.motes)
+        self.browser_panel = BrowserPanel(self, self.server.network)
         self.sniffer_panel = SnifferPanel(self)
         self.event_panel = EventPanel(self)
 
@@ -533,10 +533,10 @@ class MainFrame(wx.Frame):
                     "Do you want to continue?", caption = 'Clear devices')
         
         if res:
-            self.browser_panel.clear()
             self.server.network.clear()
             self.server.network.save()
-
+            self.browser_panel.clear()
+            
 
     def _configReg(self, obj):
         """
@@ -750,23 +750,26 @@ class BrowserPanel(wx.Panel):
             moteid, motecookie = self.tree.GetNextChild(self.rootid, motecookie)
                               
                             
-    def build_tree(self, netid):
+    def build_tree(self, netid=None):
         '''
         Build SWAP tree
         
         @param netid: SWAP network ID
         '''                 
         if netid is not None:
-            rootStr = "SWAP network " + hex(netid)[2:]
-        else:
+            self.netid = netid
+        
+        if self.netid is None:
             rootStr = "SWAP network"
+        else:
+            rootStr = "SWAP network " + hex(self.netid)[2:]
       
         # Clear tree
         self.tree.DeleteAllItems()
         self.rootid = self.tree.AddRoot(rootStr)
         self.tree.SetPyData(self.rootid, None)
 
-        for mote in self.lstmotes:
+        for mote in self.network.motes:
             self.addMote(mote)
  
         self.tree.SetItemImage(self.rootid, self.rootIcon, wx.TreeItemIcon_Normal)
@@ -780,23 +783,23 @@ class BrowserPanel(wx.Panel):
     def clear(self):
         """
         Clear browsing tree
-        """
-        self.tree.DeleteAllItems()
+        """       
+        self.build_tree()
         
         
-    def __init__(self, parent, lstmotes):
+    def __init__(self, parent, network):
         """
         Class constructor
         
         @param parent: parent object
-        @param lstmotes: List of motes
+        @param network: network object
         """
         wx.Panel.__init__(self, parent, id=wx.ID_ANY)
         
         ## Parent frame
         self.parent = parent
-        ## List of motes
-        self.lstmotes = lstmotes
+        ## Network object
+        self.network = network
         ## SWAP browsing tree
         self.tree = wx.TreeCtrl(self, -1, style=wx.TR_HAS_BUTTONS|wx.TR_DEFAULT_STYLE|wx.SUNKEN_BORDER)
         sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -816,6 +819,8 @@ class BrowserPanel(wx.Panel):
 
         self.SetAutoLayout(True)
         self.SetSizer(sizer)
+        
+        self.netid = None
 
 
 class SnifferPanel(wx.Panel):
