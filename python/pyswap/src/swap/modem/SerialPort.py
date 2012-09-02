@@ -79,6 +79,8 @@ class SerialPort(threading.Thread):
                                 serbuf.append(ch)
                         else:
                             time.sleep(0.01)
+                    except serial.SerialException:
+                        raise SwapException("Serial port " + self.portname + " not available")
                     except OSError:
                         raise SwapException(str(sys.exc_type) + ": " + str(sys.exc_info()))
            
