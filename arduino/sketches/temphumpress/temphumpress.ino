@@ -37,7 +37,9 @@
  * Pins: PIN_ADCTEMP (ADC input) and PIN_PWRTEMP (power pin)
  *
  * TEMPHUM: Device measuring temperature and humidity from a DHT11/DHT22
- * sensor.
+ * sensor. In case you use a DHT11 sensor, you will need this library:
+ * http://arduino.cc/playground/Main/DHT11Lib
+ *
  * Pins: DHT_DATA (digital I/O) and PIN_PWRDHT (power pin)
  *
  * TEMPPRESS: Device measuring temperature and barometric pressure from
@@ -126,6 +128,6 @@ void loop()
 //  digitalWrite(LEDPIN, LOW);
 
   // Sleep
-  panstamp.goToSleep();  
+  panstamp.goToSleep();
 }
 

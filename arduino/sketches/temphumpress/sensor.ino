@@ -27,11 +27,11 @@
 #include "Arduino.h"
 #include "sensor.h"
 
+#include "dht11.h"
+
 #ifdef TEMPPRESS
 #include "Wire.h"
-//#include "BMP085.h"
 #include "Adafruit_BMP085.h"
-//BMP085 bmp;
 Adafruit_BMP085 bmp;
 #endif
 
@@ -49,7 +49,7 @@ byte sensor_ReadByte(void);
 byte sensor_ReadByte(void)
 {
   byte i, result = 0;
-  int count = 20000;
+  unsigned int count = 20000;
 
   for(i=0; i< 8; i++)
   {
@@ -83,15 +83,33 @@ byte sensor_ReadByte(void)
  */
 int sensor_ReadTempHum(void)
 {
+  int temperature, humidity;
+  
+  #ifdef DHT11
+
+  dht11 sensor;
+  
+  dhtSensorON();
+  delay(1500);   
+  int chk = sensor.read(PIN_DHT_DATA);
+  dhtSensorOFF();
+
+  if (chk != DHTLIB_OK)
+    return -1;
+
+  temperature = sensor.temperature * 10 + 500;
+  humidity = sensor.humidity * 10;
+  
+  #elif DHT22
+
   byte dhtData[5];
   byte i, dhtCrc;
-  int temperature, humidity;
   boolean success = false;
 
   // Power ON sensor
   dhtSensorON();
   delay(1500);
-
+  
   setDataOutput();
   setDataPin();
    
@@ -128,7 +146,7 @@ int sensor_ReadTempHum(void)
   
   if (!success)
     return -1;
-  
+
   dhtCrc = dhtData[0] + dhtData[1] + dhtData[2] + dhtData[3];
 
   // check check_sum
@@ -136,10 +154,6 @@ int sensor_ReadTempHum(void)
     return -1;  // CRC error
 
   // Prepare values for 2-decimal format:
-  #ifdef DHT11
-  temperature = dhtData[2] * 10 + 500;  // Apply same format as for the DHT22
-  humidity = dhtData[0] * 10;
-  #elif DHT22
   int sign = 1;
   if (dhtData[2] & 0x80)
   {
@@ -148,13 +162,14 @@ int sensor_ReadTempHum(void)
   }
   temperature = sign * word(dhtData[2], dhtData[3]) + 500;  // 50.0 ºC offset in order to accept negative temperatures
   humidity = word(dhtData[0], dhtData[1]);
+
   #endif
 
   dtSensor[0] = (temperature >> 8) & 0xFF;
   dtSensor[1] = temperature & 0xFF;
   dtSensor[2] = (humidity >> 8) & 0xFF;
   dtSensor[3] = humidity & 0xFF;
-  
+   
   return 0;
 }
 
