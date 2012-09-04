@@ -27,9 +27,9 @@
 #include "Arduino.h"
 #include "sensor.h"
 
+#ifdef TEMPHUM
 #include "dht11.h"
-
-#ifdef TEMPPRESS
+#elif TEMPPRESS
 #include "Wire.h"
 #include "Adafruit_BMP085.h"
 Adafruit_BMP085 bmp;
