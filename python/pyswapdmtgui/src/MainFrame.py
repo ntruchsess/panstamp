@@ -523,6 +523,8 @@ class MainFrame(wx.Frame):
             
         # Configure registers
         self._configReg(obj)
+        # re-build tree
+        self.browser_panel.build_tree()
 
 
     def onClearDevices(self, evn):
