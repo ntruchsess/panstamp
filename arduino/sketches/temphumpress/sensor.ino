@@ -28,7 +28,9 @@
 #include "sensor.h"
 
 #ifdef TEMPHUM
+#ifdef DHT11
 #include "dht11.h"
+#endif
 #elif TEMPPRESS
 #include "Wire.h"
 #include "Adafruit_BMP085.h"

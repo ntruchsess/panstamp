@@ -35,7 +35,7 @@
 //#define TEMPPRESS  1     // Temperature + Pressure sensor = BMP085
 
 #ifdef TEMPHUM
-#define DHT11  1           // Temperature + Humidity sensor = DHT11
+//#define DHT11  1           // Temperature + Humidity sensor = DHT11
 #ifndef DHT11
 #define DHT22  1           // Temperature + Humidity sensor = DHT22
 #endif
