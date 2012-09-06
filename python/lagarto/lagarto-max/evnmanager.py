@@ -32,6 +32,7 @@ import threading
 import time
 import inspect
 import datetime
+from xmltools import XmlSettings
 
 working_dir = os.path.dirname(__file__)
 lagarto_dir = os.path.split(working_dir)[0]
@@ -317,9 +318,11 @@ class EventScript(threading.Thread):
         
         # Event object
         self.evnobj = evnobj
-        
+        self.log = int(XmlSettings.database)  
+
         # Handle to database connection
-        self.database=DatabaseManager()
+        if self.log>0: self.database=DatabaseManager()
+	else: self.database=None
         
         # Run event handler
         self.start()

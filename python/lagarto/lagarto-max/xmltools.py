@@ -36,6 +36,8 @@ class XmlSettings(object):
     file_name = "settings.xml"
     ## Debug level (0: no debug, 1: print SWAP packets, 2: print SWAP packets and network events)
     debug = 0
+    ## Database (0: no db, 1: sqlitedb)
+    database=0
     ## Latitude
     latitude = 0
     ## Longitude
@@ -57,6 +59,10 @@ class XmlSettings(object):
         elem = root.find("debug")
         if elem is not None:
             XmlSettings.debug = int(elem.text)
+	# Get database fla
+	elem = root.find("database")
+        if elem is not None:
+            XmlSettings.database = int(elem.text)
         # Get location section
         location = root.find("location")
         if location is not None:
