@@ -31,6 +31,7 @@ import sys
 import threading
 import time
 import inspect
+import datetime
 
 working_dir = os.path.dirname(__file__)
 lagarto_dir = os.path.split(working_dir)[0]
@@ -41,7 +42,7 @@ from lagartoresources import LagartoEndpoint
 
 from api import TimeAPI, NetworkAPI
 from clouding import OpenSense
-
+from storage import DatabaseManager
 
 try:
     import webscripts
@@ -56,7 +57,7 @@ except ImportError:
 from webevents import WebEvent
 import scripts.events
 
-
+    
 class PeriodicTrigger(threading.Thread):
     """
     Periodic trigger class
@@ -299,7 +300,7 @@ class EventScript(threading.Thread):
         Run thread
         """
         reload(scripts.events)
-        scripts.events.event_handler(self.evnsrc, self.evnobj)
+        scripts.events.event_handler(self.evnsrc, self.evnobj,self.database)
 
         
     def __init__(self, evnsrc, evnobj):
@@ -316,6 +317,9 @@ class EventScript(threading.Thread):
         
         # Event object
         self.evnobj = evnobj
+        
+        # Handle to database connection
+        self.database=DatabaseManager()
         
         # Run event handler
         self.start()

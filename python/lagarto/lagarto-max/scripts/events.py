@@ -22,10 +22,11 @@
 #########################################################################
 
 from api import TimeAPI as clock, NetworkAPI as network, CloudAPI as cloud
+from storage import DatabaseManager
 import time
 
 
-def event_handler(evnsrc, evnobj):
+def event_handler(evnsrc, evnobj, database=None):
     """
     Event handling function
     
@@ -36,4 +37,10 @@ def event_handler(evnsrc, evnobj):
     evnsrc = "clock" -> evnobj = time.localtime() object
     """
     if evnsrc == "network":
+        #print to console
         print time.strftime("%d %b %Y %H:%M:%S", time.localtime()), evnobj.location + "." + evnobj.name, evnobj.value
+        #log to database
+        if database: database.addEntry(evnobj.location,evnobj.name,evnobj.value,evnobj.type)
+
+    elif evnsrc == "clock":
+        print time.strftime("%d %b %Y %H:%M:%S", evnobj), "Time event"
