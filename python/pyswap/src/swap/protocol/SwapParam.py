@@ -281,7 +281,7 @@ class SwapParam:
         self.verif = verif
         
         ## Display this parameter from master app
-        self.display = False
+        self.display = True
         
 
 class SwapCfgParam(SwapParam):
