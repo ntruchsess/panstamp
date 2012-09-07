@@ -62,7 +62,9 @@ class XmlSettings(object):
 	# Get database fla
 	elem = root.find("database")
         if elem is not None:
-            XmlSettings.database = int(elem.text)
+            XmlSettings.database = elem.text.lower() in ["1", "true", "enable"]
+        else:
+            XmlSettings.database = False
         # Get location section
         location = root.find("location")
         if location is not None:

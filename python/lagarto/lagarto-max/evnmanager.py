@@ -207,14 +207,6 @@ class EvnManager(LagartoClient):
             if len(endp_data) != 3:
                 return None
                    
-            """
-            {
-            "timetag": "2011-01-28T13:39:11.428513+00:00",
-            "feed_id": 123,
-            "device_id": 456,
-            "value": 45
-            }
-            """
             try:
                 endpoint = LagartoEndpoint(location=endp_data[1], name=endp_data[2], value=params["value"], procname=endp_data[0])
             except:
@@ -318,11 +310,13 @@ class EventScript(threading.Thread):
         
         # Event object
         self.evnobj = evnobj
-        self.log = int(XmlSettings.database)  
+        self.log = XmlSettings.database # True/False
 
         # Handle to database connection
-        if self.log>0: self.database=DatabaseManager()
-	else: self.database=None
+        if self.log:
+            self.database=DatabaseManager()
+        else:
+            self.database=None
         
         # Run event handler
         self.start()
