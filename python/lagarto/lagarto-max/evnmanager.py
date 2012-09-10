@@ -293,7 +293,7 @@ class EventScript(threading.Thread):
         Run thread
         """
         reload(scripts.events)
-        scripts.events.event_handler(self.evnsrc, self.evnobj,self.database)
+        scripts.events.event_handler(self.evnsrc, self.evnobj)
 
         
     def __init__(self, evnsrc, evnobj):
@@ -310,13 +310,6 @@ class EventScript(threading.Thread):
         
         # Event object
         self.evnobj = evnobj
-        self.log = XmlSettings.database # True/False
-
-        # Handle to database connection
-        if self.log:
-            self.database=DatabaseManager()
-        else:
-            self.database=None
         
         # Run event handler
         self.start()

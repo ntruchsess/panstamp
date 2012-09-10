@@ -59,8 +59,8 @@ class XmlSettings(object):
         elem = root.find("debug")
         if elem is not None:
             XmlSettings.debug = int(elem.text)
-	# Get database fla
-	elem = root.find("database")
+        # Get database flag
+        elem = root.find("database")
         if elem is not None:
             XmlSettings.database = elem.text.lower() in ["1", "true", "enable"]
         else:
@@ -71,15 +71,15 @@ class XmlSettings(object):
             latitude = location.find("latitude")
             if latitude is not None:
                 try:
-                    XmlSettings.latitude = float(local.text)
+                    XmlSettings.latitude = float(latitude.text)
                 except ValueError:
-                    XmlSettings.latitude = int(local.text)
+                    XmlSettings.latitude = int(latitude.text)
             longitude = location.find("longitude")
             if longitude is not None:
                 try:
-                    XmlSettings.longitude = float(local.text)
+                    XmlSettings.longitude = float(longitude.text)
                 except ValueError:
-                    XmlSettings.longitude = int(local.text)
+                    XmlSettings.longitude = int(longitude.text)
         # Get path name of the error log file
         elem = root.find("errlog")
         if elem is not None:
@@ -94,6 +94,7 @@ class XmlSettings(object):
         f.write("<?xml version=\"1.0\"?>\n")
         f.write("<settings>\n")
         f.write("\t<debug>" + str(XmlSettings.debug) + "</debug>\n")
+        f.write("\t<database>" + str(XmlSettings.database) + "</database>\n")
         f.write("\t<location>\n")
         f.write("\t\t<latitude>" + str(XmlSettings.latitude) + "</latitude>\n")
         f.write("\t\t<longitude>" + str(XmlSettings.longitude) + "</longitude>\n")
@@ -111,11 +112,12 @@ class XmlSettings(object):
         # Name/path of the current configuration file
         if file_name is None:
             file_name = "settings.xml"
+
         XmlSettings.file_name = file_name
         # Read XML file
         self.read()
         
         direc = os.path.dirname(XmlSettings.file_name)
-        
+
         # Convert to absolute paths
         XmlSettings.error_file = os.path.join(direc, XmlSettings.error_file)

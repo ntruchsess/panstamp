@@ -23,10 +23,17 @@
 
 from api import TimeAPI as clock, NetworkAPI as network, CloudAPI as cloud
 from storage import DatabaseManager
+from xmltools import XmlSettings
 import time
+import os
 
-
-def event_handler(evnsrc, evnobj, database=None):
+class DatabaseConnection:
+    database=DatabaseManager()
+    config_dir=os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
+    config_file=os.path.join(config_dir, "config", XmlSettings.file_name)
+    settings=XmlSettings(config_file)
+    
+def event_handler(evnsrc, evnobj):
     """
     Event handling function
     
@@ -39,8 +46,9 @@ def event_handler(evnsrc, evnobj, database=None):
     if evnsrc == "network":
         #print to console
         print time.strftime("%d %b %Y %H:%M:%S", time.localtime()), evnobj.location + "." + evnobj.name, evnobj.value
-        #log to database
-        if database: database.addEntry(evnobj.location,evnobj.name,evnobj.value,evnobj.type)
+        #log to database if  <database>true</database>
+        if DatabaseConnection.settings.database: 
+            DatabaseConnection.database.addEntry(evnobj.location,evnobj.name,evnobj.value,evnobj.type)
 
     elif evnsrc == "clock":
         print time.strftime("%d %b %Y %H:%M:%S", evnobj), "Time event"
