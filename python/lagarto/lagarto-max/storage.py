@@ -23,7 +23,7 @@
 #
 #########################################################################
 __author__="Paolo Di Prodi"
-__date__  ="$Jan 23, 2012$"
+__date__  ="$Sept 10, 2012$"
 #########################################################################
 
 from sqlalchemy import *
@@ -58,7 +58,7 @@ class DatabaseManager:
             working_dir = os.path.dirname(__file__)
             lagarto_dir = os.path.split(working_dir)[0]
             lagarto_dir = os.path.join(lagarto_dir, "lagarto")
-            self.__file_path=lagarto_dir+"/database/events.db"
+            self.__file_path= os.path.join(lagarto_dir, "database", "events.db")
             present=os.path.exists(self.__file_path)
             self.__db= create_engine('sqlite:///'+self.__file_path)
             #self.__db.echo = False 
