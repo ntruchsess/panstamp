@@ -148,18 +148,6 @@ class SwapMote(object):
         return self.cmdRegisterWack(SwapRegId.ID_SECU_OPTION, val)
 
 
-    def setSmartEncryptPassword(self, password):
-        """
-        Set mote's smart encryption password. Return true if ACK received from mote
-        
-        @param password: encryption password object
-        
-        @return True if this command is confirmed from the mote. Return False otherwise
-        """
-        val = SwapValue(password.data)
-        return self.cmdRegisterWack(SwapRegId.ID_SECU_PASSWD, val)
-
-
     def setTxInterval(self, interval):
         """
         Set periodic Tx interval. Return true if ACK received from mote
