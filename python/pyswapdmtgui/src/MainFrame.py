@@ -48,8 +48,19 @@ import os
 import sys
 
 import wx.lib.agw.aui as aui
-from wx.lib.pubsub import Publisher
 import wx
+import wxversion
+
+if wxversion.checkInstalled("2.8"):
+    wx_version = "2.8"
+    from wx.lib.pubsub import Publisher
+    pub = Publisher()
+elif wxversion.checkInstalled("2.9"):
+    wx_version = "2.9"
+    from wx.lib.pubsub import pub
+else:
+    print "version of wxpython not supported"
+
 
 
 class MainFrame(wx.Frame):
@@ -157,12 +168,12 @@ class MainFrame(wx.Frame):
         self.Layout()   
 
         # Create a pubsub receivers
-        Publisher().subscribe(self.cb_add_event, "add_event")
-        Publisher().subscribe(self.cb_add_mote, "add_mote")
-        Publisher().subscribe(self.cb_server_started, "server_started")
-        Publisher().subscribe(self.cb_changed_addr, "changed_addr")
-        Publisher().subscribe(self.cb_changed_val, "changed_val")
-        Publisher().subscribe(self.cb_sync_received, "sync_received")
+        pub.subscribe(self.cb_add_event, "add_event")
+        pub.subscribe(self.cb_add_mote, "add_mote")
+        pub.subscribe(self.cb_server_started, "server_started")
+        pub.subscribe(self.cb_changed_addr, "changed_addr")
+        pub.subscribe(self.cb_changed_val, "changed_val")
+        pub.subscribe(self.cb_sync_received, "sync_received")
 
 
     def cb_add_event(self, msg):
@@ -171,7 +182,10 @@ class MainFrame(wx.Frame):
         
         @param msg: message containing the mote to be added to the tree
         """
-        event = msg.data
+        if wx_version == "2.8":
+            event = msg.data
+        else:
+            event = msg
         if isinstance(event, str):
             self.event_panel.print_event(event)
             
@@ -182,7 +196,10 @@ class MainFrame(wx.Frame):
         
         @param msg: message containing the mote to be added to the tree
         """
-        mote = msg.data
+        if wx_version == "2.8":
+            mote = msg.data
+        else:
+            mote = msg
         if mote.__class__.__name__ == "SwapMote":
             self.browser_panel.addMote(mote)
             
@@ -194,7 +211,7 @@ class MainFrame(wx.Frame):
         @param msg: not used
         """ 
         if self._waitfor_startdialog is not None:
-            wx.CallAfter(Publisher().sendMessage, "close_wait", None)
+            wx.CallAfter(pub.sendMessage, "close_wait", None)
         
            
     def cb_changed_addr(self, msg):
@@ -203,7 +220,10 @@ class MainFrame(wx.Frame):
         
         @param msg: message containing the mote to be modified from the tree
         """
-        mote = msg.data
+        if wx_version == "2.8":
+            mote = msg.data
+        else:
+            mote = msg
         if mote.__class__.__name__ == "SwapMote":
             self.browser_panel.updateAddressInTree(mote)
             
@@ -214,7 +234,10 @@ class MainFrame(wx.Frame):
         
         @param msg: message containing the mote to be modified from the tree
         """
-        endpoint = msg.data
+        if wx_version == "2.8":
+            endpoint = msg.data
+        else:
+            endpoint = msg
         if endpoint.__class__.__name__ == "SwapEndpoint":
             self.browser_panel.updateEndpointInTree(endpoint)
 
@@ -225,7 +248,10 @@ class MainFrame(wx.Frame):
         
         @param mote  Mote having entered the SYNC mode
         """
-        mote = msg.data
+        if wx_version == "2.8":
+            mote = msg.data
+        else:
+            mote = msg
         if mote.__class__.__name__ == "SwapMote":
             if self._waitfor_syncdialog is not None:
                 self._moteinsync = mote
@@ -868,7 +894,11 @@ class SnifferPanel(wx.Panel):
         
         @param msg: message containing the packet received
         """
-        packet = msg.data
+        if wx_version == "2.8":
+            packet = msg.data
+        else:
+            packet = msg
+            
         msgtype = self.get_message_type(packet)
         rssi = "{0:02X}".format(packet.rssi)
         lqi = "{0:02X}".format(packet.lqi)
@@ -889,7 +919,11 @@ class SnifferPanel(wx.Panel):
         
         @param msg: message containing the packet sent
         """
-        packet = msg.data
+        if wx_version == "2.8":
+            packet = msg.data
+        else:
+            packet = msg
+            
         msgtype = self.get_message_type(packet)
                             
         index = self.log_list.GetItemCount()
@@ -1054,8 +1088,8 @@ class SnifferPanel(wx.Panel):
         # Redirect stdout to the LogCtrl widget
         #sys.stdout = RedirectText(self)
         
-        Publisher().subscribe(self.cb_packet_received, "packet_received")
-        Publisher().subscribe(self.cb_packet_sent, "packet_sent")
+        pub.subscribe(self.cb_packet_received, "packet_received")
+        pub.subscribe(self.cb_packet_sent, "packet_sent")
 
 
 class EventPanel(wx.Panel):

@@ -29,7 +29,17 @@ __date__  ="$Sep 21, 2011 08:58:05 AM$"
 from ConfigDialog import ConfigDialog
 
 import wx
-from wx.lib.pubsub import Publisher
+import wxversion
+
+if wxversion.checkInstalled("2.8"):
+    wx_version = "2.8"
+    from wx.lib.pubsub import Publisher
+    pub = Publisher()
+elif wxversion.checkInstalled("2.9"):
+    wx_version = "2.9"
+    from wx.lib.pubsub import pub
+else:
+    print "version of wxpython not supported"
 
 
 class WaitDialog(ConfigDialog):
@@ -94,7 +104,7 @@ class WaitDialog(ConfigDialog):
         """
         ConfigDialog.__init__(self, parent, title="Waiting...")
         
-        Publisher().subscribe(self.cb_close, "close_wait")
+        pub.subscribe(self.cb_close, "close_wait")
         
         ## Message to be displayed
         self.message = message
