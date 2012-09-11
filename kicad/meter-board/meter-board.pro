@@ -1,4 +1,4 @@
-update=Tue 19 Jun 2012 06:01:54 PM CEST
+update=Tue 11 Sep 2012 12:20:23 PM CEST
 last_client=pcbnew
 [general]
 version=1
@@ -107,7 +107,7 @@ DrawLar=150
 EdgeLar=150
 TxtLar=120
 MSegLar=150
-LastNetListRead=meter.net
+LastNetListRead=meter-board.net
 [pcbnew/libraries]
 LibDir=
 LibName1=sockets

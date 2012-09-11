@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Tue 12 Jun 2012 04:27:57 PM CEST
+EESchema Schematic File Version 2  date Tue 11 Sep 2012 12:17:21 PM CEST
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -46,15 +46,15 @@ LIBS:mcp3304
 LIBS:microchip_mcp2120
 LIBS:microchip-mcp125x-xxx
 LIBS:toshiba
-LIBS:meter-cache
+LIBS:meter-board-cache
 EELAYER 24  0
 EELAYER END
 $Descr A4 11700 8267
 Sheet 1 1
 Title "panStamp Energy Meter board"
-Date "12 jun 2012"
+Date "11 sep 2012"
 Rev "01"
-Comp "uSapiens (www.usapiens.com)"
+Comp "panStamp"
 Comment1 ""
 Comment2 ""
 Comment3 ""
@@ -866,7 +866,7 @@ L R R3
 U 1 1 4F9C28F9
 P 2450 6850
 F 0 "R3" V 2530 6850 50  0000 C CNN
-F 1 "470 1W" V 2450 6850 50  0000 C CNN
+F 1 "47 1W" V 2450 6850 50  0000 C CNN
 F 2 "SM2512" H 2450 6850 60  0001 C CNN
 	1    2450 6850
 	0    1    1    0   
