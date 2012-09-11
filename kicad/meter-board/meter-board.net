@@ -1,4 +1,4 @@
-# EESchema Netlist Version 1.1 created  Tue 12 Jun 2012 04:28:01 PM CEST
+# EESchema Netlist Version 1.1 created  Tue 11 Sep 2012 12:20:02 PM CEST
 (
  ( /4FD72AF5 SUPER_CAP  C13 0.1F {Lib=CP1}
   (    1 +3.3V )
@@ -106,7 +106,7 @@
   (    1 N-000032 )
   (    2 /RESET )
  )
- ( /4F9C28F9 SM2512  R3 470_1W {Lib=R}
+ ( /4F9C28F9 SM2512  R3 47_1W {Lib=R}
   (    1 N-000009 )
   (    2 N-000041 )
  )
