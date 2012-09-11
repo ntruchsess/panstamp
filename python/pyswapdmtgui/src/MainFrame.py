@@ -522,9 +522,11 @@ class MainFrame(wx.Frame):
                 return
             
         # Configure registers
-        self._configReg(obj)
-        # re-build tree
-        self.browser_panel.build_tree()
+        res = self._configReg(obj)
+        
+        if res:
+            # re-build tree
+            self.browser_panel.build_tree()
 
 
     def onClearDevices(self, evn):
@@ -545,6 +547,8 @@ class MainFrame(wx.Frame):
         Configure registers in mote
         
         @param obj:  Mote or parameter to be configured
+        
+        @return True if the config process succeeds. False otherwise
         """
         if obj is not None:
             if obj.__class__.__name__ == "XmlDevice":
@@ -553,12 +557,14 @@ class MainFrame(wx.Frame):
                 if regs is not None:
                     for reg in regs:                        
                         dialog = ParamDialog(self, reg)                        
-                        dialog.Destroy()
+                        res = dialog.ShowModal()
+                        if res == wx.ID_CANCEL:
+                            return False
                     # Does this device need to enter SYNC mode first?
                     if obj.pwrdownmode == True:
                         res = self.waitForSync()                        
                         if not res:
-                            return
+                            return False
                         mote = self._moteinsync           
                     # Send new configuration to mote
                     if mote is not None:
@@ -571,12 +577,14 @@ class MainFrame(wx.Frame):
                 if mote.config_registers is not None:
                     for reg in mote.config_registers:
                         dialog = ParamDialog(self, reg)
-                        dialog.Destroy()
+                        res = dialog.ShowModal()
+                        if res == wx.ID_CANCEL:
+                            return False
                     # Does this device need to enter SYNC mode first?
                     if mote.definition.pwrdownmode == True:
                         res = self.waitForSync()
                         if not res:
-                            return
+                            return False
                         mote = self._moteinsync           
                     # Send new configuration to mote
                     if mote is not None:
@@ -586,13 +594,15 @@ class MainFrame(wx.Frame):
                                 break              
             elif obj.__class__.__name__ == "SwapRegister":
                 dialog = ParamDialog(self, obj)
-                dialog.Destroy()
+                res = dialog.ShowModal()
+                if res == wx.ID_CANCEL:
+                    return False
                 mote = obj.mote
                 # Does this device need to enter SYNC mode first?
                 if mote.definition.pwrdownmode == True:
                     res = self.waitForSync()
                     if not res:
-                        return
+                        return False
                     mote = self._moteinsync
                     
                 # Send new configuration to mote
@@ -606,6 +616,8 @@ class MainFrame(wx.Frame):
                     # Leave SYNC mode
                     self._moteinsync.leaveSync()
                     self._moteinsync = None
+                    
+            return True
                     
         
 class BrowserPanel(wx.Panel):
@@ -631,6 +643,7 @@ class BrowserPanel(wx.Panel):
             if obj.isConfig():
                 menu = wx.Menu()
                 menu.Append(0, "Configure")
+                wx.EVT_MENU(menu, 0, self.parent.onConfigDevice)
         
         if menu is not None:
             self.PopupMenu(menu, evn.GetPoint())

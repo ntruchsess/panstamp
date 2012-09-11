@@ -264,7 +264,7 @@ class BoolValidator(CtrlValidator):
         if type(value) is bool:
             boolVal = value
         else:
-            boolVal = value.lower() in ["true", "1", 1, "yes"]
+            boolVal = value.lower() in ["on", "true", "1", 1, "yes"]
         wgt.SetValue(boolVal)
         
         

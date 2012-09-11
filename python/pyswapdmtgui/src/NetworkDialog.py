@@ -45,14 +45,12 @@ class NetworkDialog(ConfigDialog):
         # Add controls to the layout
         self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "freq_channel")), "Frequency channel")
         self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "netid", regex="^[A-Fa-f0-9-]{4}$")), "Network ID")
-        self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "devaddress")), "Device address")
-        
-        if self.interval is not None:
-            self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "interval")), "Periodic Tx interval")
+        self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "devaddress")), "Device address")      
+        self.addToLayout(wx.TextCtrl(self, validator=TextValidator(self, "interval")), "Periodic Tx interval")
         self.addOkCancelButtons()
         
 
-    def __init__(self, parent=None, devAddr=255, netid=0xB547, freq_channel=0, interval=None):
+    def __init__(self, parent=None, devAddr=255, netid=0xB547, freq_channel=0, interval=0):
         """
         Class constructor
 
