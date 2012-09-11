@@ -46,6 +46,13 @@
 #define ACVOLT_SCALE        8.5
 
 /**
+ * Return codes
+ */
+#define CHANNEL_SAMPLES_NOT_COMPLETED    0
+#define CHANNEL_SAMPLES_COMPLETED        1
+#define CHANNEL_NO_VAC_SIGNAL            2
+
+/**
  * Class: CHANNEL
  * 
  * Description:
@@ -53,7 +60,7 @@
  */
 class CHANNEL
 {
-  private:
+  private:   
     /**
      * Voltage supply in mV
      */
@@ -84,7 +91,7 @@ class CHANNEL
      */
     unsigned long lastTime;
     
-  public:
+  public:  
     /**
      * Scaling factor for the AC voltage signal coming from the voltage transformer
      */
@@ -131,7 +138,12 @@ class CHANNEL
     float powerFactor;
     
     /**
-     * energy consumed in KWh
+     * Initial energy consummed in KWh
+     */
+    double initialKwh;
+    
+    /**
+     * Energy consumed in KWh
      */
     double kwh;
 
@@ -160,15 +172,23 @@ class CHANNEL
      * update
      * 
      * Update AC channel readings
+     *
+     * Return:
+     *    0 if the function still needs to take additional samples
+     *    1 if the function read the necessary amount of samples
+     *    2 if the function detected no VAC signal after reading the samples
      */
-    bool update(void);
+    byte update(void);
     
     /**
      * run
      * 
      * Run channel readings and calculations
+     *
+     * Return:
+     *   Code returned by update()
      */
-    void run(void);
+    byte run(void);
 };
 
 #endif

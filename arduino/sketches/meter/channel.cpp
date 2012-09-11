@@ -58,6 +58,7 @@ CHANNEL::CHANNEL(unsigned int vcc, int vPin, int iPin, float vScale, float iScal
   pfOffset = pfShift;
   peakVoltage = 0;
   peakCurrent = 0;
+  initialKwh = 0;
   kwh = 0;
   lastTime = 0;
 }
@@ -66,8 +67,13 @@ CHANNEL::CHANNEL(unsigned int vcc, int vPin, int iPin, float vScale, float iScal
  * update
  * 
  * Update AC channel readings
+ *
+ * Return:
+ *    0 if the function still needs to take additional samples
+ *    1 if the function read the necessary amount of samples
+ *    2 if the function detected no VAC signal after reading the samples
  */
-bool CHANNEL::update(void) 
+byte CHANNEL::update(void) 
 {
   unsigned long adcV1, adcV2, adcI;
   float voltage, current;
@@ -78,8 +84,9 @@ bool CHANNEL::update(void)
   double energy;
   bool getEnergy = false;
   const float scale = ACVOLT_SCALE;
-
-   
+  static bool noVac = true;
+  
+  
   //Read voltage and current
   adcV1 = analogRead(voltagePin);    // First AC voltage reading
   adcI = analogRead(currentPin);     // AC current reading
@@ -92,6 +99,9 @@ bool CHANNEL::update(void)
   // Discard 0 and negative voltages since we are working with a rectified voltage signal
   if (adcV1 > 0)
   {
+    if (noVac)
+      noVac = false;                   // VAC signal detected
+    
     // Process AC voltage
     adcV1 = adcV1 * voltageSupply;
     adcV1 *= scale;
@@ -117,10 +127,14 @@ bool CHANNEL::update(void)
     // Prepare for active power calculation
     accumulated += voltage * current;
     i++;
-    
+        
     // When a given amount of samples is read
     if (i == NB_OF_SAMPLES)
     {
+      // No VAC signal detected?
+      if (noVac)
+        return CHANNEL_NO_VAC_SIGNAL;
+      
       // Read current time
       currentTime = millis();
       if (lastTime > 0)
@@ -176,24 +190,35 @@ bool CHANNEL::update(void)
         kwh += energy;
       }
 
-      return true;    
+      return CHANNEL_SAMPLES_COMPLETED;    
     }
   }
   
-  return false;
+  return CHANNEL_SAMPLES_NOT_COMPLETED;
 }
 
 /**
  * run
  * 
  * Run channel readings and calculations
+ *
+ * Return:
+ *   Code returned by update()
  */
-void CHANNEL::run(void) 
+byte CHANNEL::run(void)
 {
-  while(!update())
+  byte res = CHANNEL_SAMPLES_NOT_COMPLETED;
+  // Read the necessary amount of samples and run calculations after that
+  while(res != CHANNEL_SAMPLES_COMPLETED)
   {
+    res = update();
+    
+    if (res == CHANNEL_NO_VAC_SIGNAL)
+      break;
   }
 
+  return res;
+  
   /*
   Serial.print(rmsVoltage, DEC);
   Serial.print(" ");
@@ -208,3 +233,4 @@ void CHANNEL::run(void)
   Serial.println(kwh, DEC);
   */
 }
+

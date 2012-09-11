@@ -134,17 +134,32 @@ void readInitValues(void)
   byte val, i, j;
   byte channelConfig[CONFIG_CHANNEL_SIZE];
   byte pulseConfig[CONFIG_PULSEINPL_SIZE];
+  unsigned long tmpValue;
    
   // Read configuration for the energy channels
-  for(i=0 ; i < (sizeof(channels)/sizeof(*channels)) ; i++)
+  for(i=0 ; i < NB_OF_CHANNELS ; i++)
   {
     for(j=0 ; j<CONFIG_CHANNEL_SIZE ; j++)
       channelConfig[j] = EEPROM.read(EEPROM_CONFIG_CHANNEL0 + CONFIG_CHANNEL_SIZE * i + j);
     getRegister(REGI_CHANNEL_CONFIG_0 + i)->setData(channelConfig);
   }
+  
+  // Read initial KWh values for each channel
+  for(i=0 ; i < NB_OF_CHANNELS ; i++)
+  {
+    tmpValue = 0;
+    for(j=0 ; j<CONFIG_INITKWH_SIZE ; j++)
+    {
+      val = EEPROM.read(EEPROM_INITIAL_KWH0 + CONFIG_INITKWH_SIZE * i + j);
+      tmpValue |= val;
+      if (j < (CONFIG_INITKWH_SIZE - 1))
+        tmpValue = tmpValue << 8;
+    }
+    channels[i].initialKwh = tmpValue / 100;
+  }
 
   // Read configuration for the pulse inputs
-  for(i=0 ; i < (sizeof(counters)/sizeof(*counters)) ; i++)
+  for(i=0 ; i < NB_OF_COUNTERS ; i++)
   {
     for(j=0 ; j<CONFIG_PULSEINPL_SIZE ; j++)
       pulseConfig[j] = EEPROM.read(EEPROM_CONFIG_PULSE0 + CONFIG_PULSEINPL_SIZE * i + j);
@@ -154,12 +169,48 @@ void readInitValues(void)
 }
 
 /**
+ * saveValues
+ * 
+ * Save values in EEPROM
+ */
+void saveValues(void) 
+{
+  byte i, j, val;
+  unsigned long tmpValue;
+
+  // Save current KWh readings from channels
+  for(i=0 ; i < NB_OF_CHANNELS ; i++)
+  {
+    tmpValue = channels[i].initialKwh * 100;
+    
+    for(j=0 ; j<sizeof(tmpValue) ; j++)
+    {
+      val = (tmpValue >> (8 * (3-j))) & 0xFF;
+      EEPROM.write(EEPROM_INITIAL_KWH0 + CONFIG_INITKWH_SIZE * i + j, val);
+    }
+  }
+  
+  // Save current readings from pulse inputs
+  for(i=0 ; i < NB_OF_COUNTERS ; i++)
+  {
+    for(j=0 ; j<sizeof(counters[0]) ; j++)
+    {
+      val = (counters[i] >> (8 * (3-j))) & 0xFF;
+      EEPROM.write(EEPROM_CONFIG_PULSE0 + CONFIG_PULSEINPL_SIZE * i + j, val);
+    }
+  }
+}
+
+/**
  * setup
  *
  * Arduino setup function
  */
 void setup()
 {
+  pinMode(LEDPIN, OUTPUT);
+  digitalWrite(LEDPIN, LOW);
+  
   Serial.begin(38400);
   Serial.flush();
   Serial.println("Power meter ready!");
@@ -227,7 +278,8 @@ void loop()
     if (channels[channelNb].enable)
     {
       // Read power data
-      channels[channelNb].run();
+      if (channels[channelNb].run() == CHANNEL_NO_VAC_SIGNAL)
+        saveValues();  // NO VAC signal detected. Save data in EEPROM
     }
   }
 

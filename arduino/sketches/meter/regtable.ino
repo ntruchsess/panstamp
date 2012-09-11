@@ -47,14 +47,14 @@ DEFINE_COMMON_REGISTERS()
 
 // RMS voltage, RMS current, apparent power, active power, power factor
 // and Energy in KWh
-static byte dtChannelsEnergy[6][12];       
+static byte dtChannelsEnergy[NB_OF_CHANNELS][12];       
 // Voltage transformer scaling factor [0-655.35], current transformer scaling
 // factor [0-655.35], power factor offset [0.0-0.99] and channel enable [0, 1]
-static byte dtChannelsConfig[6][CONFIG_CHANNEL_SIZE];
+static byte dtChannelsConfig[NB_OF_CHANNELS][CONFIG_CHANNEL_SIZE];
 // Pulse counts
-static byte dtPulseCount[3][4];
+static byte dtPulseCount[NB_OF_COUNTERS][4];
 // Configuration for the pulse inputs: initial energy count, scaling factor per pulse
-static byte dtPulseConfig[3][CONFIG_PULSEINPL_SIZE];
+static byte dtPulseConfig[NB_OF_COUNTERS][CONFIG_PULSEINPL_SIZE];
 
 // Energy values
 //-----------------------
@@ -169,7 +169,7 @@ const void updtChannelEnergy(byte rId)
   dtChannelsEnergy[channel][7] = tmpValue & 0xFF;
 
   // KWh
-  tmpValue = channels[channel].kwh * 100;
+  tmpValue = (channels[channel].initialKwh + channels[channel].kwh) * 100;
   dtChannelsEnergy[channel][8] = (tmpValue >> 32) & 0xFF;
   dtChannelsEnergy[channel][9] = (tmpValue >> 16) & 0xFF;
   dtChannelsEnergy[channel][10] = (tmpValue >> 8) & 0xFF;
