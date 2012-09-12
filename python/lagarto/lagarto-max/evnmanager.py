@@ -43,7 +43,7 @@ from lagartoresources import LagartoEndpoint
 
 from api import TimeAPI, NetworkAPI
 from clouding import OpenSense
-from storage import DatabaseManager
+
 
 try:
     import webscripts
@@ -276,6 +276,9 @@ class EvnManager(LagartoClient):
         # Lagarto client constructor
         LagartoClient.__init__(self, os.path.dirname(__file__))
         NetworkAPI.lagarto_client = self
+
+        # Run startup script
+        scripts.events.startup()
 
         # Start periodic trigger thread
         PeriodicTrigger()

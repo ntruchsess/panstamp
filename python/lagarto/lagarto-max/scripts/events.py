@@ -32,7 +32,17 @@ class DatabaseConnection:
     config_dir=os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
     config_file=os.path.join(config_dir, "config", XmlSettings.file_name)
     settings=XmlSettings(config_file)
+
+
+def startup():
+    """
+    Startup function
     
+    Place here your custom initializations
+    """
+    print "Custom objects being initializated..."
+    
+
 def event_handler(evnsrc, evnobj):
     """
     Event handling function
