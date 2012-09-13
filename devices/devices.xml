@@ -11,5 +11,6 @@
     <dev id="8" name="lcddriver" label="Alphanumeric LCD driver"/>
     <dev id="9" name="pulsegen" label="Programmable pulse generator"/>
     <dev id="10" name="pulsecounter" label="Pulse counter"/>
+    <dev id="11" name="meter" label="Energy meter"/>
   </developer>
 </devices>
