@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<providers>
+  <debug>1</debug>
+  <username>xxxxxx</username>
+  <password>yyyyyyyy</password>
+  <defaultidentity>Robomotic</defaultidentity>
+  <defaultdestination>4477012344567</defaultdestination>
+  <useproxy>0</useproxy>
+  <proxy></proxy>
+</providers>

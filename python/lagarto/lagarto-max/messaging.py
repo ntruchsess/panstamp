@@ -1,6 +1,6 @@
 #########################################################################
 #
-# messaging
+# messaging providers at the moment just one
 #
 # Copyright (c) 2012 Paolo Di Prodi <paolo@robomotic.com>
 #
@@ -25,21 +25,37 @@
 __author__="Paolo Di Prodi"
 __date__  ="$Sept 10, 2012$"
 #########################################################################
-
-class IntelliSMS:
-    debug=0
-    def __init__(self):
-        self.username="xxxxxx"
-        self.password="yyyyyyy"
-        self.sender="somebody"
-        self.to="44770xxxxxx"
+from smstools import MessagingSettings
+from datetime import datetime
+import time
+import os
+import logging
+import urllib
+class IntelliSMS(object):
+    """
+    A class for sending SMS messages from IntelliSoftware.co.uk
+    """
+    def __init__(self, config_path):
+        """
+        Init all variables from messaging.xml file
+        
+        """
+        self.settings=MessagingSettings(config_path)
+        self.username=self.settings.username
+        self.password=self.settings.password
+        self.sender=self.settings.defaultidentity
+        self.to=self.settings.defaultdestination
         self.url1="http://www.intellisoftware.co.uk"
         self.url2="http://www.intellisoftware2.co.uk"
         self.pushpage="/smsgateway/sendmsg.aspx"
-        self.proxies = {'http': 'http://wwwcache.gla.ac.uk:8080'}
+        self.UseProxies=self.settings.useproxy
+        if self.UseProxies:
+            self.proxies = {self.settings.gateway}
+        else:
+            self.proxies={}
         self.MaxConCatMsgs=1
         self.status=""
-        self.UseProxies=0
+
         self.last_sms=datetime.now()
         self.min_period=3
         self.sent=0
@@ -57,12 +73,12 @@ class IntelliSMS:
         else:
             self.UseProxies=0	
         
-    def SendSms(self,dest,text="Default EMMA message"):
+    def SendSms(self,text="Default text message"):
 
         deltaT=datetime.now()-self.last_sms
         if  deltaT.seconds>self.min_period or self.sent==0:
-            if self.debug>0:
-                logging.info("Simulated SMS sent %s " %time.strftime("%I:%M:%S %p", time.localtime()))
+            if self.settings.debug>0:
+                logging.info("Debug SMS sent %s " %time.strftime("%I:%M:%S %p", time.localtime()))
                 self.sent=1
                 return 1
             else:
@@ -71,7 +87,7 @@ class IntelliSMS:
                 self.config['username']=self.username
                 self.config['password']=self.password
                 #needs to be changed with international prefix what an hassle!
-                self.config['to']=dest
+                self.config['to']=self.to
                 self.config['from']=self.sender
                 self.config['text']=text
                 self.config['maxconcat']=self.MaxConCatMsgs
@@ -87,12 +103,13 @@ class IntelliSMS:
                 self.sent=1
                 self.output = file.read()
                 file.close()
+                logging.info("Message sent to %s from %s" % (self.to, self.sender)) 
                 #return self.ParseRequest()
                 return 1
         else:
             logging.info("Minimum SMS delay exceeded!")
         
-    def SendFakeSms(self,to="447508456096",text="Alarm",fromID="Robomotic"):
+    def SendFakeSms(self,to="447508456016",text="Alarm",fromID="Robomotic"):
         self.output="ID:10011000000018633309"
         return self.ParseRequest()
         
