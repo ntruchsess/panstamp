@@ -111,8 +111,11 @@ class ParamDialog(ConfigDialog):
         'register'   SWAP Register to be configured by this dialog
         """
         ConfigDialog.__init__(self, parent, title=register.name)
+
         # Register to be configured
-        self.parameters = register.parameters               
+        # FIXME: parameters need to be cloned in order to not to alter the original ones
+        self.parameters = register.parameters[:]
+                      
         # Create widgets
         self._createControls()
         # Layout widgets

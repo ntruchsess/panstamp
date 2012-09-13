@@ -238,7 +238,7 @@ class MainFrame(wx.Frame):
             endpoint = msg.data
         else:
             endpoint = msg
-        if endpoint.__class__.__name__ == "SwapEndpoint":
+        if endpoint.__class__.__name__ in ["SwapEndpoint", "SwapCfgParam"]:
             self.browser_panel.updateEndpointInTree(endpoint)
 
 
@@ -553,7 +553,7 @@ class MainFrame(wx.Frame):
         if res:
             # re-build tree
             self.browser_panel.build_tree()
-
+        
 
     def onClearDevices(self, evn):
         """
