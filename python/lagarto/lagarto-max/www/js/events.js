@@ -229,7 +229,7 @@ function conditionToWeb(line)
           else
             item2 = func
         }
-        else if (item2.length == 4)
+        else
           item2 = timeToWeb(item2);
       }
       else if (item1 == "weekday")
