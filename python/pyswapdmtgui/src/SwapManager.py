@@ -153,7 +153,7 @@ class SwapManager(SwapInterface):
             wx.CallAfter(pub.sendMessage, "changed_val", endpoint)    
 
 
-    def paramValueChanged(self, param):
+    def parameterValueChanged(self, param):
         """
         Config parameter value changed
         
