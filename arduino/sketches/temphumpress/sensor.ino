@@ -48,7 +48,7 @@ byte sensor_ReadByte(void);
  *
  * Read data byte from DHT11 sensor
  */
-byte sensor_ReadByte(void)
+int sensor_ReadByte(void)
 {
   byte i, result = 0;
   unsigned int count = 20000;
