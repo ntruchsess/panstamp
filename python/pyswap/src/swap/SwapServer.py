@@ -349,11 +349,11 @@ class SwapServer(threading.Thread):
                             if self._eventHandler.registerValueChanged is not None:
                                 self._eventHandler.registerValueChanged(reg)
                             # Notify parameter's value change to event handler
-                            if self._eventHandler.paramValueChanged is not None:
+                            if self._eventHandler.parameterValueChanged is not None:
                                 # Has any of the endpoints changed?
                                 for param in reg.parameters:
                                     if param.valueChanged == True:
-                                        self._eventHandler.paramValueChanged(param)
+                                        self._eventHandler.parameterValueChanged(param)
                             return
             return
 
