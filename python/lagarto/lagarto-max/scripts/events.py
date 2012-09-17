@@ -40,7 +40,7 @@ class DatabaseConnection:
 
 class Messaging:
     config_dir=os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
-    config_file=os.path.join(config_dir, "logs", MessagingSettings.file_name)
+    config_file=os.path.join(config_dir, "config", MessagingSettings.file_name)
     messager=IntelliSMS(config_file)
     
 def startup():
@@ -49,7 +49,7 @@ def startup():
     
     Place here your custom initializations
     """
-    logname=os.path.join(Messaging.config_dir, "config", "messaging.log")
+    logname=os.path.join(Messaging.config_dir, "logs", "messaging.log")
     logging.basicConfig(filename=logname,level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p') 
     logging.info("Logger initialised...")
 
