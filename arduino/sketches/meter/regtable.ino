@@ -53,7 +53,7 @@ static byte dtChannelsEnergy[NB_OF_CHANNELS][12];
 static byte dtChannelsConfig[NB_OF_CHANNELS][CONFIG_CHANNEL_SIZE];
 // Pulse counts
 static byte dtPulseCount[NB_OF_COUNTERS][4];
-// Configuration for the pulse inputs: initial energy count, scaling factor per pulse
+// Configuration for the pulse inputs: initial energy count, amount of pulses per unit step
 static byte dtPulseConfig[NB_OF_COUNTERS][CONFIG_PULSEINPL_SIZE];
 
 // Energy values
