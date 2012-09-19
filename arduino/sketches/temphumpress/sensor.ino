@@ -195,9 +195,9 @@ int sensor_ReadTemp(void)
   // Switch off sensor
   tempSensorOFF();
 
-  // Convert reading to voltage
-  float fVolt = ((reading * 1.1) / 1024.0) * 100;
-  unsigned int voltage = fVolt * 10;
+  // Convert reading to voltage (mV)
+  float fVolt = (reading * 1100.0) / 1023.0;
+  unsigned int voltage = fVolt;
 
   // Fill register
   dtSensor[0] = (voltage >> 8) & 0xFF;
