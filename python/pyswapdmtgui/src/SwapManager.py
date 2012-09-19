@@ -38,7 +38,7 @@ import wxversion
 if wxversion.checkInstalled("2.8"):
     wx_version = "2.8"
     from wx.lib.pubsub import Publisher
-    pub = Publisher()
+    pub = Publisher
 elif wxversion.checkInstalled("2.9"):
     wx_version = "2.9"
     from wx.lib.pubsub import pub
