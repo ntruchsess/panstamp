@@ -507,7 +507,7 @@ class MainFrame(wx.Frame):
             if not mote.setNetworkId(int(dialog.netid, 16)):
                 self._Warning("Unable to set mote's Network ID")
         if dialog.interval is not None:
-            if dialog.interval != txinterval:
+            if dialog.interval != txinterval and dialog.interval != "":
                 if not mote.setTxInterval(int(dialog.interval)):
                     self._Warning("Unable to set mote's Tx interval")
         if int(dialog.freq_channel) != freqChann:
