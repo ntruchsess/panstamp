@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<devices>
+  <developer id="1" name="panStamp">
+    <dev id="1" name="temphum" label="Dual Temperature/Humidity sensor"/>
+    <dev id="2" name="chronos" label="SWAP-enabled Chronos watch"/>
+    <dev id="3" name="rgbdriver" label="RGB driver board"/>
+    <dev id="4" name="temp" label="Temperature sensor"/>
+    <dev id="5" name="temppress" label="Dual Temperature-Barometric pressure sensor"/>
+    <dev id="6" name="bininps" label="Binary/Counter input module"/>
+    <dev id="7" name="binouts" label="Binary/PWM output module"/>
+    <dev id="8" name="lcddriver" label="Alphanumeric LCD driver"/>
+    <dev id="9" name="pulsegen" label="Programmable pulse generator"/>
+    <dev id="10" name="pulsecounter" label="Pulse counter"/>
+    <dev id="11" name="meter" label="Energy meter"/>
+  </developer>
+  <developer id="17" name="Robomotic">
+    <dev id="2" name="SeismoFloor" label="Floor sensor"/>
+  </developer>
+</devices>

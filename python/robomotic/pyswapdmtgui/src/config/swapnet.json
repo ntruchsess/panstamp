@@ -1,0 +1,105 @@
+{
+  "network": {
+    "name": "SWAP", 
+    "motes": [
+      {
+        "registers": [
+          {
+            "endpoints": [
+              {
+                "direction": "inp", 
+                "name": "Temperature", 
+                "value": "0.0", 
+                "location": "SWAP", 
+                "units": [
+                  "C", 
+                  "F", 
+                  "K"
+                ], 
+                "type": "num", 
+                "id": "236.14.0", 
+                "unit": "C"
+              }, 
+              {
+                "direction": "inp", 
+                "name": "Pressure", 
+                "value": "0.0", 
+                "location": "SWAP", 
+                "units": [
+                  "mbar", 
+                  "Pa", 
+                  "kPa"
+                ], 
+                "type": "num", 
+                "id": "236.14.1", 
+                "unit": "mbar"
+              }, 
+              {
+                "direction": "inp", 
+                "name": "Altitude", 
+                "value": "0", 
+                "location": "SWAP", 
+                "units": [
+                  "m"
+                ], 
+                "type": "num", 
+                "id": "236.14.2", 
+                "unit": "m"
+              }
+            ], 
+            "id": 14, 
+            "name": "Environmental sensors"
+          }, 
+          {
+            "endpoints": [
+              {
+                "direction": "inp", 
+                "name": "Battery", 
+                "value": "0.0", 
+                "location": "SWAP", 
+                "units": [
+                  "V"
+                ], 
+                "type": "num", 
+                "id": "236.15.0", 
+                "unit": "V"
+              }, 
+              {
+                "direction": "inp", 
+                "name": "Offset", 
+                "value": "0.0", 
+                "location": "SWAP", 
+                "units": [
+                  "V"
+                ], 
+                "type": "num", 
+                "id": "236.15.1", 
+                "unit": "V"
+              }
+            ], 
+            "id": 15, 
+            "name": "Status sensors"
+          }, 
+          {
+            "endpoints": [
+              {
+                "direction": "inp", 
+                "name": "Alarm", 
+                "value": "0", 
+                "location": "SWAP", 
+                "type": "num", 
+                "id": "236.16.0"
+              }
+            ], 
+            "id": 16, 
+            "name": "Emma events"
+          }
+        ], 
+        "pcode": "0000001100000001", 
+        "address": 236, 
+        "name": "Emma Chronos", 
+        "manufacturer": "Robomotic"
+      }
+    ]
+  }
+}

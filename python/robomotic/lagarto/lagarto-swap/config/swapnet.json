@@ -1,0 +1,150 @@
+{
+  "network": {
+    "name": "SWAP", 
+    "motes": [
+      {
+        "registers": [
+          {
+            "endpoints": [
+              {
+                "direction": "inp", 
+                "name": "Voltage", 
+                "timestamp": "17 Sep 2012 17:30:22", 
+                "value": "3.274", 
+                "location": "SWAP", 
+                "units": [
+                  "V"
+                ], 
+                "type": "num", 
+                "id": "34.11.0", 
+                "unit": "V"
+              }
+            ], 
+            "id": 11, 
+            "name": "Voltage supply"
+          }, 
+          {
+            "endpoints": [
+              {
+                "direction": "inp", 
+                "name": "Temperature", 
+                "timestamp": "17 Sep 2012 17:30:16", 
+                "value": "24.0", 
+                "location": "SWAP", 
+                "units": [
+                  "C", 
+                  "F", 
+                  "K"
+                ], 
+                "type": "num", 
+                "id": "34.12.0", 
+                "unit": "C"
+              }, 
+              {
+                "direction": "inp", 
+                "name": "Humidity", 
+                "timestamp": "17 Sep 2012 17:30:16", 
+                "value": "35.0", 
+                "location": "SWAP", 
+                "units": [
+                  "%"
+                ], 
+                "type": "num", 
+                "id": "34.12.1", 
+                "unit": "%"
+              }
+            ], 
+            "id": 12, 
+            "name": "Humidity and Temperature"
+          }
+        ], 
+        "pcode": "0000000100000001", 
+        "address": 34, 
+        "name": "Dual Temperature-Humidity sensor", 
+        "manufacturer": "panStamp"
+      }, 
+      {
+        "registers": [
+          {
+            "endpoints": [
+              {
+                "direction": "inp", 
+                "name": "Voltage", 
+                "value": "0.0", 
+                "location": "SWAP", 
+                "units": [
+                  "V"
+                ], 
+                "type": "num", 
+                "id": "17.11.0", 
+                "unit": "V"
+              }
+            ], 
+            "id": 11, 
+            "name": "Voltage supply"
+          }, 
+          {
+            "endpoints": [
+              {
+                "direction": "inp", 
+                "name": "Ax", 
+                "value": "0.0", 
+                "location": "SWAP", 
+                "units": [
+                  "G"
+                ], 
+                "type": "num", 
+                "id": "17.12.0", 
+                "unit": "G"
+              }, 
+              {
+                "direction": "inp", 
+                "name": "Ay", 
+                "value": "0.0", 
+                "location": "SWAP", 
+                "units": [
+                  "G"
+                ], 
+                "type": "num", 
+                "id": "17.12.1", 
+                "unit": "G"
+              }, 
+              {
+                "direction": "inp", 
+                "name": "Az", 
+                "value": "0.0", 
+                "location": "SWAP", 
+                "units": [
+                  "G"
+                ], 
+                "type": "num", 
+                "id": "17.12.2", 
+                "unit": "G"
+              }
+            ], 
+            "id": 12, 
+            "name": "Accelerations"
+          }, 
+          {
+            "endpoints": [
+              {
+                "direction": "inp", 
+                "name": "Event", 
+                "value": "0", 
+                "location": "SWAP", 
+                "type": "num", 
+                "id": "17.13.0"
+              }
+            ], 
+            "id": 13, 
+            "name": "Interrupt code"
+          }
+        ], 
+        "pcode": "0000001100000002", 
+        "address": 17, 
+        "name": "SeismoFloor simple", 
+        "manufacturer": "Robomotic"
+      }
+    ]
+  }
+}

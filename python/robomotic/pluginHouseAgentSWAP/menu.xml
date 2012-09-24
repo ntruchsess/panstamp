@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<items>
+  <item name="swap" url="#swap" image="/images/plugins/swap/swapIcon.png">
+		<subitem>
+			<name>Network information</name>
+			<url>/swap_network</url>
+			<description>This page displays general information about the nodes in the SWAP network.</description>
+		</subitem>
+  </item>
+</items>

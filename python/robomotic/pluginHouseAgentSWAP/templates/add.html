@@ -1,0 +1,180 @@
+<%inherit file="/master.html"/>
+<% import datetime %>
+<%def name="head()">
+<script language='javascript'>
+$(document).ready(function() 
+{
+  $('#adddevice_button').button();
+
+  function replacer(key, value)
+  {
+    if (typeof value === 'number' && !isFinite(value))
+    {
+      return String(value);
+    }
+    return value;
+  }
+    
+  function json_encode(value)
+  {
+    var myJSONText = JSON.stringify(value, replacer);
+    return myJSONText;
+  }
+
+  $('#adddevice_button').click(function()
+  {
+    var valueids = {}
+    $('input:checked').each(function()
+    {
+      //valueids.push($(this).attr('id'));
+
+      select = document.getElementById($(this).attr('id') + '_units')
+      var unit;
+      if (select != null)
+        unit = select.options[select.selectedIndex].value;
+      else
+        unit = "";
+
+      valueids[$(this).attr('id')] = unit;
+    });
+
+    location_id = $("#locations").val();
+    device_name = $("#name").val();
+
+    device_data = {'valueids': valueids,
+                   'mote': ${mote},
+                   'pluginid': "${pluginid}",
+                   'pluginguid': "${pluginguid}",
+                   'location': location_id,
+                   'name': device_name};
+
+    $.ajax({
+      type: 'POST',
+      url: '/swap_added',
+      data: json_encode(device_data),
+      success: function(data) {
+        // Show operation was successful
+        alert("Device " + device_name + " has been successfully added to the database")
+        history.go(-1);
+      }
+    });
+  });  
+});
+</script>
+</%def>
+
+<%def name="content()">
+<div id="output"></div>
+<table cellspacing="0" cellpadding="0" align="center" width="100%" id="devices">
+	<tbody>
+		<tr>
+			<td class="HeadText">Add SWAP device to the HouseAgent database</td>
+		</tr>
+		<tr>
+			<td class="body info">
+				<p>This page allows you to add this device to the database. Please select the values you would like to log..</p>
+			</td>
+		</tr>
+    <tr>
+      <td class="body">
+        <form name="device_add">
+          <table class="InfoTable" cellspacing="0" cellpadding="2" border="0" width="40%">
+            <tbody>
+              <tr>
+                <td class="Head2" colspan="3">Device properties</td>
+              </tr>
+              <tr>
+              </tr>
+                <td class="Label">
+                  Product: 
+                </td>
+                <td class="Label">
+                  ${product}
+                </td>
+              <tr>
+              </tr>
+                <td class="Label">
+                  Device address: 
+                </td>
+                <td class="Label">
+                  ${mote}
+                  <br><br>
+                </td>
+              <tr>
+                <td class="Label">
+                  <span class="requiredfield">*</span>
+                  Device name: 
+                </td>
+                <td>
+                  <input class="Field250" name="name" id="name">
+                </td>
+              </tr>
+              <tr>
+                <td class="Label">
+                  <span class="requiredfield">*</span>
+                  Location: 
+                </td>
+                <td>
+                  <select id="locations">
+                    % for location in locations:
+                      <option value="${location[0]}">${location[1]}</option>
+                    % endfor
+                  </select>       
+                </td>
+              </tr>                               
+            </tbody>                           
+          </table>
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td class="body">
+        <table class="InfoTable" cellspacing="0" cellpadding="0" border="0" width="40%">
+          <tbody>
+            <tr class="HeadTable">
+              <td nowrap="" width="5%">Select</td>
+              <td nowrap="" width="25%">Endpoint type</td>
+              <td nowrap="" width="25%">Name</td>
+              <td nowrap="" width="25%">Value</td>
+              <td nowrap="" width="20%">Units</td>
+            </tr>
+            % for value, details in result.iteritems():
+              <tr class="Row">
+                <td><input type="checkbox" id=${details["name"]}></td>
+                <td>${details["type"]}</td>
+                <td>${details["name"]}</td>
+                <td>${details["value"]}</td>
+                <td>
+                  % if len(details["units"]) == 1:
+                      ${details["units"][0]}
+                  % elif len(details["units"]) > 1:
+                    <select id=${details["name"]+'_units'} width="70" style="width: 70px">
+                    % for unit in details["units"]:
+                        % if unit == details["unit"]:
+                          <option value=${unit} selected="selected">${unit}</option>
+                        % else:
+                          <option value=${unit}>${unit}</option>
+                        % endif
+                    % endfor
+                    </select>
+                  % endif
+                </td>
+              </tr>
+            % endfor
+          </tbody>
+        </table>
+        <br>
+        <table class="PanelPlain" cellspacing="0" cellpadding="2" border="0" width="100%">
+          <tbody>
+            <tr>
+              <td height="30" valign="top">
+                <button id="adddevice_button">Add device</button><br><br>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+	</tbody>
+</table>
+</%def>
