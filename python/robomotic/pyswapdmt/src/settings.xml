@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<settings>
-  <devices>/home/daniel/development/xml/swap/devices</devices>
-  <serial>serial.xml</serial>
-  <network>network.xml</network>
-</settings>
