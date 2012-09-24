@@ -41,7 +41,7 @@ Adafruit_BMP085 bmp;
  * Local functions
  */
 #ifdef TEMPHUM
-byte sensor_ReadByte(void);
+int sensor_ReadByte(void);
 
 /**
  * sensor_ReadByte
@@ -196,7 +196,7 @@ int sensor_ReadTemp(void)
   tempSensorOFF();
 
   // Convert reading to voltage (mV)
-  float fVolt = (reading * 1100.0) / 1023.0;
+  float fVolt = (reading * voltageSupply) / 1024.0;
   unsigned int voltage = fVolt;
 
   // Fill register
@@ -242,7 +242,6 @@ void initSensor(void)
 #ifdef TEMP
   pinMode(PIN_PWRTEMP, OUTPUT);   // Configure Power pin as output
   tempSensorOFF();
-  analogReference(INTERNAL);      // Use internal 1.1 V reference fro ADC conversions
 #elif TEMPHUM
   pinMode(PIN_PWRDHT, OUTPUT);    // Configure Power pin as output
   dhtSensorOFF();

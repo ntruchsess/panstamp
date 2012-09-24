@@ -44,6 +44,7 @@ DEFINE_COMMON_REGISTERS()
  * Definition of custom registers
  */
 // Voltage supply
+static unsigned long voltageSupply = 3300;
 static byte dtVoltSupply[2];
 REGISTER regVoltSupply(dtVoltSupply, sizeof(dtVoltSupply), &updtVoltSupply, NULL);
 // Sensor value register
@@ -74,9 +75,9 @@ DEFINE_COMMON_CALLBACKS()
  * 'rId'  Register ID
  */
 const void updtVoltSupply(byte rId)
-{
-  unsigned long result;
-   
+{  
+  static unsigned long result;
+  
   // Read 1.1V reference against AVcc
   ADMUX = _BV(REFS0) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
   delay(2); // Wait for Vref to settle
@@ -85,13 +86,15 @@ const void updtVoltSupply(byte rId)
   result = ADCL;
   result |= ADCH << 8;
   result = 1126400L / result; // Back-calculate AVcc in mV
+  voltageSupply = result;     // Update global variable Vcc
   
   #ifdef VOLT_SUPPLY_A7
+  
   // Read voltage supply from A7
-  unsigned short ref = result;
+  unsigned short ref = voltageSupply;
   result = analogRead(7);
   result *= ref;
-  result /= 1023;
+  result /= 1024;
   #endif
 
   /**
