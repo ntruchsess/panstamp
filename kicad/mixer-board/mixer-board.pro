@@ -1,4 +1,4 @@
-update=Tue 18 Sep 2012 17:17:48 BST
+update=21/09/2012 11:40:09
 version=1
 last_client=kicad
 [cvpcb]
@@ -107,8 +107,6 @@ offY_E=0
 RptD_X=0
 RptD_Y=100
 RptLab=1
-SimCmd=
-UseNetN=0
 LabSize=60
 [eeschema/libraries]
 LibName1=power
@@ -141,5 +139,6 @@ LibName27=opto
 LibName28=atmel
 LibName29=contrib
 LibName30=valves
+LibName31=fv_kicad_lib
 [general]
 version=1
