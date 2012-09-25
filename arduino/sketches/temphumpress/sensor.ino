@@ -85,7 +85,7 @@ int sensor_ReadByte(void)
  */
 int sensor_ReadTempHum(void)
 {
-  int temperature, humidity;
+  int temperature, humidity, chk;
   
   #ifdef DHT11
 
@@ -93,7 +93,7 @@ int sensor_ReadTempHum(void)
   
   dhtSensorON();
   delay(1500);   
-  int chk = sensor.read(PIN_DHT_DATA);
+  chk = sensor.read(PIN_DHT_DATA);
   dhtSensorOFF();
 
   if (chk != DHTLIB_OK)
@@ -133,8 +133,13 @@ int sensor_ReadTempHum(void)
       delayMicroseconds(80);
 
       // Now ready for data reception 
-      for (i=0; i<5; i++)  
-        dhtData[i] = sensor_ReadByte();
+      for (i=0; i<5; i++)
+      {
+        if ((chk = sensor_ReadByte()) < 0)
+          return -1;
+          
+        dhtData[i] = (byte)chk;
+      }
       success = true;
     }
   }
