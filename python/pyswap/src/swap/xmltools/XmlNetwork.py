@@ -62,7 +62,8 @@ class XmlNetwork(object):
         # Get wncryption password
         elem = root.find("password")
         if elem is not None:
-            self.password = elem.text
+            if elem.text is not None:
+                self.password = elem.text
 
 
     def save(self):
@@ -76,7 +77,8 @@ class XmlNetwork(object):
         f.write("\t<netid>" + hex(self.network_id)[2:] + "</netid>\n")
         f.write("\t<address>" + str(self.devaddress) + "</address>\n")
         f.write("\t<security>" + str(self.security) + "</security>\n")
-        f.write("\t<password>" + self.password + "</password>\n")
+        if self.password != "":
+            f.write("\t<password>" + self.password + "</password>\n")
         f.write("</network>\n")
         f.close()
 
