@@ -329,7 +329,7 @@ class MainFrame(wx.Frame):
             self.server.start()
 
             self._waitfor_startdialog = WaitDialog(self, "Connecting to SWAP network...", 12)
-            res = self._waitfor_startdialog.show()
+            res = self._waitfor_startdialog.ShowModal()
             if not res:
                 # Stop SWAP server
                 if self.server is not None:
