@@ -76,27 +76,20 @@ class PeriodicTrigger(threading.Thread):
         tm_sec = time.localtime()[5]
         """
 
-        while self.go_on:
+        while True:
             tm_sec = time.localtime()[5]
             time.sleep(60.0 - tm_sec)
-            TimeEvent()
-        
-        print "Stopping periodic trigger engine..."
+            TimeEvent()        
     
-    
-    def stop(self):
-        """
-        Stop event manager
-        """
-        self.go_on = False
-
-    
+       
     def __init__(self):
         """
         Constructor
         """
         threading.Thread.__init__(self)
-        self.go_on = True
+        # Configure thread as daemon
+        self.daemon = True
+        # Run thread
         self.start()
 
 
@@ -282,10 +275,7 @@ class EvnManager(LagartoClient):
     def stop(self):
         """
         Stop event manager
-        """
-        # Stop periodic trigger engine
-        self.periodic_trigger.stop()
-        
+        """       
         # Stop lagarto client
         LagartoClient.stop(self)
         
@@ -302,7 +292,7 @@ class EvnManager(LagartoClient):
         scripts.events.startup()
 
         # Start periodic trigger thread
-        self.periodic_trigger = PeriodicTrigger()
+        PeriodicTrigger()
         
         # Start Lagarto client
         self.start()

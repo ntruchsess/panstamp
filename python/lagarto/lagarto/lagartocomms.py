@@ -140,18 +140,10 @@ class PeriodicHeartBeat(threading.Thread):
         """
         Start timer
         """
-        while self.go_on:
+        while True:
             self.send_hbeat()
             time.sleep(60.0)
-        print "Stopping periodic heart beat..."
-    
-    
-    def stop(self):
-        """
-        Stop periodic heart beats
-        """
-        self.go_on = False
-        
+                      
     
     def __init__(self, send_hbeat):
         """
@@ -160,10 +152,11 @@ class PeriodicHeartBeat(threading.Thread):
         @param send_hbeat: Heart beat transmission method
         """
         threading.Thread.__init__(self)
+        # Configure thread as daemon
+        self.daemon = True
         # Heart beat transmission method
         self.send_hbeat = send_hbeat
-        
-        self.go_on = True
+
 
 
 class LagartoServer(LagartoProcess):
@@ -190,9 +183,6 @@ class LagartoServer(LagartoProcess):
         """
         Stop lagarto server
         """
-        # Stop heart beats
-        self.hbeat_process.stop()
-        
         # Close ZeroMQ socket
         self.pub_socket.setsockopt(zmq.LINGER, 0)
         self.pub_socket.close()
@@ -225,8 +215,8 @@ class LagartoServer(LagartoProcess):
         self.publish_lock = threading.Lock()
         
         # Heart beat transmission thread
-        self.hbeat_process = PeriodicHeartBeat(self.publish_status)
-        self.hbeat_process.start()
+        hbeat_process = PeriodicHeartBeat(self.publish_status)
+        hbeat_process.start()
 
 
 class LagartoClient(threading.Thread, LagartoProcess):
@@ -247,11 +237,17 @@ class LagartoClient(threading.Thread, LagartoProcess):
         """
         Run server thread
         """
-        while self.go_on:
-            # Wait for broadcasted message from publisher
-            event = self.sub_socket.recv()
+        while self.running:           
+            try:
+                # Any broadcasted message from a lagarto server?
+                event = self.sub_socket.recv(flags=zmq.NOBLOCK)
+            except:
+                event = None
+                pass
+            
             # Process event
-            self._process_event(event)
+            if event is not None:
+                self._process_event(event)
         
         print "Stopping lagarto client..."
             
@@ -260,7 +256,7 @@ class LagartoClient(threading.Thread, LagartoProcess):
         """
         Stop lagarto client
         """        
-        self.go_on = False
+        self.running = False
         
         # Close ZeroMQ socket
         self.sub_socket.setsockopt(zmq.LINGER, 0)
@@ -396,7 +392,7 @@ class LagartoClient(threading.Thread, LagartoProcess):
         threading.Thread.__init__(self)
         LagartoProcess.__init__(self, working_dir)
         
-        self.go_on = True
+        self.running = True
         
         # ZMQ PULL socket
         self.sub_socket = None
