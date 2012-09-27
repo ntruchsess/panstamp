@@ -32,13 +32,29 @@ from evnmanager import EvnManager
 
 from lagartoresources import LagartoException
 
+import os
 import sys
+import signal
 
 
+def signal_handler(signal, frame):
+    """
+    Handle signal received
+    """
+    evnman.stop()
+    sys.exit(0)
+    
+    
 if __name__ == '__main__':
   
+    # Catch possible SIGINT signals
+    signal.signal(signal.SIGINT, signal_handler)
+    
     try:
         print "Starting Event Manager"
         evnman = EvnManager()
     except LagartoException as ex:
         ex.display()
+        
+    signal.pause()
+

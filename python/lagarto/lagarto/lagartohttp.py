@@ -508,8 +508,17 @@ class LagartoHttpServer(threading.Thread):
         Run HTTP aserver
         """
         print "Starting HTTP server"
-        httpd = make_server("", LagartoHttpServer.port, LagartoHttpServer._process_request)
-        httpd.serve_forever()
+        self.httpd = make_server("", LagartoHttpServer.port, LagartoHttpServer._process_request)
+        self.httpd.serve_forever(poll_interval=0.5)
+        print "Closing HTTP server..."
+        
+
+    def stop(self):
+        """
+        Stop HTTP server
+        """        
+        self.httpd.shutdown()
+        self.httpd.server_close()     
         
 
     def __init__(self, data_server, config, working_dir):

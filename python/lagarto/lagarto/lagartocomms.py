@@ -103,6 +103,13 @@ class LagartoProcess(object):
         return ipaddr
 
 
+    def stop(self):
+        """
+        Stop HTTP server
+        """
+        self.http_server.stop()
+
+
     def __init__(self, working_dir):
         '''
         Constructor
@@ -121,8 +128,8 @@ class LagartoProcess(object):
             self.config.save()
 
         # HTTP server
-        http_server = LagartoHttpServer(self, self.config, working_dir)
-        http_server.start()
+        self.http_server = LagartoHttpServer(self, self.config, working_dir)
+        self.http_server.start()
 
 
 class PeriodicHeartBeat(threading.Thread):
@@ -133,10 +140,18 @@ class PeriodicHeartBeat(threading.Thread):
         """
         Start timer
         """
-        while True:
+        while self.go_on:
             self.send_hbeat()
             time.sleep(60.0)
+        print "Stopping periodic heart beat..."
     
+    
+    def stop(self):
+        """
+        Stop periodic heart beats
+        """
+        self.go_on = False
+        
     
     def __init__(self, send_hbeat):
         """
@@ -147,6 +162,8 @@ class PeriodicHeartBeat(threading.Thread):
         threading.Thread.__init__(self)
         # Heart beat transmission method
         self.send_hbeat = send_hbeat
+        
+        self.go_on = True
 
 
 class LagartoServer(LagartoProcess):
@@ -168,6 +185,21 @@ class LagartoServer(LagartoProcess):
         finally:
             self.publish_lock.release()
                 
+
+    def stop(self):
+        """
+        Stop lagarto server
+        """
+        # Stop heart beats
+        self.hbeat_process.stop()
+        
+        # Close ZeroMQ socket
+        self.pub_socket.setsockopt(zmq.LINGER, 0)
+        self.pub_socket.close()
+        
+        # Close HTTP server
+        LagartoProcess.stop(self)
+
 
     def __init__(self, working_dir):
         '''
@@ -193,8 +225,8 @@ class LagartoServer(LagartoProcess):
         self.publish_lock = threading.Lock()
         
         # Heart beat transmission thread
-        hbeat_process = PeriodicHeartBeat(self.publish_status)
-        hbeat_process.start()
+        self.hbeat_process = PeriodicHeartBeat(self.publish_status)
+        self.hbeat_process.start()
 
 
 class LagartoClient(threading.Thread, LagartoProcess):
@@ -215,13 +247,29 @@ class LagartoClient(threading.Thread, LagartoProcess):
         """
         Run server thread
         """
-        while True:
+        while self.go_on:
             # Wait for broadcasted message from publisher
             event = self.sub_socket.recv()
             # Process event
             self._process_event(event)
+        
+        print "Stopping lagarto client..."
             
             
+    def stop(self):
+        """
+        Stop lagarto client
+        """        
+        self.go_on = False
+        
+        # Close ZeroMQ socket
+        self.sub_socket.setsockopt(zmq.LINGER, 0)
+        self.sub_socket.close()
+        
+        # Close HTTP server
+        LagartoProcess.stop(self)
+        
+        
     def _process_event(self, event):
         """
         Process lagarto event
@@ -347,7 +395,9 @@ class LagartoClient(threading.Thread, LagartoProcess):
         '''
         threading.Thread.__init__(self)
         LagartoProcess.__init__(self, working_dir)
-               
+        
+        self.go_on = True
+        
         # ZMQ PULL socket
         self.sub_socket = None
         
@@ -362,6 +412,7 @@ class LagartoClient(threading.Thread, LagartoProcess):
             else:
                 self.sub_socket.setsockopt(zmq.SUBSCRIBE, "")
                 print "Subscribed to", self.config.broadcast
+
 
         # List of HTTP servers
         self.http_servers = {}

@@ -234,6 +234,16 @@ class SwapManager(SwapInterface, LagartoServer):
         return True
   
     
+    def stop(self):
+        """
+        Stop SWAP manager
+        """
+        # Stop SWAP server
+        self.server.stop()
+        # Stop Lagarto server
+        LagartoServer.stop(self)
+
+    
     def __init__(self, swap_settings=None):
         """
         Class constructor

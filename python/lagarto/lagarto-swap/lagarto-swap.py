@@ -36,18 +36,32 @@ from lagartoresources import LagartoException
 import sys
 import os
 import time
+import signal
+
+
+def signal_handler(signal, frame):
+    """
+    Handle signal received
+    """
+    swap_manager.stop()
+    sys.exit(0)
 
 
 if __name__ == '__main__':
    
     settings = os.path.join(os.path.dirname(sys.argv[0]), "config", "settings.xml")
 
+    # Catch possible SIGINT signals
+    signal.signal(signal.SIGINT, signal_handler)
+
     try:      
         # SWAP manager
-        swap_manager = SwapManager(settings)       
+        swap_manager = SwapManager(settings)     
     except SwapException as ex:
         ex.display()
         ex.log()
     except LagartoException as ex:
         ex.display()
         ex.log()
+
+    signal.pause()
