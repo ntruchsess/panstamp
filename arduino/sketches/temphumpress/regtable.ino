@@ -76,7 +76,7 @@ DEFINE_COMMON_CALLBACKS()
  */
 const void updtVoltSupply(byte rId)
 {  
-  static unsigned long result;
+  unsigned long result;
   
   // Read 1.1V reference against AVcc
   ADMUX = _BV(REFS0) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
