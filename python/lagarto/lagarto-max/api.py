@@ -38,7 +38,7 @@ class TimeAPI:
     Time API providing static methods
     """
     # Current time
-    current_time = None
+    current_time = TImeAPI.update_time()
 
     # Clock event: True or False
     event = False
