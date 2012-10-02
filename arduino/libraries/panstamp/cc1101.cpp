@@ -121,7 +121,7 @@ void CC1101::cmdStrobe(byte cmd)
   cc1101_Select();                      // Select CC1101
   wait_Miso();                          // Wait until MISO goes low
   spi.send(cmd);                        // Send strobe command
-  cc1101_Deselect();                    // Deselect CC1101 
+  cc1101_Deselect();                    // Deselect CC1101
 }
 
 /**

@@ -189,6 +189,39 @@ void PANSTAMP::setup_watchdog(byte time)
   WDTCSR |= _BV(WDIE);    // Enable Watchdog interrupt
 }
 
+#ifdef EXTERNAL_RTC_CRYSTAL
+/**
+ * Timer 2 (RTC) ISR routine
+ */
+ISR(TIMER2_OVF_vect)
+{
+}
+
+/**
+ * setup_rtc
+ *
+ * Setup software (Timer 2) RTC
+ *
+ * 'time'   Timer2 prescaler
+ *
+ *          RTC_1S = 128 for 1 sec
+ *          RTC_2S = 256 for 2 sec
+ *          RTC_8S = 1024 for 8 sec
+ */
+void PANSTAMP::setup_rtc(byte time)
+{  
+  TCCR2A = 0x00;  // Normal port operation
+  // (256 cycles) * (prescaler) / (32.768KHz clock speed) = N sec
+  TCCR2B = time;  // Timer 2 prescaler
+
+  while (ASSR & (_BV(TCN2UB) | _BV(TCR2AUB) | _BV(TCR2BUB))) {}    // Wait for the registers to be updated    
+  TIFR2 = _BV(OCF2B) | _BV(OCF2A) | _BV(TOV2);                     // Clear the interrupt flags
+
+  TIMSK2 = 0x01;  // Enable timer2A overflow interrupt
+  ASSR  = 0x20;   // Enable asynchronous mode
+}
+#endif
+
 /**
  * init
  * 
@@ -281,6 +314,44 @@ void PANSTAMP::sleepWd(byte time)
   wakeUp();
 }
 
+#ifdef EXTERNAL_RTC_CRYSTAL
+/**
+ * sleepRtc
+ * 
+ * Put panStamp into Power-down state during "time".
+ * This function uses Timer 2 connected to an external 32.768KHz crystal
+ * in order to exit (interrupt) from the power-down state
+ * 
+ * 'time'	Sleeping time:
+ *  RTC_250MS  = 250 ms
+ *  RTC_500MS  = 500 ms
+ *  RTC_1S = 1 s
+ *  RTC_2S = 2 s
+ *  RTC_8S = 8 s
+ */
+void PANSTAMP::sleepRtc(byte time) 
+{
+  // Power-down CC1101
+  cc1101.setPowerDownState();
+  // Power-down panStamp
+  set_sleep_mode(SLEEP_MODE_PWR_SAVE);
+  sleep_enable();
+  setup_rtc(time);
+  delayMicroseconds(10);
+  // Disable ADC
+  ADCSRA &= ~(1 << ADEN);
+  // Unpower functions
+  PRR = 0xFF;
+  // Enter sleep mode
+  sleep_mode();
+
+  // ZZZZZZZZ...
+
+  // Wake-up!!
+  wakeUp();
+}
+#endif
+
 /**
  * wakeUp
  *
@@ -296,6 +367,10 @@ void PANSTAMP::wakeUp(void)
   power_all_enable();
   // Enable ADC
   ADCSRA |= (1 << ADEN);
+  #ifdef EXTERNAL_RTC_CRYSTAL
+  // Disable timer2A overflow interrupt
+  TIMSK2 = 0x00;
+  #endif
 
   // Reset CC1101 IC
   cc1101.wakeUp();
@@ -322,27 +397,50 @@ void PANSTAMP::goToSleep(void)
   if (intInterval % 8 == 0)
   {
     loops = intInterval / 8;
+    #ifdef EXTERNAL_RTC_CRYSTAL
+    minTime = RTC_8S;
+    #else
     minTime = WDTO_8S;
+    #endif
   }
   else if (intInterval % 4 == 0)
   {
+    #ifdef EXTERNAL_RTC_CRYSTAL
+    loops = intInterval / 2;
+    minTime = RTC_2S;
+    #else
     loops = intInterval / 4;
     minTime = WDTO_4S;
+    #endif
   }
   else if (intInterval % 2 == 0)
   {
     loops = intInterval / 2;
+    #ifdef EXTERNAL_RTC_CRYSTAL
+    minTime = RTC_2S;
+    #else
     minTime = WDTO_2S;
+    #endif
   }
   else
   {
     loops = intInterval;
+    #ifdef EXTERNAL_RTC_CRYSTAL
+    minTime = RTC_1S;
+    #else
     minTime = WDTO_1S;
+    #endif
   }
 
   // Sleep
   for (i=0 ; i<loops ; i++)
+  {
+    #ifdef EXTERNAL_RTC_CRYSTAL
+    sleepRtc(minTime);
+    #else
     sleepWd(minTime);
+    #endif
+  }
 }
 
 /**

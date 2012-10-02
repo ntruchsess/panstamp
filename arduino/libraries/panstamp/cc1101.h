@@ -190,7 +190,8 @@ enum CFREQ
  * or when the radio enters RXFIFO_OVERFLOW state. In TX the pin will de-assert if the TX FIFO underflows
  * Settings optimized for low current consumption
  */
-#define CC1101_DEFVAL_IOCFG2     0x29        // GDO2 Output Pin Configuration
+//#define CC1101_DEFVAL_IOCFG2     0x29        // GDO2 Output Pin Configuration
+#define CC1101_DEFVAL_IOCFG2     0x2E        // GDO2 Output Pin Configuration
 #define CC1101_DEFVAL_IOCFG1     0x2E        // GDO1 Output Pin Configuration
 #define CC1101_DEFVAL_IOCFG0     0x06        // GDO0 Output Pin Configuration
 #define CC1101_DEFVAL_FIFOTHR    0x07        // RX FIFO and TX FIFO Thresholds

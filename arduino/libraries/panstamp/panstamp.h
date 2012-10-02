@@ -39,6 +39,17 @@
 #include <avr/power.h>
 
 /**
+ * RTC definitions
+ */
+//#define EXTERNAL_RTC_CRYSTAL 1
+
+#define RTC_250MS    0x03   // Timer 2 prescaler = 32
+#define RTC_500MS    0x04   // Timer 2 prescaler = 64
+#define RTC_1S       0x05   // Timer 2 prescaler = 128
+#define RTC_2S       0x06   // Timer 2 prescaler = 256
+#define RTC_8S       0x07   // Timer 2 prescaler = 1024
+
+/**
  * Macros
  */
 #define setSwapStatusCallBack(ptrFunc)   statusReceived = ptrFunc
@@ -84,6 +95,21 @@ class PANSTAMP
      * 'time'	Watchdog timer value
      */
     void setup_watchdog(byte time);
+
+    #ifdef EXTERNAL_RTC_CRYSTAL
+    /**
+     * setup_rtc
+     *
+     * Setup software (Timer 2) RTC
+     *
+     * 'time'   Timer2 prescaler
+     *
+     *          RTC_1S = 128 for 1 sec
+     *          RTC_2S = 256 for 2 sec
+     *          RTC_8S = 1024 for 8 sec
+     */
+    void setup_rtc(byte time);
+    #endif
 
   public:
     /**
@@ -163,6 +189,24 @@ class PANSTAMP
      */
     void sleepWd(byte time);
 
+    #ifdef EXTERNAL_RTC_CRYSTAL
+    /**
+     * sleepRtc
+     * 
+     * Put panStamp into Power-down state during "time".
+     * This function uses Timer 2 connected to an external 32.768KHz crystal
+     * in order to exit (interrupt) from the power-down state
+     * 
+     * 'time'	Sleeping time:
+     *  RTC_250MS  = 250 ms
+     *  RTC_500MS  = 500 ms
+     *  RTC_1S = 1 s
+     *  RTC_2S = 2 s
+     *  RTC_8S = 8 s
+     */
+    void sleepRtc(byte time);
+    #endif
+
     /**
      * wakeUp
      *
@@ -174,6 +218,7 @@ class PANSTAMP
      * goToSleep
      *
      * Sleep whilst in power-down mode. This function currently uses sleepWd in a loop
+     *
      */
     void goToSleep(void);
 
