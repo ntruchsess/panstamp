@@ -37,7 +37,7 @@
 #define SWAP_REG_VAL_LEN       CC1101_DATA_LEN - SWAP_DATA_HEAD_LEN   // SWAP data payload - max length
 #define SWAP_BCAST_ADDR        0x00                                   // SWAP broadcast address
 #define SWAP_NB_TX_TRIES       3                                      // Number of transmission retries
-#define SWAP_DY_TX_TRIES       panstamp.cc1101.devAddress * 5         // Delay between Tx retries in ms
+#define SWAP_TX_DELAY          panstamp.cc1101.devAddress * 5         // Delay before sending
 
 /**
  * SWAP message functions
@@ -157,6 +157,18 @@ class SWPACKET : public CCPACKET
      *  False otherwise
      */
     boolean send(void);
+
+    /**
+     * equals
+     *
+     * Compare SWAP packets
+     *
+     * 'packet': SWAP packet to be compared against the current one
+     *
+     * Return:
+     *  true if both packets are the same. False otherwise
+     */
+    bool equals(SWPACKET packet);
 };
 
 #endif

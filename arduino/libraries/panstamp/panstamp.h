@@ -33,10 +33,19 @@
 #include "nvolat.h"
 #include "register.h"
 #include "swpacket.h"
+#include "config.h"
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 #include <avr/power.h>
+
+/**
+ * Repeater mode
+ */
+#ifdef REPEATER_MODE
+#include "repeater.h"
+#define disableRepeater()      enableRepeater(false)
+#endif
 
 /**
  * RTC definitions
@@ -59,14 +68,13 @@
   EEPROM.write(EEPROM_SYNC_WORD + 1, CC1101_DEFVAL_SYNC0);    \
   EEPROM.write(EEPROM_DEVICE_ADDR, CC1101_DEFVAL_ADDR);       \
   EEPROM.write(EEPROM_FREQ_CHANNEL, CC1101_DEFVAL_CHANNR);    \
-  EEPROM.write(EEPROM_SECU_OPTION, 0);                        \
   EEPROM.write(EEPROM_TX_INTERVAL, 0xFF);                     \
   EEPROM.write(EEPROM_TX_INTERVAL + 1, 0xFF)
 
 #define setHighTxPower()    cc1101.setTxPowerAmp(PA_LongDistance)
 #define setLowTxPower()     cc1101.setTxPowerAmp(PA_LowPower)
 
-#define enableAntiPlayback()    security |= 0x01;
+#define enableAntiPlayback()    security |= 0x01
 
 /**
  * System states
@@ -79,6 +87,7 @@ enum SYSTATE
   SYSTATE_SYNC,
   SYSTATE_LOWBAT
 };
+
 
 /**
  * Class: PANSTAMP
@@ -141,6 +150,22 @@ class PANSTAMP
      * Smart encryption password
      */
     byte encryptPwd[12];
+
+    #ifdef REPEATER_MODE
+    /**
+     * Repeater object
+     */
+    REPEATER repeater;
+
+    /**
+     * enableRepeater
+     * 
+     * Enable or disable repeater
+     *
+     * 'enable': true = repeater enabled; false = repeater disabled
+     */
+    void enableRepeater(bool enable=true);
+    #endif
 
     /**
      * SWAP status packet received. Callaback function

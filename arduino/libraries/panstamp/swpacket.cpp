@@ -97,7 +97,7 @@ boolean SWPACKET::send(void)
   while(!(res = panstamp.cc1101.sendData(packet)) && i>1)
   {
     i--;
-    delay(SWAP_DY_TX_TRIES);
+    delay(SWAP_TX_DELAY);
   }
 
   return res;
@@ -137,3 +137,44 @@ void SWPACKET::smartEncrypt(bool decrypt)
     nonce ^= panstamp.encryptPwd[9];
 }
 
+/**
+ * equals
+ *
+ * Compare SWAP packets
+ *
+ * 'packet': SWAP packet to be compared against the current one
+ *
+ * Return:
+ *  true if both packets are the same. False otherwise
+ */
+#ifdef REPEATER_MODE
+bool SWPACKET::equals(SWPACKET packet)
+{
+  int i;
+
+  if (length != packet.length)
+    return false;
+  if (destAddr != packet.destAddr)
+    return false;
+  if (srcAddr != packet.srcAddr)
+    return false;
+  if (security != packet.security)
+    return false;
+  if (nonce != packet.nonce)
+    return false;
+  if (function != packet.function)
+    return false;
+  if (regAddr != packet.regAddr)
+    return false;
+  if (regId != packet.regId)
+    return false;
+
+  for(i=0 ; i<value.length ; i++)
+  {
+    if (value.data[i] != packet.value.data[i])
+      return false;
+  }
+
+  return true;
+}
+#endif
