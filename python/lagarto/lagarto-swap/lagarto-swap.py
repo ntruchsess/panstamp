@@ -17,7 +17,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with panLoader; if not, write to the Free Software
+# along with lagarto; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
 # USA
 #
@@ -25,7 +25,7 @@
 __author__="Daniel Berenguer"
 __date__  ="$Jan 29, 2012$"
 __appname__= "lagarto-swap"
-__version__= "0.0.2"
+__version__= "0.1.7"
 #########################################################################
 
 from swap.SwapException import SwapException

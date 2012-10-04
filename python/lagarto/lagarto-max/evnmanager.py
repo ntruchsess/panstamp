@@ -30,8 +30,6 @@ import os
 import sys
 import threading
 import time
-import inspect
-import datetime
 from xmltools import XmlSettings
 
 working_dir = os.path.dirname(__file__)
@@ -287,6 +285,10 @@ class EvnManager(LagartoClient):
         # Lagarto client constructor
         LagartoClient.__init__(self, os.path.dirname(__file__))
         NetworkAPI.lagarto_client = self
+
+        # Read configuration
+        config_file = os.path.join(working_dir, "config", "settings.xml")
+        XmlSettings(config_file)
 
         # Run startup script
         scripts.events.startup()
