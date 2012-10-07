@@ -43,6 +43,7 @@
  
 #include "regtable.h"
 #include "panstamp.h"
+#include "repeater.h"
 
 /**
  * LED pin
@@ -93,6 +94,10 @@ void setup()
 
   // Init panStamp
   panstamp.init();
+  
+  // Initialize repeater
+  repeater.init(panstamp, 4);
+
 
   //byte password[] = {1,2,3,4,5,6,7,8,9,10,11,12};
   //panstamp.setSmartPassword(password);
