@@ -40,18 +40,8 @@
 #include <avr/power.h>
 
 /**
- * Repeater mode
- */
-#ifdef REPEATER_MODE
-#include "repeater.h"
-#define disableRepeater()      enableRepeater(false)
-#endif
-
-/**
  * RTC definitions
  */
-//#define EXTERNAL_RTC_CRYSTAL 1
-
 #define RTC_250MS    0x03   // Timer 2 prescaler = 32
 #define RTC_500MS    0x04   // Timer 2 prescaler = 64
 #define RTC_1S       0x05   // Timer 2 prescaler = 128
@@ -151,21 +141,10 @@ class PANSTAMP
      */
     byte encryptPwd[12];
 
-    #ifdef REPEATER_MODE
     /**
-     * Repeater object
+     * SWAP packet handler. Callaback function
      */
-    REPEATER repeater;
-
-    /**
-     * enableRepeater
-     * 
-     * Enable or disable repeater
-     *
-     * 'enable': true = repeater enabled; false = repeater disabled
-     */
-    void enableRepeater(bool enable=true);
-    #endif
+    void (*packetHandler)(SWPACKET *packet);
 
     /**
      * SWAP status packet received. Callaback function

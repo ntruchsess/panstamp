@@ -46,6 +46,7 @@ extern byte regTableSize;
  */
 PANSTAMP::PANSTAMP(void)
 {
+  packetHandler = NULL;
   statusReceived = NULL;
 }
 
@@ -85,9 +86,9 @@ void isrGDO0event(void)
     {
       swPacket = SWPACKET(ccPacket);
 
-      #ifdef REPEATER_MODE
-      panstamp.repeater.handlePacket(swPacket);
-      #endif
+      // Packet handling function declared?
+      if (panstamp.packetHandler != NULL)
+        panstamp.packetHandler(&swPacket);
 
       // Smart encryption locally enabled?
       if (panstamp.security & 0x02)
@@ -518,25 +519,6 @@ void PANSTAMP::setSmartPassword(byte* password)
   // Enable Smart Encryption
   security |= 0x02;
 }
-
-#ifdef REPEATER_MODE
-/**
- * enableRepeater
- * 
- * Enable or disable repeater
- *
- * 'enable': true = repeater enabled; false = repeater disabled
- */
-void PANSTAMP::enableRepeater(bool enable)
-{
-  repeater.enable = enable;
-
-  if (enable)
-    cc1101.disableAddressCheck();
-  else
-    cc1101.enableAddressCheck();
-}
-#endif
 
 /**
  * Pre-instantiate PANSTAMP object

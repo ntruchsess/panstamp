@@ -28,13 +28,9 @@
 #define _CONFIG_H
 
 /**
- * Repeater mode
+ * External RTC crystal (32.768 KHz)
  */
-#define REPEATER_MODE   1
-#ifdef REPEATER_MODE
-#define REPEATER_MAX_HOP      4
-#define REPEATER_TABLE_DEPTH  10
-#endif
+#define EXTERNAL_RTC_CRYSTAL 1
 
 #endif
 

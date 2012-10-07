@@ -147,7 +147,6 @@ void SWPACKET::smartEncrypt(bool decrypt)
  * Return:
  *  true if both packets are the same. False otherwise
  */
-#ifdef REPEATER_MODE
 bool SWPACKET::equals(SWPACKET packet)
 {
   int i;
@@ -177,4 +176,4 @@ bool SWPACKET::equals(SWPACKET packet)
 
   return true;
 }
-#endif
+
