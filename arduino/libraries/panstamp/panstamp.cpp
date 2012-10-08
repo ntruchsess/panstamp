@@ -85,11 +85,11 @@ void isrGDO0event(void)
     if (ccPacket.crc_ok)
     {
       swPacket = SWPACKET(ccPacket);
-
+/*
       // Packet handling function declared?
       if (panstamp.packetHandler != NULL)
         panstamp.packetHandler(&swPacket);
-
+*/
       // Smart encryption locally enabled?
       if (panstamp.security & 0x02)
       {

@@ -157,18 +157,6 @@ class SWPACKET : public CCPACKET
      *  False otherwise
      */
     boolean send(void);
-
-    /**
-     * equals
-     *
-     * Compare SWAP packets
-     *
-     * 'packet': SWAP packet to be compared against the current one
-     *
-     * Return:
-     *  true if both packets are the same. False otherwise
-     */
-    bool equals(SWPACKET packet);
 };
 
 #endif
