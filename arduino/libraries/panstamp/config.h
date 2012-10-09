@@ -32,5 +32,14 @@
  */
 #define EXTERNAL_RTC_CRYSTAL 1
 
+/**
+ * Repeater options
+ */
+// Amount of transactions to be saved for evaluation before repeating a packet
+// Maximum depth = 255
+#define REPEATER_TABLE_DEPTH  20
+// Expiration time (in ms) for any transaction
+#define REPEATER_EXPIRATION_TIME  2000
+
 #endif
 

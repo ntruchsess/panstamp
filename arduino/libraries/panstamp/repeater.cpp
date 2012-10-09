@@ -26,6 +26,7 @@
 
 #include "repeater.h"
 #include "swpacket.h"
+#include "panstamp.h"
 
 /**
  * init
@@ -47,7 +48,9 @@ void REPEATER::init(byte maxHop)
  */
 void REPEATER::start(void)
 {
-  enable = true;  
+  panstamp.cc1101.disableAddressCheck();    // Disable address check
+  panstamp.packetHandler = handlePacket;    // Set custom packet handler
+  enable = true;                            // Enable repeater
 }
 
 /**
@@ -57,7 +60,10 @@ void REPEATER::start(void)
  */
 void REPEATER::stop(void)
 {
-  enable = false;
+  panstamp.cc1101.enableAddressCheck();     // Enable address check
+  panstamp.packetHandler = NULL;            // Disable custom packet handler
+  enable = false;                           // Disable repeater
+
 }
 
 /**
@@ -65,6 +71,7 @@ void REPEATER::stop(void)
  */
 REPEATER::REPEATER(void)
 {
+  byte i;
   enable = false;
 }
 
@@ -77,77 +84,80 @@ REPEATER::REPEATER(void)
  */
 void handlePacket(SWPACKET *packet)
 {
+  bool repeatPacket = true;
+  unsigned long currentTime;
+
   // Repeater enabled?
   if (repeater.enable)
   {
     // Don't repeat packets addressed to our device
-    if (packet->destAddr != repeater.panstamp->cc1101.devAddress)
+    if (packet->destAddr != panstamp.cc1101.devAddress)
     {
       // Don't repeat beyond the maximum hop count
       if (packet->hop < repeater.maxHopCount)
       {
         byte i;        
 
-        // Check received packet against the latest packets repeated
+        // Check received packet against the latest transactions
         for(i=0 ; i<REPEATER_TABLE_DEPTH ; i++)
-        {       
-          if (packet->equals(repeater.repeatedPacket[i]))
-            return;
+        {
+          // Same source/destination node?
+          if (repeater.transactions[i].regAddr == packet->regAddr)
+          {
+            // Same SWAP function?
+            if (repeater.transactions[i].function == packet->function)
+            {
+              // Different source of transmission?
+              if (repeater.transactions[i].srcAddr != packet->srcAddr)
+              {
+                // Same cyclic nonce?
+                if (repeater.transactions[i].nonce == packet->nonce)
+                {
+                  currentTime = millis();
+                  // Time stamp not expired?
+                  if ((currentTime - repeater.transactions[i].timeStamp) < REPEATER_EXPIRATION_TIME)
+                    repeatPacket = false;   //Don't repeat packet
+                }
+              }
+            }
+          }
         }
-        packet->hop++;                  // Increment hop counter
-        delay(SWAP_TX_DELAY);           // Delay before sending
-        if (packet->send())             // Repeat packet
-          repeater.savePacket(*packet); // Update last packet repeated
+
+        // Repeat packet?
+        if (repeatPacket)
+        {
+          packet->srcAddr = panstamp.cc1101.devAddress;   // Modify source address
+          packet->hop++;                                  // Increment hop counter
+          delay(SWAP_TX_DELAY);                           // Delay before sending
+          if (packet->send())                             // Repeat packet
+            repeater.saveTransaction(packet);             // Save transaction
+        }
       }
     }
   }
 }
 
 /**
- * savePacket
+ * saveTransaction
  *
- * Save SWAP pcket in global array
+ * Save transaction in array
  *
- * 'packet': SWAP packet to be saved
+ * 'packet': SWAP packet being repeated
  */
-void REPEATER::savePacket(SWPACKET packet)
+void REPEATER::saveTransaction(SWPACKET *packet)
 {
   byte i;
 
   // Move all packets one position forward
   for(i=REPEATER_TABLE_DEPTH-1 ; i>0 ; i--)
-    repeatedPacket[i] = repeatedPacket[i-1];
+    transactions[i] = transactions[i-1];
 
-  // Save packet in first position
-  memcpy(repeatedPacket[0], packet.data, sizeof(repeatedPacket[0]));
-}
-
-/**
- * isRepeated
- *
- * Return true if the packet passed as argument has already been repeated
- *
- * 'packet': pointer to the packet being received
- *
- * Return:
- *  true in the packet has been repeated before. Return false otherwise
- */
-void REPEATER::isRepeated(SWPACKET *packet)
-{
-  byte i;
-
-  for(i=0 ; i<REPEATER_TABLE_DEPTH ; i++)
-  {
-    // Same packet length?
-    if (repeatedPacket[i][0] == packet.length)
-    {
-      // Same destination address?
-      if (repeatedPacket[i][1] == packet.destAddr)
-      {
-        // Same destination address?
-        if (repeatedPacket[i][1] == packet.destAddr)
-    }
-  }
+  // Save current transaction in first position
+  transactions[0].timeStamp = millis();         // Current time stamp
+  transactions[0].function = packet->function;  // SWAP function
+  transactions[0].srcAddr = packet->srcAddr;    // Source address
+  transactions[0].nonce = packet->nonce;        // Cyclic nonce
+  transactions[0].regAddr = packet->regAddr;    // Register address
 }
 
 /**

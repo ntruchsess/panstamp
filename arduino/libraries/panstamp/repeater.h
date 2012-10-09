@@ -28,11 +28,21 @@
 #define _REPEATER_H
 
 #include "Arduino.h"
+#include "swpacket.h"
+#include "config.h"
 
 /**
- * Definitions
+ * Transaction
  */
-#define REPEATER_TABLE_DEPTH  10
+typedef struct
+{
+  unsigned long timeStamp;  // Transmission time stamp (ms)
+  byte function;            // SWAP function
+  byte srcAddr;             // Source address
+  byte nonce;               // Cyclic nonce
+  byte regAddr;             // Register address
+} Transaction;
+
 
 /**
  * Cñass declaration
@@ -51,9 +61,9 @@ class REPEATER
     byte maxHopCount;
 
     /**
-     * Last repeated packets
+     * Array of latest transactions
      */
-    byte repeatedPacket[REPEATER_TABLE_DEPTH][CC1101_DATA_LEN+1];
+    Transaction transactions[REPEATER_TABLE_DEPTH];
 
     /**
      * init
@@ -84,13 +94,13 @@ class REPEATER
     REPEATER(void);
 
     /**
-     * savePacket
+     * saveTransaction
      *
-     * Save SWA^àcket in global array
+     * Save transaction in array
      *
-     * 'packet': SWAP packet to be saved
+     * 'packet': SWAP packet being repeated
      */
-    void savePacket(SWPACKET packet);
+    void saveTransaction(SWPACKET *packet);
 };
 
 /**
