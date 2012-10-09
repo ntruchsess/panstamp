@@ -109,7 +109,7 @@ class LagartoEndpoint:
                 res = int(strval)
             except ValueError:
                 try:
-                   res = float(strval)
+                    res = float(strval)
                 except ValueError:
                     raise LagartoException(value + " is not a valid numeric value for " + self.strval)
         elif vtype == "bin":

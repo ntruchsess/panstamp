@@ -185,13 +185,27 @@ function getCondition()
     else if (item2 != null)
     {
       if (document.getElementById("item2box").src.indexOf("edit_item2_network.html") != -1)
+      {
+        if (parseFloat(network.event[1]) != NaN)
+          pythonString = "network.event[0] == " + item1 + " and float(network.event[1]) " + operator + " network.get_value(" + item2 + ")";
         pythonString = "network.event[0] == " + item1 + " and network.event[1] " + operator + " network.get_value(" + item2 + ")";
+      }
       else
-        pythonString = "network.event[0] == " + item1 + " and network.event[1] " + operator + " " + item2;
+      {
+        if (parseFloat(network.event[1]) != NaN)
+          pythonString = "network.event[0] == " + item1 + " and float(network.event[1]) " + operator + " " + item2;
+        else
+          pythonString = "network.event[0] == " + item1 + " and network.event[1] " + operator + " \"" + item2 + "\"";
+      }
     }
   }
   else if (item2 != null)
-    pythonString = "network.get_value(" +  item1 + ") " + operator + " " + item2;
+  {
+    if (parseFloat(item2) != NaN)
+      pythonString = "network.get_value(" +  item1 + ") " + operator + " " + item2;
+    else
+      pythonString = "network.get_value(" +  item1 + ") " + operator + " \"" + item2 + "\"";
+  }
 
   return pythonString;
 }

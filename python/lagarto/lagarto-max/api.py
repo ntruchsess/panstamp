@@ -220,7 +220,7 @@ class NetworkAPI:
         """
         epd = NetworkAPI.get_endpoint(endp)
         if epd is not None:
-            return epd.value
+            return epd.get_value()
         return None
 
 
