@@ -174,12 +174,19 @@ function conditionToWeb(line)
   }
   else if (line.substring(0, 21) == "network.event[0] == \"")
   {
+    var endShift = 22;
+
     start = 21;
     end = line.indexOf("\" and network.event[1]", start);
+    if (end == -1)
+    {
+      end = line.indexOf("\" and float(network.event[1])", start);
+      endShift = 29;
+    }
     if (end > -1)
     {
       item1 =  line.substring(start, end);
-      line = line.substring(end + 22);
+      line = line.substring(end + endShift);
     }
     else
     {
