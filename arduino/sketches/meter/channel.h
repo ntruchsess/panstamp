@@ -113,6 +113,11 @@ class CHANNEL
     bool enable;
     
     /**
+     * AC frequency
+     */
+    byte frequency;
+    
+    /**
      * RMS voltage
      */
     float rmsVoltage;

@@ -28,6 +28,7 @@
 #include "product.h"
 #include "panstamp.h"
 #include "regtable.h"
+#include "config.h"
 
 /**
  * Declaration of common callback functions
@@ -47,7 +48,7 @@ DEFINE_COMMON_REGISTERS()
 
 // RMS voltage, RMS current, apparent power, active power, power factor
 // and Energy in KWh
-static byte dtChannelsEnergy[NB_OF_CHANNELS][12];       
+static byte dtChannelsEnergy[NB_OF_CHANNELS][13];       
 // Voltage transformer scaling factor [0-655.35], current transformer scaling
 // factor [0-655.35], power factor offset [0.0-0.99] and channel enable [0, 1]
 static byte dtChannelsConfig[NB_OF_CHANNELS][CONFIG_CHANNEL_SIZE];
@@ -145,35 +146,38 @@ const void updtChannelEnergy(byte rId)
   int channel = rId - REGI_CHANNEL_ENERGY_0;
   unsigned long tmpValue;
 
+  // AC frequency (in Hz)
+  dtChannelsEnergy[channel][0] = channels[channel].frequency;
+  
   // RMS voltage (in volts)
   tmpValue = channels[channel].rmsVoltage;
-  dtChannelsEnergy[channel][0] = tmpValue & 0xFF;
+  dtChannelsEnergy[channel][1] = tmpValue & 0xFF;
   
   // RMS current (in 1/100 amps)
   tmpValue = channels[channel].rmsCurrent * 100;
-  dtChannelsEnergy[channel][1] = (tmpValue >> 8) & 0xFF;
-  dtChannelsEnergy[channel][2] = tmpValue & 0xFF;
+  dtChannelsEnergy[channel][2] = (tmpValue >> 8) & 0xFF;
+  dtChannelsEnergy[channel][3] = tmpValue & 0xFF;
   
   // Apparent power (in VA)
   tmpValue = channels[channel].appPower;
-  dtChannelsEnergy[channel][3] = (tmpValue >> 8) & 0xFF;
-  dtChannelsEnergy[channel][4] = tmpValue & 0xFF;
+  dtChannelsEnergy[channel][4] = (tmpValue >> 8) & 0xFF;
+  dtChannelsEnergy[channel][5] = tmpValue & 0xFF;
   
   // Active power (in W)
   tmpValue = channels[channel].actPower;
-  dtChannelsEnergy[channel][5] = (tmpValue >> 8) & 0xFF;
-  dtChannelsEnergy[channel][6] = tmpValue & 0xFF;
+  dtChannelsEnergy[channel][6] = (tmpValue >> 8) & 0xFF;
+  dtChannelsEnergy[channel][7] = tmpValue & 0xFF;
   
   // Power factor (1/100)
   tmpValue = channels[channel].powerFactor * 100;
-  dtChannelsEnergy[channel][7] = tmpValue & 0xFF;
+  dtChannelsEnergy[channel][8] = tmpValue & 0xFF;
 
   // KWh
   tmpValue = (channels[channel].initialKwh + channels[channel].kwh) * 100;
-  dtChannelsEnergy[channel][8] = (tmpValue >> 32) & 0xFF;
-  dtChannelsEnergy[channel][9] = (tmpValue >> 16) & 0xFF;
-  dtChannelsEnergy[channel][10] = (tmpValue >> 8) & 0xFF;
-  dtChannelsEnergy[channel][11] = tmpValue & 0xFF; 
+  dtChannelsEnergy[channel][9] = (tmpValue >> 24) & 0xFF;
+  dtChannelsEnergy[channel][10] = (tmpValue >> 16) & 0xFF;
+  dtChannelsEnergy[channel][11] = (tmpValue >> 8) & 0xFF;
+  dtChannelsEnergy[channel][12] = tmpValue & 0xFF;
 }
 
 /**
@@ -196,16 +200,16 @@ const void setChannelConfig(byte rId, byte *config)
   // Voltage scale
   tmpValue = config[0];
   tmpValue = (tmpValue << 8) | config[1];
-  channels[channel].voltageScale = tmpValue / 100;
+  channels[channel].voltageScale = tmpValue / 100.0;
   
   // Current scale
   tmpValue = config[2];
   tmpValue = (tmpValue << 8) | config[3];
-  channels[channel].currentScale = tmpValue / 100;
+  channels[channel].currentScale = tmpValue / 100.0;
   
   // Power factor offset
-  channels[channel].pfOffset = config[4] / 100;
-  
+  channels[channel].pfOffset = config[4] / 100.0;
+
   // Enable
   channels[channel].enable = config[5] & 0x01;
   

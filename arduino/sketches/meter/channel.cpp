@@ -25,6 +25,7 @@
  */
 
 #include "channel.h"
+#include "config.h"
 
 /**
  * CHANNEL
@@ -50,6 +51,7 @@ CHANNEL::CHANNEL(void)
 CHANNEL::CHANNEL(unsigned int vcc, int vPin, int iPin, float vScale, float iScale, float pfShift)
 {
   enable = true;
+  frequency = 50;
   voltageSupply = vcc;
   voltagePin = vPin;
   currentPin = iPin;
@@ -80,12 +82,11 @@ byte CHANNEL::update(void)
   static double accumulated;
   static int i = 0;
   const float peakToRMS = 0.707106781;       // Peak to RMS conversion factor
-  unsigned long currentTime, elapsedTime;
+  unsigned long currentTime, elapsedTime = 0;
   double energy;
   bool getEnergy = false;
   const float scale = ACVOLT_SCALE;
-  static bool noVac = true;
-  
+  static byte noVacCount = 0;
   
   //Read voltage and current
   adcV1 = analogRead(voltagePin);    // First AC voltage reading
@@ -99,9 +100,8 @@ byte CHANNEL::update(void)
   // Discard 0 and negative voltages since we are working with a rectified voltage signal
   if (adcV1 > 0)
   {
-    if (noVac)
-      noVac = false;                   // VAC signal detected
-    
+    noVacCount = 0;                    // VAC signal detected
+   
     // Process AC voltage
     adcV1 = adcV1 * voltageSupply;
     adcV1 *= scale;
@@ -127,16 +127,13 @@ byte CHANNEL::update(void)
     // Prepare for active power calculation
     accumulated += voltage * current;
     i++;
-        
+            
     // When a given amount of samples is read
     if (i == NB_OF_SAMPLES)
     {
-      // No VAC signal detected?
-      if (noVac)
-        return CHANNEL_NO_VAC_SIGNAL;
-      
       // Read current time
       currentTime = millis();
+      
       if (lastTime > 0)
       {
         // Elapsed time between readings
@@ -150,7 +147,7 @@ byte CHANNEL::update(void)
       // Active power (W)
       if (accumulated < 0)
         accumulated = 0;
-      actPower = accumulated / (NB_OF_SAMPLES/2);
+      actPower = accumulated / NB_OF_SAMPLES;
       accumulated = 0;
       // RMS voltage (V)
       rmsVoltage = peakVoltage * peakToRMS;
@@ -172,7 +169,7 @@ byte CHANNEL::update(void)
       i = 0;
 
       // Power factor offset to be applied?
-      if (pfOffset > 0 && powerFactor < 1)
+      if (pfOffset > 0 && powerFactor < 1.0)
       {
         // Correct power factor
         powerFactor += pfOffset;
@@ -183,15 +180,21 @@ byte CHANNEL::update(void)
         actPower = appPower * powerFactor;
       }
 
+      // Energy consumed
       if (getEnergy)
       {
         energy = actPower * elapsedTime;
-        energy /= 3600000;        
-        kwh += energy;
+        energy /= 3600000;      // Wh        
+        kwh += energy/1000.0;   // KWh
       }
 
       return CHANNEL_SAMPLES_COMPLETED;    
     }
+  }
+  else
+  {
+    if (++noVacCount > 16)
+      return CHANNEL_NO_VAC_SIGNAL;
   }
   
   return CHANNEL_SAMPLES_NOT_COMPLETED;
@@ -211,13 +214,11 @@ byte CHANNEL::run(void)
   // Read the necessary amount of samples and run calculations after that
   while(res != CHANNEL_SAMPLES_COMPLETED)
   {
-    res = update();
+    res = update();    
     
     if (res == CHANNEL_NO_VAC_SIGNAL)
       break;
   }
-
-  return res;
   
   /*
   Serial.print(rmsVoltage, DEC);
@@ -232,5 +233,7 @@ byte CHANNEL::run(void)
   Serial.print(" ");
   Serial.println(kwh, DEC);
   */
+  
+  return res;
 }
 

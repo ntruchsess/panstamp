@@ -34,7 +34,7 @@
 /**
  * LED pin
  */
-#define LEDPIN               4
+#define LEDPIN                   4
 
 /**
  * global definitions
@@ -63,26 +63,6 @@
 #define TIMER1_TICK_PERIOD_US    1000000  // Timer1 tick = 1 sec
 
 /**
- * Timer 1 ticks
- */
-unsigned int t1Ticks = 0;
-
-/**
- * Wireless transmission interval (seconds)
- */
-unsigned int txInterval;
-
-/**
- * If true, send power data wirelessly
- */
-bool transmit = false;
-
-/**
- * Vcc in mV
- */
-unsigned int voltageSupply = 3260;
-
-/**
  * AC channels
  */
 CHANNEL channels[6];
@@ -97,18 +77,5 @@ CHANNEL channels[6];
  */
 #define pcEnableInterrupt()     PCICR = 0x04    // Enable Pin Change interrupt on Port D
 #define pcDisableInterrupt()    PCICR = 0x00    // Disable Pin Change interrupts
-
-/**
- * Pin Change Interrupt flag
- */
-volatile boolean pcIRQ = false;
-
-/**
- * Counters
- */
-uint8_t counterPin[] = {5, 6, 7};                            // Counter pins (Atmega port bits)
-volatile uint8_t *counterPort[] = {&PIND, &PIND, &PIND};     // Counter ports (Atmega port)
-unsigned long counters[] = {0, 0, 0};                        // Initial counter values
-int lastStateCount[] = {-1, -1, -1};                         // Initial pin states
 
 #endif
