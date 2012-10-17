@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <device>
   <developer>panStamp</developer>
-  <product>Binary/PWM output module</product>
+  <product>Advanced Binary/PWM output module + repeater</product>
   <pwrdownmode>false</pwrdownmode>
   <config>
     <reg name="Repeater mode" id="11">
@@ -42,13 +42,13 @@
       <endpoint name="PWM output 0" type="num" dir="out"/>
     </reg>
     <reg name="PWM output 1" id="21">
-      <endpoint name="PWM output 0" type="num" dir="out"/>
+      <endpoint name="PWM output 1" type="num" dir="out"/>
     </reg>
     <reg name="PWM output 2" id="22">
-      <endpoint name="PWM output 0" type="num" dir="out"/>
+      <endpoint name="PWM output 2" type="num" dir="out"/>
     </reg>
     <reg name="PWM output 3" id="23">
-      <endpoint name="PWM output 0" type="num" dir="out"/>
+      <endpoint name="PWM output 3" type="num" dir="out"/>
     </reg>
   </regular>
 </device>
