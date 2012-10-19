@@ -28,7 +28,7 @@ import httplib
 import urllib
 import json
 import subprocess
-
+from time import strftime
 
 class PachubePacket:
     """
@@ -190,4 +190,7 @@ class TwitterMessage:
         
         @param message: message text
         """
-        self.message = message
+        timestring = message+' '+strftime("%Y-%m-%d %H:%M:%S")
+        #truncate to the maximum chars allowed by twitter that is 160
+        self.message=  timestring[:160]
+
