@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<settings>
+  <recordcmd>sox -r 16000 -t alsa default ${audio_file} silence 1 0.1 1% 1 1.5 1%</recordcmd>
+  <playcmd>mplayer ${audio_file}</playcmd>
+  <language>en</language>
+  <welcomemsg>Ready for your commands</welcomemsg>
+  <keyword>lagarto</keyword>
+  <reply>What do you wish?</reply>
+</settings>
