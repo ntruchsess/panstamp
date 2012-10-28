@@ -124,14 +124,14 @@ class SpeechNetwork:
                                      location="speech",
                                      name="input",
                                      vtype="str",
-                                     direction="input",
+                                     direction="inp",
                                      value="")
         ## Text to speech endpoint
         self.output = LagartoEndpoint(endp_id="ttsout",
                                      location="speech",
                                      name="output",
                                      vtype="str",
-                                     direction="output",
+                                     direction="out",
                                      value="")
         
         # List of endpoints

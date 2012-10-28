@@ -67,7 +67,6 @@ class XmlSettings(object):
             self.welcomemsg = elem.text
 
                               
-
     def save(self):
         """
         Save serial port settings in disk

@@ -98,11 +98,27 @@ class SpeechListener(threading.Thread):
     """
     Class used to listen for possible voice commands
     """
+    def start_command_timer(self):
+        """
+        Schedule end of command
+        """
+        self.ready_for_command = True
+        threading.Timer(10, self._terminate_command_window).start()
+
+
+    def _terminate_command_window(self):
+        """
+        Require attention phrase before accepting a new command
+        """
+        self.ready_for_command = False
+        print "End of command window"
+        
+  
     def run(self):
         """
         Run thread
         """
-        ready_for_command = False
+        self.ready_for_command = False
         while self.running:
             print "recording command..."
             # Run recording command
@@ -128,12 +144,14 @@ class SpeechListener(threading.Thread):
                             voice_command = response_data["hypotheses"][0]["utterance"]
                             print "RESPONSE =", voice_command
                             
-                            if not ready_for_command:
+                            if not self.ready_for_command:
                                 if voice_command == self.keyword:
                                     self.parent.confirm_attention()
-                                    ready_for_command = True
+                                    self.start_command_timer()
                             else:                                    
                                 self.notify_speech(voice_command)
+                                self.start_command_timer()
+                                
                 audio.close()
             except IOError:
                 pass
@@ -254,7 +272,7 @@ class SpeechManager(LagartoServer):
         for item in endpoints:
             endp = self.get_endpoint(item["id"], item["location"], item["name"])
             if endp is not None:
-                if endp.type == "output":
+                if endp.direction == "out":
                     if "value" in item:
                         if endp.id == "ttsout":
                             value = item["value"]
