@@ -1,216 +1,258 @@
-# EESchema Netlist Version 1.1 created  Tue 11 Sep 2012 12:20:02 PM CEST
+# EESchema Netlist Version 1.1 created  Thu 01 Nov 2012 06:29:39 PM CET
 (
+ ( /508F05DA audio_jack_smd_01  P12 CONN_3 {Lib=CONN_3}
+  (    1 GND )
+  (    2 /COUNTER3 )
+  (    3 +3.3V )
+ )
+ ( /508F05D9 SM0603S  R29 10k {Lib=R}
+  (    1 GND )
+  (    2 /COUNTER3 )
+ )
+ ( /508F0567 SM0603S  C14 100n {Lib=C}
+  (    1 N-000046 )
+  (    2 GND )
+ )
+ ( /508F0563 SM0603S  R31 470k {Lib=R}
+  (    1 GND )
+  (    2 N-000046 )
+ )
+ ( /508F0562 SM0603S  R30 470k {Lib=R}
+  (    1 N-000046 )
+  (    2 +3.3V )
+ )
+ ( /508F0561 audio_jack_smd_01  P13 CONN_3 {Lib=CONN_3}
+  (    1 N-000046 )
+  (    2 ? )
+  (    3 /ADC_CT6 )
+ )
+ ( /508F0560 SM0603S  R32 100 {Lib=R}
+  (    1 N-000046 )
+  (    2 /ADC_CT6 )
+ )
+ ( /508F0493 SM0603S  R27 2k {Lib=R}
+  (    1 N-000039 )
+  (    2 GND )
+ )
+ ( /508F047D SM0603S  R26 2k {Lib=R}
+  (    1 N-000041 )
+  (    2 /ADC_VAC )
+ )
+ ( /508DBB27 SM0603S  R28 10k {Lib=R}
+  (    1 +3.3V )
+  (    2 /ZEROC_INT )
+ )
+ ( /508DB908 $noname  U3 H11AA1 {Lib=OPTO-TRANSISTOR}
+  (    1 N-000041 )
+  (    2 N-000039 )
+  (    3 ? )
+  (    4 GND )
+  (    5 /ZEROC_INT )
+  (    6 ? )
+ )
  ( /4FD72AF5 SUPER_CAP  C13 0.1F {Lib=CP1}
   (    1 +3.3V )
   (    2 GND )
  )
  ( /4FD6FB04 SM0603S  R16 10k {Lib=R}
   (    1 GND )
-  (    2 /COUNTER3 )
+  (    2 /COUNTER2 )
  )
  ( /4FD6FB03 audio_jack_smd_01  P11 CONN_3 {Lib=CONN_3}
   (    1 GND )
-  (    2 /COUNTER3 )
+  (    2 /COUNTER2 )
   (    3 +3.3V )
  )
  ( /4FD6FAFD audio_jack_smd_01  P10 CONN_3 {Lib=CONN_3}
   (    1 GND )
-  (    2 /COUNTER2 )
+  (    2 /COUNTER1 )
   (    3 +3.3V )
  )
  ( /4FD6FAFC SM0603S  R15 10k {Lib=R}
   (    1 GND )
-  (    2 /COUNTER2 )
+  (    2 /COUNTER1 )
  )
  ( /4FD6F988 SM0603S  R14 10k {Lib=R}
   (    1 GND )
-  (    2 /COUNTER1 )
+  (    2 /COUNTER0 )
  )
  ( /4FD6F97B audio_jack_smd_01  P9 CONN_3 {Lib=CONN_3}
   (    1 GND )
-  (    2 /COUNTER1 )
+  (    2 /COUNTER0 )
   (    3 +3.3V )
  )
  ( /4FD6F872 SM0603S  R25 100 {Lib=R}
-  (    1 N-000036 )
-  (    2 /ADC_CT6 )
+  (    1 N-000047 )
+  (    2 /ADC_CT5 )
  )
  ( /4FD6F871 audio_jack_smd_01  P8 CONN_3 {Lib=CONN_3}
-  (    1 N-000036 )
+  (    1 N-000047 )
   (    2 ? )
-  (    3 /ADC_CT6 )
+  (    3 /ADC_CT5 )
  )
  ( /4FD6F870 SM0603S  R17 470k {Lib=R}
-  (    1 N-000036 )
+  (    1 N-000047 )
   (    2 +3.3V )
  )
  ( /4FD6F86F SM0603S  R18 470k {Lib=R}
   (    1 GND )
-  (    2 N-000036 )
+  (    2 N-000047 )
  )
  ( /4FD6F86B SM0603S  R24 100 {Lib=R}
-  (    1 N-000038 )
-  (    2 /ADC_CT4 )
+  (    1 N-000007 )
+  (    2 /ADC_CT3 )
  )
  ( /4FD6F86A audio_jack_smd_01  P6 CONN_3 {Lib=CONN_3}
-  (    1 N-000038 )
+  (    1 N-000007 )
   (    2 ? )
-  (    3 /ADC_CT4 )
+  (    3 /ADC_CT3 )
  )
  ( /4FD6F869 SM0603S  C10 100n {Lib=C}
-  (    1 N-000036 )
+  (    1 N-000047 )
   (    2 GND )
  )
  ( /4FD6F868 SM0603S  C12 100n {Lib=C}
-  (    1 N-000038 )
+  (    1 N-000007 )
   (    2 GND )
  )
  ( /4FD6F865 SM0603S  R22 470k {Lib=R}
   (    1 GND )
-  (    2 N-000038 )
+  (    2 N-000007 )
  )
  ( /4FD6F864 SM0603S  R21 470k {Lib=R}
-  (    1 N-000038 )
+  (    1 N-000007 )
   (    2 +3.3V )
  )
  ( /4FD6F861 SM0603S  R19 470k {Lib=R}
-  (    1 N-000035 )
+  (    1 N-000048 )
   (    2 +3.3V )
  )
  ( /4FD6F860 SM0603S  R20 470k {Lib=R}
   (    1 GND )
-  (    2 N-000035 )
+  (    2 N-000048 )
  )
  ( /4FD6F85D SM0603S  C11 100n {Lib=C}
-  (    1 N-000035 )
+  (    1 N-000048 )
   (    2 GND )
  )
  ( /4FD6F85C audio_jack_smd_01  P7 CONN_3 {Lib=CONN_3}
-  (    1 N-000035 )
+  (    1 N-000048 )
   (    2 ? )
-  (    3 /ADC_CT5 )
+  (    3 /ADC_CT4 )
  )
  ( /4FD6F85B SM0603S  R23 100 {Lib=R}
-  (    1 N-000035 )
-  (    2 /ADC_CT5 )
+  (    1 N-000048 )
+  (    2 /ADC_CT4 )
  )
  ( /4FB0CF63 switch-tact-noah  SW1 SW_PUSH_SMALL {Lib=SW_PUSH_SMALL}
   (    1 GND )
   (    2 /RESET )
  )
- ( /4FA26347 SMDCPOL_12  C9 470u {Lib=CP1}
-  (    1 N-000004 )
-  (    2 GND )
- )
  ( /4F9E9A21 SM0603S  C8 100n {Lib=C}
-  (    1 N-000032 )
+  (    1 N-000017 )
   (    2 /RESET )
  )
  ( /4F9C28F9 SM2512  R3 47_1W {Lib=R}
-  (    1 N-000009 )
-  (    2 N-000041 )
+  (    1 N-000032 )
+  (    2 N-000042 )
  )
  ( /4F9C1E74 SM0603S  R12 100 {Lib=R}
-  (    1 N-000043 )
-  (    2 /ADC_CT2 )
+  (    1 N-000009 )
+  (    2 /ADC_CT1 )
  )
  ( /4F9C1E73 audio_jack_smd_01  P4 CONN_3 {Lib=CONN_3}
-  (    1 N-000043 )
+  (    1 N-000009 )
   (    2 ? )
-  (    3 /ADC_CT2 )
+  (    3 /ADC_CT1 )
  )
  ( /4F9C1E72 SM0603S  C7 100n {Lib=C}
-  (    1 N-000043 )
+  (    1 N-000009 )
   (    2 GND )
  )
  ( /4F9C1E6F SM0603S  R10 470k {Lib=R}
   (    1 GND )
-  (    2 N-000043 )
+  (    2 N-000009 )
  )
  ( /4F9C1E6E SM0603S  R9 470k {Lib=R}
-  (    1 N-000043 )
+  (    1 N-000009 )
   (    2 +3.3V )
  )
  ( /4F9C1DD8 SM0603S  R7 470k {Lib=R}
-  (    1 N-000006 )
+  (    1 N-000030 )
   (    2 +3.3V )
  )
  ( /4F9C1DD7 SM0603S  R8 470k {Lib=R}
   (    1 GND )
-  (    2 N-000006 )
+  (    2 N-000030 )
  )
  ( /4F9C1DD4 SM0603S  C6 100n {Lib=C}
-  (    1 N-000006 )
+  (    1 N-000030 )
   (    2 GND )
  )
  ( /4F9C1D2C SM0603S  C5 100n {Lib=C}
-  (    1 N-000010 )
+  (    1 N-000036 )
   (    2 GND )
  )
- ( /4F9C1966 SMA  D2 DIODESCH {Lib=DIODESCH}
-  (    1 N-000009 )
-  (    2 N-000004 )
+ ( /4F9C1966 SMA  D1 DIODESCH {Lib=DIODESCH}
+  (    1 N-000032 )
+  (    2 N-000035 )
  )
  ( /4E32BAC6 audio_jack_smd_01  P3 CONN_3 {Lib=CONN_3}
-  (    1 N-000006 )
+  (    1 N-000030 )
   (    2 ? )
-  (    3 /ADC_CT1 )
+  (    3 /ADC_CT0 )
  )
  ( /4E32BAC5 SM0603S  R11 100 {Lib=R}
-  (    1 N-000006 )
-  (    2 /ADC_CT1 )
+  (    1 N-000030 )
+  (    2 /ADC_CT0 )
  )
  ( /4E2EE2C9 SM0603S  R2 100k {Lib=R}
   (    1 GND )
   (    2 /ADC_VAC )
  )
  ( /4E2EE2B3 SM0603S  R1 750k {Lib=R}
-  (    1 N-000041 )
+  (    1 N-000042 )
   (    2 /ADC_VAC )
- )
- ( /4E2EDD72 SMA  D1 DIODESCH {Lib=DIODESCH}
-  (    1 N-000028 )
-  (    2 N-000041 )
  )
  ( /4E2D9547 SM0603S  R6 470k {Lib=R}
   (    1 GND )
-  (    2 N-000010 )
+  (    2 N-000036 )
  )
  ( /4E2D9532 SM0603S  R5 470k {Lib=R}
-  (    1 N-000010 )
+  (    1 N-000036 )
   (    2 +3.3V )
  )
  ( /4E2D91DA terminal_0.2_right_2  P1 CONN_2 {Lib=CONN_2}
   (    1 GND )
-  (    2 N-000028 )
+  (    2 N-000042 )
  )
  ( /4E2D8C27 audio_jack_smd_01  P5 CONN_3 {Lib=CONN_3}
-  (    1 N-000010 )
+  (    1 N-000036 )
   (    2 ? )
-  (    3 /ADC_CT3 )
+  (    3 /ADC_CT2 )
  )
  ( /4E2D8ADC SM0603S  R13 100 {Lib=R}
-  (    1 N-000010 )
-  (    2 /ADC_CT3 )
+  (    1 N-000036 )
+  (    2 /ADC_CT2 )
  )
  ( /4E2D137B PIN_ARRAY_5X1  P2 CONN_5 {Lib=CONN_5}
   (    1 /TXD )
   (    2 /RXD )
   (    3 GND )
   (    4 +3.3V )
-  (    5 N-000032 )
+  (    5 N-000017 )
  )
  ( /4E2D1265 SM0603S  D3 LED {Lib=LED}
-  (    1 N-000022 )
+  (    1 N-000019 )
   (    2 GND )
  )
  ( /4E2D1255 SM0603S  R4 470 {Lib=R}
-  (    1 N-000022 )
-  (    2 N-000024 )
+  (    1 N-000019 )
+  (    2 N-000027 )
  )
  ( /4E2D1188 PANSTAMP_02  U1 PANSTAMP_02 {Lib=PANSTAMP_02}
   (    1 GND )
-  (    2 ? )
+  (    2 /COUNTER3 )
   (    3 ? )
   (    4 /ADC_VAC )
   (    5 /ADC_CT6 )
@@ -220,17 +262,17 @@
   (    9 /ADC_CT3 )
   (   10 /ADC_CT2 )
   (   11 /ADC_CT1 )
-  (   12 ? )
+  (   12 /ADC_CT0 )
   (   13 /RESET )
   (   14 +3.3V )
   (   15 GND )
   (   16 /RXD )
   (   17 /TXD )
-  (   18 ? )
-  (   19 N-000024 )
-  (   20 /COUNTER1 )
-  (   21 /COUNTER2 )
-  (   22 /COUNTER3 )
+  (   18 /ZEROC_INT )
+  (   19 N-000027 )
+  (   20 /COUNTER0 )
+  (   21 /COUNTER1 )
+  (   22 /COUNTER2 )
   (   23 GND )
   (   24 GND )
   (   25 ? )
@@ -240,7 +282,7 @@
   (   29 ? )
  )
  ( /4BFFD798 SOT223  U2 UA78M33 {Lib=LF33}
-  (    1 N-000004 )
+  (    1 N-000035 )
   (    2 GND )
   (    3 +3.3V )
  )
@@ -249,7 +291,7 @@
   (    2 GND )
  )
  ( /48B2D4EC SMDCPOL_12  C1 470u {Lib=CP1}
-  (    1 N-000004 )
+  (    1 N-000035 )
   (    2 GND )
  )
  ( /48B2D4E6 SMDCPOL_8  C2 220u {Lib=CP1}
@@ -263,6 +305,60 @@
 )
 *
 { Allowed footprints by component:
+$component R29
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component C14
+ SM*
+ C?
+ C1-1
+$endlist
+$component R31
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R30
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R32
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R27
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R26
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R28
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
 $component C13
  CP*
  SM*
@@ -366,10 +462,6 @@ $component R23
  R?-*
  SM1206
 $endlist
-$component C9
- CP*
- SM*
-$endlist
 $component C8
  SM*
  C?
@@ -432,7 +524,7 @@ $component C5
  C?
  C1-1
 $endlist
-$component D2
+$component D1
  D?
  S*
 $endlist
@@ -456,10 +548,6 @@ $component R1
  SM0805
  R?-*
  SM1206
-$endlist
-$component D1
- D?
- S*
 $endlist
 $component R6
  R?
@@ -525,168 +613,197 @@ $endlist
 $endfootprintlist
 }
 { Pin List by Nets
-Net 1 "GND" "GND"
- R22 1
- U1 15
+Net 2 "GND" "GND"
+ C4 2
+ C1 2
+ C2 2
+ C3 2
  U1 24
+ U1 15
+ C14 2
+ U2 2
+ R14 1
+ P9 1
  U1 23
  U1 7
- R16 1
- P11 1
- C11 2
- R20 1
- C4 2
- U2 2
- P2 3
- R2 1
- R6 1
- P1 1
- U1 1
  D3 2
- C3 2
- C2 2
- C1 2
+ U1 1
+ U3 4
+ R29 1
+ P12 1
+ R2 1
  R8 1
- P9 1
- R15 1
- R14 1
  C6 2
  C5 2
- C9 2
- R18 1
- C13 2
- R10 1
+ R27 2
+ R31 1
+ P2 3
+ R6 1
+ P1 1
  P10 1
- SW1 1
- C10 2
+ P11 1
+ R22 1
+ C13 2
  C12 2
+ C10 2
+ SW1 1
+ R10 1
  C7 2
-Net 2 "+3.3V" "+3.3V"
- P2 4
+ R15 1
+ C11 2
+ R18 1
+ R20 1
+ R16 1
+Net 3 "+3.3V" "+3.3V"
+ R30 2
+ R9 2
+ P12 3
+ R7 2
  R5 2
- C13 1
- P9 3
+ R28 1
+ R21 2
+ R19 2
+ C3 1
+ C2 1
+ P2 4
  P10 3
  P11 3
- R17 2
- U2 3
  C4 1
- R21 2
- C2 1
- C3 1
- R19 2
- R7 2
+ C13 1
+ P9 3
+ U2 3
+ R17 2
  U1 14
- R9 2
-Net 4 "" ""
- C9 1
- U2 1
- C1 1
- D2 2
-Net 5 "/ADC_CT1" "ADC_CT1"
- R11 2
+Net 4 "/ADC_CT3" "ADC_CT3"
+ P6 3
+ U1 9
+ R24 2
+Net 7 "" ""
+ C12 1
+ P6 1
+ R24 1
+ R21 1
+ R22 2
+Net 9 "" ""
+ R12 1
+ P4 1
+ R9 1
+ C7 1
+ R10 2
+Net 10 "/ADC_CT4" "ADC_CT4"
+ R23 2
+ P7 3
+ U1 8
+Net 11 "/ADC_CT1" "ADC_CT1"
+ P4 3
+ R12 2
  U1 11
- P3 3
-Net 6 "" ""
+Net 12 "/ADC_CT5" "ADC_CT5"
+ P8 3
+ R25 2
+ U1 6
+Net 13 "/COUNTER0" "COUNTER0"
+ U1 20
+ R14 2
+ P9 2
+Net 14 "/COUNTER2" "COUNTER2"
+ U1 22
+ R16 2
+ P11 2
+Net 15 "/ADC_CT6" "ADC_CT6"
+ U1 5
+ P13 3
+ R32 2
+Net 17 "" ""
+ P2 5
+ C8 1
+Net 18 "/RESET" "RESET"
+ SW1 2
+ C8 2
+ U1 13
+Net 19 "" ""
+ D3 1
+ R4 1
+Net 20 "/COUNTER3" "COUNTER3"
+ R29 2
+ U1 2
+ P12 2
+Net 22 "/RXD" "RXD"
+ U1 16
+ P2 2
+Net 24 "/TXD" "TXD"
+ U1 17
+ P2 1
+Net 27 "" ""
+ R4 2
+ U1 19
+Net 30 "" ""
  R7 1
+ P3 1
  C6 1
  R8 2
  R11 1
- P3 1
-Net 9 "" ""
- D2 1
+Net 31 "/ADC_CT0" "ADC_CT0"
+ R11 2
+ P3 3
+ U1 12
+Net 32 "" ""
+ D1 1
  R3 1
-Net 10 "" ""
+Net 34 "/ADC_CT2" "ADC_CT2"
+ P5 3
+ R13 2
+ U1 10
+Net 35 "" ""
+ D1 2
+ U2 1
+ C1 1
+Net 36 "" ""
  C5 1
  R6 2
  R5 1
  P5 1
  R13 1
-Net 13 "/ADC_CT6" "ADC_CT6"
- P8 3
- R25 2
- U1 5
-Net 14 "/ADC_CT5" "ADC_CT5"
- P7 3
- U1 6
- R23 2
-Net 19 "/COUNTER1" "COUNTER1"
- R14 2
- P9 2
- U1 20
-Net 22 "" ""
- R4 1
- D3 1
-Net 24 "" ""
- R4 2
- U1 19
-Net 28 "" ""
- P1 2
- D1 1
-Net 29 "/TXD" "TXD"
- P2 1
- U1 17
-Net 30 "/RXD" "RXD"
- P2 2
- U1 16
-Net 31 "/RESET" "RESET"
- C8 2
- SW1 2
- U1 13
-Net 32 "" ""
- P2 5
- C8 1
-Net 33 "/ADC_VAC" "ADC_VAC"
+Net 37 "/ADC_VAC" "ADC_VAC"
  R2 2
  R1 2
+ R26 2
  U1 4
-Net 34 "/ADC_CT3" "ADC_CT3"
- U1 9
- R13 2
- P5 3
-Net 35 "" ""
- R19 1
- R20 2
- R23 1
- P7 1
- C11 1
-Net 36 "" ""
- R25 1
- P8 1
+Net 38 "/COUNTER1" "COUNTER1"
+ P10 2
+ R15 2
+ U1 21
+Net 39 "" ""
+ U3 2
+ R27 1
+Net 40 "/ZEROC_INT" "ZEROC_INT"
+ R28 2
+ U1 18
+ U3 5
+Net 41 "" ""
+ U3 1
+ R26 1
+Net 42 "" ""
+ R3 2
+ P1 2
+ R1 1
+Net 46 "" ""
+ C14 1
+ R31 2
+ R30 1
+ P13 1
+ R32 1
+Net 47 "" ""
+ C10 1
  R17 1
  R18 2
- C10 1
-Net 37 "/ADC_CT4" "ADC_CT4"
- U1 8
- R24 2
- P6 3
-Net 38 "" ""
- R22 2
- R21 1
- R24 1
- P6 1
- C12 1
-Net 39 "/COUNTER3" "COUNTER3"
- U1 22
- R16 2
- P11 2
-Net 40 "/COUNTER2" "COUNTER2"
- P10 2
- U1 21
- R15 2
-Net 41 "" ""
- R1 1
- R3 2
- D1 2
-Net 42 "/ADC_CT2" "ADC_CT2"
- U1 10
- P4 3
- R12 2
-Net 43 "" ""
- R9 1
- R12 1
- P4 1
- R10 2
- C7 1
+ R25 1
+ P8 1
+Net 48 "" ""
+ P7 1
+ C11 1
+ R20 2
+ R19 1
+ R23 1
 }
 #End
