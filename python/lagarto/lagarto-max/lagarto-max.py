@@ -54,7 +54,7 @@ if __name__ == '__main__':
         print "Starting Event Manager"
         evnman = EvnManager()
     except LagartoException as ex:
-        ex.display()
+        ex.log()
         
     signal.pause()
 

@@ -9,13 +9,13 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 #
-# panStamp is distributed in the hope that it will be useful,
+# lagarto is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with panLoader; if not, write to the Free Software
+# along with lagarto; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
 # USA
 #
@@ -185,13 +185,12 @@ class NetworkAPI:
         epid = None
         eploc = None
         epname = None
-        if length == 2:
-            epid = epd[1]
-        elif length == 3:
+        if length == 3:
             eploc = epd[1]
             epname = epd[2]
         else:
-            return None
+            epd = endp.partition('.')
+            epid = epd[2]
         
         procname = epd[0]
         lagarto_endp = LagartoEndpoint(endp_id=epid, location=eploc, name=epname)

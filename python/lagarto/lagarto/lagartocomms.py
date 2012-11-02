@@ -248,6 +248,7 @@ class LagartoClient(threading.Thread, LagartoProcess):
             # Process event
             if event is not None:
                 self._process_event(event)
+            time.sleep(0.01)
         
         print "Stopping lagarto client..."
             
@@ -303,7 +304,13 @@ class LagartoClient(threading.Thread, LagartoProcess):
             
             cmd_list = []
             for endp in req:
-                cmd = "location=" + endp["location"] + "&" + "name=" + endp["name"]
+                if endp["location"] is not None and endp["name"] is not None:
+                    cmd = "location=" + endp["location"] + "&" + "name=" + endp["name"]
+                elif endp["id"] is not None:
+                    cmd = "id=" + endp["id"]
+                else:
+                    raise LagartoException("Insufficient data to identify endpoint")
+                
                 if control:
                     cmd += "&value=" + endp["value"]
                 cmd_list.append(cmd)

@@ -31,13 +31,11 @@ import sys
 import threading
 import time
 from xmltools import XmlSettings
-
-working_dir = os.path.dirname(__file__)
-lagarto_dir = os.path.split(working_dir)[0]
-lagarto_dir = os.path.join(lagarto_dir, "lagarto")
-sys.path.append(lagarto_dir) 
+from database import DataBase
+from maxdefs import MaxDefinitions
+sys.path.append(MaxDefinitions.lagarto_dir) 
 from lagartocomms import LagartoClient
-from lagartoresources import LagartoEndpoint
+from lagartoresources import LagartoEndpoint, LagartoException
 
 from api import TimeAPI, NetworkAPI
 from clouding import OpenSense
@@ -77,16 +75,27 @@ class PeriodicTrigger(threading.Thread):
         while True:
             tm_sec = time.localtime()[5]
             time.sleep(60.0 - tm_sec)
-            TimeEvent()        
+            
+            try:
+                # Run time-based events
+                TimeEvent()
+                ## Update contents in database
+                self.database.update_tables()
+            except LagartoException as ex:
+                ex.log()
     
        
-    def __init__(self):
+    def __init__(self, database):
         """
         Constructor
+        
+        @param database Database object
         """
         threading.Thread.__init__(self)
         # Configure thread as daemon
         self.daemon = True
+        # Database object
+        self.database = database
         # Run thread
         self.start()
 
@@ -146,7 +155,7 @@ class EvnManager(LagartoClient):
             evnscript = EventScript("network", lagarto_endp)
             # Update network event in API
             NetworkAPI.event = [event["procname"] + "." + endp["location"]  + "." + endp["name"], endp["value"]]
-        
+               
             # Wait if time event currently running
             while TimeAPI.event:
                 time.sleep(0.1)
@@ -157,7 +166,7 @@ class EvnManager(LagartoClient):
                     event_func = getattr(webscripts.WebScripts, attr)
                     event_func()
 
-
+            
     def http_command_received(self, command, params):
         """
         Process command sent from HTTP server. Method to be overrided by data consumer.
@@ -169,103 +178,159 @@ class EvnManager(LagartoClient):
         @return True if command successfukky processed by server.
         Return False otherwise
         """
-        if command == "get_server_list":
-            return self.get_servers()
-        
-        elif command == "get_endpoint_list":
-            return self.get_endpoints(params["server"])
-
-        elif command == "set_endpoint_value":
-            location = None
-            name = None
-            endp_id = None
+        try:
+            if command == "get_server_list":
+                return self.get_servers()
             
-            if "id" in params:
-                endp_id = params["id"]
-            if "location" in params:
-                location = params["location"]
-                if "name" in params:
-                    name = params["name"]
-            try:
-                endpoint = LagartoEndpoint(endp_id = endp_id, location=location, name=name, value=params["value"], procname=params["procname"])
-            except:
-                return None
-            
-            return self.set_endpoint(endpoint)
-
-        elif command == "set_from_opensense":
-            if "feed_id" not in params:
-                return None
-
-            endp = None
-            for key, value in OpenSense.feed_ids.iteritems():
-                if value == params["feed_id"]:
-                    endp = value
-
-            if endp is None:
-                return None
-            endp_data = endp.split(".")
-            if len(endp_data) != 3:
-                return None
-                   
-            try:
-                endpoint = LagartoEndpoint(location=endp_data[1], name=endp_data[2], value=params["value"], procname=endp_data[0])
-            except:
-                return None
-            
-            return self.set_endpoint(endpoint)
+            elif command == "get_endpoint_list":
+                return self.get_endpoints(params["server"])
     
-        elif command == "get_event_list":
-            return WebEvent.get_events()
+            elif command == "set_endpoint_value":
+                location = None
+                name = None
+                endp_id = None
+                
+                if "id" in params:
+                    endp_id = params["id"]
+                if "location" in params:
+                    location = params["location"]
+                    if "name" in params:
+                        name = params["name"]
+    
+                endpoint = LagartoEndpoint(endp_id = endp_id, location=location, name=name, value=params["value"], procname=params["procname"])           
+                return self.set_endpoint(endpoint)
+    
+            elif command == "set_from_opensense":
+                if "feed_id" not in params:
+                    return None
+    
+                endp = None
+                for key, value in OpenSense.feed_ids.iteritems():
+                    if value == params["feed_id"]:
+                        endp = value
+    
+                if endp is None:
+                    return None
+                endp_data = endp.split(".")
+                if len(endp_data) != 3:
+                    return None
+                       
+                endpoint = LagartoEndpoint(location=endp_data[1], name=endp_data[2], value=params["value"], procname=endp_data[0])
+                return self.set_endpoint(endpoint)
         
-        elif command == "get_event":
-            if "id" in params:
-                try:
-                    event = WebEvent(params["id"])
-                    return event.dumps()
-                except:
-                    pass
+            elif command == "get_event_list":
+                return WebEvent.get_events()
             
-        elif command == "delete_event":
-            if "id" in params:
-                try:
+            elif command == "get_event":
+                if "id" in params:
+                    try:
+                        event = WebEvent(params["id"])
+                        return event.dumps()
+                    except:
+                        pass
+                
+            elif command == "delete_event":
+                if "id" in params:
                     event = WebEvent(params["id"])
                     event.delete()
                     return "event_panel.html"
-                except:
-                    pass
-
-        elif command == "config_event_name":
-            if "id" in params:
-                try:
+    
+            elif command == "config_event_name":
+                if "id" in params:
                     event = WebEvent(params["id"])
                     event.name = params["name"]
                     event.save()
                     return True
-                except:
-                    pass
-                
-        elif command == "set_event_line":
-            if "id" in params:
-                try:
+                    
+            elif command == "set_event_line":
+                if "id" in params:
                     event = WebEvent(params["id"])
                     linenb = params["linenb"]
                     event.set_line(params["line"], linenb, params["type"])
                     event.save()
                     return "edit_event.html"
-                except:
-                    pass
-
-        elif command == "delete_event_line":
-            if "id" in params:
-                try:
+    
+            elif command == "delete_event_line":
+                if "id" in params:
                     event = WebEvent(params["id"])
                     linenb = params["linenb"]
                     event.delete_line(linenb)
                     event.save()
                     return "edit_event.html"
-                except:
-                    pass
+    
+            elif command == "edit_db_table":
+                self.database.edit_table(params["name"], params["endpoints"].split(','), params["interval"])
+                return "db_panel.html"
+    
+            elif command == "delete_db_table":
+                self.database.delete_table(params["name"])
+                return "db_panel.html"
+            
+            elif command == "edit_graph":
+                columns = None
+                if "columns" in params:
+                    columns = params["columns"].split(',')
+                title = None
+                if "title" in params:
+                    title = params["title"]
+                graphtype = None
+                if "type" in params:
+                    graphtype = params["type"]
+                samples = None
+                if "samples" in params:
+                    samples = params["samples"]
+                start = None
+                if "starttime" in params:
+                    start = params["starttime"]
+                end = None
+                if "endtime" in params:
+                    end = params["endtime"]
+                miny = None
+                if "miny" in params:
+                    miny = params["miny"]
+                maxy = None
+                if "maxy" in params:
+                    maxy = params["maxy"]
+                show_grid = False
+                if "show_grid" in params:
+                    show_grid = (params["show_grid"].lower() in ["true", "on", "yes", "enable"])
+                self.database.edit_graph(graph_name=params["name"],
+                                         table_name=params["table"],
+                                         columns=columns,
+                                         title=title,
+                                         graphtype=graphtype,
+                                         samples=samples,
+                                         start=start,
+                                         end=end,
+                                         miny=miny,
+                                         maxy=maxy,
+                                         show_grid=show_grid)
+                return "graph_panel.html"
+
+            elif command == "delete_graph":
+                self.database.delete_graph(params["name"])
+                return "graph_panel.html"
+            
+            elif command == "query_db_table":
+                columns = None
+                start = None
+                end = None
+                samples = None
+                if "table" in params:
+                    if "columns" in params:
+                        columns = params["columns"].split(',')
+                    if "start" in params:
+                        start = params["start"].replace('+', ' ')
+                    if "end" in params:
+                        end = params["end"].replace('+', ' ')
+                    if "samples" in params:
+                        samples = params["samples"]
+                return self.database.query_table(params["table"], columns, start, end, samples)
+        
+        except LagartoException as ex:
+            ex.log()
+        except Exception:
+            pass
 
         return False
 
@@ -282,23 +347,28 @@ class EvnManager(LagartoClient):
         """
         Constructor
         """
+        # Set log file to trace lagarto exceptions
+        LagartoException.error_file = os.path.join(MaxDefinitions.working_dir, "logs", "lagarto.err")
         # Lagarto client constructor
-        LagartoClient.__init__(self, os.path.dirname(__file__))
+        LagartoClient.__init__(self, MaxDefinitions.working_dir)
         NetworkAPI.lagarto_client = self
 
         # Read configuration
-        config_file = os.path.join(working_dir, "config", "settings.xml")
+        config_file = os.path.join(MaxDefinitions.working_dir, "config", "settings.xml")
         XmlSettings(config_file)
 
         # Run startup script
-        scripts.events.startup()
-
+        scripts.events.startup()      
+        
+        # Open database
+        self.database = DataBase()
+        
         # Start periodic trigger thread
-        PeriodicTrigger()
+        PeriodicTrigger(self.database)
         
         # Start Lagarto client
         self.start()
-
+        
 
 class EventScript(threading.Thread):
     """

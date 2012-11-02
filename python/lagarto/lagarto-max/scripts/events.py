@@ -31,8 +31,8 @@ def startup():
     
     Place here your custom initializations
     """
-    print "Custom objects being initializated..."
-    
+    print "Custom objects being initialized..."
+        
     
 def event_handler(evnsrc, evnobj):
     """
@@ -46,4 +46,3 @@ def event_handler(evnsrc, evnobj):
     """
     if evnsrc == "network":
         print time.strftime("%d %b %Y %H:%M:%S", time.localtime()), evnobj.location + "." + evnobj.name, evnobj.value
-

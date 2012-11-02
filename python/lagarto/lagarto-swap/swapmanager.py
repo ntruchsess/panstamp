@@ -157,9 +157,14 @@ class SwapManager(SwapInterface, LagartoServer):
         for item in endpoints:
             endp = self.get_endpoint(item["id"], item["location"], item["name"])
             if endp is not None:
-                # Create SWAP value object
                 if "value" in item:
-                    endp.cmdWack(item["value"])
+                    new_value = item["value"]
+                    if endp.type == "bin" and item["value"].lower() == "toogle":
+                        if endp.getValueInAscii() == "on":
+                            new_value = "off"
+                        else:
+                            new_value = "on"
+                    endp.cmdWack(new_value)
                     # Build new JSON structure
                     status.append(endp.dumps()) 
 
