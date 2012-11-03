@@ -2,6 +2,9 @@
 
 var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+// Database metadata
+var database;
+
 // Global array of columns associated to the graph
 var arrColumns = new Array();
 
@@ -108,11 +111,11 @@ function updateTables()
  */
 function onchangeTable()
 {
-  var jsonDoc = getJsonDoc();
-  database = jsonDoc.database;
-
   var tableName = document.getElementById("table").value;
   var fldEndpoint = document.getElementById("endp");
+
+  // Empty list of endpoints
+  fldEndpoint.options.length = 0;
 
   if (tableName != "")
   {
@@ -148,6 +151,7 @@ function updateValues()
       var config = graphs[graphName];
       document.getElementById("graphname").value = graphName;
       document.getElementById("table").value = config.table;
+      onchangeTable();
       if ("title" in config)
         document.getElementById("title").value = config.title;
       if ("type" in config)

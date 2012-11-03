@@ -76,7 +76,7 @@ class LogTable:
         query = "SELECT " + cols + " FROM " + self.name + range_condition
         
         if samples is not None:
-            query += " ORDER BY timestamp DESC LIMIT " + str(samples)
+            query += " ORDER BY timestamp ASC LIMIT " + str(samples)
 
         try:
             # Run query
