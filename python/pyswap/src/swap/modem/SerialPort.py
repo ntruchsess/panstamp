@@ -101,6 +101,7 @@ class SerialPort(threading.Thread):
                 raise SwapException("Unable to read serial port " + self.portname + " since it is not open")
         else:
             raise SwapException("Unable to read serial port " + self.portname + " since it is not open")
+        print "Closing serial port..."
 
     
     def stop(self):

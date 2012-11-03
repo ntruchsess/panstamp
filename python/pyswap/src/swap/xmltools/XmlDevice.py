@@ -37,7 +37,6 @@ from swap.SwapException import SwapException
 import os
 import xml.etree.ElementTree as xml
 
-
 class DeviceEntry:
     """
     Class representing a device entry in a device directory
@@ -231,28 +230,31 @@ class XmlDevice(object):
         Read current configuration file
         """
         if self.fileName is not None:
-            # Parse XML file
-            tree = xml.parse(self.fileName)
-            if tree is None:
-                raise IOError(self.fileName  + " does not exist")
-            # Get the root node
-            root = tree.getroot()
-            # Get manufacturer
-            elem = root.find("developer")
-            if elem is not None:
-                self.manufacturer = elem.text
-            # Get product name
-            elem = root.find("product")
-            if elem is not None:
-                self.product = elem.text
-            # Get Power Down flag
-            elem = root.find("pwrdownmode")
-            if elem is not None:
-                self.pwrdownmode = (elem.text.lower() == "true")
-            # Get periodic tx interval
-            elem = root.find("txinterval")
-            if elem is not None:
-                self.txinterval = int(elem.text)
+            try:
+                # Parse XML file
+                tree = xml.parse(self.fileName)
+                if tree is None:
+                    raise IOError(self.fileName  + " does not exist")
+                # Get the root node
+                root = tree.getroot()
+                # Get manufacturer
+                elem = root.find("developer")
+                if elem is not None:
+                    self.manufacturer = elem.text
+                # Get product name
+                elem = root.find("product")
+                if elem is not None:
+                    self.product = elem.text
+                # Get Power Down flag
+                elem = root.find("pwrdownmode")
+                if elem is not None:
+                    self.pwrdownmode = (elem.text.lower() == "true")
+                # Get periodic tx interval
+                elem = root.find("txinterval")
+                if elem is not None:
+                    self.txinterval = int(elem.text)
+            except Exception as ex:
+                raise SwapException("Unable to parse " + self.fileName + " : " + ex)
 
 
     def getRegList(self, config=False):

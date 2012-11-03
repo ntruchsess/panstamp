@@ -115,17 +115,24 @@ class SwapServer(threading.Thread):
             threading.Thread.__init__(self)
             raise
         
-        threading.Thread.__init__(self)
+        threading.Thread.__init__(self)        
            
 
     def stop(self):
         """
         Stop SWAP server
         """
-        #self._stop.set()
+        
+        print "Stopping SWAP server..."
+        
+        # Stop modem
         if self.modem is not None:
             self.modem.stop()
         self.is_running = False
+        
+        # Save network data
+        print "Saving network data..."
+        self.network.save()
         
         threading.Thread.__init__(self)
 
@@ -155,6 +162,8 @@ class SwapServer(threading.Thread):
         # Check function code
         # STATUS packet received
         if swPacket.function == SwapFunction.STATUS:
+            if swPacket.value is None:
+                return
             try:
                 # Check status message (ecpected response, nonce, ...)?
                 self._checkStatus(swPacket)
