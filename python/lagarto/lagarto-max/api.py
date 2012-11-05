@@ -26,7 +26,10 @@ __date__  ="$Feb 24, 2012$"
 
 import ephem
 import time
+import sys
 
+from maxdefs import MaxDefinitions
+sys.path.append(MaxDefinitions.lagarto_dir)
 from lagartoresources import LagartoEndpoint
 from xmltools import XmlSettings
 
