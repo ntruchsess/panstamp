@@ -194,7 +194,11 @@ function getCondition()
       else
       {
         if (operator == '==')
-          pythonString = "network.event[0] == " + item1 + " and network.event[1] " + operator + " \"" + item2 + "\"";
+        {
+          if (item2[0] != '\"')
+            item2 = "\"" + item2 + "\"";
+          pythonString = "network.event[0] == " + item1 + " and network.event[1] " + operator + " " + item2;
+        }
         else
           pythonString = "network.event[0] == " + item1 + " and float(network.event[1]) " + operator + " " + item2;         
       }
