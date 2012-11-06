@@ -207,7 +207,11 @@ function getCondition()
   else if (item2 != null)
   {
     if (operator == '==')
-      pythonString = "network.get_value(" +  item1 + ") " + operator + " \"" + item2 + "\"";
+    {
+      if (item2[0] != '\"')
+        item2 = "\"" + item2 + "\"";
+      pythonString = "network.get_value(" +  item1 + ") " + operator + " " + item2;
+    }
     else
       pythonString = "network.get_value(" +  item1 + ") " + operator + " " + item2;      
   }
