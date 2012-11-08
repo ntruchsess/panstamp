@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Thu 01 Nov 2012 06:59:10 PM CET
+EESchema Schematic File Version 2  date Wed 07 Nov 2012 06:59:29 PM CET
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -52,7 +52,7 @@ EELAYER END
 $Descr A4 11700 8267
 Sheet 1 1
 Title "panStamp Energy Meter board"
-Date "1 nov 2012"
+Date "7 nov 2012"
 Rev "02"
 Comp "panStamp"
 Comment1 ""
@@ -60,12 +60,12 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text Label 3500 4350 2    60   ~ 0
-COUNTER0
+Text Label 1500 6850 0    60   ~ 0
+ZEROC_VAC
+Wire Wire Line
+	1400 7050 1850 7050
 Wire Wire Line
 	2950 4050 3500 4050
-Text Label 800  4750 0    60   ~ 0
-ADC_CT0
 Wire Wire Line
 	1300 4750 800  4750
 Wire Wire Line
@@ -165,8 +165,6 @@ Connection ~ 2100 6850
 Wire Wire Line
 	2100 6550 2100 6850
 Wire Wire Line
-	1800 6850 2200 6850
-Wire Wire Line
 	7850 5600 8550 5600
 Wire Wire Line
 	8300 6150 8300 6200
@@ -187,9 +185,7 @@ Wire Wire Line
 Wire Wire Line
 	2350 6000 2350 6050
 Wire Wire Line
-	1850 7450 1850 7050
-Wire Wire Line
-	1850 7050 1800 7050
+	1850 7050 1850 7450
 Wire Wire Line
 	7600 3500 7600 3550
 Wire Wire Line
@@ -450,6 +446,12 @@ Wire Wire Line
 	6650 1200 5800 1200
 Wire Wire Line
 	6350 1800 6350 1900
+Wire Wire Line
+	1400 6850 2200 6850
+Text Label 3500 4350 2    60   ~ 0
+COUNTER0
+Text Label 800  4750 0    60   ~ 0
+ADC_CT0
 $Comp
 L CONN_3 P12
 U 1 1 508F05DA
@@ -609,7 +611,7 @@ F 1 "GND" H 3900 3080 30  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Text Label 3150 2700 0    60   ~ 0
-ADC_VAC
+ZEROC_VAC
 Text Label 6700 2800 2    60   ~ 0
 ZEROC_INT
 Text Label 3500 4550 2    60   ~ 0
@@ -1380,11 +1382,11 @@ $EndComp
 $Comp
 L CONN_2 P1
 U 1 1 4E2D91DA
-P 1450 6950
-F 0 "P1" V 1400 6950 40  0000 C CNN
-F 1 "CONN_2" V 1500 6950 40  0000 C CNN
-F 2 "terminal_0.2_right_2" H 1450 6950 60  0001 C CNN
-	1    1450 6950
+P 1050 6950
+F 0 "P1" V 1000 6950 40  0000 C CNN
+F 1 "CONN_2" V 1100 6950 40  0000 C CNN
+F 2 "terminal_0.2_right_2" H 1050 6950 60  0001 C CNN
+	1    1050 6950
 	-1   0    0    1   
 $EndComp
 $Comp

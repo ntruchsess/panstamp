@@ -1,4 +1,4 @@
-# EESchema Netlist Version 1.1 created  Thu 01 Nov 2012 06:29:39 PM CET
+# EESchema Netlist Version 1.1 created  Wed 07 Nov 2012 07:00:02 PM CET
 (
  ( /508F05DA audio_jack_smd_01  P12 CONN_3 {Lib=CONN_3}
   (    1 GND )
@@ -36,7 +36,7 @@
  )
  ( /508F047D SM0603S  R26 2k {Lib=R}
   (    1 N-000041 )
-  (    2 /ADC_VAC )
+  (    2 /ZEROC_VAC )
  )
  ( /508DBB27 SM0603S  R28 10k {Lib=R}
   (    1 +3.3V )
@@ -99,11 +99,11 @@
   (    2 N-000047 )
  )
  ( /4FD6F86B SM0603S  R24 100 {Lib=R}
-  (    1 N-000007 )
+  (    1 N-000006 )
   (    2 /ADC_CT3 )
  )
  ( /4FD6F86A audio_jack_smd_01  P6 CONN_3 {Lib=CONN_3}
-  (    1 N-000007 )
+  (    1 N-000006 )
   (    2 ? )
   (    3 /ADC_CT3 )
  )
@@ -112,15 +112,15 @@
   (    2 GND )
  )
  ( /4FD6F868 SM0603S  C12 100n {Lib=C}
-  (    1 N-000007 )
+  (    1 N-000006 )
   (    2 GND )
  )
  ( /4FD6F865 SM0603S  R22 470k {Lib=R}
   (    1 GND )
-  (    2 N-000007 )
+  (    2 N-000006 )
  )
  ( /4FD6F864 SM0603S  R21 470k {Lib=R}
-  (    1 N-000007 )
+  (    1 N-000006 )
   (    2 +3.3V )
  )
  ( /4FD6F861 SM0603S  R19 470k {Lib=R}
@@ -153,28 +153,28 @@
   (    2 /RESET )
  )
  ( /4F9C28F9 SM2512  R3 47_1W {Lib=R}
-  (    1 N-000032 )
-  (    2 N-000042 )
+  (    1 N-000033 )
+  (    2 /ZEROC_VAC )
  )
  ( /4F9C1E74 SM0603S  R12 100 {Lib=R}
-  (    1 N-000009 )
+  (    1 N-000008 )
   (    2 /ADC_CT1 )
  )
  ( /4F9C1E73 audio_jack_smd_01  P4 CONN_3 {Lib=CONN_3}
-  (    1 N-000009 )
+  (    1 N-000008 )
   (    2 ? )
   (    3 /ADC_CT1 )
  )
  ( /4F9C1E72 SM0603S  C7 100n {Lib=C}
-  (    1 N-000009 )
+  (    1 N-000008 )
   (    2 GND )
  )
  ( /4F9C1E6F SM0603S  R10 470k {Lib=R}
   (    1 GND )
-  (    2 N-000009 )
+  (    2 N-000008 )
  )
  ( /4F9C1E6E SM0603S  R9 470k {Lib=R}
-  (    1 N-000009 )
+  (    1 N-000008 )
   (    2 +3.3V )
  )
  ( /4F9C1DD8 SM0603S  R7 470k {Lib=R}
@@ -190,12 +190,12 @@
   (    2 GND )
  )
  ( /4F9C1D2C SM0603S  C5 100n {Lib=C}
-  (    1 N-000036 )
+  (    1 N-000032 )
   (    2 GND )
  )
  ( /4F9C1966 SMA  D1 DIODESCH {Lib=DIODESCH}
-  (    1 N-000032 )
-  (    2 N-000035 )
+  (    1 N-000033 )
+  (    2 N-000036 )
  )
  ( /4E32BAC6 audio_jack_smd_01  P3 CONN_3 {Lib=CONN_3}
   (    1 N-000030 )
@@ -211,28 +211,28 @@
   (    2 /ADC_VAC )
  )
  ( /4E2EE2B3 SM0603S  R1 750k {Lib=R}
-  (    1 N-000042 )
+  (    1 /ZEROC_VAC )
   (    2 /ADC_VAC )
  )
  ( /4E2D9547 SM0603S  R6 470k {Lib=R}
   (    1 GND )
-  (    2 N-000036 )
+  (    2 N-000032 )
  )
  ( /4E2D9532 SM0603S  R5 470k {Lib=R}
-  (    1 N-000036 )
+  (    1 N-000032 )
   (    2 +3.3V )
  )
  ( /4E2D91DA terminal_0.2_right_2  P1 CONN_2 {Lib=CONN_2}
   (    1 GND )
-  (    2 N-000042 )
+  (    2 /ZEROC_VAC )
  )
  ( /4E2D8C27 audio_jack_smd_01  P5 CONN_3 {Lib=CONN_3}
-  (    1 N-000036 )
+  (    1 N-000032 )
   (    2 ? )
   (    3 /ADC_CT2 )
  )
  ( /4E2D8ADC SM0603S  R13 100 {Lib=R}
-  (    1 N-000036 )
+  (    1 N-000032 )
   (    2 /ADC_CT2 )
  )
  ( /4E2D137B PIN_ARRAY_5X1  P2 CONN_5 {Lib=CONN_5}
@@ -282,7 +282,7 @@
   (   29 ? )
  )
  ( /4BFFD798 SOT223  U2 UA78M33 {Lib=LF33}
-  (    1 N-000035 )
+  (    1 N-000036 )
   (    2 GND )
   (    3 +3.3V )
  )
@@ -291,7 +291,7 @@
   (    2 GND )
  )
  ( /48B2D4EC SMDCPOL_12  C1 470u {Lib=CP1}
-  (    1 N-000035 )
+  (    1 N-000036 )
   (    2 GND )
  )
  ( /48B2D4E6 SMDCPOL_8  C2 220u {Lib=CP1}
@@ -614,98 +614,98 @@ $endfootprintlist
 }
 { Pin List by Nets
 Net 2 "GND" "GND"
- C4 2
- C1 2
- C2 2
- C3 2
- U1 24
- U1 15
- C14 2
- U2 2
+ R2 1
+ R8 1
+ C6 2
+ C5 2
+ P2 3
+ R6 1
+ P1 1
  R14 1
  P9 1
  U1 23
  U1 7
  D3 2
  U1 1
- U3 4
+ C4 2
+ C1 2
+ C2 2
+ C3 2
+ U1 24
+ U1 15
+ U2 2
  R29 1
  P12 1
- R2 1
- R8 1
- C6 2
- C5 2
- R27 2
+ U3 4
  R31 1
- P2 3
- R6 1
- P1 1
- P10 1
- P11 1
- R22 1
- C13 2
- C12 2
+ R27 2
+ C14 2
  C10 2
- SW1 1
- R10 1
- C7 2
- R15 1
  C11 2
  R18 1
- R20 1
+ SW1 1
  R16 1
+ C13 2
+ R20 1
+ R15 1
+ P10 1
+ P11 1
+ C7 2
+ R10 1
+ R22 1
+ C12 2
 Net 3 "+3.3V" "+3.3V"
- R30 2
- R9 2
- P12 3
- R7 2
+ P10 3
  R5 2
- R28 1
- R21 2
  R19 2
+ P11 3
+ R21 2
+ R7 2
+ R9 2
+ R28 1
+ R30 2
+ P12 3
+ U2 3
  C3 1
  C2 1
- P2 4
- P10 3
- P11 3
- C4 1
- C13 1
- P9 3
- U2 3
  R17 2
+ C4 1
+ P9 3
  U1 14
-Net 4 "/ADC_CT3" "ADC_CT3"
- P6 3
- U1 9
- R24 2
-Net 7 "" ""
+ C13 1
+ P2 4
+Net 6 "" ""
  C12 1
- P6 1
  R24 1
+ P6 1
  R21 1
  R22 2
-Net 9 "" ""
- R12 1
- P4 1
+Net 8 "" ""
  R9 1
  C7 1
+ R12 1
  R10 2
-Net 10 "/ADC_CT4" "ADC_CT4"
+ P4 1
+Net 9 "/ADC_CT4" "ADC_CT4"
+ U1 8
  R23 2
  P7 3
- U1 8
-Net 11 "/ADC_CT1" "ADC_CT1"
- P4 3
+Net 10 "/ADC_CT1" "ADC_CT1"
  R12 2
  U1 11
-Net 12 "/ADC_CT5" "ADC_CT5"
+ P4 3
+Net 11 "/ADC_CT5" "ADC_CT5"
+ U1 6
  P8 3
  R25 2
- U1 6
+Net 12 "/ADC_CT3" "ADC_CT3"
+ P6 3
+ R24 2
+ U1 9
 Net 13 "/COUNTER0" "COUNTER0"
- U1 20
  R14 2
  P9 2
+ U1 20
 Net 14 "/COUNTER2" "COUNTER2"
  U1 22
  R16 2
@@ -715,59 +715,58 @@ Net 15 "/ADC_CT6" "ADC_CT6"
  P13 3
  R32 2
 Net 17 "" ""
- P2 5
  C8 1
+ P2 5
 Net 18 "/RESET" "RESET"
- SW1 2
  C8 2
  U1 13
+ SW1 2
 Net 19 "" ""
- D3 1
  R4 1
+ D3 1
 Net 20 "/COUNTER3" "COUNTER3"
- R29 2
  U1 2
  P12 2
+ R29 2
 Net 22 "/RXD" "RXD"
  U1 16
  P2 2
 Net 24 "/TXD" "TXD"
- U1 17
  P2 1
+ U1 17
 Net 27 "" ""
  R4 2
  U1 19
 Net 30 "" ""
- R7 1
- P3 1
- C6 1
  R8 2
+ P3 1
+ R7 1
+ C6 1
  R11 1
 Net 31 "/ADC_CT0" "ADC_CT0"
- R11 2
  P3 3
+ R11 2
  U1 12
 Net 32 "" ""
+ R13 1
+ P5 1
+ C5 1
+ R5 1
+ R6 2
+Net 33 "" ""
  D1 1
  R3 1
-Net 34 "/ADC_CT2" "ADC_CT2"
- P5 3
+Net 35 "/ADC_CT2" "ADC_CT2"
  R13 2
+ P5 3
  U1 10
-Net 35 "" ""
- D1 2
- U2 1
- C1 1
 Net 36 "" ""
- C5 1
- R6 2
- R5 1
- P5 1
- R13 1
+ C1 1
+ U2 1
+ D1 2
 Net 37 "/ADC_VAC" "ADC_VAC"
  R2 2
  R1 2
- R26 2
  U1 4
 Net 38 "/COUNTER1" "COUNTER1"
  P10 2
@@ -777,16 +776,17 @@ Net 39 "" ""
  U3 2
  R27 1
 Net 40 "/ZEROC_INT" "ZEROC_INT"
+ U3 5
  R28 2
  U1 18
- U3 5
 Net 41 "" ""
- U3 1
  R26 1
-Net 42 "" ""
- R3 2
+ U3 1
+Net 42 "/ZEROC_VAC" "ZEROC_VAC"
  P1 2
  R1 1
+ R3 2
+ R26 2
 Net 46 "" ""
  C14 1
  R31 2
@@ -794,16 +794,16 @@ Net 46 "" ""
  P13 1
  R32 1
 Net 47 "" ""
- C10 1
- R17 1
- R18 2
  R25 1
  P8 1
+ R18 2
+ C10 1
+ R17 1
 Net 48 "" ""
  P7 1
- C11 1
- R20 2
  R19 1
+ R20 2
+ C11 1
  R23 1
 }
 #End
