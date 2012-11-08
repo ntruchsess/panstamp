@@ -199,7 +199,6 @@ void readInitValues(void)
       tmpValue = tmpValue << 8;
       tmpValue |= val;
     }
-Serial.println(tmpValue, DEC);
 
     if (setToZero)
       channels[i].initialKwh = 0;
