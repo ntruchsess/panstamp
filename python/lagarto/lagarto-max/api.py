@@ -30,7 +30,7 @@ import sys
 
 from maxdefs import MaxDefinitions
 sys.path.append(MaxDefinitions.lagarto_dir)
-from lagartoresources import LagartoEndpoint
+from lagartoresources import LagartoEndpoint, LagartoException
 from xmltools import XmlSettings
 
 from clouding import PachubePacket, ThingSpeakPacket, OpenSensePacket, OpenSense, TwitterMessage
