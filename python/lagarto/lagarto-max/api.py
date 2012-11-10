@@ -196,7 +196,7 @@ class NetworkAPI:
             epid = epd[2]
         
         procname = epd[0]
-        lagarto_endp = LagartoEndpoint(endp_id=epid, location=eploc, name=epname)
+        lagarto_endp = LagartoEndpoint(endp_id=epid, location=eploc, name=epname, procname=procname)
 
         try:
             status = NetworkAPI.lagarto_client.request_status(procname, [lagarto_endp.dumps()])
@@ -239,11 +239,11 @@ class NetworkAPI:
         @return endpoint value
         """
         try:
-            epd = NetworkAPI.get_endpoint(endp)
-            if epd is not None:
-                endp.value = value
+            lagarto_endp = NetworkAPI.get_endpoint(endp)
+            if lagarto_endp is not None:
+                lagarto_endp.value = value
                 
-                status = NetworkAPI.lagarto_client.request_status(procname, [lagarto_endp.dumps()])
+                status = NetworkAPI.lagarto_client.request_status(lagarto_endp.procname, [lagarto_endp.dumps()])
                 if status is not None:
                     if len(status) > 0:
                         if "value" in status[0]:
