@@ -19,10 +19,7 @@
     </div>
     <script language="JavaScript" type="text/javascript">
       if (!("name" in getUrlVars()))
-      {
         alert("No graph selected");
-        return;
-      }
       document.getElementById("graphbox").src = "/plot.html?name=" + getUrlVars()["name"];
     </script>
   </body>
