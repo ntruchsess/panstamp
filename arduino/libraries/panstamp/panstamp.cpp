@@ -27,6 +27,10 @@
 #include "panstamp.h"
 #include "commonregs.h"
 
+#ifdef EXTERNAL_RTC_CRYSTAL
+#include "calibration.h"
+#endif
+
 #define enableIRQ_GDO0()          attachInterrupt(0, isrGDO0event, FALLING);
 #define disableIRQ_GDO0()         detachInterrupt(0);
 
@@ -358,61 +362,6 @@ void PANSTAMP::sleepRtc(byte time)
 
   // Wake-up!!
   wakeUp();
-}
-
-/**
- * rcOscCalibrate
- * 
- * Calibrate internal RC oscillator
- */
-void PANSTAMP::rcOscCalibrate(void)
-{
-  uint8_t loopCount = (0x7F / 2); 
-
-  // Inital OSCCAL of half its maximum
-  OSCCAL = (0x7F / 2);
-
-  // Disable timer interrupts
-  TIMSK1 = 0;
-  TIMSK2 = 0;
-
-  // Set timer 2 to asyncronous mode (32.768KHz crystal)
-  ASSR = (1 << AS2);
-
-  // Ensure timer 1 control register A is cleared
-  TCCR1A = 0;
-
-  // Timer 2 normal operation
-  TCCR2A = 0x00;
-
-  // Start Timer 2 with no prescaling
-  TCCR2B = (1 << CS20);
-  
-  while (loopCount--)
-  {  
-    TIFR2 |= (1 << TOV2);          // Clear timer 2 overflow flag   
-    TCNT2 = 0;                     // Reset Timer 2 count
-    
-    // Wait for the registers to be updated for Timer 2
-    while (ASSR & (_BV(TCN2UB) | _BV(TCR2AUB) | _BV(TCR2BUB))) {}
-    
-    TCCR1B = (1 << CS10);          // Restart Timer 1 with no prescaling
-    TCNT1 = 0;                     // Reset Timer 1 count
-    
-    // Wait until timer 2 overflows
-    while (!(TIFR2 & (1 << TOV2)));
-
-    // Stop timer 1 so it can be read
-    TCCR1B = 0x00;
-
-    // Check timer value against ideal constant
-    if (TCNT1 > TARGETCOUNT_MAX)       // Clock is running too fast
-      OSCCAL--;
-    else if (TCNT1 < TARGETCOUNT_MIN)  // Clock is running too slow
-      OSCCAL++;
-    else                               // Clock is OK
-      break;
-  }
 }
 #endif
 

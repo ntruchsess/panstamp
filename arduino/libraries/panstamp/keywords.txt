@@ -37,6 +37,7 @@ getData	KEYWORD2
 setData KEYWORD2
 sendSwapStatus KEYWORD2
 getRegister KEYWORD2
+rcOscCalibrate KEYWORD2
 
 #######################################
 # Atributes (KEYWORD2)

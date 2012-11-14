@@ -1,5 +1,5 @@
 /**
- * config.h
+ * calibration.h
  *
  * Copyright (c) 2011 Daniel Berenguer <dberenguer@usapiens.com>
  * 
@@ -21,25 +21,27 @@
  * USA
  * 
  * Author: Daniel Berenguer
- * Creation date: 10/03/2012
+ * Creation date: 11/13/2012
  */
 
-#ifndef _CONFIG_H
-#define _CONFIG_H
+#ifndef _CALIBRATION_H
+#define _CALIBRATION_H
 
-/**
- * External RTC crystal (32.768 KHz)
- */
-#define EXTERNAL_RTC_CRYSTAL 1
+#include "EEPROM.h"
+#include "nvolat.h"
 
 /**
- * Repeater options
+ * Calibration thresholds
  */
-// Amount of transactions to be saved for evaluation before repeating a packet
-// Maximum depth = 255
-#define REPEATER_TABLE_DEPTH  20
-// Expiration time (in ms) for any transaction
-#define REPEATER_EXPIRATION_TIME  2000
+#define TARGETCOUNT_MIN 62450   // Calibration target MIN
+#define TARGETCOUNT_MAX 62550   // Calibration target MAX#endif
+
+/**
+ * rcOscCalibrate
+ * 
+ * Calibrate internal RC oscillator
+ */
+extern void rcOscCalibrate(void);
 
 #endif
 

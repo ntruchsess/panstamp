@@ -48,9 +48,6 @@
 #define RTC_1S       0x05   // Timer 2 prescaler = 128
 #define RTC_2S       0x06   // Timer 2 prescaler = 256
 #define RTC_8S       0x07   // Timer 2 prescaler = 1024
-
-#define TARGETCOUNT_MIN 62450   // Calibration target MIN
-#define TARGETCOUNT_MAX 62550   // Calibration target MAX
 #endif
 
 /**
@@ -214,13 +211,6 @@ class PANSTAMP
      *  RTC_8S = 8 s
      */
     void sleepRtc(byte time);
-
-    /**
-     * rcOscCalibrate
-     * 
-     * Calibrate internal RC oscillator
-     */
-    void rcOscCalibrate(void);
     #endif
 
     /**
