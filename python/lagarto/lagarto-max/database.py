@@ -75,12 +75,16 @@ class LogTable:
         
         query = "SELECT " + cols + " FROM " + self.name + range_condition
         
+        reverse_result = False
         if samples is not None:
-            query += " ORDER BY timestamp ASC LIMIT " + str(samples)
+            query += " ORDER BY timestamp DESC LIMIT " + str(samples)
+            reverse_result = True
 
         try:
             # Run query
             res = self.database.runquery(query)
+            if reverse_result:
+                res.reverse()
             # Convert response to JSON format
             formatted_res = {"columns": columns}
             formatted_res["data"] = res
