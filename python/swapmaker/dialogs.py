@@ -238,11 +238,11 @@ class RegisterDialog(ConfigDialog):
         # Fill list widget
         for index, param in enumerate(self.parameters):
             self.list_parameters.InsertStringItem(index, param["name"])
-            self.list_parameters.SetStringItem(index, 1, param["type"])
             if "dir" not in param:
-                self.list_parameters.SetStringItem(index, 2, "out")
+                self.list_parameters.SetStringItem(index, 1, "out")
             else:
-                self.list_parameters.SetStringItem(index, 2, param["dir"])
+                self.list_parameters.SetStringItem(index, 1, param["dir"])
+            self.list_parameters.SetStringItem(index, 2, param["type"])
             self.list_parameters.EnsureVisible(index)
 
 
@@ -626,7 +626,7 @@ class RegParameterDialog(ParameterDialog):
         # Fill list widget
         #self.list_units.DeleteAllItems()
         for index, unit in enumerate(self.units):
-            self.list_units.InsertStringItem(index, unit["unit"])
+            self.list_units.InsertStringItem(index, unit["name"])
             self.list_units.SetStringItem(index, 1, str(unit["factor"]))
             self.list_units.SetStringItem(index, 2, str(unit["offset"]))
             self.list_units.EnsureVisible(index)
