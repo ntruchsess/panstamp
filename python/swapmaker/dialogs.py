@@ -378,7 +378,7 @@ class RegRegisterDialog(RegisterDialog):
         res = dialog.ShowModal()
         
         if res == wx.ID_OK:
-            parameter = {"name": dialog.paramname, "type": dialog.paramtype, "dir": dialog.paramdir, "bitsize": dialog.bitsize, "units": dialog.units}       
+            parameter = {"name": dialog.paramname, "type": dialog.paramtype, "dir": dialog.paramdir, "size": dialog.bitsize, "units": dialog.units}       
             self.parameters[index] = parameter
             self.list_parameters.SetStringItem(index, 0, dialog.paramname)
             self.list_parameters.SetStringItem(index, 1, dialog.paramtype)
