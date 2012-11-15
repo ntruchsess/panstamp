@@ -40,6 +40,7 @@
 #include "TimerOne.h"
 #include "EEPROM.h"
 #include "modem.h"
+#include "calibration.h"
 
 /**
  * LED pin
@@ -240,7 +241,12 @@ void handleSerialCmd(char* command)
  * Arduino setup function
  */
 void setup()
-{ 
+{
+  #ifdef EXTERNAL_RTC_CRYSTAL
+  // Calibrate internal RC oscillator
+  rcOscCalibrate();
+  #endif
+  
   pinMode(LEDPIN, OUTPUT);
   digitalWrite(LEDPIN, HIGH);
 
@@ -251,9 +257,8 @@ void setup()
   // Reset serial buffer
   memset(strSerial, 0, sizeof(strSerial));
   
-  // Default mode is COMMAND
+  // Default mode is COMMAND 
   Serial.println("Modem ready!");
-
   // Setup CC1101
   cc1101.init();
 
