@@ -213,10 +213,13 @@ class LagartoEndpoint:
         ## Direction (input or output)
         self.direction = direction
         ## Endpoint value
-        if value is not None and type(value) in ["str", "unicode"] and vtype is not None:
-            self.value = LagartoEndpoint.strtovalue(value, vtype)
+        if value is not None:
+            if type(value) in ["str", "unicode"] and vtype is not None:
+                self.value = LagartoEndpoint.strtovalue(value, vtype)
+            else:
+                self.value = value
         else:
-            self.value = value
+            self.value = "?"
 
         ## Unit
         self.unit = unit

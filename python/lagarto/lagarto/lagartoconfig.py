@@ -108,6 +108,6 @@ class XmlLagarto(object):
         
         ## Local IP address
         self.address = None
-
+               
         # Read XML file
         self._read()

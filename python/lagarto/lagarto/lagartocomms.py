@@ -174,7 +174,7 @@ class LagartoServer(LagartoProcess):
             http_server = self.config.address + ":" + str(self.config.httpport)
             lagarto_msg = LagartoMessage(proc_name=self.config.procname, http_server=http_server, status=status_data)
             msg = json.dumps(lagarto_msg.dumps())
-            self.pub_socket.send(msg)
+            self.push_socket.send(msg)
         finally:
             self.publish_lock.release()
                 
@@ -184,8 +184,8 @@ class LagartoServer(LagartoProcess):
         Stop lagarto server
         """
         # Close ZeroMQ socket
-        self.pub_socket.setsockopt(zmq.LINGER, 0)
-        self.pub_socket.close()
+        self.push_socket.setsockopt(zmq.LINGER, 0)
+        self.push_socket.close()
         
         # Close HTTP server
         LagartoProcess.stop(self)
@@ -201,16 +201,27 @@ class LagartoServer(LagartoProcess):
         
         context = zmq.Context()
         
-        # Publisher socket
-        self.pub_socket = None
+        # ZMQ PUSH socket
+        self.push_socket = None
         if self.config.broadcast is not None:
-            self.pub_socket = context.socket(zmq.PUB)
+            self.push_socket = context.socket(zmq.PUSH)
             
-        # Bind socket
-        if self.pub_socket.bind(self.config.broadcast) == -1:
-            raise LagartoException("Unable to bind publisher socket")
-        else:
-            print "Publishing through", self.config.broadcast
+        # Bind/connect socket
+        try:
+            # Try binding socket first
+            if self.push_socket.bind(self.config.broadcast) == -1:
+                raise LagartoException("Unable to bind zmq push socket")
+            else:
+                print "ZMQ PUSH socket binded to ", self.config.broadcast
+        except zmq.error.ZMQError as ex:
+            try:
+                # Now try connecting to the socket            
+                if self.push_socket.connect(self.config.broadcast) == -1:
+                    raise LagartoException("Unable to connect to zmq push socket")
+                else:
+                    print "ZMQ PUSH socket connected to ", self.config.broadcast
+            except zmq.error.ZMQError as ex:
+                raise LagartoException("Unable to establish connection with zmq push socket: " + str(ex))
         
         self.publish_lock = threading.Lock()
         
@@ -240,7 +251,7 @@ class LagartoClient(threading.Thread, LagartoProcess):
         while self.running:           
             try:
                 # Any broadcasted message from a lagarto server?
-                event = self.sub_socket.recv(flags=zmq.NOBLOCK)
+                event = self.pull_socket.recv(flags=zmq.NOBLOCK)
             except:
                 event = None
                 pass
@@ -260,8 +271,8 @@ class LagartoClient(threading.Thread, LagartoProcess):
         self.running = False
         
         # Close ZeroMQ socket
-        self.sub_socket.setsockopt(zmq.LINGER, 0)
-        self.sub_socket.close()
+        self.pull_socket.setsockopt(zmq.LINGER, 0)
+        self.pull_socket.close()
         
         # Close HTTP server
         LagartoProcess.stop(self)
@@ -402,20 +413,73 @@ class LagartoClient(threading.Thread, LagartoProcess):
         self.running = True
         
         # ZMQ PULL socket
-        self.sub_socket = None
+        self.pull_socket = None
         
         # Create ZeroMQ sockets
         self.context = zmq.Context()
-        
-        # PULL socket between consumer and coordinator
+
+        # ZMQ PUSH socket
+        self.pull_socket = None
         if self.config.broadcast is not None:
-            self.sub_socket = self.context.socket(zmq.SUB)
-            if self.sub_socket.connect(self.config.broadcast) == -1:
-                raise LagartoException("Unable to connect subscriber socket")
+            self.pull_socket = context.socket(zmq.PULL)
+
+        # Bind/connect ZMQ PULL socket
+        try:
+            # Try binding socket first
+            if self.pull_socket.bind(self.config.broadcast) == -1:
+                raise LagartoException("Unable to bind zmq pull socket to " + self.config.broadcast)
             else:
-                self.sub_socket.setsockopt(zmq.SUBSCRIBE, "")
-                print "Subscribed to", self.config.broadcast
+                print "ZMQ PULL socket binded to ", self.config.broadcast                
+        except zmq.error.ZMQError as ex:
+            try:
+                # Now try connecting to the socket
+                if self.pull_socket.connect(self.config.broadcast) == -1:
+                    raise LagartoException("Unable to connect zmq pull socket to " + self.config.broadcast)
+                else:
+                    print "ZMQ PULL socket connected to ", self.config.broadcast
+            except zmq.error.ZMQError as ex:
+                raise LagartoException("Unable to establish connection with zmq pull socket")
 
 
         # List of HTTP servers
         self.http_servers = {}
+
+
+class LagartoBroker(LagartoClient):
+    """
+    Lagarto broker class
+    """
+
+    def _process_event(self, event):
+        """
+        Process lagarto event
+        
+        @param event: event packet to be processed
+        """
+        # Publish event downstream
+        self.push_socket.send(event)
+        
+        # Run the rest of the client tasks
+        LagartoClient._process_event(self, event)
+               
+                
+    def __init__(self, working_dir):
+        '''
+        Constructor
+        
+        @param working_dir: Working directory
+        '''
+        LagartoClient.__init__(self, working_dir)
+        
+        # ZMQ PUSH socket
+        self.push_socket = None
+               
+        # PUSH socket between broker and clients
+        try:
+            self.push_socket = self.context.socket(zmq.PUSH)
+            if self.pull_socket.bind(self.config.broadcast) == -1:
+                raise LagartoException("Unable to bind ZMQ PUSH socket to " + self.config.broadcast)
+            else:
+                print "ZMQ PUSH socket binded to", self.config.broadcast
+        except zmq.error.ZMQError as ex:
+            raise LagartoException("Unable to bind ZMQ PUSH socket to " + self.config.broadcast + ": " + str(ex))
