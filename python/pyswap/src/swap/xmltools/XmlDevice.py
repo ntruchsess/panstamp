@@ -253,7 +253,7 @@ class XmlDevice(object):
                 elem = root.find("txinterval")
                 if elem is not None:
                     self.txinterval = int(elem.text)
-            except Exception as ex:
+            except IOError as ex:
                 raise SwapException("Unable to parse " + self.fileName + " : " + ex)
 
 

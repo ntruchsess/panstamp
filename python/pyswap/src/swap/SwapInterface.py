@@ -200,12 +200,14 @@ class SwapInterface:
 
     def get_endpoint(self, endpid=None, location=None, name=None):
         """
-        Get endpoint given its unique id
+        Get endpoint given its unique id or location.name pair
         
-        @param endpid: endpoint id
+        @param endpid endpoint id
+        @param location endpoint location
+        @param name endpoint name
         
         @return endpoint object
-        """       
+        """    
         for mote in self.network.motes:
             for register in mote.regular_registers:
                 for endpoint in register.parameters:
