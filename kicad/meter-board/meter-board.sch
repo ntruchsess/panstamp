@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Wed 07 Nov 2012 06:59:29 PM CET
+EESchema Schematic File Version 2  date Sat 17 Nov 2012 10:35:24 PM CET
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -52,7 +52,7 @@ EELAYER END
 $Descr A4 11700 8267
 Sheet 1 1
 Title "panStamp Energy Meter board"
-Date "7 nov 2012"
+Date "17 nov 2012"
 Rev "02"
 Comp "panStamp"
 Comment1 ""
@@ -67,7 +67,7 @@ Wire Wire Line
 Wire Wire Line
 	2950 4050 3500 4050
 Wire Wire Line
-	1300 4750 800  4750
+	1300 4650 800  4650
 Wire Wire Line
 	4600 3000 4500 3000
 Wire Wire Line
@@ -193,7 +193,7 @@ Wire Wire Line
 Wire Wire Line
 	8600 2350 8600 2550
 Wire Wire Line
-	800  4250 1300 4250
+	800  4150 1300 4150
 Wire Wire Line
 	5700 4350 5600 4350
 Wire Wire Line
@@ -256,9 +256,9 @@ Wire Wire Line
 Wire Wire Line
 	5700 4250 5600 4250
 Wire Wire Line
-	800  4050 1300 4050
+	800  4750 1300 4750
 Wire Wire Line
-	800  4350 1300 4350
+	800  4250 1300 4250
 Connection ~ 8350 2950
 Wire Wire Line
 	8600 2750 8600 2950
@@ -277,7 +277,7 @@ Wire Wire Line
 Connection ~ 7950 2950
 Connection ~ 8350 2350
 Wire Wire Line
-	1300 4150 800  4150
+	1300 4050 800  4050
 Wire Wire Line
 	3300 6850 3300 6950
 Wire Wire Line
@@ -376,11 +376,11 @@ Wire Wire Line
 Wire Wire Line
 	10550 4550 9600 4550
 Wire Wire Line
-	1300 4450 800  4450
-Wire Wire Line
-	800  4650 1300 4650
+	1300 4350 800  4350
 Wire Wire Line
 	800  4550 1300 4550
+Wire Wire Line
+	800  4450 1300 4450
 Wire Wire Line
 	1650 1300 1550 1300
 Wire Wire Line
@@ -450,7 +450,7 @@ Wire Wire Line
 	1400 6850 2200 6850
 Text Label 3500 4350 2    60   ~ 0
 COUNTER0
-Text Label 800  4750 0    60   ~ 0
+Text Label 800  4050 0    60   ~ 0
 ADC_CT0
 $Comp
 L CONN_3 P12
@@ -501,7 +501,7 @@ F 1 "GND" H 6350 1830 30  0001 C CNN
 $EndComp
 Text Label 5800 1200 0    60   ~ 0
 COUNTER3
-Text Label 9900 750  0    60   ~ 0
+Text Label 7850 5600 0    60   ~ 0
 ADC_CT6
 $Comp
 L C C14
@@ -835,11 +835,11 @@ F 2 "audio_jack_smd_01" H 2000 1200 60  0001 C CNN
 	1    2000 1200
 	1    0    0    1   
 $EndComp
-Text Label 800  4350 0    60   ~ 0
+Text Label 800  4450 0    60   ~ 0
 ADC_CT4
-Text Label 800  4250 0    60   ~ 0
+Text Label 800  4550 0    60   ~ 0
 ADC_CT5
-Text Label 800  4150 0    60   ~ 0
+Text Label 800  4650 0    60   ~ 0
 ADC_CT6
 $Comp
 L R R25
@@ -930,7 +930,7 @@ F 2 "audio_jack_smd_01" H 10900 5900 60  0001 C CNN
 	1    10900 5900
 	1    0    0    1   
 $EndComp
-Text Label 9850 3950 0    60   ~ 0
+Text Label 7900 2350 0    60   ~ 0
 ADC_CT4
 NoConn ~ 10600 2650
 NoConn ~ 10550 5900
@@ -1059,7 +1059,7 @@ F 2 "SM0603S" H 9950 4850 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 NoConn ~ 10550 4250
-Text Label 9900 2350 0    60   ~ 0
+Text Label 7850 3950 0    60   ~ 0
 ADC_CT5
 $Comp
 L CONN_3 P7
@@ -1140,7 +1140,7 @@ F 2 "audio_jack_smd_01" H 8900 4250 60  0001 C CNN
 	1    8900 4250
 	1    0    0    1   
 $EndComp
-Text Label 7900 2350 0    60   ~ 0
+Text Label 9850 3950 0    60   ~ 0
 ADC_CT2
 NoConn ~ 8550 4250
 $Comp
@@ -1279,7 +1279,7 @@ F 2 "SMA" H 2950 6850 60  0001 C CNN
 $EndComp
 NoConn ~ 8550 5900
 NoConn ~ 8600 2650
-Text Label 7850 3950 0    60   ~ 0
+Text Label 9900 2350 0    60   ~ 0
 ADC_CT1
 $Comp
 L CONN_3 P3
@@ -1398,7 +1398,7 @@ F 1 "GND" H 1850 7380 30  0001 C CNN
 	1    1850 7450
 	1    0    0    -1  
 $EndComp
-Text Label 7850 5600 0    60   ~ 0
+Text Label 9900 750  0    60   ~ 0
 ADC_CT0
 $Comp
 L CONN_3 P5
@@ -1420,13 +1420,13 @@ F 2 "SM0603S" H 8350 2650 60  0001 C CNN
 	1    8350 2650
 	-1   0    0    1   
 $EndComp
-Text Label 800  4050 0    60   ~ 0
+Text Label 800  4750 0    60   ~ 0
 ADC_VAC
-Text Label 800  4450 0    60   ~ 0
+Text Label 800  4350 0    60   ~ 0
 ADC_CT3
-Text Label 800  4550 0    60   ~ 0
+Text Label 800  4250 0    60   ~ 0
 ADC_CT2
-Text Label 800  4650 0    60   ~ 0
+Text Label 800  4150 0    60   ~ 0
 ADC_CT1
 NoConn ~ 2400 5350
 NoConn ~ 1300 3850
