@@ -4,22 +4,22 @@
 /**
  * Hardware version
  */
-#define HARDWARE_VERSION        0x${HARDWARE_VERSION}
+#define HARDWARE_VERSION        ${HARDWARE_VERSION}
 
 /**
  * Firmware version
  */
-#define FIRMWARE_VERSION        0x${FIRMWARE_VERSION}
+#define FIRMWARE_VERSION        ${FIRMWARE_VERSION}
 
 /**
  * Manufacturer SWAP ID
  */
-#define SWAP_MANUFACT_ID        0x${SWAP_MANUFACT_ID}
+#define SWAP_MANUFACT_ID        ${SWAP_MANUFACT_ID}
 
 /**
  * Product SWAP ID
  */
-#define SWAP_PRODUCT_ID         0x${SWAP_PRODUCT_ID}
+#define SWAP_PRODUCT_ID         ${SWAP_PRODUCT_ID}
 
 #endif
 
