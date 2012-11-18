@@ -409,8 +409,8 @@ class SwapWizard(wx.wizard.Wizard):
                 ProductFile(filename=file_path,
                             developer=product_info.developer_name,
                             product=product_info.product_name + " (" + product_info.product_descr + ")",
-                            hwversion="00000100",
-                            fwversion="00000100",
+                            hwversion="0x00000100",
+                            fwversion="0x00000100",
                             develid=product_info.developer_id,
                             productid=product_info.product_id)
                 
