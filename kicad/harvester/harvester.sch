@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Mon 11 Jun 2012 06:13:37 PM CEST
+EESchema Schematic File Version 2  date Wed 26 Sep 2012 01:37:27 PM CEST
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -52,7 +52,7 @@ EELAYER END
 $Descr A4 11700 8267
 Sheet 1 1
 Title "panStamp solar harvester"
-Date "11 jun 2012"
+Date "26 sep 2012"
 Rev "01"
 Comp "uSAPIENS"
 Comment1 ""
@@ -60,6 +60,8 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+Text Notes 7450 4350 0    60   ~ 0
+Vbias = 1.25V
 Wire Wire Line
 	8700 1450 9000 1450
 Wire Wire Line
@@ -409,13 +411,13 @@ F 2 "SM0603S" H 9950 1600 60  0001 C CNN
 $EndComp
 Text Notes 5750 2250 0    60   ~ 0
 open circuit = 2.2V
-Text Notes 7450 4800 0    60   ~ 0
+Text Notes 7450 4950 0    60   ~ 0
 Vbat_ok_prog = Vbias (1 + Rok2/Rok1) = 3.0V
-Text Notes 7450 5000 0    60   ~ 0
+Text Notes 7450 5150 0    60   ~ 0
 Vbat_ok_hist = Vbias (1 + (Rok2 + Rok3)/Rok1) = 3.6V
-Text Notes 7450 4600 0    60   ~ 0
-Vbat_ov = 3/2 Vbias (1 + Rov2/Rov1) = 3.8V
-Text Notes 7450 4400 0    60   ~ 0
+Text Notes 7450 4750 0    60   ~ 0
+Vbat_ov = 3/2 Vbias (1 + Rov2/Rov1) = 3.75V
+Text Notes 7450 4550 0    60   ~ 0
 Vbat_uv = Vbias (1 + Ruv2/Ruv1) = 2.7V
 $Comp
 L GND #PWR03
@@ -452,7 +454,7 @@ L R Rok1
 U 1 1 4FA4089C
 P 10500 1600
 F 0 "Rok1" V 10580 1600 50  0000 C CNN
-F 1 "6.2M" V 10500 1600 50  0000 C CNN
+F 1 "3.57M" V 10500 1600 50  0000 C CNN
 F 2 "SM0603S" H 10500 1600 60  0001 C CNN
 	1    10500 1600
 	-1   0    0    1   
@@ -462,7 +464,7 @@ L R Rok3
 U 1 1 4FA40877
 P 10500 2800
 F 0 "Rok3" V 10580 2800 50  0000 C CNN
-F 1 "1.69M" V 10500 2800 50  0000 C CNN
+F 1 "1.65M" V 10500 2800 50  0000 C CNN
 F 2 "SM0603S" H 10500 2800 60  0001 C CNN
 	1    10500 2800
 	-1   0    0    1   
@@ -472,7 +474,7 @@ L R Rok2
 U 1 1 4FA40861
 P 10500 2200
 F 0 "Rok2" V 10580 2200 50  0000 C CNN
-F 1 "2.2M" V 10500 2200 50  0000 C CNN
+F 1 "4.75M" V 10500 2200 50  0000 C CNN
 F 2 "SM0603S" H 10500 2200 60  0001 C CNN
 	1    10500 2200
 	-1   0    0    1   
@@ -500,7 +502,7 @@ L R Ruv2
 U 1 1 4FA40805
 P 10100 3400
 F 0 "Ruv2" V 10180 3400 50  0000 C CNN
-F 1 "1.8M" V 10100 3400 50  0000 C CNN
+F 1 "5.36M" V 10100 3400 50  0000 C CNN
 F 2 "SM0603S" H 10100 3400 60  0001 C CNN
 	1    10100 3400
 	1    0    0    -1  
@@ -510,7 +512,7 @@ L R Ruv1
 U 1 1 4FA40802
 P 10100 4100
 F 0 "Ruv1" V 10180 4100 50  0000 C CNN
-F 1 "8.2M" V 10100 4100 50  0000 C CNN
+F 1 "4.64M" V 10100 4100 50  0000 C CNN
 F 2 "SM0603S" H 10100 4100 60  0001 C CNN
 	1    10100 4100
 	1    0    0    -1  
@@ -520,7 +522,7 @@ L R Rov1
 U 1 1 4FA407FC
 P 9850 4100
 F 0 "Rov1" V 9930 4100 50  0000 C CNN
-F 1 "8.66M" V 9850 4100 50  0000 C CNN
+F 1 "5.1M" V 9850 4100 50  0000 C CNN
 F 2 "SM0603S" H 9850 4100 60  0001 C CNN
 	1    9850 4100
 	1    0    0    -1  
@@ -530,7 +532,7 @@ L R Rov2
 U 1 1 4FA407F4
 P 9850 3400
 F 0 "Rov2" V 9930 3400 50  0000 C CNN
-F 1 "1.33M" V 9850 3400 50  0000 C CNN
+F 1 "5.1" V 9850 3400 50  0000 C CNN
 F 2 "SM0603S" H 9850 3400 60  0001 C CNN
 	1    9850 3400
 	1    0    0    -1  
