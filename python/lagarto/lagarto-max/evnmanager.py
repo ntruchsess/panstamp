@@ -34,7 +34,7 @@ from xmltools import XmlSettings
 from database import DataBase
 from maxdefs import MaxDefinitions
 sys.path.append(MaxDefinitions.lagarto_dir) 
-from lagartocomms import LagartoClient
+from lagartocomms import LagartoBroker
 from lagartoresources import LagartoEndpoint, LagartoException
 
 from api import TimeAPI, NetworkAPI
@@ -133,7 +133,7 @@ class TimeEvent(threading.Thread):
         self.start()
 
     
-class EvnManager(LagartoClient):
+class EvnManager(LagartoBroker):
     """
     Lagarto event management class
     """
@@ -350,7 +350,7 @@ class EvnManager(LagartoClient):
         # Set log file to trace lagarto exceptions
         LagartoException.error_file = os.path.join(MaxDefinitions.working_dir, "logs", "lagarto.err")
         # Lagarto client constructor
-        LagartoClient.__init__(self, MaxDefinitions.working_dir)
+        LagartoBroker.__init__(self, MaxDefinitions.working_dir)
         NetworkAPI.lagarto_client = self
 
         # Read configuration

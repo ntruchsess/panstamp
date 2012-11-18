@@ -179,7 +179,7 @@ class SwapManager(SwapInterface, LagartoServer):
         @param command: command string
         @param params: dictionary of parameters
         
-        @return True if command successfukky processed by server.
+        @return True if command successfully processed by server.
         Return False otherwise
         """
         try:

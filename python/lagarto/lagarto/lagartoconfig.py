@@ -109,5 +109,11 @@ class XmlLagarto(object):
         ## Local IP address
         self.address = None
                
+        ## PUSh address
+        self.push_address = "tcp://*:5001"
+
+        ## PULL address
+        self.pull_address = "tcp://localhost:5001"
+
         # Read XML file
         self._read()

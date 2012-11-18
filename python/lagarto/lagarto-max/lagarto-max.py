@@ -37,6 +37,8 @@ import sys
 import signal
 
 
+evnman = None
+
 def signal_handler(signal, frame):
     """
     Handle signal received

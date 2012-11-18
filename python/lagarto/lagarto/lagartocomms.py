@@ -34,8 +34,6 @@ import threading
 import json
 import socket
 import os
-import base64
-import urllib
 import time
 
 
@@ -213,14 +211,14 @@ class LagartoServer(LagartoProcess):
                 raise LagartoException("Unable to bind zmq push socket")
             else:
                 print "ZMQ PUSH socket binded to ", self.config.broadcast
-        except zmq.error.ZMQError as ex:
+        except zmq.ZMQError as ex:
             try:
                 # Now try connecting to the socket            
                 if self.push_socket.connect(self.config.broadcast) == -1:
                     raise LagartoException("Unable to connect to zmq push socket")
                 else:
-                    print "ZMQ PUSH socket connected to ", self.config.broadcast
-            except zmq.error.ZMQError as ex:
+                    print "ZMQ PUSH socket connected to", self.config.broadcast
+            except zmq.ZMQError as ex:
                 raise LagartoException("Unable to establish connection with zmq push socket: " + str(ex))
         
         self.publish_lock = threading.Lock()
@@ -411,7 +409,7 @@ class LagartoClient(threading.Thread, LagartoProcess):
         LagartoProcess.__init__(self, working_dir)
         
         self.running = True
-        
+       
         # ZMQ PULL socket
         self.pull_socket = None
         
@@ -421,7 +419,7 @@ class LagartoClient(threading.Thread, LagartoProcess):
         # ZMQ PUSH socket
         self.pull_socket = None
         if self.config.broadcast is not None:
-            self.pull_socket = context.socket(zmq.PULL)
+            self.pull_socket = self.context.socket(zmq.PULL)
 
         # Bind/connect ZMQ PULL socket
         try:
@@ -429,15 +427,15 @@ class LagartoClient(threading.Thread, LagartoProcess):
             if self.pull_socket.bind(self.config.broadcast) == -1:
                 raise LagartoException("Unable to bind zmq pull socket to " + self.config.broadcast)
             else:
-                print "ZMQ PULL socket binded to ", self.config.broadcast                
-        except zmq.error.ZMQError as ex:
+                print "ZMQ PULL socket binded to", self.config.broadcast                
+        except zmq.ZMQError as ex:
             try:
                 # Now try connecting to the socket
                 if self.pull_socket.connect(self.config.broadcast) == -1:
                     raise LagartoException("Unable to connect zmq pull socket to " + self.config.broadcast)
                 else:
                     print "ZMQ PULL socket connected to ", self.config.broadcast
-            except zmq.error.ZMQError as ex:
+            except zmq.ZMQError as ex:
                 raise LagartoException("Unable to establish connection with zmq pull socket")
 
 
@@ -471,15 +469,24 @@ class LagartoBroker(LagartoClient):
         '''
         LagartoClient.__init__(self, working_dir)
         
+        addr = self.config.broadcast.split(':')
+
+        if len(addr) < 3:
+            raise LagartoException("Incorrect broadcast address:port, " + self.config.broadcast)
+        
+        port = int(addr[2]) + 1
+        
+        push_address = addr[0] + ':' + addr[1] + ':' + str(port)
+        
         # ZMQ PUSH socket
         self.push_socket = None
                
         # PUSH socket between broker and clients
         try:
             self.push_socket = self.context.socket(zmq.PUSH)
-            if self.pull_socket.bind(self.config.broadcast) == -1:
-                raise LagartoException("Unable to bind ZMQ PUSH socket to " + self.config.broadcast)
+            if self.pull_socket.bind(push_address) == -1:
+                raise LagartoException("Unable to bind ZMQ PUSH socket to " + push_address)
             else:
-                print "ZMQ PUSH socket binded to", self.config.broadcast
-        except zmq.error.ZMQError as ex:
-            raise LagartoException("Unable to bind ZMQ PUSH socket to " + self.config.broadcast + ": " + str(ex))
+                print "ZMQ PUSH socket binded to", push_address
+        except zmq.ZMQError as ex:
+            raise LagartoException("Unable to bind ZMQ PUSH socket to " + push_address + ": " + str(ex))

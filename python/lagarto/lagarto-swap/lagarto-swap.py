@@ -38,6 +38,7 @@ import os
 import time
 import signal
 
+swap_manager = None
 
 def signal_handler(signal, frame):
     """
