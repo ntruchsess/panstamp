@@ -340,7 +340,7 @@ class EvnManager(LagartoBroker):
         Stop event manager
         """       
         # Stop lagarto client
-        LagartoClient.stop(self)
+        LagartoBroker.stop(self)
         
         
     def __init__(self):
@@ -349,8 +349,9 @@ class EvnManager(LagartoBroker):
         """
         # Set log file to trace lagarto exceptions
         LagartoException.error_file = os.path.join(MaxDefinitions.working_dir, "logs", "lagarto.err")
-        # Lagarto client constructor
+        # Lagarto broker constructor
         LagartoBroker.__init__(self, MaxDefinitions.working_dir)
+
         NetworkAPI.lagarto_client = self
 
         # Read configuration

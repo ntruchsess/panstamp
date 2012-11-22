@@ -158,15 +158,16 @@ class SwapManager(SwapInterface, LagartoServer):
             endp = self.get_endpoint(item["id"], item["location"], item["name"])
             if endp is not None:
                 if "value" in item:
-                    new_value = item["value"]
-                    if endp.type == "bin" and item["value"].lower() == "toogle":
-                        if endp.getValueInAscii() == "on":
-                            new_value = "off"
-                        else:
-                            new_value = "on"
-                    endp.cmdWack(new_value)
-                    # Build new JSON structure
-                    status.append(endp.dumps()) 
+                    if endp.direction == "out":
+                        new_value = item["value"]
+                        if endp.type == "bin" and item["value"].lower() == "toogle":
+                            if endp.getValueInAscii() == "on":
+                                new_value = "off"
+                            else:
+                                new_value = "on"
+                        endp.cmdWack(new_value)
+                        # Build new JSON structure
+                        status.append(endp.dumps())
 
         return status
     

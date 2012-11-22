@@ -166,9 +166,11 @@ class LagartoEndpoint:
         return res
         
 
-    def dumps(self):
+    def dumps(self, enable_value=True):
         """
         Serialize address in form of JSON string
+        
+        @param enable_value add value information
         """
         endpoint = {}
         endpoint["id"] = self.id
@@ -179,7 +181,7 @@ class LagartoEndpoint:
             endpoint["direction"] = self.direction
         if self.type is not None:
             endpoint["type"] = self.type
-        if self.value is not None:
+        if enable_value and self.value is not None:
             endpoint["value"] = str(self.value)
             if self.unit is not None:
                 endpoint["unit"] = self.unit
