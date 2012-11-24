@@ -1,4 +1,4 @@
-Cmp-Mod V01 Genere par PcbNew le Fri 11 May 2012 10:35:14 AM CEST
+Cmp-Mod V01 Created by CvPCB (2010-05-05 BZR 2356)-stable date = Sat 24 Nov 2012 04:04:25 PM CET
 
 BeginCmp
 TimeStamp = /4E292A6A;
@@ -36,10 +36,66 @@ IdModule  = SM1206;
 EndCmp
 
 BeginCmp
+TimeStamp = /4FA10C95;
+Reference = C5;
+ValeurCmp = 1u;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FA10CA8;
+Reference = C6;
+ValeurCmp = 100n;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
 TimeStamp = /4CC93692;
 Reference = D1;
 ValeurCmp = LED;
 IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDAFFF9;
+Reference = K1;
+ValeurCmp = CONN_3;
+IdModule  = TERMINAL_BLOCK_3.5MM_3P;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDB00DC;
+Reference = K2;
+ValeurCmp = CONN_3;
+IdModule  = TERMINAL_BLOCK_3.5MM_3P;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDB00E3;
+Reference = K3;
+ValeurCmp = CONN_3;
+IdModule  = TERMINAL_BLOCK_3.5MM_3P;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDB00FB;
+Reference = K4;
+ValeurCmp = CONN_3;
+IdModule  = TERMINAL_BLOCK_3.5MM_3P;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDB00F0;
+Reference = K5;
+ValeurCmp = CONN_3;
+IdModule  = TERMINAL_BLOCK_3.5MM_3P;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDB00EF;
+Reference = K6;
+ValeurCmp = CONN_3;
+IdModule  = TERMINAL_BLOCK_3.5MM_3P;
 EndCmp
 
 BeginCmp
@@ -57,10 +113,10 @@ IdModule  = PIN_ARRAY_5x1;
 EndCmp
 
 BeginCmp
-TimeStamp = /4F97D66B;
+TimeStamp = /50B0D783;
 Reference = P2;
-ValeurCmp = CONN_12X2;
-IdModule  = pinhead-1-2X12;
+ValeurCmp = CONN_4;
+IdModule  = GROVE_MALE;
 EndCmp
 
 BeginCmp
@@ -92,9 +148,86 @@ IdModule  = SM0603S;
 EndCmp
 
 BeginCmp
-TimeStamp = /4E2A7593;
+TimeStamp = /4FDB0057;
 Reference = R5;
-ValeurCmp = 10k;
+ValeurCmp = 100k;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDB00DA;
+Reference = R6;
+ValeurCmp = 100k;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDB00E5;
+Reference = R7;
+ValeurCmp = 100k;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDB003E;
+Reference = R8;
+ValeurCmp = 100k;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDB00DB;
+Reference = R9;
+ValeurCmp = 100k;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDB00E4;
+Reference = R10;
+ValeurCmp = 100k;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDB00F9;
+Reference = R11;
+ValeurCmp = 100k;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDB00F2;
+Reference = R12;
+ValeurCmp = 100k;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDB00ED;
+Reference = R13;
+ValeurCmp = 100k;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDB00FA;
+Reference = R14;
+ValeurCmp = 100k;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDB00F1;
+Reference = R15;
+ValeurCmp = 100k;
+IdModule  = SM0603S;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDB00EE;
+Reference = R16;
+ValeurCmp = 100k;
 IdModule  = SM0603S;
 EndCmp
 
