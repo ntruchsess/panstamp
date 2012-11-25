@@ -368,8 +368,8 @@ class XmlDevice(object):
                             f.write("\t\t\t<endpoint name=\"" + param["name"] + "\" type=\"" + param["type"] + "\" dir=\"" + param["dir"] + "\">\n")
                             if len(reg["endpoints"]) > 1:
                                 pos = self.get_bytebits(curr_bitpos)
-                                if bitsize > 8 - pos[1]:
-                                    pos = (pos[0] + 1, 0)
+                                #if bitsize > 8 - pos[1]:
+                                #    pos = (pos[0] + 1, 0)
                                 strpos = ".".join(map(str, pos))
                                 curr_bitpos = pos[0] * 8 + pos[1]
                                 f.write("\t\t\t\t<position>" + strpos + "</position>\n")
