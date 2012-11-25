@@ -198,7 +198,7 @@ class RegisterDialog(ConfigDialog):
         self.list_parameters = wx.ListCtrl(self, -1, style=wx.LC_REPORT, size=(275, 150))
         self.list_parameters.InsertColumn(0, "Parameter name")
         self.list_parameters.InsertColumn(1, "type")
-        self.list_parameters.InsertColumn(1, "dir")
+        self.list_parameters.InsertColumn(2, "dir")
         self.list_parameters.SetColumnWidth(0, 140)
         self.list_parameters.SetColumnWidth(1, 50)
         self.list_parameters.SetColumnWidth(1, 50)
