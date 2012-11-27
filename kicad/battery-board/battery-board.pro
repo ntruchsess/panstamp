@@ -1,4 +1,4 @@
-update=Fri 23 Nov 2012 05:34:07 PM CET
+update=Mon 26 Nov 2012 10:35:57 AM CET
 last_client=pcbnew
 [general]
 version=1
@@ -102,7 +102,7 @@ TxtPcbH=600
 TxtModV=600
 TxtModH=600
 TxtModW=120
-VEgarde=100
+VEgarde=0
 DrawLar=150
 EdgeLar=150
 TxtLar=120
