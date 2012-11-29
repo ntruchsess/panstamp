@@ -179,7 +179,11 @@ class SwapParam:
         if self.type == SwapType.NUMBER:
             # Add units
             if self.unit is not None:
-                strVal = str(self.value.toInteger() * self.unit.factor + self.unit.offset)
+                val = self.value.toInteger()
+                if self.unit.calc is not None:
+                    oper = self.unit.calc.replace("${val}", val)         
+                    val = eval("math." + oper)                 
+                strVal = str(val * self.unit.factor + self.unit.offset)
             else:
                 strVal = str(self.value.toInteger())
         elif self.type == SwapType.BINARY:

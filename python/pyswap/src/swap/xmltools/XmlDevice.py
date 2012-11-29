@@ -196,7 +196,7 @@ class XmlUnit:
     """
     Endpoint units appearing in any XmlDevice object
     """
-    def __init__(self, name="", factor=1, offset=0):
+    def __init__(self, name="", factor=1, offset=0, calc=None):
         """
         Class constructor
         
@@ -218,6 +218,9 @@ class XmlUnit:
             self.offset = int(offset)
         except ValueError:
             self.offset = float(offset)
+            
+        ## Optional calculator
+        self.calc = calc
       
 
 class XmlDevice(object):
@@ -342,7 +345,8 @@ class XmlDevice(object):
                                 name = unit.get("name", default=None)
                                 factor = unit.get("factor", default=1)
                                 offset = unit.get("offset", default=0)
-                                xmlUnit = XmlUnit(name, factor, offset)
+                                calc = unit.get("calc", default=None)
+                                xmlUnit = XmlUnit(name, factor, offset, calc)
                                 lstUnits.append(xmlUnit)
 
                         if config == True:
