@@ -87,13 +87,15 @@ class SwapNetwork:
         """
         Save current network data into file
         """
-        network = self.dumps()
         try:
+            network = self.dumps()
             print "Saving", self.filename
             network_file = open(self.filename, 'w')     
             # Write network data into file
             json.dump(network, network_file, sort_keys=False, indent=2)
             network_file.close()
+        except SwapException:
+            raise
         except IOError:
             raise SwapException("Unable to save SWAP network data in file")
   
@@ -192,8 +194,11 @@ class SwapNetwork:
         
         motes_data = []
         
-        for mote in self.motes:
-            motes_data.append(mote.dumps(include_units=True))
+        try:
+            for mote in self.motes:
+                motes_data.append(mote.dumps(include_units=True))
+        except SwapException:
+            raise
         
         net_data["motes"] = motes_data
 

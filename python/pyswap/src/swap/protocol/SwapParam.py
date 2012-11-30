@@ -181,8 +181,12 @@ class SwapParam:
             # Add units
             if self.unit is not None:                
                 if self.unit.calc is not None:
-                    oper = self.unit.calc.replace("${val}", str(val))         
-                    val = eval("math." + oper)                 
+                    oper = self.unit.calc.replace("${val}", str(val))
+                    try:    
+                        val = eval("math." + oper)
+                    except ValueError as ex:
+                        raise SwapException("Math exception for " + oper + ". " + str(ex))
+                                         
                 strVal = str(val * self.unit.factor + self.unit.offset)
             else:
                 strVal = str(val)
@@ -452,8 +456,11 @@ class SwapEndpoint(SwapParam):
         Serialize endpoint data to a JSON formatted string
         
         @param include_units: if True, include list of units within the serialized output
-        """       
-        val = self.getValueInAscii()
+        """
+        try:
+            val = self.getValueInAscii()
+        except SwapException:
+            raise
         
         data = {}
         data["id"] = self.id.replace(" ", "_")

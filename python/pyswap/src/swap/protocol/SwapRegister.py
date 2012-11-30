@@ -227,8 +227,12 @@ class SwapRegister(object):
         data["name"] = self.name
         
         endpoints_data = []
-        for item in self.parameters:
-            endpoints_data.append(item.dumps(include_units))
+        
+        try:
+            for item in self.parameters:
+                endpoints_data.append(item.dumps(include_units))
+        except SwapException:
+            raise
             
         data["endpoints"] = endpoints_data
         

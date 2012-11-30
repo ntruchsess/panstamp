@@ -243,8 +243,11 @@ class SwapMote(object):
         data["address"] = self.address
         
         regs = []
-        for reg in self.regular_registers:
-            regs.append(reg.dumps(include_units))
+        try:
+            for reg in self.regular_registers:
+                regs.append(reg.dumps(include_units))
+        except SwapException:
+            raise
             
         data["registers"] = regs
         

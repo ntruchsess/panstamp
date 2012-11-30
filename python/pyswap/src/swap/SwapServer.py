@@ -132,7 +132,11 @@ class SwapServer(threading.Thread):
         
         # Save network data
         print "Saving network data..."
-        self.network.save()
+        
+        try:
+            self.network.save()
+        except SwapException:
+            raise
         
         threading.Thread.__init__(self)
 
