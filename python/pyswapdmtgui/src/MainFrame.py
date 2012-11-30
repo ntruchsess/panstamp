@@ -445,7 +445,11 @@ class MainFrame(wx.Frame):
         Callback function called whenever the window is closed
         """
         if self.server is not None:
-            self.server.stop()
+            try:
+                self.server.stop()
+            except SwapException as ex:
+                self._Warning(ex.description)
+                ex.log()
         self.Destroy()
         self.parent.terminate()
         
