@@ -177,15 +177,15 @@ class SwapParam:
         @return Value in ASCII format
         """
         if self.type == SwapType.NUMBER:
+            val = self.value.toInteger()
             # Add units
-            if self.unit is not None:
-                val = self.value.toInteger()
+            if self.unit is not None:                
                 if self.unit.calc is not None:
-                    oper = self.unit.calc.replace("${val}", val)         
+                    oper = self.unit.calc.replace("${val}", str(val))         
                     val = eval("math." + oper)                 
                 strVal = str(val * self.unit.factor + self.unit.offset)
             else:
-                strVal = str(self.value.toInteger())
+                strVal = str(val)
         elif self.type == SwapType.BINARY:
             strVal = self.value.toAscii()
             if strVal == "1":
