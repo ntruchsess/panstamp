@@ -79,7 +79,6 @@ void rcOscCalibrate(void)
     else                               // Clock is OK
       break;
   }
-
   /*
   // Read OSSCAL from EEPROM
   uint8_t val = EEPROM.read(0x3FF);

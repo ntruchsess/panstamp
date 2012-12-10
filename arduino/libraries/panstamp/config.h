@@ -30,7 +30,7 @@
 /**
  * External RTC crystal (32.768 KHz)
  */
-//#define EXTERNAL_RTC_CRYSTAL 1
+#define EXTERNAL_RTC_CRYSTAL 1
 
 /**
  * Repeater options
