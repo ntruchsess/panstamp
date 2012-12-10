@@ -1,0 +1,5 @@
+Dec 10 2012
+---------------
+- EXTERNAL_RTC_CRYSTAL now enabled by default from config.h. This option needs to be disabled
+for old versions of panStamp, without the external 32.768 KHz crystal
+
