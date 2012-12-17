@@ -39,7 +39,7 @@
 /**
  * global definitions
  */
-#define NB_OF_CHANNELS           6
+#define NB_OF_CHANNELS           7
 #define NB_OF_COUNTERS           3
 #define CONFIG_CHANNEL_SIZE      6
 #define CONFIG_INITKWH_SIZE      4
@@ -55,7 +55,7 @@
 /**
  * Pin definitions
  */
-#define PIN_ACVOLTAGE    0    // Arduino analog pin 0
+#define PIN_ACVOLTAGE    7    // Arduino analog pin 7
 
 /**
  * Time 1 interval
@@ -65,7 +65,7 @@
 /**
  * AC channels
  */
-CHANNEL channels[6];
+CHANNEL *channels[NB_OF_CHANNELS];
 
 /**
  * Interrupt masks

@@ -36,17 +36,19 @@
  */
 DEFINE_REGINDEX_START()
   REGI_CHANNEL_ENERGY_0,  // Index to register containing channel 0 energy data
-  REGI_CHANNEL_ENERGY_1,  // Index to register containing channel 0 energy data
-  REGI_CHANNEL_ENERGY_2,  // Index to register containing channel 0 energy data
-  REGI_CHANNEL_ENERGY_3,  // Index to register containing channel 0 energy data
-  REGI_CHANNEL_ENERGY_4,  // Index to register containing channel 0 energy data
-  REGI_CHANNEL_ENERGY_5,  // Index to register containing channel 0 energy data
+  REGI_CHANNEL_ENERGY_1,  // Index to register containing channel 1 energy data
+  REGI_CHANNEL_ENERGY_2,  // Index to register containing channel 2 energy data
+  REGI_CHANNEL_ENERGY_3,  // Index to register containing channel 3 energy data
+  REGI_CHANNEL_ENERGY_4,  // Index to register containing channel 4 energy data
+  REGI_CHANNEL_ENERGY_5,  // Index to register containing channel 5 energy data
+  REGI_CHANNEL_ENERGY_6,  // Index to register containing channel 6 energy data
   REGI_CHANNEL_CONFIG_0,  // Index to register containing channel 0 energy data
-  REGI_CHANNEL_CONFIG_1,  // Index to register containing channel 0 energy data
-  REGI_CHANNEL_CONFIG_2,  // Index to register containing channel 0 energy data
-  REGI_CHANNEL_CONFIG_3,  // Index to register containing channel 0 energy data
-  REGI_CHANNEL_CONFIG_4,  // Index to register containing channel 0 energy data
-  REGI_CHANNEL_CONFIG_5,  // Index to register containing channel 0 energy data
+  REGI_CHANNEL_CONFIG_1,  // Index to register containing channel 1 energy data
+  REGI_CHANNEL_CONFIG_2,  // Index to register containing channel 2 energy data
+  REGI_CHANNEL_CONFIG_3,  // Index to register containing channel 3 energy data
+  REGI_CHANNEL_CONFIG_4,  // Index to register containing channel 4 energy data
+  REGI_CHANNEL_CONFIG_5,  // Index to register containing channel 5 energy data
+  REGI_CHANNEL_CONFIG_6,  // Index to register containing channel 6 energy data
   REGI_PULSE_COUNT_0,     // Index to register containing pulse counter 0 data
   REGI_PULSE_COUNT_1,     // Index to register containing pulse counter 1 data
   REGI_PULSE_COUNT_2,     // Index to register containing pulse counter 2 data

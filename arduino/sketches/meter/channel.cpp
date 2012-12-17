@@ -101,7 +101,6 @@ byte CHANNEL::update(void)
   if (adcV1 > 0)
   {
     noVacCount = 0;                    // VAC signal detected
-   
     // Process AC voltage
     adcV1 = adcV1 * voltageSupply;
     adcV1 *= scale;
@@ -143,7 +142,6 @@ byte CHANNEL::update(void)
       }
       // Update last time
       lastTime = currentTime;
-  
       // Active power (W)
       if (accumulated < 0)
         accumulated = 0;
@@ -219,8 +217,8 @@ byte CHANNEL::run(void)
     if (res == CHANNEL_NO_VAC_SIGNAL)
       break;
   }
-  
-  /*
+
+/*
   Serial.print(rmsVoltage, DEC);
   Serial.print(" ");
   Serial.print(rmsCurrent, DEC);
@@ -232,8 +230,8 @@ byte CHANNEL::run(void)
   Serial.print(powerFactor, DEC);
   Serial.print(" ");
   Serial.println(kwh, DEC);
-  */
-  
+*/
+
   return res;
 }
 

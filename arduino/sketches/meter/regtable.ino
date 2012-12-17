@@ -71,21 +71,25 @@ REGISTER regChannelEnergy3(dtChannelsEnergy[3], sizeof(dtChannelsEnergy[0]), &up
 REGISTER regChannelEnergy4(dtChannelsEnergy[4], sizeof(dtChannelsEnergy[0]), &updtChannelEnergy, NULL);
 // Channel 5 energy
 REGISTER regChannelEnergy5(dtChannelsEnergy[5], sizeof(dtChannelsEnergy[0]), &updtChannelEnergy, NULL);
+// Channel 6 energy
+REGISTER regChannelEnergy6(dtChannelsEnergy[6], sizeof(dtChannelsEnergy[0]), &updtChannelEnergy, NULL);
 
 // Configuration registers for energy channels
 //----------------------------------------------
 // Channel 0 config
 REGISTER regChannelConfig0(dtChannelsConfig[0], sizeof(dtChannelsConfig[0]), NULL, &setChannelConfig);
-// Channel 0 config
+// Channel 1 config
 REGISTER regChannelConfig1(dtChannelsConfig[1], sizeof(dtChannelsConfig[0]), NULL, &setChannelConfig);
-// Channel 0 config
+// Channel 2 config
 REGISTER regChannelConfig2(dtChannelsConfig[2], sizeof(dtChannelsConfig[0]), NULL, &setChannelConfig);
-// Channel 0 config
+// Channel 3 config
 REGISTER regChannelConfig3(dtChannelsConfig[3], sizeof(dtChannelsConfig[0]), NULL, &setChannelConfig);
-// Channel 0 config
+// Channel 4 config
 REGISTER regChannelConfig4(dtChannelsConfig[4], sizeof(dtChannelsConfig[0]), NULL, &setChannelConfig);
-// Channel 0 config
+// Channel 5 config
 REGISTER regChannelConfig5(dtChannelsConfig[5], sizeof(dtChannelsConfig[0]), NULL, &setChannelConfig);
+// Channel 6 config
+REGISTER regChannelConfig6(dtChannelsConfig[6], sizeof(dtChannelsConfig[0]), NULL, &setChannelConfig);
 
 // Pulse counters
 //---------------------
@@ -115,12 +119,14 @@ DECLARE_REGISTERS_START()
   &regChannelEnergy3,
   &regChannelEnergy4,
   &regChannelEnergy5,
+  &regChannelEnergy6,
   &regChannelConfig0,
   &regChannelConfig1,
   &regChannelConfig2,
   &regChannelConfig3,
   &regChannelConfig4,
   &regChannelConfig5,
+  &regChannelConfig6,
   &regPulseCount0,
   &regPulseCount1,
   &regPulseCount2,
@@ -147,33 +153,33 @@ const void updtChannelEnergy(byte rId)
   unsigned long tmpValue;
 
   // AC frequency (in Hz)
-  dtChannelsEnergy[channel][0] = channels[channel].frequency;
+  dtChannelsEnergy[channel][0] = channels[channel]->frequency;
   
   // RMS voltage (in volts)
-  tmpValue = channels[channel].rmsVoltage;
+  tmpValue = channels[channel]->rmsVoltage;
   dtChannelsEnergy[channel][1] = tmpValue & 0xFF;
   
   // RMS current (in 1/100 amps)
-  tmpValue = channels[channel].rmsCurrent * 100;
+  tmpValue = channels[channel]->rmsCurrent * 100;
   dtChannelsEnergy[channel][2] = (tmpValue >> 8) & 0xFF;
   dtChannelsEnergy[channel][3] = tmpValue & 0xFF;
   
   // Apparent power (in VA)
-  tmpValue = channels[channel].appPower;
+  tmpValue = channels[channel]->appPower;
   dtChannelsEnergy[channel][4] = (tmpValue >> 8) & 0xFF;
   dtChannelsEnergy[channel][5] = tmpValue & 0xFF;
   
   // Active power (in W)
-  tmpValue = channels[channel].actPower;
+  tmpValue = channels[channel]->actPower;
   dtChannelsEnergy[channel][6] = (tmpValue >> 8) & 0xFF;
   dtChannelsEnergy[channel][7] = tmpValue & 0xFF;
   
   // Power factor (1/100)
-  tmpValue = channels[channel].powerFactor * 100;
+  tmpValue = channels[channel]->powerFactor * 100;
   dtChannelsEnergy[channel][8] = tmpValue & 0xFF;
 
   // KWh
-  tmpValue = (channels[channel].initialKwh + channels[channel].kwh) * 100;
+  tmpValue = (channels[channel]->initialKwh + channels[channel]->kwh) * 100;
   dtChannelsEnergy[channel][9] = (tmpValue >> 24) & 0xFF;
   dtChannelsEnergy[channel][10] = (tmpValue >> 16) & 0xFF;
   dtChannelsEnergy[channel][11] = (tmpValue >> 8) & 0xFF;
@@ -200,22 +206,25 @@ const void setChannelConfig(byte rId, byte *config)
   // Voltage scale
   tmpValue = config[0];
   tmpValue = (tmpValue << 8) | config[1];
-  channels[channel].voltageScale = tmpValue / 100.0;
+  channels[channel]->voltageScale = tmpValue / 100.0;
   
   // Current scale
   tmpValue = config[2];
   tmpValue = (tmpValue << 8) | config[3];
-  channels[channel].currentScale = tmpValue / 100.0;
+  channels[channel]->currentScale = tmpValue / 100.0;
   
   // Power factor offset
-  channels[channel].pfOffset = config[4] / 100.0;
+  channels[channel]->pfOffset = config[4] / 100.0;
 
   // Enable
-  channels[channel].enable = config[5] & 0x01;
+  channels[channel]->enable = config[5] & 0x01;
   
   // Save config settings in EEPROM
+  Serial.println(sizeof(dtChannelsConfig[channel]), HEX);
   for(i=0 ; i<sizeof(dtChannelsConfig[channel]) ; i++)
+  {
     EEPROM.write(EEPROM_CONFIG_CHANNEL0 + CONFIG_CHANNEL_SIZE * channel + i, dtChannelsConfig[channel][i]);
+  }
 }
 
 /**
