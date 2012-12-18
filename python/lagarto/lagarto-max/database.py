@@ -26,6 +26,7 @@ __date__  ="$Oct 18, 2012$"
 
 import sqlite3
 from datetime import datetime, timedelta
+datetime.strptime("2012-12-12", "%Y-%m-%d")   # This avoids thread locks
 import os.path
 import sys
 import json
@@ -107,13 +108,12 @@ class LogTable:
         try:
             # Run query
             res = self.database.runquery(query)
+            if len(res) > 0:
+                if len(res[0]) > 0:
+                    return datetime.strptime(res[0][0], "%Y-%m-%d %H:%M:%S")
         except LagartoException:
             raise
-
-        if len(res) > 0:
-            if len(res[0]) > 0:
-                return datetime.strptime(res[0][0], "%Y-%m-%d %H:%M:%S")
-        
+       
         return None
 
         
