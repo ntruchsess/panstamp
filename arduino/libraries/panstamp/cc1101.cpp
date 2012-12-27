@@ -427,8 +427,11 @@ boolean CC1101::sendData(CCPACKET packet)
   setRxState();
 
   // Check that the RX state has been entered
-  while ((readStatusReg(CC1101_MARCSTATE) & 0x1F) != 0x0D)
-    delay(1);
+  while (((marcState = readStatusReg(CC1101_MARCSTATE)) & 0x1F) != 0x0D)
+  {
+    if (marcState == 0x11)        // RX_OVERFLOW
+      flushRxFifo();              // flush receive queue
+  }
   delayMicroseconds(500);
 
   // Set data length at the first position of the TX FIFO
