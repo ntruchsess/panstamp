@@ -40,7 +40,6 @@
 
 #include "TimerOne.h"
 #include "meter.h"
-#include "repeater.h"
 
 /**
  * Auxiliary variables
@@ -205,7 +204,7 @@ void readInitValues(void)
     else
       channels[i]->initialKwh = tmpValue / 100.0;
   }
-/*
+
   // Read configuration for the pulse inputs
   for(i=0 ; i < NB_OF_COUNTERS ; i++)
   {
@@ -219,7 +218,6 @@ void readInitValues(void)
     if (!setToZero)
       getRegister(REGI_PULSE_CONFIG_0 + i)->setData(pulseConfig);
   }
-*/
 }
 
 /**
@@ -242,7 +240,7 @@ void saveValues(void)
       EEPROM.write(EEPROM_INITIAL_KWH0 + CONFIG_INITKWH_SIZE * i + j, val);
     }
   }
-/*
+
   // Save current readings from pulse inputs
   for(i=0 ; i < NB_OF_COUNTERS ; i++)
   {
@@ -252,7 +250,6 @@ void saveValues(void)
       EEPROM.write(EEPROM_CONFIG_PULSE0 + CONFIG_PULSEINPL_SIZE * i + j, val);
     }
   }
-*/
 }
 
 /**
@@ -300,9 +297,6 @@ void setup()
   // Init panStamp
   panstamp.init();
 
-  // Initialize repeater
-  //repeater.init(4);
-
   // Wireless transmission interval
   txInterval = panstamp.txInterval[0];
   txInterval = txInterval << 8 | panstamp.txInterval[1];
@@ -314,14 +308,14 @@ void setup()
   panstamp.enterSystemState(SYSTATE_RXON);
 
   // Read initial configuration settings from EEPROM
-  //readInitValues();
+  readInitValues();
 
   // Initialize Timer1
   Timer1.initialize(TIMER1_TICK_PERIOD_US);
   Timer1.attachInterrupt(isrT1event);
 
   // Enable PCINT interrupt on counter pins
-  //pcEnableInterrupt();
+  pcEnableInterrupt();
 }
 
 /**
@@ -356,7 +350,6 @@ void loop()
     }
   }
 
-/*
   // Read pulses
   if (pcIRQ)
   {
@@ -378,6 +371,6 @@ void loop()
     //Ready to receive new PC interrupts
     pcIRQ = false;
   }
-*/
+
   delay(100);
 }
