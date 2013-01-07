@@ -205,7 +205,7 @@ void readInitValues(void)
     else
       channels[i]->initialKwh = tmpValue / 100.0;
   }
-
+/*
   // Read configuration for the pulse inputs
   for(i=0 ; i < NB_OF_COUNTERS ; i++)
   {
@@ -219,6 +219,7 @@ void readInitValues(void)
     if (!setToZero)
       getRegister(REGI_PULSE_CONFIG_0 + i)->setData(pulseConfig);
   }
+*/
 }
 
 /**
@@ -241,7 +242,7 @@ void saveValues(void)
       EEPROM.write(EEPROM_INITIAL_KWH0 + CONFIG_INITKWH_SIZE * i + j, val);
     }
   }
-  
+/*
   // Save current readings from pulse inputs
   for(i=0 ; i < NB_OF_COUNTERS ; i++)
   {
@@ -251,6 +252,7 @@ void saveValues(void)
       EEPROM.write(EEPROM_CONFIG_PULSE0 + CONFIG_PULSEINPL_SIZE * i + j, val);
     }
   }
+*/
 }
 
 /**
@@ -271,20 +273,21 @@ void setup()
   voltageSupply = readVoltSupply();
  
   // Create energy channel objects
-  CHANNEL channel0(voltageSupply, PIN_ACVOLTAGE, 0, 17.75, 5);
+  static CHANNEL channel0(voltageSupply, PIN_ACVOLTAGE, 0, 17.75, 5);
   channels[0] = &channel0;
-  CHANNEL channel1(voltageSupply, PIN_ACVOLTAGE, 1, 17.75, 5);
+  static CHANNEL channel1(voltageSupply, PIN_ACVOLTAGE, 1, 17.75, 5);
   channels[1] = &channel1;
-  CHANNEL channel2(voltageSupply, PIN_ACVOLTAGE, 2, 17.75, 5);
+  static CHANNEL channel2(voltageSupply, PIN_ACVOLTAGE, 2, 17.75, 5);
   channels[2] = &channel2;
-  CHANNEL channel3(voltageSupply, PIN_ACVOLTAGE, 3, 17.75, 5);
+  static CHANNEL channel3(voltageSupply, PIN_ACVOLTAGE, 3, 17.75, 5);
   channels[3] = &channel3;
-  CHANNEL channel4(voltageSupply, PIN_ACVOLTAGE, 4, 17.75, 5);
+  static CHANNEL channel4(voltageSupply, PIN_ACVOLTAGE, 4, 17.75, 5);
   channels[4] = &channel4;
-  CHANNEL channel5(voltageSupply, PIN_ACVOLTAGE, 5, 17.75, 5);
+  static CHANNEL channel5(voltageSupply, PIN_ACVOLTAGE, 5, 17.75, 5);
   channels[5] = &channel5;
-  CHANNEL channel6(voltageSupply, PIN_ACVOLTAGE, 6, 17.75, 5);
-  channels[6] = &channel6;
+  static CHANNEL channel6(voltageSupply, PIN_ACVOLTAGE, 6, 17.75, 5);
+  //channels[6] = &channel6;
+  channels[6] = &channel5;
 
   // Pulse inputs
   // Set pins as inputs
@@ -299,7 +302,7 @@ void setup()
   panstamp.init();
 
   // Initialize repeater
-  repeater.init(4);
+  //repeater.init(4);
 
   // Wireless transmission interval
   txInterval = panstamp.txInterval[0];
@@ -312,14 +315,14 @@ void setup()
   panstamp.enterSystemState(SYSTATE_RXON);
 
   // Read initial configuration settings from EEPROM
-  readInitValues();
+  //readInitValues();
 
   // Initialize Timer1
   Timer1.initialize(TIMER1_TICK_PERIOD_US);
   Timer1.attachInterrupt(isrT1event);
 
   // Enable PCINT interrupt on counter pins
-  pcEnableInterrupt();
+  //pcEnableInterrupt();
 }
 
 /**
@@ -330,7 +333,7 @@ void setup()
 void loop()
 { 
   // Measure energy data
-  for(channelNb=0 ; channelNb < NB_OF_CHANNELS ; channelNb++)
+  for(channelNb=0 ; channelNb < 6/*NB_OF_CHANNELS*/ ; channelNb++)
   {
     if (channels[channelNb]->enable)
     {
@@ -339,7 +342,7 @@ void loop()
         saveValues();  // NO VAC signal detected. Save data in EEPROM
     }
   }
-
+/*
   if (transmit)
   {
     transmit = false;
@@ -353,7 +356,8 @@ void loop()
       }
     }
   }
-
+*/
+/*
   // Read pulses
   if (pcIRQ)
   {
@@ -375,6 +379,6 @@ void loop()
     //Ready to receive new PC interrupts
     pcIRQ = false;
   }
-
+*/
   delay(100);
 }

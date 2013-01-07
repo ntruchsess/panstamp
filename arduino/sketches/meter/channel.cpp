@@ -218,7 +218,6 @@ byte CHANNEL::run(void)
       break;
   }
 
-
   Serial.print(rmsVoltage, DEC);
   Serial.print(" ");
   Serial.print(rmsCurrent, DEC);
@@ -230,7 +229,6 @@ byte CHANNEL::run(void)
   Serial.print(powerFactor, DEC);
   Serial.print(" ");
   Serial.println(kwh, DEC);
-
 
   return res;
 }
