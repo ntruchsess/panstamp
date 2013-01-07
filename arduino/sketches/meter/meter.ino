@@ -286,8 +286,7 @@ void setup()
   static CHANNEL channel5(voltageSupply, PIN_ACVOLTAGE, 5, 17.75, 5);
   channels[5] = &channel5;
   static CHANNEL channel6(voltageSupply, PIN_ACVOLTAGE, 6, 17.75, 5);
-  //channels[6] = &channel6;
-  channels[6] = &channel5;
+  channels[6] = &channel6;
 
   // Pulse inputs
   // Set pins as inputs
@@ -333,7 +332,7 @@ void setup()
 void loop()
 { 
   // Measure energy data
-  for(channelNb=0 ; channelNb < 6/*NB_OF_CHANNELS*/ ; channelNb++)
+  for(channelNb=0 ; channelNb < NB_OF_CHANNELS ; channelNb++)
   {
     if (channels[channelNb]->enable)
     {
@@ -342,7 +341,7 @@ void loop()
         saveValues();  // NO VAC signal detected. Save data in EEPROM
     }
   }
-/*
+
   if (transmit)
   {
     transmit = false;
@@ -356,7 +355,7 @@ void loop()
       }
     }
   }
-*/
+
 /*
   // Read pulses
   if (pcIRQ)
