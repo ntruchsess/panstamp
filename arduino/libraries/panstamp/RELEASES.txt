@@ -1,3 +1,7 @@
+Jan 17 2013
+---------------
+- Check for RX_OVERFLOW in sendData whilst trying to enter Rx state
+
 Dec 10 2012
 ---------------
 - EXTERNAL_RTC_CRYSTAL now enabled by default from config.h. This option needs to be disabled
