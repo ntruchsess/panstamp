@@ -17,4 +17,7 @@
   <developer id="17" name="Robomotic">
     <dev id="2" name="SeismoFloor" label="Floor sensor"/>
   </developer>
+	<developer id="22" name="Luka Mustafa - Musti">
+		<dev id="1" name="sfpddm" label="SFP DDM monitoring system"/>
+	</developer>
 </devices>
