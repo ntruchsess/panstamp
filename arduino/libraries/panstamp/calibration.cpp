@@ -79,6 +79,11 @@ void rcOscCalibrate(void)
     else                               // Clock is OK
       break;
   }
+
+  ASSR = 0;                        // Disable Timer 2
+  TIFR2 |= (1 << TOV2);            // Clear timer 2 overflow flag   
+  TCNT2 = 0;                       // Reset Timer 2 count
+
   /*
   // Read OSSCAL from EEPROM
   uint8_t val = EEPROM.read(0x3FF);
