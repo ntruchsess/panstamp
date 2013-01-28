@@ -25,7 +25,6 @@
  */
 
 #include "channel.h"
-#include "config.h"
 
 /**
  * CHANNEL

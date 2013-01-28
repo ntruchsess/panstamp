@@ -29,9 +29,10 @@
  * Description:
  * Energy meter providing the following inputs:
  *
- * 1 x Input for voltage transformer: pin 12
- * 7 x Inputs for current transformers: pins 4, 5, 6, 8, 9, 10 and 11
- * 3 x Inputs for pulse counters: pins 20, 21 and 22
+ * 1 x Input for voltage transformer: pin 12 (A7)
+ * 7 x Inputs for current transformers: pins 4 (A0), 5 (A1), 6 (A2), 8 (A3),
+ *   9 (A4), 10 (A5) and 11 (A6)
+ * 3 x Inputs for pulse counters: pins 20 (D5), 21 (D6) and 22 (D7)
  *
  * Associated Device Definition File, defining registers, endpoints and
  * configuration parameters:
