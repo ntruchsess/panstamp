@@ -112,7 +112,6 @@ void handleSerialCmd(char* command)
         packet.data[i] = charToHex(command[i*2]) << 4;
         packet.data[i] |= charToHex(command[i*2 + 1]);
       }
-
       // Send packet via RF
       cc1101.sendData(packet);
     }
@@ -242,20 +241,18 @@ void handleSerialCmd(char* command)
  */
 void setup()
 {
-  #ifdef EXTERNAL_RTC_CRYSTAL
-  // Calibrate internal RC oscillator
-  rcOscCalibrate();
-  #endif
-  
   pinMode(LEDPIN, OUTPUT);
   digitalWrite(LEDPIN, HIGH);
+ 
+  // Calibrate internal RC oscillator
+  res = rcOscCalibrate();
+  
+  // Reset serial buffer
+  memset(strSerial, 0, sizeof(strSerial));
 
   Serial.begin(38400);
   Serial.flush();
   Serial.println("");
-
-  // Reset serial buffer
-  memset(strSerial, 0, sizeof(strSerial));
   
   // Default mode is COMMAND 
   Serial.println("Modem ready!");
