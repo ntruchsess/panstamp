@@ -28,11 +28,6 @@
 #define _CONFIG_H
 
 /**
- * External RTC crystal (32.768 KHz)
- */
-#define EXTERNAL_RTC_CRYSTAL 1
-
-/**
  * Repeater options
  */
 // Amount of transactions to be saved for evaluation before repeating a packet

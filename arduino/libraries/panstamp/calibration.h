@@ -34,14 +34,18 @@
  * Calibration thresholds
  */
 #define TARGETCOUNT_MIN 62450   // Calibration target MIN
-#define TARGETCOUNT_MAX 62550   // Calibration target MAX#endif
+#define TARGETCOUNT_MAX 62550   // Calibration target MAX
 
 /**
  * rcOscCalibrate
  * 
  * Calibrate internal RC oscillator
+ *
+ * Return:
+ *   true  : calibration successfully done
+ *   false : unable to complete calibration
  */
-extern void rcOscCalibrate(void);
+bool rcOscCalibrate(void);
 
 #endif
 

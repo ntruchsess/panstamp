@@ -26,10 +26,7 @@
 
 #include "panstamp.h"
 #include "commonregs.h"
-
-#ifdef EXTERNAL_RTC_CRYSTAL
 #include "calibration.h"
-#endif
 
 #define enableIRQ_GDO0()          attachInterrupt(0, isrGDO0event, FALLING);
 #define disableIRQ_GDO0()         detachInterrupt(0);
@@ -76,89 +73,92 @@ REGISTER * getRegister(byte regId)
  */
 void isrGDO0event(void)
 {
-  CCPACKET ccPacket;
-  SWPACKET swPacket;
-  REGISTER *reg;
-  bool eval = true;
-
   // Disable interrupt
   disableIRQ_GDO0();
 
-  if (panstamp.cc1101.receiveData(&ccPacket) > 0)
+  if (panstamp.cc1101.rfState == RFSTATE_RX)
   {
-    if (ccPacket.crc_ok)
+    CCPACKET ccPacket;
+    SWPACKET swPacket;
+    REGISTER *reg;
+    bool eval = true;
+
+    if (panstamp.cc1101.receiveData(&ccPacket) > 0)
     {
-      swPacket = SWPACKET(ccPacket);
-
-      // Packet handling function declared?
-      if (panstamp.packetHandler != NULL)
-        panstamp.packetHandler(&swPacket);
-
-      // Smart encryption locally enabled?
-      if (panstamp.security & 0x02)
+      if (ccPacket.crc_ok)
       {
-        // OK, then incoming packets must be encrypted too
-        if (!(swPacket.security & 0x02))
-          eval = false;
-      }
+        swPacket = SWPACKET(ccPacket);
 
-      if (eval)
-      {
-        // Function
-        switch(swPacket.function)
+        // Packet handling function declared?
+        if (panstamp.packetHandler != NULL)
+          panstamp.packetHandler(&swPacket);
+
+        // Smart encryption locally enabled?
+        if (panstamp.security & 0x02)
         {
-          case SWAPFUNCT_CMD:
-            // Broadcasted commands are not allowed
-            if (swPacket.destAddr == SWAP_BCAST_ADDR)
-              break;
-            // Current version does not support data recording mode
-            // so destination address and register address must be the same
-            if (swPacket.destAddr != swPacket.regAddr)
-              break;
-            // Valid register?
-            if ((reg = getRegister(swPacket.regId)) == NULL)
-              break;
-            // Anti-playback security enabled?
-            if (panstamp.security & 0x01)
-            {
-              // Check received nonce
-              if (panstamp.nonce != swPacket.nonce)
+          // OK, then incoming packets must be encrypted too
+          if (!(swPacket.security & 0x02))
+            eval = false;
+        }
+
+        if (eval)
+        {
+          // Function
+          switch(swPacket.function)
+          {
+            case SWAPFUNCT_CMD:
+              // Broadcasted commands are not allowed
+              if (swPacket.destAddr == SWAP_BCAST_ADDR)
+                break;
+              // Current version does not support data recording mode
+              // so destination address and register address must be the same
+              if (swPacket.destAddr != swPacket.regAddr)
+                break;
+              // Valid register?
+              if ((reg = getRegister(swPacket.regId)) == NULL)
+                break;
+              // Anti-playback security enabled?
+              if (panstamp.security & 0x01)
               {
-                // Nonce missmatch. Transmit correct nonce.
-                reg = getRegister(REGI_SECUNONCE);
-                reg->sendSwapStatus();
-                break;
+                // Check received nonce
+                if (panstamp.nonce != swPacket.nonce)
+                {
+                  // Nonce missmatch. Transmit correct nonce.
+                  reg = getRegister(REGI_SECUNONCE);
+                  reg->sendSwapStatus();
+                  break;
+                }
               }
-            }
-            // Filter incorrect data lengths
-            if (swPacket.value.length == reg->length)
-              reg->setData(swPacket.value.data);
-            else
-              reg->sendSwapStatus();
-            break;
-          case SWAPFUNCT_QRY:
-            // Only Product Code can be broadcasted
-            if (swPacket.destAddr == SWAP_BCAST_ADDR)
-            {
-              if (swPacket.regId != REGI_PRODUCTCODE)
+              // Filter incorrect data lengths
+              if (swPacket.value.length == reg->length)
+                reg->setData(swPacket.value.data);
+              else
+                reg->sendSwapStatus();
+              break;
+            case SWAPFUNCT_QRY:
+              // Only Product Code can be broadcasted
+              if (swPacket.destAddr == SWAP_BCAST_ADDR)
+              {
+                if (swPacket.regId != REGI_PRODUCTCODE)
+                  break;
+              }
+              // Current version does not support data recording mode
+              // so destination address and register address must be the same
+              if (swPacket.destAddr != swPacket.regAddr)
                 break;
-            }
-            // Current version does not support data recording mode
-            // so destination address and register address must be the same
-            if (swPacket.destAddr != swPacket.regAddr)
+              // Valid register?
+              if ((reg = getRegister(swPacket.regId)) == NULL)
+                break;
+              reg->getData();
               break;
-            // Valid register?
-            if ((reg = getRegister(swPacket.regId)) == NULL)
+            case SWAPFUNCT_STA:
+              // User callback function declared?
+              if (panstamp.statusReceived != NULL)
+                panstamp.statusReceived(&swPacket);
               break;
-            reg->getData();
-            break;
-          case SWAPFUNCT_STA:
-            // User callback function declared?
-            if (panstamp.statusReceived != NULL)
-              panstamp.statusReceived(&swPacket);
-            break;
-          default:
-            break;
+            default:
+              break;
+          }
         }
       }
     }
@@ -199,7 +199,6 @@ void PANSTAMP::setup_watchdog(byte time)
   WDTCSR |= _BV(WDIE);    // Enable Watchdog interrupt
 }
 
-#ifdef EXTERNAL_RTC_CRYSTAL
 /**
  * Timer 2 (RTC) ISR routine
  */
@@ -230,7 +229,6 @@ void PANSTAMP::setup_rtc(byte time)
   TIMSK2 = 0x01;  // Enable timer2A overflow interrupt
   ASSR  = 0x20;   // Enable asynchronous mode
 }
-#endif
 
 /**
  * init
@@ -239,10 +237,8 @@ void PANSTAMP::setup_rtc(byte time)
  */
 void PANSTAMP::init() 
 {
-  #ifdef EXTERNAL_RTC_CRYSTAL
   // Calibrate internal RC oscillator
-  rcOscCalibrate();
-  #endif
+  rtcCrystal = rcOscCalibrate();
 
   // Setup CC1101
   cc1101.init();
@@ -327,7 +323,6 @@ void PANSTAMP::sleepWd(byte time)
   wakeUp();
 }
 
-#ifdef EXTERNAL_RTC_CRYSTAL
 /**
  * sleepRtc
  * 
@@ -363,7 +358,6 @@ void PANSTAMP::sleepRtc(byte time)
   // Wake-up!!
   wakeUp();
 }
-#endif
 
 /**
  * wakeUp
@@ -380,10 +374,13 @@ void PANSTAMP::wakeUp(void)
   power_all_enable();
   // Enable ADC
   ADCSRA |= (1 << ADEN);
-  #ifdef EXTERNAL_RTC_CRYSTAL
-  // Disable timer2A overflow interrupt
-  TIMSK2 = 0x00;
-  #endif
+  
+  // If 32.768 KHz crystal enabled
+  if (rtcCrystal)
+  {
+    // Disable timer2A overflow interrupt
+    TIMSK2 = 0x00;
+  }
 
   // Reset CC1101 IC
   cc1101.wakeUp();
@@ -410,49 +407,49 @@ void PANSTAMP::goToSleep(void)
   if (intInterval % 8 == 0)
   {
     loops = intInterval / 8;
-    #ifdef EXTERNAL_RTC_CRYSTAL
-    minTime = RTC_8S;
-    #else
-    minTime = WDTO_8S;
-    #endif
+    
+    if (rtcCrystal)
+      minTime = RTC_8S;
+    else
+      minTime = WDTO_8S;
   }
   else if (intInterval % 4 == 0)
   {
-    #ifdef EXTERNAL_RTC_CRYSTAL
-    loops = intInterval / 2;
-    minTime = RTC_2S;
-    #else
-    loops = intInterval / 4;
-    minTime = WDTO_4S;
-    #endif
+    if (rtcCrystal)
+    {
+      loops = intInterval / 2;
+      minTime = RTC_2S;
+    }
+    else
+    {
+      loops = intInterval / 4;
+      minTime = WDTO_4S;
+    }
   }
   else if (intInterval % 2 == 0)
   {
     loops = intInterval / 2;
-    #ifdef EXTERNAL_RTC_CRYSTAL
-    minTime = RTC_2S;
-    #else
-    minTime = WDTO_2S;
-    #endif
+    if (rtcCrystal)    
+      minTime = RTC_2S;
+    else
+      minTime = WDTO_2S;
   }
   else
   {
     loops = intInterval;
-    #ifdef EXTERNAL_RTC_CRYSTAL
-    minTime = RTC_1S;
-    #else
-    minTime = WDTO_1S;
-    #endif
+    if (rtcCrystal)
+      minTime = RTC_1S;
+    else
+      minTime = WDTO_1S;
   }
 
   // Sleep
   for (i=0 ; i<loops ; i++)
   {
-    #ifdef EXTERNAL_RTC_CRYSTAL
-    sleepRtc(minTime);
-    #else
-    sleepWd(minTime);
-    #endif
+    if (rtcCrystal)
+      sleepRtc(minTime);
+    else
+      sleepWd(minTime);
   }
 }
 

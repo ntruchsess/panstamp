@@ -42,13 +42,11 @@
 /**
  * RTC definitions
  */
-#ifdef EXTERNAL_RTC_CRYSTAL
 #define RTC_250MS    0x03   // Timer 2 prescaler = 32
 #define RTC_500MS    0x04   // Timer 2 prescaler = 64
 #define RTC_1S       0x05   // Timer 2 prescaler = 128
 #define RTC_2S       0x06   // Timer 2 prescaler = 256
 #define RTC_8S       0x07   // Timer 2 prescaler = 1024
-#endif
 
 /**
  * Macros
@@ -97,7 +95,6 @@ class PANSTAMP
      */
     void setup_watchdog(byte time);
 
-    #ifdef EXTERNAL_RTC_CRYSTAL
     /**
      * setup_rtc
      *
@@ -110,9 +107,13 @@ class PANSTAMP
      *          RTC_8S = 1024 for 8 sec
      */
     void setup_rtc(byte time);
-    #endif
 
   public:
+    /**
+     * True if the external 32.768 KHz crystal is enabled
+     */
+    bool rtcCrystal;
+
     /**
      * CC1101 radio interface
      */
@@ -195,7 +196,6 @@ class PANSTAMP
      */
     void sleepWd(byte time);
 
-    #ifdef EXTERNAL_RTC_CRYSTAL
     /**
      * sleepRtc
      * 
@@ -211,7 +211,6 @@ class PANSTAMP
      *  RTC_8S = 8 s
      */
     void sleepRtc(byte time);
-    #endif
 
     /**
      * wakeUp

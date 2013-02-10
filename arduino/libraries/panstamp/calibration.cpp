@@ -30,10 +30,18 @@
  * rcOscCalibrate
  * 
  * Calibrate internal RC oscillator
+ *
+ * Return:
+ *   true  : calibration successfully done
+ *   false : unable to complete calibration
  */
-void rcOscCalibrate(void)
+bool rcOscCalibrate(void)
 {
-  uint8_t loopCount = (0x7F / 2); 
+  uint8_t loopCount = (0x7F / 2);
+  uint32_t checkCount = 100;
+
+  // Save current OSCCAL value
+  uint8_t oldOsccal = OSCCAL;
 
   // Inital OSCCAL of half its maximum
   OSCCAL = (0x7F / 2);
@@ -53,7 +61,32 @@ void rcOscCalibrate(void)
 
   // Start Timer 2 with no prescaling
   TCCR2B = (1 << CS20);
-  
+
+  // Start Timer 1 with no prescaling
+  TCCR1B = (1 << CS10);
+  TIFR1 |= (1 << TOV1);          // Clear timer 1 overflow flag   
+  TCNT1 = 0;                     // Reset Timer 1 count
+
+  // Wait for the registers to be updated for Timer 2
+  while (ASSR & (_BV(TCN2UB) | _BV(TCR2AUB) | _BV(TCR2BUB)))
+  {
+    // Use timer 1 to detect presence or lack of external crystal
+    if (TIFR1 & (1 << TOV1))
+    {
+      TIFR1 |= (1 << TOV1);        // Clear timer 1 overflow flag   
+      TCNT1 = 0;                   // Reset Timer 1 count
+      if (--checkCount == 0)
+      {
+        ASSR = 0;                  // Disable Timer 2
+        OSCCAL = oldOsccal;        // Set factory default OSCCAL
+        return false;              // 32.768 KHz crystal is not present
+      }
+    }
+  }
+
+  TIFR1 |= (1 << TOV1);            // Clear timer 1 overflow flag   
+
+  // Enter calibration loop
   while (loopCount--)
   {  
     TIFR2 |= (1 << TOV2);          // Clear timer 2 overflow flag   
@@ -61,8 +94,8 @@ void rcOscCalibrate(void)
     
     // Wait for the registers to be updated for Timer 2
     while (ASSR & (_BV(TCN2UB) | _BV(TCR2AUB) | _BV(TCR2BUB))) {}
-    
-    TCCR1B = (1 << CS10);          // Restart Timer 1 with no prescaling
+
+    TCCR1B = (1 << CS10);          // Start Timer 1 with no prescaling
     TCNT1 = 0;                     // Reset Timer 1 count
     
     // Wait until timer 2 overflows
@@ -85,7 +118,7 @@ void rcOscCalibrate(void)
   TCNT2 = 0;                       // Reset Timer 2 count
 
   /*
-  // Read OSSCAL from EEPROM
+  // Read OSCCAL from EEPROM
   uint8_t val = EEPROM.read(0x3FF);
   if (val != OSCCAL)
   {
@@ -93,5 +126,7 @@ void rcOscCalibrate(void)
     EEPROM.write(0x3FF, OSCCAL);
   }
   */
+
+  return true;
 }
 
