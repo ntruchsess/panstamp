@@ -40,6 +40,17 @@ enum CFREQ
 };
 
 /**
+ * RF STATES
+ */
+enum RFSTATE
+{
+  RFSTATE_IDLE = 0,
+  RFSTATE_RX,
+  RFSTATE_TX
+};
+
+
+/**
  * Frequency channels
  */
 #define NUMBER_OF_FCHANNELS      10
@@ -285,7 +296,7 @@ enum CFREQ
  */
 class CC1101
 {
-  private:  
+  private:
     /**
      * Atmega's SPI interface
      */
@@ -328,6 +339,11 @@ class CC1101
     void setRegsFromEeprom(void);
 
   public:
+    /*
+     * RF state
+     */
+    byte rfState;
+
     /**
      * Tx Power byte (single PATABLE config)
      */
@@ -361,6 +377,15 @@ class CC1101
     CC1101(void);
 
     /**
+     * cmdStrobe
+     * 
+     * Send command strobe to the CC1101 IC via SPI
+     * 
+     * 'cmd'	Command strobe
+     */
+    void cmdStrobe(byte cmd);
+
+    /**
      * wakeUp
      * 
      * Wake up CC1101 from Power Down state
@@ -389,15 +414,6 @@ class CC1101
      * 'value'	Value to be writen
      */
     void writeReg(byte regAddr, byte value);
-
-    /**
-     * cmdStrobe
-     * 
-     * Send command strobe to the CC1101 IC via SPI
-     * 
-     * 'cmd'	Command strobe
-     */
-    void cmdStrobe(byte cmd);
 
     /**
      * reset

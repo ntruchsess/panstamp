@@ -422,6 +422,11 @@ void CC1101::setPowerDownState()
 boolean CC1101::sendData(CCPACKET packet)
 {
   byte marcState;
+  bool res = false;
+ 
+  // Declare to be in Tx state. This will avoid receiving packets whilst
+  // transmitting
+  rfState = RFSTATE_TX;
 
   // Enter RX state
   setRxState();
@@ -432,6 +437,7 @@ boolean CC1101::sendData(CCPACKET packet)
     if (marcState == 0x11)        // RX_OVERFLOW
       flushRxFifo();              // flush receive queue
   }
+
   delayMicroseconds(500);
 
   // Set data length at the first position of the TX FIFO
@@ -440,7 +446,6 @@ boolean CC1101::sendData(CCPACKET packet)
   writeBurstReg(CC1101_TXFIFO, packet.data, packet.length);
 
   // CCA enabled: will enter TX state only if the channel is clear
-  //cmdStrobe(CC1101_STX);
   setTxState();
 
   // Check that TX state is being entered (state = RXTX_SETTLING)
@@ -450,6 +455,9 @@ boolean CC1101::sendData(CCPACKET packet)
     setIdleState();       // Enter IDLE state
     flushTxFifo();        // Flush Tx FIFO
     setRxState();         // Back to RX state
+
+    // Declare to be in Rx state
+    rfState = RFSTATE_RX;
     return false;
   }
 
@@ -459,14 +467,17 @@ boolean CC1101::sendData(CCPACKET packet)
   // Wait until the end of the packet transmission
   wait_GDO0_low();
 
+  // Check that the TX FIFO is empty
+  if((readStatusReg(CC1101_TXBYTES) & 0x7F) == 0)
+    res = true;
+
   // Enter back into RX state
   setRxState();
 
-  // Check that the TX FIFO is empty
-  if((readStatusReg(CC1101_TXBYTES) & 0x7F) == 0)
-    return true;
+  // Declare to be in Rx state
+  rfState = RFSTATE_RX;
 
-  return false;
+  return res;
 }
 
 /**
