@@ -215,7 +215,7 @@ class LagartoHttpServer(threading.Thread):
         
         @param path: tokenized ('/') PATH_INFO read from HTTP/GET request
         """
-        if len(path) != 3:
+        if len(path) != 4:
             return None
         
         return path[1]
