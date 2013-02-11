@@ -245,7 +245,7 @@ void setup()
   digitalWrite(LEDPIN, HIGH);
  
   // Calibrate internal RC oscillator
-  res = rcOscCalibrate();
+  rcOscCalibrate();
   
   // Reset serial buffer
   memset(strSerial, 0, sizeof(strSerial));
