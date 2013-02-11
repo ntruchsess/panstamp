@@ -2,7 +2,7 @@
 <device>
   <developer>panStamp</developer>
   <product>RESPIRA air quality monitor</product>
-  <pwrdownmode>true</pwrdownmode>
+  <pwrdownmode>false</pwrdownmode>
   <regular>
     <reg name="Voltage supply" id="11">
       <endpoint name="Voltage" type="num" dir="inp">
