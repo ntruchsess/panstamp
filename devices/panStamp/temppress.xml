@@ -18,7 +18,7 @@
         <size>2</size>
         <units>
           <unit name="C" factor="0.1" offset="-50"/>
-          <unit name="F" factor="0.18" offset="-18"/>
+          <unit name="F" factor="0.18" offset="-58"/>
           <unit name="K" factor="0.1" offset="223.15"/>
         </units>
       </endpoint>

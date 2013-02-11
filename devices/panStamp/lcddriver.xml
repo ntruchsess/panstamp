@@ -36,18 +36,6 @@
         <position>0.4</position>
         <size>0.1</size>
       </endpoint>
-      <endpoint name="Binary 4" type="bin" dir="inp">
-        <position>0.3</position>
-        <size>0.1</size>
-      </endpoint>
-      <endpoint name="Binary 5" type="bin" dir="inp">
-        <position>0.2</position>
-        <size>0.1</size>
-      </endpoint>
-      <endpoint name="Binary 6" type="bin" dir="inp">
-        <position>0.1</position>
-        <size>0.1</size>
-      </endpoint>
     </reg>
   </regular>
 </device>
