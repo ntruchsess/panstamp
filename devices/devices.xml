@@ -21,4 +21,7 @@
 	<developer id="22" name="Luka Mustafa - Musti">
 		<dev id="1" name="sfpddm" label="SFP DDM monitoring system"/>
 	</developer>
+  <developer id="25" name="IulianV">
+		<dev id="1" name="onewire" label="OneWire Temperature DS18B20x3"/>
+  </developer>
 </devices>
