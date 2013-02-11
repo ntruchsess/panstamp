@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <device>
   <developer>panStamp</developer>
-  <product>Dual Temperature-Humidity sensor</product>
+  <product>RESPIRA air quality monitor</product>
   <pwrdownmode>true</pwrdownmode>
   <regular>
     <reg name="Voltage supply" id="11">
