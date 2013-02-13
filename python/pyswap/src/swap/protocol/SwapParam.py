@@ -73,6 +73,10 @@ class SwapParam:
         bitsToCopy = self.byteSize * 8 + self.bitSize
         # Current parameter value in list format
         lstParamVal = self.value.toList()
+
+        if len(lstParamVal) == 0:
+            return
+
         # Keep old value
         oldParamVal = self.value.clone()
         indexParam = 0

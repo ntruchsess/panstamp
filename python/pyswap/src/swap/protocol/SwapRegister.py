@@ -153,7 +153,7 @@ class SwapRegister(object):
             if shiftParam < 0:
                 shiftParam = 7
 
-            if len(lstParamVal) != 0:                
+            if len(lstParamVal) > 0:                
                 for i in range(bitsToCopy):
                     if (lstParamVal[indexParam] >> shiftParam) & 0x01 == 0:
                         mask = ~(1 << shiftReg)
