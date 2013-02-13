@@ -15,8 +15,8 @@
       </endpoint>
     </reg>
     <reg name="Backlight" id="13">
-      <endpoint name="Backlight level" type="num" dir="out">
-        <size>1</size>
+      <endpoint name="Backlight level" type="bin" dir="out">
+        <size>0.1</size>
       </endpoint>
     </reg>
     <reg name="Binary states" id="14">
