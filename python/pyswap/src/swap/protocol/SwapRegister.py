@@ -153,26 +153,27 @@ class SwapRegister(object):
             if shiftParam < 0:
                 shiftParam = 7
 
-            for i in range(bitsToCopy):
-                if (lstParamVal[indexParam] >> shiftParam) & 0x01 == 0:
-                    mask = ~(1 << shiftReg)
-                    lstRegVal[indexReg] &= mask
-                else:
-                    mask = 1 << shiftReg
-                    lstRegVal[indexReg] |= mask
-
-                shiftReg -= 1
-                shiftParam -= 1
-
-                # Register byte over?
-                if shiftReg < 0:                    
-                    indexReg += 1
-                    shiftReg = 7
-
-                # Parameter byte over?
-                if shiftParam < 0:
-                    indexParam += 1
-                    shiftParam = 7
+            if len(lstParamVal) != 0:                
+                for i in range(bitsToCopy):
+                    if (lstParamVal[indexParam] >> shiftParam) & 0x01 == 0:
+                        mask = ~(1 << shiftReg)
+                        lstRegVal[indexReg] &= mask
+                    else:
+                        mask = 1 << shiftReg
+                        lstRegVal[indexReg] |= mask
+    
+                    shiftReg -= 1
+                    shiftParam -= 1
+    
+                    # Register byte over?
+                    if shiftReg < 0:                    
+                        indexReg += 1
+                        shiftReg = 7
+    
+                    # Parameter byte over?
+                    if shiftParam < 0:
+                        indexParam += 1
+                        shiftParam = 7
                     
         # Update mote's time stamp
         if self.mote is not None:
