@@ -160,7 +160,7 @@ class SwapManager(SwapInterface, LagartoServer):
                 if "value" in item:
                     if endp.direction == "out":
                         new_value = item["value"]
-                        if endp.type == "bin" and item["value"].lower() == "toogle":
+                        if endp.type == "bin" and item["value"].lower() == "toggle":
                             if endp.getValueInAscii() == "on":
                                 new_value = "off"
                             else:
