@@ -262,11 +262,7 @@ void setup()
 {
   pinMode(LEDPIN, OUTPUT);
   digitalWrite(LEDPIN, LOW);
-  
-  Serial.begin(38400);
-  Serial.flush();
-  Serial.println("Power meter ready!");
-  
+   
   // Read Vcc
   voltageSupply = readVoltSupply();
  
@@ -297,6 +293,10 @@ void setup()
 
   // Init panStamp
   panstamp.init();
+
+  Serial.begin(38400);
+  Serial.flush();
+  Serial.println("Power meter ready!");
 
   // Wireless transmission interval
   txInterval = panstamp.txInterval[0];
