@@ -233,41 +233,41 @@
       </endpoint>
       <endpoint name="RMS Voltage 0" type="num" dir="inp">
         <position>1</position>
-        <size>1</size>
+        <size>2</size>
         <units>
           <unit name="V" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="RMS Current 0" type="num" dir="inp">
-        <position>2</position>
+        <position>3</position>
         <size>2</size>
         <units>
           <unit name="A" factor="0.01" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Apparent power 0" type="num" dir="inp">
-        <position>4</position>
+        <position>5</position>
         <size>2</size>
         <units>
           <unit name="VA" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Active power 0" type="num" dir="inp">
-        <position>6</position>
+        <position>7</position>
         <size>2</size>
         <units>
           <unit name="W" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Power factor 0" type="num" dir="inp">
-        <position>8</position>
+        <position>9</position>
         <size>1</size>
         <units>
           <unit name="" factor="0.01" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Energy consumption 0" type="num" dir="inp">
-        <position>9</position>
+        <position>10</position>
         <size>4</size>
         <units>
           <unit name="KWh" factor="0.01" offset="0"/>
@@ -284,41 +284,41 @@
       </endpoint>
       <endpoint name="RMS Voltage 1" type="num" dir="inp">
         <position>1</position>
-        <size>1</size>
+        <size>2</size>
         <units>
           <unit name="V" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="RMS Current 1" type="num" dir="inp">
-        <position>2</position>
+        <position>3</position>
         <size>2</size>
         <units>
           <unit name="A" factor="0.01" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Apparent power 1" type="num" dir="inp">
-        <position>4</position>
+        <position>5</position>
         <size>2</size>
         <units>
           <unit name="VA" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Active power 1" type="num" dir="inp">
-        <position>6</position>
+        <position>7</position>
         <size>2</size>
         <units>
           <unit name="W" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Power factor 1" type="num" dir="inp">
-        <position>8</position>
+        <position>9</position>
         <size>1</size>
         <units>
           <unit name="" factor="0.01" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Energy consumption 1" type="num" dir="inp">
-        <position>9</position>
+        <position>10</position>
         <size>4</size>
         <units>
           <unit name="KWh" factor="0.01" offset="0"/>
@@ -335,41 +335,41 @@
       </endpoint>
       <endpoint name="RMS Voltage 2" type="num" dir="inp">
         <position>1</position>
-        <size>1</size>
+        <size>2</size>
         <units>
           <unit name="V" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="RMS Current 2" type="num" dir="inp">
-        <position>2</position>
+        <position>3</position>
         <size>2</size>
         <units>
           <unit name="A" factor="0.01" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Apparent power 2" type="num" dir="inp">
-        <position>4</position>
+        <position>5</position>
         <size>2</size>
         <units>
           <unit name="VA" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Active power 2" type="num" dir="inp">
-        <position>6</position>
+        <position>7</position>
         <size>2</size>
         <units>
           <unit name="W" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Power factor 2" type="num" dir="inp">
-        <position>8</position>
+        <position>9</position>
         <size>1</size>
         <units>
           <unit name="" factor="0.01" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Energy consumption 2" type="num" dir="inp">
-        <position>9</position>
+        <position>10</position>
         <size>4</size>
         <units>
           <unit name="KWh" factor="0.01" offset="0"/>
@@ -386,41 +386,41 @@
       </endpoint>
       <endpoint name="RMS Voltage 3" type="num" dir="inp">
         <position>1</position>
-        <size>1</size>
+        <size>2</size>
         <units>
           <unit name="V" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="RMS Current 3" type="num" dir="inp">
-        <position>2</position>
+        <position>3</position>
         <size>2</size>
         <units>
           <unit name="A" factor="0.01" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Apparent power 3" type="num" dir="inp">
-        <position>4</position>
+        <position>5</position>
         <size>2</size>
         <units>
           <unit name="VA" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Active power 3" type="num" dir="inp">
-        <position>6</position>
+        <position>7</position>
         <size>2</size>
         <units>
           <unit name="W" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Power factor 3" type="num" dir="inp">
-        <position>8</position>
+        <position>9</position>
         <size>1</size>
         <units>
           <unit name="" factor="0.01" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Energy consumption 3" type="num" dir="inp">
-        <position>9</position>
+        <position>10</position>
         <size>4</size>
         <units>
           <unit name="KWh" factor="0.01" offset="0"/>
@@ -437,41 +437,41 @@
       </endpoint>
       <endpoint name="RMS Voltage 4" type="num" dir="inp">
         <position>1</position>
-        <size>1</size>
+        <size>2</size>
         <units>
           <unit name="V" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="RMS Current 4" type="num" dir="inp">
-        <position>2</position>
+        <position>3</position>
         <size>2</size>
         <units>
           <unit name="A" factor="0.01" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Apparent power 4" type="num" dir="inp">
-        <position>4</position>
+        <position>5</position>
         <size>2</size>
         <units>
           <unit name="VA" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Active power 4" type="num" dir="inp">
-        <position>6</position>
+        <position>7</position>
         <size>2</size>
         <units>
           <unit name="W" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Power factor 4" type="num" dir="inp">
-        <position>8</position>
+        <position>9</position>
         <size>1</size>
         <units>
           <unit name="" factor="0.01" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Energy consumption 4" type="num" dir="inp">
-        <position>9</position>
+        <position>10</position>
         <size>4</size>
         <units>
           <unit name="KWh" factor="0.01" offset="0"/>
@@ -488,41 +488,41 @@
       </endpoint>
       <endpoint name="RMS Voltage 5" type="num" dir="inp">
         <position>1</position>
-        <size>1</size>
+        <size>2</size>
         <units>
           <unit name="V" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="RMS Current 5" type="num" dir="inp">
-        <position>2</position>
+        <position>3</position>
         <size>2</size>
         <units>
           <unit name="A" factor="0.01" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Apparent power 5" type="num" dir="inp">
-        <position>4</position>
+        <position>5</position>
         <size>2</size>
         <units>
           <unit name="VA" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Active power 5" type="num" dir="inp">
-        <position>6</position>
+        <position>7</position>
         <size>2</size>
         <units>
           <unit name="W" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Power factor 5" type="num" dir="inp">
-        <position>8</position>
+        <position>9</position>
         <size>1</size>
         <units>
           <unit name="" factor="0.01" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Energy consumption 5" type="num" dir="inp">
-        <position>9</position>
+        <position>10</position>
         <size>4</size>
         <units>
           <unit name="KWh" factor="0.01" offset="0"/>
@@ -539,41 +539,41 @@
       </endpoint>
       <endpoint name="RMS Voltage 6" type="num" dir="inp">
         <position>1</position>
-        <size>1</size>
+        <size>2</size>
         <units>
           <unit name="V" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="RMS Current 6" type="num" dir="inp">
-        <position>2</position>
+        <position>3</position>
         <size>2</size>
         <units>
           <unit name="A" factor="0.01" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Apparent power 6" type="num" dir="inp">
-        <position>4</position>
+        <position>5</position>
         <size>2</size>
         <units>
           <unit name="VA" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Active power 6" type="num" dir="inp">
-        <position>6</position>
+        <position>7</position>
         <size>2</size>
         <units>
           <unit name="W" factor="1" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Power factor 6" type="num" dir="inp">
-        <position>8</position>
+        <position>9</position>
         <size>1</size>
         <units>
           <unit name="" factor="0.01" offset="0"/>
         </units>
       </endpoint>
       <endpoint name="Energy consumption 6" type="num" dir="inp">
-        <position>9</position>
+        <position>10</position>
         <size>4</size>
         <units>
           <unit name="KWh" factor="0.01" offset="0"/>
