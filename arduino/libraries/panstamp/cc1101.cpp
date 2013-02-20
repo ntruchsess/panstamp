@@ -471,6 +471,9 @@ boolean CC1101::sendData(CCPACKET packet)
   if((readStatusReg(CC1101_TXBYTES) & 0x7F) == 0)
     res = true;
 
+  setIdleState();       // Enter IDLE state
+  flushTxFifo();        // Flush Tx FIFO
+
   // Enter back into RX state
   setRxState();
 
