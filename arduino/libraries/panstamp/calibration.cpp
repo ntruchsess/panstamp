@@ -67,25 +67,6 @@ bool rcOscCalibrate(void)
   TIFR1 |= (1 << TOV1);          // Clear timer 1 overflow flag   
   TCNT1 = 0;                     // Reset Timer 1 count
 
-  // Wait for the registers to be updated for Timer 2
-  while (ASSR & (_BV(TCN2UB) | _BV(TCR2AUB) | _BV(TCR2BUB)))
-  {
-    // Use timer 1 to detect presence or lack of external crystal
-    if (TIFR1 & (1 << TOV1))
-    {
-      TIFR1 |= (1 << TOV1);        // Clear timer 1 overflow flag   
-      TCNT1 = 0;                   // Reset Timer 1 count
-      if (--checkCount == 0)
-      {
-        ASSR = 0;                  // Disable Timer 2
-        OSCCAL = oldOsccal;        // Set factory default OSCCAL
-        return false;              // 32.768 KHz crystal is not present
-      }
-    }
-  }
-
-  TIFR1 |= (1 << TOV1);            // Clear timer 1 overflow flag   
-
   // Enter calibration loop
   while (loopCount--)
   {  
@@ -93,7 +74,21 @@ bool rcOscCalibrate(void)
     TCNT2 = 0;                     // Reset Timer 2 count
     
     // Wait for the registers to be updated for Timer 2
-    while (ASSR & (_BV(TCN2UB) | _BV(TCR2AUB) | _BV(TCR2BUB))) {}
+    while (ASSR & (_BV(TCN2UB) | _BV(TCR2AUB) | _BV(TCR2BUB)))
+    {
+      // Use timer 1 to detect presence or lack of external crystal
+      if (TIFR1 & (1 << TOV1))
+      {
+        TIFR1 |= (1 << TOV1);        // Clear timer 1 overflow flag   
+        TCNT1 = 0;                   // Reset Timer 1 count
+        if (--checkCount == 0)
+        {
+          ASSR = 0;                  // Disable Timer 2
+          OSCCAL = oldOsccal;        // Set factory default OSCCAL
+          return false;              // 32.768 KHz crystal is not present
+        }
+      }
+    }
 
     TCCR1B = (1 << CS10);          // Start Timer 1 with no prescaling
     TCNT1 = 0;                     // Reset Timer 1 count
