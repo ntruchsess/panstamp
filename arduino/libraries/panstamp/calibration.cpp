@@ -43,6 +43,10 @@ bool rcOscCalibrate(void)
   // Save current OSCCAL value
   uint8_t oldOsccal = OSCCAL;
 
+  // Save Timer 1 settings
+  uint8_t oldTCCR1A = TCCR1A;
+  uint8_t oldTCCR1B = TCCR1B;
+
   // Inital OSCCAL of half its maximum
   OSCCAL = (0x7F / 2);
 
@@ -111,6 +115,10 @@ bool rcOscCalibrate(void)
   ASSR = 0;                        // Disable Timer 2
   TIFR2 |= (1 << TOV2);            // Clear timer 2 overflow flag   
   TCNT2 = 0;                       // Reset Timer 2 count
+
+  //Revert to original Timer 1 settings
+  TCCR1A = oldTCCR1A;
+  TCCR1B = oldTCCR1B;
 
   /*
   // Read OSCCAL from EEPROM
