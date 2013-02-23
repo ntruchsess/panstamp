@@ -1,3 +1,8 @@
+Feb 23 2013
+---------------
+ - Self-detection of 32.768 KHz crystal
+ - Timer 1 reverted to its original settings after calibration
+
 Feb 10 2013
 ---------------
 - Fixed problem about Rx interrupts happening wjilst in Tx mode
