@@ -1,4 +1,13 @@
 {
   "database": {
+    "power_consumptions": {
+      "endpoints": [
+        "Lagarto-SWAP.SWAP.Energy_consumption_0", 
+        "Lagarto-SWAP.SWAP.Energy_consumption_1", 
+        "Lagarto-SWAP.SWAP.Energy_consumption_2", 
+        "Lagarto-SWAP.SWAP.Energy_consumption_3"
+      ], 
+      "interval": "1h"
+    }
   }
 }

@@ -1,4 +1,18 @@
 {
   "graphs": {
+    "power_consumptions": {
+      "maxy": "3", 
+      "title": "Power consumptions", 
+      "miny": "0", 
+      "samples": "24", 
+      "table": "power_consumptions", 
+      "type": "line", 
+      "columns": [
+        "Lagarto-SWAP.SWAP.Energy_consumption_0", 
+        "Lagarto-SWAP.SWAP.Energy_consumption_1", 
+        "Lagarto-SWAP.SWAP.Energy_consumption_2", 
+        "Lagarto-SWAP.SWAP.Energy_consumption_3"
+      ]
+    }
   }
 }

@@ -329,7 +329,8 @@ class EvnManager(LagartoBroker):
         
         except LagartoException as ex:
             ex.log()
-        except Exception:
+        except Exception as ex:
+            print ex
             pass
 
         return False

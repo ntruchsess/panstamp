@@ -456,7 +456,7 @@ class LagartoBroker(LagartoClient):
         @param event: event packet to be processed
         """
         # Publish event downstream
-        #self.pub_socket.send(event)
+        self.pub_socket.send(event)
         
         # Run the rest of the client tasks
         LagartoClient._process_event(self, event)
