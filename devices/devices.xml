@@ -13,15 +13,22 @@
     <dev id="10" name="pulsecounter" label="Pulse counter"/>
     <dev id="11" name="meter" label="Energy meter"/>
     <dev id="12" name="binouts2" label="Advanced Binary/PWM output module + repeater"/>
-    <dev id="13" name="respira" label="RESPIRA air quality monitor"/>
+    <dev id="13" name="respira" label="Respira sensor for CO and NO2"/>
   </developer>
   <developer id="17" name="Robomotic">
+    <dev id="1" name="EmmaTI" label="Emma watch"/>
     <dev id="2" name="SeismoFloor" label="Floor sensor"/>
+    <dev id="3" name="EnvPIR" label="Environment and motion sensor"/>
+    <dev id="4" name="Repeater" label="Robomotic repeater"/>
+    <dev id="7" name="LuminoPod" label="Luminosity sensor"/>
   </developer>
 	<developer id="22" name="Luka Mustafa - Musti">
 		<dev id="1" name="sfpddm" label="SFP DDM monitoring system"/>
 	</developer>
   <developer id="25" name="IulianV">
 		<dev id="1" name="onewire" label="OneWire Temperature DS18B20x3"/>
+  </developer>
+  <developer id="27" name="Miom">
+    <dev id="1" name="temphumlight" label="Temperature/Humidity and Light sensor"/>
   </developer>
 </devices>

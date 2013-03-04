@@ -36,9 +36,37 @@
 			</endpoint>
 		</reg>
 		<reg name="Interrupt code" id="13">
-			<endpoint name="Event" type="num" dir="inp">
-				<position>0</position>
-				<size>1</size>
+			<endpoint name="OVERRUNY" type="num" dir="inp">
+				<position>0.7</position>
+				<size>0.1</size>
+			</endpoint>
+			<endpoint name="WATERMARK" type="num" dir="inp">
+				<position>0.6</position>
+				<size>0.1</size>
+			</endpoint>
+			<endpoint name="FREE_FALL" type="num" dir="inp">
+				<position>0.5</position>
+				<size>0.1</size>
+			</endpoint>
+			<endpoint name="INACTIVITY" type="num" dir="inp">
+				<position>0.4</position>
+				<size>0.1</size>
+			</endpoint>
+			<endpoint name="ACTIVITY" type="num" dir="inp">
+				<position>0.3</position>
+				<size>0.1</size>
+			</endpoint>
+			<endpoint name="DOUBLE_TAP" type="num" dir="inp">
+				<position>0.2</position>
+				<size>0.1</size>
+			</endpoint>
+			<endpoint name="SINGLE_TAP" type="num" dir="inp">
+				<position>0.1</position>
+				<size>0.1</size>
+			</endpoint>
+			<endpoint name="DATA_READY" type="num" dir="inp">
+				<position>0.0</position>
+				<size>0.1</size>
 			</endpoint>
 		</reg>
 	</regular>
@@ -58,6 +86,7 @@
 				<position>0.4</position>
 				<size>0.4</size>
 				<verif>^(\d*)$</verif>
+				<default>4</default>
 			</param>
 		</reg>
 		<reg name="Range" id="15">
