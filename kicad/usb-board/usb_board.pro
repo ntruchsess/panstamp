@@ -1,7 +1,12 @@
-update=Tue 03 Jul 2012 11:21:14 AM CEST
+update=Tue 20 Nov 2012 11:29:25 AM CET
 last_client=pcbnew
 [general]
 version=1
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms
 [eeschema]
 version=1
 LibDir=
@@ -85,16 +90,11 @@ LibName44=mcp3304
 LibName45=microchip_mcp2120
 LibName46=microchip-mcp125x-xxx
 LibName47=toshiba
-[cvpcb]
-version=1
-NetIExt=net
-[cvpcb/libraries]
-EquName1=devcms
 [pcbnew]
 version=1
-PadDrlX=360
-PadDimH=560
-PadDimV=560
+PadDrlX=236
+PadDimH=473
+PadDimV=473
 BoardThickness=630
 SgPcb45=1
 TxtPcbV=800
@@ -102,11 +102,11 @@ TxtPcbH=600
 TxtModV=600
 TxtModH=600
 TxtModW=120
-VEgarde=100
+VEgarde=0
 DrawLar=150
 EdgeLar=150
 TxtLar=120
-MSegLar=150
+MSegLar=60
 LastNetListRead=usb_board.net
 [pcbnew/libraries]
 LibDir=
