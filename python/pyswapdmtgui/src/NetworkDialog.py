@@ -50,7 +50,7 @@ class NetworkDialog(ConfigDialog):
         self.addOkCancelButtons()
         
 
-    def __init__(self, parent=None, devAddr=255, netid=0xB547, freq_channel=0, interval=0):
+    def __init__(self, parent=None, devAddr=255, netid=0xB547, freq_channel=0, interval=255):
         """
         Class constructor
 
