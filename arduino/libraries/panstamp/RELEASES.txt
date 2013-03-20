@@ -1,3 +1,7 @@
+Mar 20 2013
+---------------
+ - Fixed problem with Timer 2 being disabled during SLEEP
+
 Feb 23 2013
 ---------------
  - Self-detection of 32.768 KHz crystal
