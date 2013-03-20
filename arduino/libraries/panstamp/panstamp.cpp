@@ -218,7 +218,10 @@ ISR(TIMER2_OVF_vect)
  *          RTC_8S = 1024 for 8 sec
  */
 void PANSTAMP::setup_rtc(byte time)
-{  
+{
+  // Set timer 2 to asyncronous mode (32.768KHz crystal)
+  ASSR = (1 << AS2);
+
   TCCR2A = 0x00;  // Normal port operation
   // (256 cycles) * (prescaler) / (32.768KHz clock speed) = N sec
   TCCR2B = time;  // Timer 2 prescaler
@@ -227,7 +230,6 @@ void PANSTAMP::setup_rtc(byte time)
   TIFR2 = _BV(OCF2B) | _BV(OCF2A) | _BV(TOV2);                     // Clear the interrupt flags
 
   TIMSK2 = 0x01;  // Enable timer2A overflow interrupt
-  ASSR  = 0x20;   // Enable asynchronous mode
 }
 
 /**
