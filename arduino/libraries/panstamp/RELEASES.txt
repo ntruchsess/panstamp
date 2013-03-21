@@ -1,11 +1,15 @@
+Mar 21 2013
+---------------
+- Switched to LGPL license
+
 Mar 20 2013
 ---------------
- - Fixed problem with Timer 2 being disabled during SLEEP
+- Fixed problem with Timer 2 being disabled during SLEEP
 
 Feb 23 2013
 ---------------
- - Self-detection of 32.768 KHz crystal
- - Timer 1 reverted to its original settings after calibration
+- Self-detection of 32.768 KHz crystal
+- Timer 1 reverted to its original settings after calibration
 
 Feb 10 2013
 ---------------
