@@ -76,10 +76,10 @@ void isrGDO0event(void)
 
   if (panstamp.cc1101.rfState == RFSTATE_RX)
   {
-    CCPACKET ccPacket;
-    SWPACKET swPacket;
+    static CCPACKET ccPacket;
+    static SWPACKET swPacket;
     REGISTER *reg;
-    bool eval = true;
+    static bool eval = true;
 
     if (panstamp.cc1101.receiveData(&ccPacket) > 0)
     {

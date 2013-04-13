@@ -1,3 +1,7 @@
+Apr 13 2013
+---------------
+- CCPACKET and SWPACKET objects become static in isrGDO0event()
+
 Mar 21 2013
 ---------------
 - Switched to LGPL license

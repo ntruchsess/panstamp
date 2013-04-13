@@ -450,14 +450,15 @@ boolean CC1101::sendData(CCPACKET packet)
 
   // Check that TX state is being entered (state = RXTX_SETTLING)
   marcState = readStatusReg(CC1101_MARCSTATE) & 0x1F;
+
   if((marcState != 0x13) && (marcState != 0x14) && (marcState != 0x15))
   {
+digitalWrite(4, HIGH);
     setIdleState();       // Enter IDLE state
+digitalWrite(4, LOW);
     flushTxFifo();        // Flush Tx FIFO
     setRxState();         // Back to RX state
 
-    // Declare to be in Rx state
-    rfState = RFSTATE_RX;
     return false;
   }
 
