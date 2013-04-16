@@ -69,7 +69,7 @@
         <verif>MINUTE</verif>
       </param>
     </reg>
- <reg name="Browser page 0" id="18">
+    <reg name="Browser page 0" id="18">
       <param name="Label (5 chars)" type="str">
         <position>0</position>
         <size>5</size>

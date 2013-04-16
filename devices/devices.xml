@@ -20,7 +20,7 @@
     <dev id="2" name="SeismoFloor" label="Floor sensor"/>
     <dev id="3" name="EnvPIR" label="Environment and motion sensor"/>
     <dev id="4" name="Repeater" label="Robomotic repeater"/>
-    <dev id="7" name="LuminoPod" label="Luminosity sensor"/>
+    <dev id="5" name="LuminoPod" label="Luminosity sensor"/>
   </developer>
 	<developer id="22" name="Luka Mustafa - Musti">
 		<dev id="1" name="sfpddm" label="SFP DDM monitoring system"/>
@@ -30,5 +30,8 @@
   </developer>
   <developer id="27" name="Miom">
     <dev id="1" name="temphumlight" label="Temperature/Humidity and Light sensor"/>
+  </developer>
+  <developer id="29" name="panMillenium">
+    <dev id="1" name="panmillenium1" label="Crouzet Millenium 3 wireless interface by panSTamp"/>
   </developer>
 </devices>
