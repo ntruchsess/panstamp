@@ -47,8 +47,6 @@ void REPEATER::init(byte maxHop)
 void REPEATER::start(void)
 {
   panstamp.cc1101.disableAddressCheck();    // Disable address check
-  panstamp.packetHandler = handlePacket;    // Set custom packet handler
-  enable = true;                            // Enable repeater
 }
 
 /**
@@ -59,9 +57,6 @@ void REPEATER::start(void)
 void REPEATER::stop(void)
 {
   panstamp.cc1101.enableAddressCheck();     // Enable address check
-  panstamp.packetHandler = NULL;            // Disable custom packet handler
-  enable = false;                           // Disable repeater
-
 }
 
 /**
@@ -69,67 +64,61 @@ void REPEATER::stop(void)
  */
 REPEATER::REPEATER(void)
 {
-  byte i;
-  enable = false;
 }
 
 /**
- * handlePacket
+ * packetHandler
  *
  * Handle incoming packet. Repeat if necessary
  *
  * 'packet': Pointer to the SWAP packet received
  */
-void handlePacket(SWPACKET *packet)
+void REPEATER::packetHandler(SWPACKET *packet)
 {
-  bool repeatPacket = true;
-  unsigned long currentTime;
+  static bool repeatPacket = true;
+  static unsigned long currentTime;
 
-  // Repeater enabled?
-  if (repeater.enable)
+  // Don't repeat packets addressed to our device
+  if (packet->destAddr != panstamp.cc1101.devAddress)
   {
-    // Don't repeat packets addressed to our device
-    if (packet->destAddr != panstamp.cc1101.devAddress)
+    // Don't repeat beyond the maximum hop count
+    if (packet->hop < maxHopCount)
     {
-      // Don't repeat beyond the maximum hop count
-      if (packet->hop < repeater.maxHopCount)
-      {
-        byte i;        
+      byte i;        
 
-        // Check received packet against the latest transactions
-        for(i=0 ; i<REPEATER_TABLE_DEPTH ; i++)
+      // Check received packet against the latest transactions
+      for(i=0 ; i<REPEATER_TABLE_DEPTH ; i++)
+      {
+        // Same source/destination node?
+        if (transactions[i].regAddr == packet->regAddr)
         {
-          // Same source/destination node?
-          if (repeater.transactions[i].regAddr == packet->regAddr)
+          // Same SWAP function?
+          if (transactions[i].function == packet->function)
           {
-            // Same SWAP function?
-            if (repeater.transactions[i].function == packet->function)
+            // Different source of transmission?
+            if (transactions[i].srcAddr != packet->srcAddr)
             {
-              // Different source of transmission?
-              if (repeater.transactions[i].srcAddr != packet->srcAddr)
+              // Same cyclic nonce?
+              if (transactions[i].nonce == packet->nonce)
               {
-                // Same cyclic nonce?
-                if (repeater.transactions[i].nonce == packet->nonce)
-                {
-                  currentTime = millis();
-                  // Time stamp not expired?
-                  if ((currentTime - repeater.transactions[i].timeStamp) < REPEATER_EXPIRATION_TIME)
-                    repeatPacket = false;   //Don't repeat packet
-                }
+                currentTime = millis();
+                // Time stamp not expired?
+                if ((currentTime - transactions[i].timeStamp) < REPEATER_EXPIRATION_TIME)
+                  repeatPacket = false;   //Don't repeat packet
               }
             }
           }
         }
+      }
 
-        // Repeat packet?
-        if (repeatPacket)
-        {
-          packet->srcAddr = panstamp.cc1101.devAddress;   // Modify source address
-          packet->hop++;                                  // Increment hop counter
-          delay(SWAP_TX_DELAY);                           // Delay before sending
-          if (packet->send())                             // Repeat packet
-            repeater.saveTransaction(packet);             // Save transaction
-        }
+      // Repeat packet?
+      if (repeatPacket)
+      {
+        packet->srcAddr = panstamp.cc1101.devAddress;   // Modify source address
+        packet->hop++;                                  // Increment hop counter
+        delay(SWAP_TX_DELAY);                           // Delay before sending
+        if (packet->send())                             // Repeat packet
+          saveTransaction(packet);                      // Save transaction
       }
     }
   }
@@ -157,9 +146,4 @@ void REPEATER::saveTransaction(SWPACKET *packet)
   transactions[0].nonce = packet->nonce;        // Cyclic nonce
   transactions[0].regAddr = packet->regAddr;    // Register address
 }
-
-/**
- * Pre-instantiate REPEATER object
- */
-REPEATER repeater;
 

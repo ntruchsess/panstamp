@@ -45,8 +45,22 @@ extern byte regTableSize;
  */
 PANSTAMP::PANSTAMP(void)
 {
-  packetHandler = NULL;
   statusReceived = NULL;
+  repeater = NULL;
+}
+
+/**
+ * enableRepeater
+ *
+ * Enable repeater mode
+ *
+ * 'maxHop'  MAximum repeater count. Zero if omitted
+ */
+void PANSTAMP::enableRepeater(byte maxHop)
+{
+  static REPEATER repe;
+  repeater = &repe;
+  repeater->init(maxHop);
 }
 
 /**
@@ -87,9 +101,9 @@ void isrGDO0event(void)
       {
         swPacket = SWPACKET(ccPacket);
 
-        // Packet handling function declared?
-        if (panstamp.packetHandler != NULL)
-          panstamp.packetHandler(&swPacket);
+        // Repeater enabled?
+        if (panstamp.repeater != NULL)
+          panstamp.repeater->packetHandler(&swPacket);
 
         // Smart encryption locally enabled?
         if (panstamp.security & 0x02)

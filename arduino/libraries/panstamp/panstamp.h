@@ -32,6 +32,7 @@
 #include "register.h"
 #include "swpacket.h"
 #include "config.h"
+#include "repeater.h"
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
@@ -108,6 +109,13 @@ class PANSTAMP
 
   public:
     /**
+     * repeater
+     *
+     * Pointer to repeater object
+     */
+    REPEATER *repeater;
+
+    /**
      * True if the external 32.768 KHz crystal is enabled
      */
     bool rtcCrystal;
@@ -143,9 +151,20 @@ class PANSTAMP
     byte encryptPwd[12];
 
     /**
-     * SWAP packet handler. Callaback function
+     * enableRepeater
+     *
+     * Enable repeater mode
      */
-    void (*packetHandler)(SWPACKET *packet);
+    void enableRepeater(void);
+
+    /**
+     * enableRepeater
+     *
+     * Enable repeater mode
+     *
+     * 'maxHop'  MAximum repeater count. Zero if omitted
+     */
+    void enableRepeater(byte maxHop=0);
 
     /**
      * SWAP status packet received. Callaback function

@@ -47,12 +47,7 @@ typedef struct
  */
 class REPEATER
 {
-  public:
-    /**
-     * Enable flag
-     */
-    bool enable;
-
+  private:
     /**
      * Maximum hop
      */
@@ -63,6 +58,16 @@ class REPEATER
      */
     Transaction transactions[REPEATER_TABLE_DEPTH];
 
+    /**
+     * saveTransaction
+     *
+     * Save transaction in array
+     *
+     * 'packet': SWAP packet being repeated
+     */
+    void saveTransaction(SWPACKET *packet);
+
+  public:
     /**
      * init
      *
@@ -87,25 +92,19 @@ class REPEATER
     void stop(void);
 
     /**
+     * packetHandler
+     *
+     * Handle incoming packet. Repeat if necessary
+     *
+     * 'packet': Pointer to the SWAP packet received
+     */
+    void packetHandler(SWPACKET *packet);
+
+    /**
      * Class constructor
      */
     REPEATER(void);
-
-    /**
-     * saveTransaction
-     *
-     * Save transaction in array
-     *
-     * 'packet': SWAP packet being repeated
-     */
-    void saveTransaction(SWPACKET *packet);
 };
-
-/**
- * Global REPEATER object
- */
-extern REPEATER repeater;
-extern void handlePacket(SWPACKET *packet);
 
 #endif
 
