@@ -45,7 +45,7 @@
  
 #include "regtable.h"
 #include "panstamp.h"
-#include "repeater.h"
+//#include "repeater.h"
 
 /**
  * LED pin
@@ -58,6 +58,11 @@
 #define EEPROM_CONFIG_REPEATER   EEPROM_FIRST_CUSTOM
 
 /**
+ * Maximum repeating count
+ */
+byte maxRepeaterHop = 0;
+
+/**
  * Binary output pins (Arduino pins)
  */
 uint8_t binaryPin[] = {8, 14, 15, 16, 17, 18, 19, 7};
@@ -66,11 +71,6 @@ uint8_t binaryPin[] = {8, 14, 15, 16, 17, 18, 19, 7};
  * PWM output pins (Arduino pins)
  */
 uint8_t pwmPin[] = {9, 6, 5, 3};
-
-/**
- * Register mode
- */
-byte maxRepeaterHop = 0;  // Repeater disabled by default
 
 /**
  * swapStatusReceived
@@ -119,13 +119,11 @@ void setup()
   // Init panStamp
   panstamp.init();
 
+  // Enable repeater mode
+  panstamp.enableRepeater(maxRepeaterHop);
+
   // Read config from EEPROM
   readConfig();
-
-  // Initialize repeater if enabled  
-  if (maxRepeaterHop)
-    repeater.init(maxRepeaterHop);
-
 
   // Transmit product code
   getRegister(REGI_PRODUCTCODE)->getData();
