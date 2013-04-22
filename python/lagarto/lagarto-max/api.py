@@ -283,11 +283,14 @@ class CloudAPI:
         
         @return HTTP response from Pachube
         """
-        endpoint = NetworkAPI.get_endpoint(endp)
-        if endpoint is not None:
-            packet = PachubePacket(sharing_key, feed_id, [(datastream_id, endpoint.value)])
-            return packet.push()
-        return None
+        try:
+            endpoint = NetworkAPI.get_endpoint(endp)
+            if endpoint is not None:
+                packet = PachubePacket(sharing_key, feed_id, [(datastream_id, endpoint.value)])
+                return packet.push()
+            return None
+        except LagartoException as ex:
+            ex.log()
 
 
     @staticmethod
@@ -303,11 +306,14 @@ class CloudAPI:
         
         @return HTTP response from ThingSpeak
         """
-        endpoint = NetworkAPI.get_endpoint(endp)
-        if endpoint is not None:
-            packet = ThingSpeakPacket(api_key, [(field_id, endpoint.value)])
-            return packet.push()
-        return None
+        try:
+            endpoint = NetworkAPI.get_endpoint(endp)
+            if endpoint is not None:
+                packet = ThingSpeakPacket(api_key, [(field_id, endpoint.value)])
+                return packet.push()
+            return None
+        except LagartoException as ex:
+            ex.log()
 
 
     @staticmethod
@@ -323,14 +329,17 @@ class CloudAPI:
         
         @return HTTP response from open.sen.se
         """
-        endpoint = NetworkAPI.get_endpoint(endp)
-        if endpoint is not None:
-            endpstr = endpoint.procname + "." + endpoint.location + "." + endpoint.name
-            if endpstr not in OpenSense.feed_ids:
-                OpenSense.feed_ids[endpstr] = feed_id
-            packet = OpenSensePacket(sense_key, [(feed_id, endpoint.value)])
-            return packet.push()
-        return None
+        try:
+            endpoint = NetworkAPI.get_endpoint(endp)
+            if endpoint is not None:
+                endpstr = endpoint.procname + "." + endpoint.location + "." + endpoint.name
+                if endpstr not in OpenSense.feed_ids:
+                    OpenSense.feed_ids[endpstr] = feed_id
+                packet = OpenSensePacket(sense_key, [(feed_id, endpoint.value)])
+                return packet.push()
+            return None
+        except LagartoException as ex:
+            ex.log()
 
 
     @staticmethod
@@ -342,11 +351,15 @@ class CloudAPI:
         format 1: process.location.name
         format 2: process.id        
         """
-        endpoint = NetworkAPI.get_endpoint(endp)
-        if endpoint is not None:
-            endpstr = endpoint.procname + "." + endpoint.location + "." + endpoint.name + " = " + str(endpoint.value)
-            if endpoint.unit is not None:
-                endpstr += " " + endpoint.unit
-            message = TwitterMessage(endpstr)
-            return message.send()
-        return None
+        try:
+            endpoint = NetworkAPI.get_endpoint(endp)
+            if endpoint is not None:
+                endpstr = endpoint.procname + "." + endpoint.location + "." + endpoint.name + " = " + str(endpoint.value)
+                if endpoint.unit is not None:
+                    endpstr += " " + endpoint.unit
+                message = TwitterMessage(endpstr)
+                return message.send()
+            return None
+        except LagartoException as ex:
+            ex.log()
+
