@@ -31,7 +31,7 @@
  * This device also provides 7 binary inputs for detecting puch buttons
  * and a LED pin.
  *
- * Binary inputs : pins 16, 17, 18, 19, 20, 21 and 22
+ * Binary inputs : pins 18, 20, 21 and 22
  * LCD pins : pins 4(RS), 5(E), 6(D4), 8(D5), 9(D6) and 10(D7). Pin 3 for backlight control
  * LED pin : pin 2
  *
@@ -81,11 +81,11 @@ volatile boolean pcIRQ = false;
 /**
  * Binary inputs (push buttons)
  */
-byte binaryPin[] = {0, 1, 3, 4, 5, 6, 7};               // Binary pins (Atmega port bits)
-#define BINARY_INP_PORT    PIND                         // Atmega port register
-int lastState[] = {-1, -1, -1, -1, -1, -1, -1};         // Initial pin states
-#define PCINTMASK    0xFB                               // PD[0:1], PD[3:7] - Pin Change interrupt mask
-byte states;                                            // Each bit represents a binary state
+byte binaryPin[] = {3, 5, 6, 7};            // Binary pins (Atmega port bits)
+#define BINARY_INP_PORT    PIND             // Atmega port register
+int lastState[] = {-1, -1, -1, -1};         // Initial pin states
+#define PCINTMASK    0xE8                   // PD[3], PD[5:7] - Pin Change interrupt mask
+byte states;                                // Each bit represents a binary state
 
 /**
  * Pin Change Interrupt vectors
@@ -126,7 +126,7 @@ byte updateValues(void)
   states = 0;
   for(i=0 ; i<sizeof(binaryPin) ; i++)
   {
-    state = bitRead(BINARY_INP_PORT, binaryPin[i]);
+    state = !bitRead(BINARY_INP_PORT, binaryPin[i]);
     states |= state << i;
     if (lastState[i] != state)
     {
@@ -176,6 +176,9 @@ void setup()
   //updateValues();
   // Transmit initial binary states
   getRegister(REGI_BININPUTS)->getData();
+  
+  // Read binary inputs
+  updateValues();
   
   // Enable Pin Change interrupt
   pcEnableInterrupt();
