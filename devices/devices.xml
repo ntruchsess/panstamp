@@ -14,6 +14,7 @@
     <dev id="11" name="meter" label="Energy meter"/>
     <dev id="12" name="binouts2" label="Advanced Binary/PWM output module + repeater"/>
     <dev id="13" name="respira" label="Respira sensor for CO and NO2"/>
+    <dev id="14" name="soilmoisture" label="Soil moisture sensor"/>
   </developer>
   <developer id="17" name="Robomotic">
     <dev id="1" name="EmmaTI" label="Emma watch"/>
