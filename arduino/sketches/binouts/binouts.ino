@@ -81,7 +81,7 @@ uint8_t pwmPin[] = {9, 6, 5, 3};
 void setup()
 {
   int i;
-  
+
   pinMode(LEDPIN, OUTPUT);
   digitalWrite(LEDPIN, LOW);
 
@@ -100,7 +100,7 @@ void setup()
   // Transmit product code
   getRegister(REGI_PRODUCTCODE)->getData();
 
-  // Enter SYNC state
+  // Enter Rx ON state
   panstamp.enterSystemState(SYSTATE_RXON);
   // Transmit initial binary states
   getRegister(REGI_BINOUTPUTS)->getData();
