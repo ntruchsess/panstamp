@@ -91,7 +91,7 @@ void setup()
 {
   // Init panStamp
   panstamp.init();
-  
+
   // Declare callback function for dispatching the incoming SWAP status packets
   panstamp.setSwapStatusCallBack(swapStatusReceived);
   
@@ -106,4 +106,5 @@ void setup()
  */
 void loop()
 {
+  delay(100);
 }

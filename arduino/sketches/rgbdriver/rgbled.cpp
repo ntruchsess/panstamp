@@ -54,7 +54,7 @@ RGBLED::RGBLED(int redPin, int greenPin, int bluePin)
  * 'blue'     Bright level of the blue LED
  */
 void RGBLED::setColor(byte red, byte green, byte blue)
-{ 	 
+{
   analogWrite(pRed, red); 	 
   analogWrite(pGreen, green);
   analogWrite(pBlue, blue);
