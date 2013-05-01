@@ -36,6 +36,7 @@ enum CFREQ
 {
   CFREQ_868 = 0,
   CFREQ_915,
+  CFREQ_433,
   CFREQ_LAST
 };
 
@@ -223,6 +224,10 @@ enum RFSTATE
 #define CC1101_DEFVAL_FREQ2_915  0x22        // Frequency Control Word, High Byte
 #define CC1101_DEFVAL_FREQ1_915  0xB1        // Frequency Control Word, Middle Byte
 #define CC1101_DEFVAL_FREQ0_915  0x3B        // Frequency Control Word, Low Byte
+// Carrier frequency = 433 MHz
+#define CC1101_DEFVAL_FREQ2_433  0x10        // Frequency Control Word, High Byte
+#define CC1101_DEFVAL_FREQ1_433  0xA7        // Frequency Control Word, Middle Byte
+#define CC1101_DEFVAL_FREQ0_433  0x62        // Frequency Control Word, Low Byte
 
 #define CC1101_DEFVAL_MDMCFG4    0xCA        // Modem Configuration
 #define CC1101_DEFVAL_MDMCFG3    0x83        // Modem Configuration
@@ -434,10 +439,21 @@ class CC1101
      * 
      * Set synchronization word
      * 
-     * 'sync'	Synchronization word
+     * 'syncH'	Synchronization word - High byte
+     * 'syncL'	Synchronization word - Low byte
      * 'save' If TRUE, save parameter in EEPROM
      */
-    void setSyncWord(byte *sync, bool save);
+    void setSyncWord(uint8_t syncH, uint8_t syncL, bool save=true);
+
+    /**
+     * setSyncWord (overriding method)
+     * 
+     * Set synchronization word
+     * 
+     * 'syncH'	Synchronization word - pointer to 2-byte array
+     * 'save' If TRUE, save parameter in EEPROM
+     */
+    void setSyncWord(byte *sync, bool save=true);
 
     /**
      * setDevAddress
@@ -447,7 +463,7 @@ class CC1101
      * 'addr'	Device address
      * 'save' If TRUE, save parameter in EEPROM
      */
-    void setDevAddress(byte addr, bool save);
+    void setDevAddress(byte addr, bool save=true);
 
     /**
      * setCarrierFreq
@@ -466,7 +482,7 @@ class CC1101
      * 'chnl'	Frequency channel
      * 'save' If TRUE, save parameter in EEPROM
      */
-    void setChannel(byte chnl, bool save);
+    void setChannel(byte chnl, bool save=true);
 
     /**
      * setPowerDownState

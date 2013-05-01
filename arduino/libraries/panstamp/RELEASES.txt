@@ -1,3 +1,10 @@
+May 1 2013
+---------------
+- Changes in REPEATER class
+- New setRegValue method in class REGISTER to set register value from a 1-to-4 byte number
+- setSyncWord from CC1101 class now accepts the main argument to be passed as individual bytes
+  (High byte and low byte of the sync word)
+
 Apr 13 2013
 ---------------
 - CCPACKET and SWPACKET objects become static in isrGDO0event()

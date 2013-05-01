@@ -104,6 +104,22 @@ class REGISTER
      * Send SWAP status message
      */
     void sendSwapStatus(void);
+
+    /**
+     * setRegValue
+     *
+     * Set register value from different data formats
+     * Use this method to simplify LE to BE conversion
+     *
+     * 'val'   New register value
+     */
+    template<class T> void setRegValue(T val)
+    {
+      uint8_t i;
+
+      for(i=length-1 ; i>=0 ; i--)
+        value[i] = (val >> 8*i) & 0xFF;
+    }
 };
 
 /**

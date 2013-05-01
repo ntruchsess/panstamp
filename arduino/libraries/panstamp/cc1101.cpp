@@ -203,8 +203,6 @@ void CC1101::reset(void)
  */
 void CC1101::setDefaultRegs(void) 
 {
-  byte defSyncWrd[] = {CC1101_DEFVAL_SYNC1, CC1101_DEFVAL_SYNC0};
-
   writeReg(CC1101_IOCFG2,  CC1101_DEFVAL_IOCFG2);
   writeReg(CC1101_IOCFG1,  CC1101_DEFVAL_IOCFG1);
   writeReg(CC1101_IOCFG0,  CC1101_DEFVAL_IOCFG0);
@@ -214,7 +212,7 @@ void CC1101::setDefaultRegs(void)
   writeReg(CC1101_PKTCTRL0,  CC1101_DEFVAL_PKTCTRL0);
 
   // Set default synchronization word
-  setSyncWord(defSyncWrd, false);
+  setSyncWord(CC1101_DEFVAL_SYNC1, CC1101_DEFVAL_SYNC0, false);
 
   // Set default device address
   setDevAddress(CC1101_DEFVAL_ADDR, false);
@@ -282,23 +280,38 @@ void CC1101::init(void)
  * 
  * Set synchronization word
  * 
- * 'sync'	Synchronization word
+ * 'syncH'	Synchronization word - High byte
+ * 'syncL'	Synchronization word - Low byte
+ * 'save' If TRUE, save parameter in EEPROM
+ */
+void CC1101::setSyncWord(uint8_t syncH, uint8_t syncL, bool save) 
+{
+  if ((syncWord[0] != syncH) || (syncWord[1] != syncL))
+  {
+    writeReg(CC1101_SYNC1, syncH);
+    writeReg(CC1101_SYNC0, syncL);
+    syncWord[0] = syncH;
+    syncWord[1] = syncL;
+    // Save in EEPROM
+    if (save)
+    {
+      EEPROM.write(EEPROM_SYNC_WORD, syncH);
+      EEPROM.write(EEPROM_SYNC_WORD + 1, syncL);
+    }
+  }
+}
+
+/**
+ * setSyncWord (overriding method)
+ * 
+ * Set synchronization word
+ * 
+ * 'syncH'	Synchronization word - pointer to 2-byte array
  * 'save' If TRUE, save parameter in EEPROM
  */
 void CC1101::setSyncWord(byte *sync, bool save) 
 {
-  if ((syncWord[0] != sync[0]) || (syncWord[1] != sync[1]))
-  {
-    writeReg(CC1101_SYNC1, sync[0]);
-    writeReg(CC1101_SYNC0, sync[1]);
-    memcpy(syncWord, sync, sizeof(syncWord));
-    // Save in EEPROM
-    if (save)
-    {
-      EEPROM.write(EEPROM_SYNC_WORD, sync[0]);
-      EEPROM.write(EEPROM_SYNC_WORD + 1, sync[1]);
-    }
-  }
+  CC1101::setSyncWord(sync[0], sync[1], save);
 }
 
 /**
@@ -357,6 +370,11 @@ void CC1101::setCarrierFreq(byte freq)
       writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_915);
       writeReg(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_915);
       break;
+    case CFREQ_433:
+      writeReg(CC1101_FREQ2,  CC1101_DEFVAL_FREQ2_433);
+      writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_433);
+      writeReg(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_433);
+      break;
     default:
       writeReg(CC1101_FREQ2,  CC1101_DEFVAL_FREQ2_868);
       writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_868);
@@ -387,7 +405,7 @@ void CC1101::setRegsFromEeprom(void)
   arrV[1] = EEPROM.read(EEPROM_SYNC_WORD + 1);
   // Set Sync word. 0x00 and 0xFF values are not allowed
   if (((arrV[0] != 0x00) && (arrV[0] != 0xFF)) || ((arrV[1] != 0x00) && (arrV[1] != 0xFF)))
-    setSyncWord(arrV, false);
+    setSyncWord(arrV[0], arrV[1], false);
   // Read device address from EEPROM
   bVal = EEPROM.read(EEPROM_DEVICE_ADDR);
   // Set device address
