@@ -4,6 +4,7 @@ May 1 2013
 - New setRegValue method in class REGISTER to set register value from a 1-to-4 byte number
 - setSyncWord from CC1101 class now accepts the main argument to be passed as individual bytes
   (High byte and low byte of the sync word)
+- 433MHz band now supported from the CC1101 class
 
 Apr 13 2013
 ---------------
