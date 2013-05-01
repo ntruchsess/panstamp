@@ -107,7 +107,6 @@ byte CHANNEL::update(void)
     voltage += ACVOLT_OFFSET_DIODE;    // Apply offset
     voltage *= voltageScale;
     voltage /= 1000;                   // convert to volts
-  
     //Process AC current
     adcI = adcI * voltageSupply;
     current = adcI / 1023;
@@ -216,7 +215,7 @@ byte CHANNEL::run(void)
     if (res == CHANNEL_NO_VAC_SIGNAL)
       break;
   }
-  /*
+  
   Serial.print(rmsVoltage, DEC);
   Serial.print(" ");
   Serial.print(rmsCurrent, DEC);
@@ -228,7 +227,7 @@ byte CHANNEL::run(void)
   Serial.print(powerFactor, DEC);
   Serial.print(" ");
   Serial.println(kwh, DEC);
-  */
+  
   return res;
 }
 
