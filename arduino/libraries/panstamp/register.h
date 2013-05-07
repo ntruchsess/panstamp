@@ -118,7 +118,7 @@ class REGISTER
       uint8_t i;
 
       for(i=0 ; i<length ; i++)
-        value[i] = (val >> 8*(length-i-1) & 0xFF;
+        value[i] = (val >> 8*(length-i-1)) & 0xFF;
     }
 };
 
