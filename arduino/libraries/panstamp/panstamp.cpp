@@ -488,7 +488,7 @@ void PANSTAMP::enterSystemState(SYSTATE state)
  * Reference: http://playground.arduino.cc/Main/InternalTemperatureSensor
  * 
  * Return:
- * 	Temperature in milli-degrees Celsius
+ * 	Temperature in degrees Celsius
  */
 long PANSTAMP::getInternalTemp(void) 
 {
