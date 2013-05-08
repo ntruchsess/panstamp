@@ -253,6 +253,7 @@ void initSensor(void)
 #elif TEMPPRESS
   pinMode(PIN_PWRPRESS, OUTPUT);  // Configure Power pin as output
   pressSensorON();
+  delay(200);
   bmp.begin();
 #endif
 }
