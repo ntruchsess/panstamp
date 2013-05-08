@@ -260,7 +260,7 @@ class PANSTAMP
      * Reference: http://playground.arduino.cc/Main/InternalTemperatureSensor
      * 
      * Return:
-     * 	Temperature in milli-degrees Celsius
+     * 	Temperature in degrees Celsius
      */
     long getInternalTemp(void);
 
