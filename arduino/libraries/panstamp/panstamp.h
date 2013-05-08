@@ -257,6 +257,7 @@ class PANSTAMP
      * getInternalTemp
      * 
      * Read internal (ATMEGA328 only) temperature sensor
+     * Reference: http://playground.arduino.cc/Main/InternalTemperatureSensor
      * 
      * Return:
      * 	Temperature in milli-degrees Celsius
