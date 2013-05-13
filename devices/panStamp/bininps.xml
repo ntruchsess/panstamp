@@ -64,20 +64,20 @@
     </reg>
     <reg name="Counters" id="13">
       <endpoint name="Counter 0" type="num" dir="inp">
-        <position>3</position>
-        <size>1</size>
+        <position>12</position>
+        <size>4</size>
       </endpoint>
       <endpoint name="Counter 1" type="num" dir="inp">
-        <position>2</position>
-        <size>1</size>
+        <position>8</position>
+        <size>4</size>
       </endpoint>
       <endpoint name="Counter 2" type="num" dir="inp">
-        <position>1</position>
-        <size>1</size>
+        <position>4</position>
+        <size>4</size>
       </endpoint>
       <endpoint name="Counter 3" type="num" dir="inp">
         <position>0</position>
-        <size>1</size>
+        <size>4</size>
       </endpoint>
     </reg>
   </regular>
