@@ -1,3 +1,7 @@
+May 13 2013
+---------------
+- Skip sleeping loop in goToSleep after running wakeUp
+
 May 8 2013
 ---------------
 - New implementation of getInternalTemp
