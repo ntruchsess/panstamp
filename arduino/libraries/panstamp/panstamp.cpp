@@ -398,6 +398,8 @@ void PANSTAMP::wakeUp(void)
 
   // Reset CC1101 IC
   cc1101.wakeUp();
+
+  systemState = SYSTATE_RXON;
 }
 
 /**
@@ -457,14 +459,21 @@ void PANSTAMP::goToSleep(void)
       minTime = WDTO_1S;
   }
 
+  systemState = SYSTATE_RXOFF;
+
   // Sleep
   for (i=0 ; i<loops ; i++)
   {
+    // Exit sleeping loop?
+    if (systemState == SYSTATE_RXON)
+      break;
+
     if (rtcCrystal)
       sleepRtc(minTime);
     else
       sleepWd(minTime);
   }
+  systemState = SYSTATE_RXON;
 }
 
 /**
