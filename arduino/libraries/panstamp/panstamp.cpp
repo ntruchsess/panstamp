@@ -334,7 +334,7 @@ void PANSTAMP::sleepWd(byte time)
   // ZZZZZZZZ...
 
   // Wake-up!!
-  wakeUp();
+  wakeUp(false);
 }
 
 /**
@@ -370,15 +370,17 @@ void PANSTAMP::sleepRtc(byte time)
   // ZZZZZZZZ...
 
   // Wake-up!!
-  wakeUp();
+  wakeUp(false);
 }
 
 /**
  * wakeUp
  *
  * Wake from sleep mode
+ *
+ * 'rxOn' Enter RX_ON state after waking up
  */
-void PANSTAMP::wakeUp(void) 
+void PANSTAMP::wakeUp(bool rxOn) 
 {
   // Exit from sleep
   sleep_disable();
@@ -399,7 +401,8 @@ void PANSTAMP::wakeUp(void)
   // Reset CC1101 IC
   cc1101.wakeUp();
 
-  systemState = SYSTATE_RXON;
+  if (rxOn)
+    systemState = SYSTATE_RXON;
 }
 
 /**

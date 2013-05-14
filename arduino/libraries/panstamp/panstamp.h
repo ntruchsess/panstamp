@@ -233,8 +233,10 @@ class PANSTAMP
      * wakeUp
      *
      * Wake from sleep mode
+     *
+     * 'rxOn' Enter RX_ON state after waking up
      */
-    void wakeUp(void);
+    void wakeUp(bool rxOn=true);
 
     /**
      * goToSleep
