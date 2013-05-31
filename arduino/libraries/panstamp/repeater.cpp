@@ -40,26 +40,6 @@ void REPEATER::init(byte maxHop)
 }
 
 /**
- * start
- *
- * Start repeater
- */
-void REPEATER::start(void)
-{
-  panstamp.cc1101.disableAddressCheck();    // Disable address check
-}
-
-/**
- * stop
- *
- * Stop repeater
- */
-void REPEATER::stop(void)
-{
-  panstamp.cc1101.enableAddressCheck();     // Enable address check
-}
-
-/**
  * Class constructor
  */
 REPEATER::REPEATER(void)
@@ -78,25 +58,24 @@ void REPEATER::packetHandler(SWPACKET *packet)
   static bool repeatPacket = true;
   static unsigned long currentTime;
 
-  // Don't repeat packets addressed to our device
-  if (packet->destAddr != panstamp.cc1101.devAddress)
+  if (enabled)
   {
-    // Don't repeat beyond the maximum hop count
-    if (packet->hop < maxHopCount)
+    // Don't repeat packets addressed to our device
+    if (packet->destAddr != panstamp.cc1101.devAddress)
     {
-      byte i;        
-
-      // Check received packet against the latest transactions
-      for(i=0 ; i<REPEATER_TABLE_DEPTH ; i++)
+      // Don't repeat beyond the maximum hop count
+      if (packet->hop < maxHopCount)
       {
-        // Same source/destination node?
-        if (transactions[i].regAddr == packet->regAddr)
+        byte i;        
+
+        // Check received packet against the latest transactions
+        for(i=0 ; i<REPEATER_TABLE_DEPTH ; i++)
         {
-          // Same SWAP function?
-          if (transactions[i].function == packet->function)
+          // Same source/destination node?
+          if (transactions[i].regAddr == packet->regAddr)
           {
-            // Different source of transmission?
-            if (transactions[i].srcAddr != packet->srcAddr)
+            // Same SWAP function?
+            if (transactions[i].function == packet->function)
             {
               // Same cyclic nonce?
               if (transactions[i].nonce == packet->nonce)
@@ -109,16 +88,16 @@ void REPEATER::packetHandler(SWPACKET *packet)
             }
           }
         }
-      }
 
-      // Repeat packet?
-      if (repeatPacket)
-      {
-        packet->srcAddr = panstamp.cc1101.devAddress;   // Modify source address
-        packet->hop++;                                  // Increment hop counter
-        delay(SWAP_TX_DELAY);                           // Delay before sending
-        if (packet->send())                             // Repeat packet
-          saveTransaction(packet);                      // Save transaction
+        // Repeat packet?
+        if (repeatPacket)
+        {
+          packet->srcAddr = panstamp.cc1101.devAddress;   // Modify source address
+          packet->hop++;                                  // Increment hop counter
+          delay(SWAP_TX_DELAY);                           // Delay before sending
+          if (packet->send())                             // Repeat packet
+            saveTransaction(packet);                      // Save transaction
+        }
       }
     }
   }

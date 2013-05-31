@@ -58,9 +58,15 @@ PANSTAMP::PANSTAMP(void)
  */
 void PANSTAMP::enableRepeater(byte maxHop)
 {
-  static REPEATER repe;
-  repeater = &repe;
-  repeater->init(maxHop);
+  if (repeater == NULL)
+  {
+    static REPEATER repe;
+    repeater = &repe;
+    repeater->init(maxHop);
+  }
+
+  if (maxHop == 0)
+    repeater->stop();
 }
 
 /**
@@ -119,8 +125,8 @@ void isrGDO0event(void)
           switch(swPacket.function)
           {
             case SWAPFUNCT_CMD:
-              // Broadcasted commands are not allowed
-              if (swPacket.destAddr == SWAP_BCAST_ADDR)
+              // Command not addressed to us?
+              if (swPacket.destAddr != panstamp.cc1101.devAddress)
                 break;
               // Current version does not support data recording mode
               // so destination address and register address must be the same
@@ -154,6 +160,9 @@ void isrGDO0event(void)
                 if (swPacket.regId != REGI_PRODUCTCODE)
                   break;
               }
+              // Query not addressed to us?
+              else if (swPacket.destAddr != panstamp.cc1101.devAddress)
+                break;
               // Current version does not support data recording mode
               // so destination address and register address must be the same
               if (swPacket.destAddr != swPacket.regAddr)

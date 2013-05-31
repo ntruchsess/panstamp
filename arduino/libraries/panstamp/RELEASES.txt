@@ -1,3 +1,10 @@
+May 26 2013
+---------------
+- Fixed bug in panstamp.cpp so that repeaters no longer respond to queries and commands not
+addressed to them.
+- Added "enabled" flag in repeater.cpp
+- enableRepeater(0) now stops the repeater mode
+
 May 14 2013
 ---------------
 - Fixed bug in wakeUp

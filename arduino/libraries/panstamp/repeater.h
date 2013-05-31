@@ -30,6 +30,12 @@
 #include "config.h"
 
 /**
+ * Macros
+ */
+#define start()     enabled = true
+#define stop()      enabled = false
+
+/**
  * Transaction
  */
 typedef struct
@@ -69,6 +75,11 @@ class REPEATER
 
   public:
     /**
+     * Enable flag
+     */
+    bool enabled;
+
+    /**
      * init
      *
      * Initialize repeater
@@ -76,20 +87,6 @@ class REPEATER
      * 'maxHop': maximum hop count
      */
     void init(byte maxHop);
-
-    /**
-     * start
-     *
-     * Start repeater
-     */
-    void start(void);
-
-    /**
-     * stop
-     *
-     * Stop repeater
-     */
-    void stop(void);
 
     /**
      * packetHandler
