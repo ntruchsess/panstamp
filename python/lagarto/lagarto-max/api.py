@@ -24,6 +24,8 @@ __author__="Daniel Berenguer"
 __date__  ="$Feb 24, 2012$"
 #########################################################################
 
+#import logging
+#import os
 import ephem
 import time
 import sys
@@ -33,7 +35,7 @@ sys.path.append(MaxDefinitions.lagarto_dir)
 from lagartoresources import LagartoEndpoint, LagartoException
 from xmltools import XmlSettings
 
-from clouding import PachubePacket, ThingSpeakPacket, OpenSensePacket, OpenSense, TwitterMessage
+from clouding import PachubePacket, ThingSpeakPacket, OpenSensePacket, OpenSense, TwitterMessage, AutoRemotePacket
 
 
 class TimeAPI:
@@ -163,7 +165,7 @@ class NetworkAPI:
     lagarto_client = None
     # Current network event tuple (endpoint, value)
     event = [None, None]
-      
+
 
     @staticmethod
     def reset_event():
@@ -269,6 +271,7 @@ class CloudAPI:
     """
     Static toolbox for clouding tasks
     """
+
     @staticmethod
     def push_pachube(endp, sharing_key, feed_id, datastream_id):
         """
@@ -363,3 +366,35 @@ class CloudAPI:
         except LagartoException as ex:
             ex.log()
 
+    @staticmethod
+    def push_autoremote(endp, key, message, target, sender, channel, password):
+        """
+        Push data to AutoRemote
+
+        @param endp: endpoint identification string
+        format 1: process.location.name
+        format 2: process.id
+        @param key: AutoRemote key
+        @param message: Formatted message template
+        @param target: Target field
+        @param sender: Sending device
+        @param channel: Act as Sender device channel
+        @param password: Device password
+
+        @return HTTP response from AutoRemote
+        """
+        try:
+            endpoint = NetworkAPI.get_endpoint(endp)
+            if endpoint is not None:
+		populated_message= message.replace("${id}", str(endpoint.id))
+                populated_message= populated_message.replace("${location}", str(endpoint.location))
+                populated_message= populated_message.replace("${name}", str(endpoint.name))
+                populated_message= populated_message.replace("${type}", str(endpoint.type))
+                populated_message= populated_message.replace("${direction}", str(endpoint.direction))
+                populated_message= populated_message.replace("${value}", str(endpoint.value))
+                populated_message= populated_message.replace("${unit}", str(endpoint.unit))
+                packet = AutoRemotePacket(key, populated_message, target, sender, channel, password)
+                return packet.push()
+            return None
+        except LagartoException as ex:
+            ex.log()

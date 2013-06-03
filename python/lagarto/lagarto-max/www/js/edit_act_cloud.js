@@ -30,7 +30,8 @@ function onchangeService()
     document.getElementById("item2box").src = "../edit_item2_opensense.html";
   else if (service == "twitter")
     document.getElementById("item2box").src = "../edit_item2_twitter.html";
-}
+  else if (service == "autoremote")
+    document.getElementById("item2box").src = "../edit_item2_autoremote.html";}
 
 /**
  * Return python representation of the network action

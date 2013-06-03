@@ -24,11 +24,21 @@ __author__="Daniel Berenguer"
 __date__  ="$Mar 31, 2012$"
 #########################################################################
 
+import logging
+import os
 import httplib
 import urllib
 import json
 import subprocess
 from time import strftime
+
+class ApiLog:
+    """
+    API logging class
+    """
+    # Logging
+    logger = logging.getLogger('Lagarto-Max')
+    logging.basicConfig(format='%(asctime)s %(module)s %(levelname)s %(message)s',filename='lagarto-max-cloud.log',level=logging.INFO)
 
 class PachubePacket:
     """
@@ -194,3 +204,58 @@ class TwitterMessage:
         #truncate to the maximum chars allowed by twitter that is 160
         self.message=  timestring[:160]
 
+class AutoRemotePacket:
+    """
+    Generic AutoRemote packet class
+    """
+    def push(self):
+        """
+        Push values to AutoRemote
+
+        @return response from AutoRemote
+        """
+        headers = {"Content-type": "application/x-www-form-urlencoded","Accept": "text/plain"}
+        url = "autoremotejoaomgcd.appspot.com"
+        res = None
+
+        try:
+            conn = httplib.HTTPSConnection(url, timeout=5)
+            ApiLog.logger.debug('AutoRemotePacket.push.conn.request( \"POST\", \"/sendmessage\", '+str(self.params)+', '+str(headers)+')')
+            conn.request("POST", "/sendmessage", self.params, headers)
+            response = conn.getresponse()
+            res = response.reason
+        except:
+            pass
+
+        conn.close()
+        ApiLog.logger.debug('AutoRemotePacket.push.res: '+str(res))
+
+        return res
+
+
+    def __init__(self, key, message, target, sender, channel, password):
+        """
+        Constructor
+
+        @param key: AutoRemote key
+        @param message: Formatted message template
+        @param target: Target field
+        @param sender: Sending device
+        @param channel: Act as Sender device channel
+        @param password: Device password
+        
+        """
+        ApiLog.logger.info('AutoRemotePacket('+key+', '+message+', '+target+', '+sender+', '+channel+', '+password+')')
+        params_dict = {'key': key, 'message': message}
+        if target:
+                params_dict['target']=target
+        if sender:
+                params_dict['sender']=sender
+        if channel:
+                params_dict['channel']=channel
+        if password:
+                params_dict['password']=password
+
+        # Parameters
+        self.params = urllib.urlencode(params_dict)
+        ApiLog.logger.debug('AutoRemotePacket.params: '+self.params)
