@@ -38,7 +38,7 @@ DEFINE_COMMON_REGISTERS()
 /*
  * Definition of custom registers
  */
-REGISTER panStream((byte*)&PanStream.send_message,(byte)PANSTREAM_MAXDATASIZE, NULL, NULL);
+REGISTER panStream((byte*)&PanStream.status,sizeof(PanStream.status), NULL, NULL);
 
 /**
  * 
@@ -56,10 +56,9 @@ DECLARE_REGISTERS_END()
  */
 DEFINE_COMMON_CALLBACKS()
 
-void onStatusReceived(SWPACKET *status);
+void onStatusReceived(SWPACKET *status_pkt);
 
 PanStreamClass::PanStreamClass(byte reg) : reg(reg) {
-  panstamp.statusReceived = &onStatusReceived;
   send_len = 0;
   receive_pos = 0;
   receive_len = 0;
@@ -67,13 +66,19 @@ PanStreamClass::PanStreamClass(byte reg) : reg(reg) {
   id = 0;
 }
 
+void PanStreamClass::init() {
+  panstamp.statusReceived = &onStatusReceived;
+};
+
 size_t PanStreamClass::write(uint8_t c) {
 
-  if (send_len == PANSTREAM_BUFFERSIZE) {
-    return 0;
+  while (send_len == PANSTREAM_BUFFERSIZE) {
+    delay(1); //wait for the buffer to clear (by receiving the matching acknowledge-packet)
   }
+  noInterrupts();
   send_message.send_buffer[send_len++] = c;
-  if (send_len >= PANSTREAM_MAXDATASIZE) {
+  interrupts();
+  if (send_len >= PANSTREAM_MAXDATASIZE || (status.autoflush_time_ms>0 && next_transmit-millis()<0)) {
     flush();
   }
   return 1;
@@ -87,22 +92,22 @@ int PanStreamClass::available() {
 int PanStreamClass::read() {
 
   if (receive_len == 0) return -1;
+  noInterrupts();
   byte ret = receive_buffer[receive_pos++];
   if (receive_pos == PANSTREAM_BUFFERSIZE) receive_pos=0;
   receive_len--;
+  noInterrupts();
   return ret;
 };
 
 int PanStreamClass::peek() {
-
   if (receive_len == 0) return -1;
   return receive_buffer[receive_pos];
 };
 
 void PanStreamClass::flush() {
-panstamp.statusReceived = &onStatusReceived;
-
   // send new packet only if there's no outstanding acknowledge
+  noInterrupts();
   if (send_message.send_id==0 && send_len > 0) {
     id++;
     if (id==0) {
@@ -112,11 +117,10 @@ panstamp.statusReceived = &onStatusReceived;
     send_message.num_bytes = send_len > PANSTREAM_MAXDATASIZE ? PANSTREAM_MAXDATASIZE : send_len;
     sendSwapStatus();
   }
+  interrupts();
 };
 
 void PanStreamClass::receiveMessage(PanStreamReceivedMessage* received) {
-Serial.println("receiveMessage");
-
   bool send = false;
   if (received->received_id==send_message.send_id) { //previous packet acknowledged by master -> prepare new packet send data
     // discard data of previous packet
@@ -163,21 +167,23 @@ Serial.println("receiveMessage");
 
 void PanStreamClass::sendSwapStatus() {
   SWSTATUS packet = SWSTATUS(reg, (byte*)&send_message, send_message.num_bytes+3);
+  next_transmit = status.autoflush_time_ms+millis();
   packet.send();
 };
 
-void onStatusReceived(SWPACKET *status) {
-  if( status->destAddr != panstamp.cc1101.devAddress ) // ignore packets not for this device
+void onStatusReceived(SWPACKET *status_pkt) {
+  if( status_pkt->destAddr != panstamp.cc1101.devAddress ) { // ignore packets not for this device
     return;
-  if( status->regId != PanStream.reg )                 // ignore packets not for the stream register
+  }
+  if( status_pkt->regId != PanStream.reg ) {                // ignore packets not for the stream register
     return;
-
+  }
   PanStreamReceivedMessage message;
-  byte *data = status->value.data;
+  byte *data = status_pkt->value.data;
   message.received_bytes = data[0];
   message.received_id = data[1];
   message.send_id = data[2];
-  message.num_bytes = status->value.length-3;
+  message.num_bytes = status_pkt->value.length-3;
   message.data = data+3;
   PanStream.receiveMessage(&message);
 };

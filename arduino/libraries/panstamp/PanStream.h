@@ -31,8 +31,8 @@
 #include "commonregs.h"
 
 #define PANSTREAM_BUFFERSIZE 64
-//#define PANSTREAM_MAXDATASIZE SWAP_REG_VAL_LEN-4
-#define PANSTREAM_MAXDATASIZE 16-4
+#define PANSTREAM_MAXDATASIZE SWAP_REG_VAL_LEN-4
+//#define PANSTREAM_MAXDATASIZE 16-4
 
 #define SWAP_MANUFACT_ID 0x00000022
 #define SWAP_PRODUCT_ID 0xFFFFFFFF
@@ -40,9 +40,9 @@
 #define FIRMWARE_VERSION 0xFF
 
 /**
- * 
+ *
  * Register indexes
- * 
+ *
  */
 
 DEFINE_REGINDEX_START()
@@ -65,6 +65,10 @@ struct PanStreamStatusMessage {
   uint8_t num_bytes;
 };
 
+struct PanStreamRegister {
+  volatile unsigned long autoflush_time_ms;
+};
+
 class PanStreamClass : public Stream
 
 {
@@ -77,21 +81,21 @@ public:
   int read();
   int peek();
   void flush();
+  void init();
 
+  PanStreamRegister status;
   PanStreamStatusMessage send_message;
   void receiveMessage(PanStreamReceivedMessage *v);
-
   byte reg;
-
-protected:
 
 private:
   byte receive_buffer[PANSTREAM_BUFFERSIZE];
-  uint8_t send_len;
-  uint8_t receive_pos;
-  uint8_t receive_len;
-  uint8_t master_id;
-  uint8_t id;
+  volatile unsigned long next_transmit;
+  volatile uint8_t send_len;
+  volatile uint8_t receive_pos;
+  volatile uint8_t receive_len;
+  volatile uint8_t master_id;
+  volatile uint8_t id;
   void sendSwapStatus();
 };
 
