@@ -31,10 +31,11 @@
 #include "commonregs.h"
 
 #define PANSTREAM_BUFFERSIZE 64
-#define PANSTREAM_MAXDATASIZE SWAP_REG_VAL_LEN-4
+//#define PANSTREAM_MAXDATASIZE SWAP_REG_VAL_LEN-4
+#define PANSTREAM_MAXDATASIZE 16-4
 
-#define SWAP_MANUFACT_ID 0xFF
-#define SWAP_PRODUCT_ID 0xFF
+#define SWAP_MANUFACT_ID 0x00000022
+#define SWAP_PRODUCT_ID 0xFFFFFFFF
 #define HARDWARE_VERSION 0xFF
 #define FIRMWARE_VERSION 0xFF
 
@@ -69,7 +70,7 @@ class PanStreamClass : public Stream
 {
 public:
 
-  PanStreamClass();
+  PanStreamClass(byte reg);
   
   size_t write(uint8_t c);
   int available();
@@ -79,6 +80,8 @@ public:
 
   PanStreamStatusMessage send_message;
   void receiveMessage(PanStreamReceivedMessage *v);
+
+  byte reg;
 
 protected:
 

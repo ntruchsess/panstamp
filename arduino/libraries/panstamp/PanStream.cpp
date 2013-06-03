@@ -58,7 +58,7 @@ DEFINE_COMMON_CALLBACKS()
 
 void onStatusReceived(SWPACKET *status);
 
-PanStreamClass::PanStreamClass() {
+PanStreamClass::PanStreamClass(byte reg) : reg(reg) {
   panstamp.statusReceived = &onStatusReceived;
   send_len = 0;
   receive_pos = 0;
@@ -100,6 +100,7 @@ int PanStreamClass::peek() {
 };
 
 void PanStreamClass::flush() {
+panstamp.statusReceived = &onStatusReceived;
 
   // send new packet only if there's no outstanding acknowledge
   if (send_message.send_id==0 && send_len > 0) {
@@ -114,6 +115,7 @@ void PanStreamClass::flush() {
 };
 
 void PanStreamClass::receiveMessage(PanStreamReceivedMessage* received) {
+Serial.println("receiveMessage");
 
   bool send = false;
   if (received->received_id==send_message.send_id) { //previous packet acknowledged by master -> prepare new packet send data
@@ -160,11 +162,16 @@ void PanStreamClass::receiveMessage(PanStreamReceivedMessage* received) {
 };
 
 void PanStreamClass::sendSwapStatus() {
-  SWSTATUS packet = SWSTATUS(REGI_STREAM, (byte*)&send_message, send_message.num_bytes+3);
+  SWSTATUS packet = SWSTATUS(reg, (byte*)&send_message, send_message.num_bytes+3);
   packet.send();
 };
 
 void onStatusReceived(SWPACKET *status) {
+  if( status->destAddr != panstamp.cc1101.devAddress ) // ignore packets not for this device
+    return;
+  if( status->regId != PanStream.reg )                 // ignore packets not for the stream register
+    return;
+
   PanStreamReceivedMessage message;
   byte *data = status->value.data;
   message.received_bytes = data[0];
@@ -175,4 +182,4 @@ void onStatusReceived(SWPACKET *status) {
   PanStream.receiveMessage(&message);
 };
 
-PanStreamClass PanStream;
+PanStreamClass PanStream(REGI_STREAM);
