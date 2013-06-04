@@ -1,0 +1,2 @@
+package Device::PanStamp;
+
