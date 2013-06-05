@@ -25,37 +25,6 @@
 #include "panstamp.h"
 #include "PanStream.h"
 
-/**
- * Declaration of common callback functions
- */
-DECLARE_COMMON_CALLBACKS()
-
-/**
- * Definition of common registers
- */
-DEFINE_COMMON_REGISTERS()
-
-/*
- * Definition of custom registers
- */
-REGISTER panStream((byte*)&PanStream.status,sizeof(PanStream.status), NULL, NULL);
-
-/**
- * 
- * Initialize table of registers
- * 
- */
-DECLARE_REGISTERS_START()
-&panStream
-DECLARE_REGISTERS_END()
-
-/**
- * 
- * Definition of common getter/setter callback functions
- * 
- */
-DEFINE_COMMON_CALLBACKS()
-
 void onStatusReceived(SWPACKET *status_pkt);
 
 PanStreamClass::PanStreamClass(byte reg) : reg(reg) {
@@ -187,5 +156,3 @@ void onStatusReceived(SWPACKET *status_pkt) {
   message.data = data+3;
   PanStream.receiveMessage(&message);
 };
-
-PanStreamClass PanStream(REGI_STREAM);
