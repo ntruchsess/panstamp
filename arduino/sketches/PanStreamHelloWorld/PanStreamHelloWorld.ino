@@ -11,13 +11,16 @@
  */
 #define LEDPIN 4
 
+#include "regtable.h"
+PanStreamClass PanStream(REGI_STREAM);
+
 void setup()
 {
   pinMode(LEDPIN, OUTPUT);
 
   Serial.begin(9600);
   Serial.println("startup");
-  delay(10000);
+  //delay(10000);
   // Init panStamp
   panstamp.init();
 

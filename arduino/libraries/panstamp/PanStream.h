@@ -34,21 +34,6 @@
 #define PANSTREAM_MAXDATASIZE SWAP_REG_VAL_LEN-4
 //#define PANSTREAM_MAXDATASIZE 16-4
 
-#define SWAP_MANUFACT_ID 0x00000022
-#define SWAP_PRODUCT_ID 0xFFFFFFFF
-#define HARDWARE_VERSION 0xFF
-#define FIRMWARE_VERSION 0xFF
-
-/**
- *
- * Register indexes
- *
- */
-
-DEFINE_REGINDEX_START()
-REGI_STREAM
-DEFINE_REGINDEX_END()
-
 struct PanStreamReceivedMessage {
   uint8_t received_bytes;
   uint8_t received_id;
