@@ -41,16 +41,21 @@ sub run() {
   my $self = shift;
 
   # Network configuration settings
-  $self->{_xmlnetwork} = XmlNetwork->new( $self->{_xmlSettings}->{network_file} );
-  $self->{devaddress}  = $self->{_xmlnetwork}->{devaddress};
-  $self->{security}    = $self->{_xmlnetwork}->{security};
-  $self->{password}    = Password->new( $self->{_xmlnetwork}->{password} );
+  $self->{_xmlnetwork} =
+    XmlNetwork->new( $self->{_xmlSettings}->{network_file} );
+  $self->{devaddress} = $self->{_xmlnetwork}->{devaddress};
+  $self->{security}   = $self->{_xmlnetwork}->{security};
+  $self->{password}   = Password->new( $self->{_xmlnetwork}->{password} );
 
   # Serial configuration settings
   $self->{_xmlserial} = XmlSerial-new( $self->{_xmlSettings}->{serial_file} );
 
   # Create and start serial modem object
-  $self->{modem} = SerialModem->new( $self->{_xmlserial}->{port}, $self->{_xmlserial}->{speed}, $self->{verbose} );
+  $self->{modem} = SerialModem->new(
+    $self->{_xmlserial}->{port},
+    $self->{_xmlserial}->{speed},
+    $self->{verbose}
+  );
 
   # Declare receiving callback function
   $self->{modem}->setRxCallback( $self->{_ccPacketReceived} );
@@ -62,8 +67,10 @@ sub run() {
   if ( defined $self->{_xmlnetwork}->{devaddress}
     and $self->{modem}->{devaddress} ne $self->{_xmlnetwork}->{devaddress} )
   {
-    die "Unable to set modem's device address to " . $self->{_xmlnetwork}->{devaddress}
-      unless ( $self->{modem}->setDevAddress( $self->{_xmlnetwork}->{devaddress} ) );
+    die "Unable to set modem's device address to "
+      . $self->{_xmlnetwork}->{devaddress}
+      unless (
+      $self->{modem}->setDevAddress( $self->{_xmlnetwork}->{devaddress} ) );
     $param_changed = 1;
   }
 
@@ -71,8 +78,10 @@ sub run() {
   if ( defined $self->{_xmlnetwork}->{network_id}
     and $self->{modem}->{syncword} ne $self->{_xmlnetwork}->{network_id} )
   {
-    die "Unable to set modem's network ID to " . $self->{_xmlnetwork}->{network_id}
-      unless ( $self->{modem}->setSyncWord( $self->{_xmlnetwork}->{network_id} ) );
+    die "Unable to set modem's network ID to "
+      . $self->{_xmlnetwork}->{network_id}
+      unless (
+      $self->{modem}->setSyncWord( $self->{_xmlnetwork}->{network_id} ) );
     $param_changed = 1;
   }
 
@@ -80,8 +89,10 @@ sub run() {
   if ( defined $self->{_xmlnetwork}->{freq_channel}
     and $self->{modem}->{freq_channel} ne $self->{_xmlnetwork}->{freq_channel} )
   {
-    die "Unable to set modem's frequency channel to " . $self->{_xmlnetwork}->{freq_channel}
-      unless ( $self->{modem}->setFreqChannel( $self->{_xmlnetwork}->{freq_channel} ) );
+    die "Unable to set modem's frequency channel to "
+      . $self->{_xmlnetwork}->{freq_channel}
+      unless (
+      $self->{modem}->setFreqChannel( $self->{_xmlnetwork}->{freq_channel} ) );
     $param_changed = 1;
   }
 
@@ -157,96 +168,107 @@ sub _ccPacketReceived($) {
 
   # Check function code
   # STATUS packet received
-  if ( $swPacket->{function} eq SwapFunction . STATUS ) {    #TODO implement SwapFunction.STATUS
-    return unless defined $swPacket - {value};
+  if ( $swPacket->{function} eq $SwapFunction::STATUS ) return
+    unless defined $swPacket - {value};
 
-    # Check status message (ecpected response, nonce, ...)?
-    $self->_checkStatus($swPacket);
+  # Check status message (ecpected response, nonce, ...)?
+  $self->_checkStatus($swPacket);
 
-    # Check type of data received
-    # Product code received
-    #TODO implement SwapRegId.ID_PRODUCT_CODE
-    if ( $swPacket->{regId} eq SwapRegId . ID_PRODUCT_CODE ) {
-      my $mote = SwapMote->new( $self, $swPacket->{value}->toAsciiHex(), $swPacket - {srcAddress}, $swPacket - {security}, $swPacket - {nonce} ) $mote->{nonce} = $swPacket->{nonce};
-      $self->_checkMote($mote);
-
-    }
-
-    # Device address received
-    elsif ( $swPacket->{regId} eq SwapRegId . ID_DEVICE_ADDR ) {
-
-      # Check address in list of motes
-      $self->updateMoteAddress( $swPacket->{srcAddress}, $swPacket->{value}->toInteger() );
-
-    }
-
-    # System state received
-    elsif ( $swPacket->{regId} eq == SwapRegId . ID_SYSTEM_STATE ) {
-      $self->_updateMoteState($swPacket);
-
-    }
-
-    # Periodic Tx interval received
-    elsif ( $swPacket->{regId} eq == SwapRegId . ID_TX_INTERVAL ) {
-
-      # Update interval in list of motes
-      $self->_updateMoteTxInterval($swPacket);
-
-    }
-
-    # For any other register id
-    else {
-
-      # Update register in the list of motes
-      $self->_updateRegisterValue($swPacket);
-    }
+  # Check type of data received
+  # Product code received
+  if ( $swPacket->{regId} eq $SwapRegId::ID_PRODUCT_CODE ) {
+    my $mote = SwapMote->new(
+      $self,
+      $swPacket->{value}->toAsciiHex(),
+      $swPacket - {srcAddress},
+      $swPacket - {security},
+      $swPacket - {nonce}
+    ) $mote->{nonce} = $swPacket->{nonce};
+    $self->_checkMote($mote);
 
   }
 
-  # QUERY packet received
-  elsif ( $swPacket->{function} eq SwapFunction . QUERY ) {
+  # Device address received
+  elsif ( $swPacket->{regId} eq $SwapRegId::ID_DEVICE_ADDR ) {
 
-    # Query addressed to our gateway?
-    if ( $swPacket->{destAddress} eq $self->{modem}->{devaddress} ) {
-
-      # Get mote from register address
-      my $mote = $self->{network}->get_mote( address = swPacket . regAddress );    #TODO parameter address?
-      if ( defined $mote ) {
-
-        # Send status packet
-        $self->send_status( $mote, $swPacket->{regId} );
-      }
-    }
+    # Check address in list of motes
+    $self->updateMoteAddress( $swPacket->{srcAddress},
+      $swPacket->{value}->toInteger() );
 
   }
 
-  # COMMAND packet received
-  elsif ( $swPacket->{function} eq SwapFunction . COMMAND ) {
+  # System state received
+  elsif ( $swPacket->{regId} eq $SwapRegId::ID_SYSTEM_STATE ) {
+    $self->_updateMoteState($swPacket);
 
-    # Command addressed to our gateway?
-    if ( $swPacket->{destAddress} eq $self->{modem}->{devaddress} ) {
+  }
 
-      # Get mote from register address
-      my $mote = $self->{network}->get_mote( address = swPacket . regAddress );    #TODO parameter address?
-      if ( defined $mote ) {
+  # Periodic Tx interval received
+  elsif ( $swPacket->{regId} eq $SwapRegId::ID_TX_INTERVAL ) {
 
-        # Anti-playback security enabled?
-        if ( $self->{_xmlnetwork}->{security} & 0x01 ) {
+    # Update interval in list of motes
+    $self->_updateMoteTxInterval($swPacket);
 
-          # Check nonces
-          if ( $mote->{nonce} ne $swPacket->{nonce} ) {
+  }
 
-            # Nonce missmatch. Transmit correct nonce
-            $self->send_nonce();
-            return;
-          }
+  # For any other register id
+  else {
+
+    # Update register in the list of motes
+    $self->_updateRegisterValue($swPacket);
+  }
+
+}
+
+# QUERY packet received
+elsif ( $swPacket->{function} eq SwapFunction::QUERY ) {
+
+  # Query addressed to our gateway?
+  if ( $swPacket->{destAddress} eq $self->{modem}->{devaddress} ) {
+
+    # Get mote from register address
+    my $mote =
+      $self->{network}->get_mote( address = swPacket . regAddress )
+      ;    #TODO parameter address?
+    if ( defined $mote ) {
+
+      # Send status packet
+      $self->send_status( $mote, $swPacket->{regId} );
+    }
+  }
+
+}
+
+# COMMAND packet received
+elsif ( $swPacket->{function} eq $SwapFunction::COMMAND ) {
+
+  # Command addressed to our gateway?
+  if ( $swPacket->{destAddress} eq $self->{modem}->{devaddress} ) {
+
+    # Get mote from register address
+    my $mote =
+      $self->{network}->get_mote( address = swPacket . regAddress )
+      ;    #TODO parameter address?
+    if ( defined $mote ) {
+
+      # Anti-playback security enabled?
+      if ( $self->{_xmlnetwork}->{security} & 0x01 ) {
+
+        # Check nonces
+        if ( $mote->{nonce} ne $swPacket->{nonce} ) {
+
+          # Nonce missmatch. Transmit correct nonce
+          $self->send_nonce();
+          return;
         }
-
-        # Send command packet to target mote
-        $self->setMoteRegister( $mote, $swPacket->{regId}, $swPacket->{value}, sendack = True );    #TODO parameter sendack
       }
+
+      # Send command packet to target mote
+      $self->setMoteRegister( $mote, $swPacket->{regId}, $swPacket->{value},
+        sendack = True );    #TODO parameter sendack
     }
   }
+}
 }
 ###########################################################
 # sub _checkMote
@@ -305,7 +327,8 @@ sub _updateMoteAddress($$) {
   return if ( $oldAddr eq $newAddr );
 
   # Get mote from list
-  my $mote = $self->{network}->get_mote( address = oldAddr );    #TODO parameter address
+  my $mote =
+    $self->{network}->get_mote( address = oldAddr );    #TODO parameter address
   if ( defined $mote ) {
     $mote->{address} = $newAddr;
 
@@ -331,7 +354,9 @@ sub _updateMoteState($) {
   my $state = $packet->{value}->toInteger();
 
   # Get mote from list
-  my $mote = $self->{network}->get_mote( address = packet . regAddress );    #TODO parameter address
+  my $mote =
+    $self->{network}->get_mote( address = packet . regAddress )
+    ;    #TODO parameter address
   if ( defined $mote ) {
 
     # Has the state really changed?
@@ -363,7 +388,9 @@ sub _updateMoteTxInterval($) {
   my $interval = $packet->{value} . > toInteger();
 
   # Get mote from list
-  my $mote = $self->{network}->get_mote( address = packet . regAddress );    #TODO parameter address
+  my $mote =
+    $self->{network}->get_mote( address = packet . regAddress )
+    ;    #TODO parameter address
   if ( defined $mote ) {
 
     # Has the interval really changed?
@@ -386,7 +413,9 @@ sub _updateRegisterValue($) {
   my ( $self, $packet ) = @_;
 
   # Get mote from list
-  my $mote = $self->{network}->get_mote( address = packet . regAddress );    #TODO parameter address
+  my $mote =
+    $self->{network}->get_mote( address = packet . regAddress )
+    ;    #TODO parameter address
   if ( defined $mote ) {
 
     # Search within its list of regular registers
@@ -400,7 +429,8 @@ sub _updateRegisterValue($) {
           if ( defined $reg->{value} ) {
             return if ( $reg->{value}->isEqual( $packet->{value} ) );
             return unless ( defined $packet->{value} );
-            return unless ( $reg->getLength() eq $packet->{value}->getLength() );
+            return
+              unless ( $reg->getLength() eq $packet->{value}->getLength() );
           }
 
           # Save new register value
@@ -476,17 +506,22 @@ sub _checkStatus($) {
   my ( $self, $status ) = @_;
 
   # Check possible command ACK
-  if ( ( defined $self->{_expectedAck} ) and ( $status->{function} eq SwapFunction . STATUS ) ) {    #TODO SwapFunction.STATUS
+  if (  ( defined $self->{_expectedAck} )
+    and ( $status->{function} eq $SwapFunction::STATUS ) )
+  {
     if ( $status->{regAddress} eq $self->{_expectedAck}->{regAddress} ) {
       if ( $status->{regId} eq $self->{_expectedAck}->{regId} ) {
-        $self->{_packetAcked} = $self->{_expectedAck}->{value}->isEqual( $status->{value} );
+        $self->{_packetAcked} =
+          $self->{_expectedAck}->{value}->isEqual( $status->{value} );
       }
     }
   }
 
   # Check possible response to a precedent query
   delete $self->{_valueReceived};
-  if ( ( defined $self->_expectedRegister ) and ( $status->{function} eq SwapFunction . STATUS ) ) {    #TODO SwapFunction.STATUS
+  if (  ( defined $self->_expectedRegister )
+    and ( $status->{function} eq $SwapFunction::STATUS ) )
+  {
     if ( $status->{regAddress} eq $self->{_expectedRegister}->getAddress() ) {
       if ( $status->{regId} eq $self->{_expectedRegister}->{id} ) {
         $self->{_valueReceived} = $status->{value};
@@ -495,7 +530,9 @@ sub _checkStatus($) {
   }
 
   # Update security option and nonce in list
-  my $mote = $self->{network}->get_mote( address = $status->{srcAddress} );                             #TODO parameter address
+  my $mote =
+    $self->{network}->get_mote( address = $status->{srcAddress} )
+    ;    #TODO parameter address
 
   if ( defined $mote ) {
 
@@ -513,8 +550,10 @@ sub _checkStatus($) {
           $upper_limit -= 0x100;
         }
 
-        #TODO str?
-        die "Mote " . str( $mote->{address} ) . ": anti-playback nonce missmatch. Possible attack!" unless ( $lower_limit <= $status->{nonce} <= $upper_limit );
+        die "Mote "
+          . $mote->{address}
+          . ": anti-playback nonce missmatch. Possible attack!"
+          unless ( $lower_limit <= $status->{nonce} <= $upper_limit );
       }
     }
     $mote->{security} = $status->{security};
@@ -533,9 +572,12 @@ sub _discoverMotes() {
   my $self = shift;
 
   $self->{_poll_regular_regs} = 1;
-  my $query = SwapQueryPacket->new( SwapRegId . ID_PRODUCT_CODE );    #TODO SwapRegId.ID_PRODUCT_CODE
+  my $query = SwapQueryPacket->new($SwapRegId::ID_PRODUCT_CODE);
   $query->send($self);
-  my $t = threading . Timer( 20.0, self . _endPollingValues ) t . start();    #TODO threading?
+  my $t =
+      threading
+    . Timer( 20.0, self . _endPollingValues ) t
+    . start();    #TODO threading?
 }
 
 ###########################################################
@@ -566,7 +608,8 @@ sub send_status($$) {
   if ( defined $reg ) {
 
     # Status packet to be sent
-    my $status = SwapStatusPacket->new( $mote . $address, $regid, $reg->{value} );
+    my $status =
+      SwapStatusPacket->new( $mote . $address, $regid, $reg->{value} );
     $status->{srcAddress} = $self->{_xmlnetwork}->{devaddress};
     $self->{nonce}++;
     if ( $self->{nonce} > 0xFF ) {
@@ -590,7 +633,8 @@ sub send_nonce() {
   my $value = SwapValue->new( $self->{nonce} );
 
   # Status packet to be sent
-  my $status = SwapStatusPacket->new( $self->{_xmlnetwork}->{devaddress}, SwapRegId . ID_SECU_NONCE, $value );
+  my $status = SwapStatusPacket->new( $self->{_xmlnetwork}->{devaddress},
+    $SwapRegId::ID_SECU_NONCE, $value );
   $self->{nonce}++;
   if ( $self->{nonce} > 0xFF ) {
     $self->{nonce} = 0;
@@ -617,22 +661,23 @@ sub setMoteRegister($$$@) {
   my ( $self, $mote, $regid, $value, $sendack ) = @_;
 
   # Send command multiple times if necessary
-  for ( my $i = 0 ; $i < SwapServer . _MAX_SWAP_COMMAND_TRIES ; $i++ ) {    #TODO SwapServer._MAX_SWAP_COAMMAND_TRIES
+  for ( my $i = 0 ; $i < $SwapServer::_MAX_SWAP_COMMAND_TRIES ; $i++ )
+  {    #TODO SwapServer._MAX_SWAP_COAMMAND_TRIES
 
     # Send command
     my $ack = $mote->cmdRegister( $regid->{value} );
 
     # Wait for aknowledgement from mote
-    if ( $self->_waitForAck( $ack, SwapServer . _MAX_WAITTIME_ACK ) ) {
+    if ( $self->_waitForAck( $ack, $SwapServer::_MAX_WAITTIME_ACK ) ) {
       if ($sendack) {
 
         # Send status message
         $self->send_status( $mote, $regid );
       }
-      return 1;                                                             # ACK received
+      return 1;    # ACK received
     }
   }
-  return 0;                                                                 # Got no ACK from mote
+  return 0;        # Got no ACK from mote
 }
 
 ###########################################################
@@ -650,17 +695,17 @@ sub setEndpointValue($$) {
   my ( $self, $endpoint, $value ) = @_;
 
   # Send command multiple times if necessary
-  for ( my $i = 0 ; $i < SwapServer . _MAX_SWAP_COMMAND_TRIES ; $i++ ) {    #TODO SwapServer._MAX_SWAP_COMMAND_TRIES
+  for ( my $i = 0 ; $i < $SwapServer::_MAX_SWAP_COMMAND_TRIES ; $i++ ) {
 
     # Send command
     my $ack = $endpoint->sendSwapCmd($value);
 
     # Wait for aknowledgement from mote
-    if ( $self->_waitForAck( $ack, SwapServer . _MAX_WAITTIME_ACK ) ) {
-      return 1;                                                             # ACK received
+    if ( $self->_waitForAck( $ack, $SwapServer::_MAX_WAITTIME_ACK ) ) {
+      return 1;    # ACK received
     }
   }
-  return 0;                                                                 # Got no ACK from mote
+  return 0;        # Got no ACK from mote
 }
 
 ###########################################################
@@ -682,15 +727,16 @@ sub queryMoteRegister($$) {
   my $register = SwapRegister->new( $mote, $regId );
 
   # Send query multiple times if necessary
-  for ( my $i = 0 ; $i < SwapServer . _MAX_SWAP_COMMAND_TRIES ; $i++ ) {    #TODO SwapServer._MAX_SWAP_COMMAND_TRIES
+  for ( my $i = 0 ; $i < $SwapServer::_MAX_SWAP_COMMAND_TRIES ; $i++ ) {
 
     # Send query
     $register->sendSwapQuery();
 
     # Wait for aknowledgement from mote
-    my $regVal = $self->_waitForReg( $register, SwapServer . _MAX_WAITTIME_ACK );    #TODO SwapServer._MAX_WAITTIME_ACK
-    if ( defined $regVal ) {
-      return $regVal;                                                                # Got response from mote
+    my $regVal = $self->_waitForReg( $register, $SwapServer::_MAX_WAITTIME_ACK )
+      if ( defined $regVal )
+    {
+      return $regVal;    # Got response from mote
     }
   }
   return undef;
@@ -788,11 +834,19 @@ sub update_definition_files() {
   my $local_tar = XmlSettings->{device_localdir} . ".tar";
 
   eval {    #TODO retrieve file from URL
-    my $remote = urllib2 . urlopen( XmlSettings . device_remote ) local = open( local_tar, 'wb' ) local . write( remote . read() ) local . close();
+    my $remote = urllib2 . urlopen( XmlSettings . device_remote ) local =
+      open( local_tar, 'wb' ) local . write( remote . read() ) local . close();
   };
 
-  my $tar = $tarfile . open(local_tar) direc =
-    os . path . dirname( XmlSettings . device_localdir ) tar . extractall( path = direc ) tar . close() os . remove(local_tar) except : print "Unable to update Device Definition Files";
+  my $tar = $tarfile 
+    . open(local_tar) direc =
+      os 
+    . path
+    . dirname( XmlSettings . device_localdir ) tar
+    . extractall( path = direc ) tar
+    . close() os
+    . remove(local_tar) except : print
+    "Unable to update Device Definition Files";
 }
 
 ###########################################################
@@ -806,63 +860,70 @@ sub update_definition_files() {
 # @param start: Start server upon creation if this flag is True
 ###########################################################
 
-sub new($@) { # self, eventHandler, settings = None, start = True ) : """
-  my ($class,$eventHandler,$settings,$start) = @_;
-  
-  $start = 1 unless (defined $start);
+sub new($@) {    # self, eventHandler, settings = None, start = True ) : """
+  my ( $class, $eventHandler, $settings, $start ) = @_;
+
+  $start = 1 unless ( defined $start );
 
   #threading . Thread . __init__(self) self . _stop = threading . Event()
 
-  my $self = {
+  my $self = bless {
+
     # Server's device address
     devaddress => 1,
+
     # Server's Security nonce
     nonce => 0,
+
     # Security option
     security => 0,
+
     # Encryption password
-  password => 0,
+    password => 0,
 
-  # True if last packet was ack'ed
-  _packetAcked =>0,
+    # True if last packet was ack'ed
+    _packetAcked => 0,
 
-  # Event handling object. Its class must define the following methods
-  # in order to dispatch incoming SWAP events:
-  # - newMoteDetected(mote)
-  # - newEndpointDetected(endpoint)
-  # - newParameterDetected(parameter)
-  # - moteStateChanged(mote)
-  # - moteAddressChanged(mote)
-  # - registerValueChanged(register)
-  # - endpointValueChanged(endpoint)
-  # - parameterValueChanged(parameter)
-  _eventHandler => $eventHandler,
+    # Event handling object. Its class must define the following methods
+    # in order to dispatch incoming SWAP events:
+    # - newMoteDetected(mote)
+    # - newEndpointDetected(endpoint)
+    # - newParameterDetected(parameter)
+    # - moteStateChanged(mote)
+    # - moteAddressChanged(mote)
+    # - registerValueChanged(register)
+    # - endpointValueChanged(endpoint)
+    # - parameterValueChanged(parameter)
+    _eventHandler => $eventHandler,
 
-  # General settings
-  _xmlSettings => XmlSettings->new($settings)
-  };
+    # General settings
+    _xmlSettings => XmlSettings->new($settings)
+  }, $class;
 
   # Update Device Definition Files from Internet server
-  if ($self->{_xmlSettings}->{updatedef} ) {
+  if ( $self->{_xmlSettings}->{updatedef} ) {
     $self->update_definition_files();
   }
 
   ## Verbose SWAP frames
-  $self->{verbose} = ($self->{_xmlSettings}->{debug} > 0) ? 1 : 0; 
-  
+  $self->{verbose} = ( $self->{_xmlSettings}->{debug} > 0 ) ? 1 : 0;
+
   ## Network data
-  $self->{network} = SwapNetwork->new( $self, $self->{_xmlSettings}->{swap_file} );
+  $self->{network} =
+    SwapNetwork->new( $self, $self->{_xmlSettings}->{swap_file} );
 
   ## Tells us if the server is running
   $self->{is_running} = 0;
 
   ## Poll regular registers whenever a product code packet is received
-  $self->{_poll_regular_regs}=0;
+  $self->{_poll_regular_regs} = 0;
 
   # Start server
   if ($start) {
     $self->start();
   }
-  
-  return bless $self,$class;
+
+  return $self;
 }
+
+1;

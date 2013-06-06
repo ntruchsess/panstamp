@@ -157,7 +157,7 @@ sub getNbOfMotes() {
 # @return mote
 ###########################################################
 
-sub getMote(@) {
+sub getMote(;$$) {
   my ( $self, $index, $address ) = @_;
   return $self->{server}->{network}->get_mote( $index, $address );
 }
@@ -243,7 +243,7 @@ sub stop() {
 # @return endpoint object
 ###########################################################
 
-sub get_endpoint(@) {
+sub get_endpoint(;$$$) {
   my ( $self, $endpid, $location, $name ) = @_;
   foreach my $mote ( @{ $self->{network}->{motes} } ) {
     foreach my $register ( @{ $mote->{regular_registers} } ) {
@@ -283,7 +283,7 @@ sub update_definition_files() {
 # @param start: Start SWAP server if True
 ###########################################################
 
-sub new(@) {
+sub new(;$$) {
   my ($class, $settings, $start) = @_;
 
   $start = 1 unless (defined $start);
