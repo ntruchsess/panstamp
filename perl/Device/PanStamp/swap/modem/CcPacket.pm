@@ -35,7 +35,7 @@ sub toString() {
 #        Class constructor
 #        @param strPacket: Wireless packet in string format
 ###########################################################
-sub new(@) {
+sub new(;$) {
   my ($class,$strPacket) = @_;
 
   my $self = {
@@ -44,7 +44,7 @@ sub new(@) {
   	lqi  => 0   # LQI in case of packet received
   };
 
-  if ($strPacket) {
+  if (defined $strPacket) {
   	# Check packet length
     die "Incomplete packet received." if (length $strPacket < 20);
     # Check the existence of the (RSSI/LQI) pair
