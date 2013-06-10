@@ -3,7 +3,6 @@
 #
 # Multi-format SWAP value class
 #########################################################################
-
 #########################################################################
 # sub getLength
 #
@@ -11,12 +10,10 @@
 #
 # @return Length in bytes of the current value
 #########################################################################
-
 sub getLength() {
   my $self = shift;
   return scalar @{ $self->{_data} };
 }
-
 #########################################################################
 # sub toInteger
 #
@@ -24,10 +21,8 @@ sub getLength() {
 #
 # @return Current value in integer format
 #########################################################################
-
 sub toInteger() {
   my $self = shift;
-
   my $val  = 0;
   my @data = @{ $self->{_data} };
   foreach my $i ( 0 .. $#data ) {
@@ -35,7 +30,6 @@ sub toInteger() {
   }
   return $val;
 }
-
 #########################################################################
 # sub clone
 #
@@ -43,13 +37,11 @@ sub toInteger() {
 #
 # @return Copy of the current value
 #########################################################################
-
 sub clone() {
   my $self = shift;
   my @data = @{ $self->{_data} };
   return SwapValue->new(@data);
 }
-
 #########################################################################
 # sub toAscii
 #
@@ -57,12 +49,10 @@ sub clone() {
 #
 # @return Current value in ASCII format
 #########################################################################
-
 sub toAscii() {
   my $self = shift;
   return join( "", @{ $self->{_data} } );
 }
-
 #########################################################################
 # sub toAsciiStr
 #
@@ -70,29 +60,24 @@ sub toAscii() {
 #
 # @return
 #########################################################################
-
 sub toAsciiStr() {
   my $self = shift;
   return pack "A*", @{ $self->{_data} };
 }
-
 #########################################################################
 # sub toAsciiHex
 #
 # Convert SWAP value into printable ASCII hex string. Use this function for sequences of
 # integer numbers
 #########################################################################
-
 my $self = shift;
-
-my @out = ();
+my @out  = ();
 foreach my $item ( @{ $self->{_data} } ) {
   push @out, sprintf( "%02X", $item );
 }
 
 # Return ASCII string
 return join "", @out;
-
 #########################################################################
 # sub toList
 #
@@ -100,13 +85,10 @@ return join "", @out;
 #
 # @return Current value as a list of bytes
 #########################################################################
-
 sub toList() {
   my $self = shift;
-
   return @{ $self->{_data} };
 }
-
 #########################################################################
 # sub isEqual
 #
@@ -117,13 +99,11 @@ sub toList() {
 # @return 1 if the value passed as argument is equal to the current one. Return 0
 # otherwise
 #########################################################################
-
 sub isEqual($) {
   my ( $self, $value ) = @_;
-
   if ( defined $value ) {
     if ( $self->getLength() eq $value->getLength() ) {
-      my @data1 = @{$self->{_data}};
+      my @data1 = @{ $self->{_data} };
       my @data2 = $value->toList();
       foreach my $i ( 0 .. $#data1 ) {
         return 0 if ( $data1[$i] ne $data2[$i] );
@@ -133,7 +113,6 @@ sub isEqual($) {
   }
   return 0;
 }
-
 #########################################################################
 # sub new
 #
@@ -141,62 +120,50 @@ sub isEqual($) {
 #
 # @param value: Raw value in form of list or string
 # @param length: byte length of the value
+# @param template: perl 'unpack' template to read value byte data from string
 #########################################################################
+sub new(;$$$) {
+  my ( $class, $value, $length, $template ) = @_;
 
-sub new(;$) {
-  my ( $class, $value, $length ) = @_;
-  ## Raw value in form of list
+  # no value:
+  return bless { _data => [] }, $class unless defined $value;
 
-  $length = 0 unless defined $length;
-  
-  return bless {
-    _data => ref($value) eq "ARRAY" ? $value : unpack( "C*", $value ) #TODO unpack is array, not ref to array
-  }, $class;
+  # Raw value in form of list:
+  return bless { _data => $value }, $class if ( ref($value) eq "ARRAY" );
+
+  # template supplied:
+  return bless { _data => unpack( $template, $value ) }, $class
+    if ( defined $template );
+
+  # default length = 0:
+  return bless { _data => [] }, $class unless defined $length;
+  my $res;
+
+  #Boolean or int
+  if ( $value =~ /^[01]$/ or $value =~ /^\d+$/ ) {
+    $res = $value;
+
+    #Float
+  } elsif ( $value =~ /^\d+\.\d*$/ ) {
+    $res = int( $value * 10 );
+
+    #just Numbers and dots, remove dots
+  } elsif ( $value =~ /^\d[\d.]*$/ ) {
+    $res = ( $value =~ s/\.//gr );
+
+    #ascii string
+  } else {
+    return bless {
+      _data => unpack "a" x $length,
+      substr( $value, 0, $length )
+    }, $class;
+  }
+  my @data = ();
+  if ( $length > 0 and $length <= 4 ) {
+    foreach my $i ( 0 .. $length ) {
+      push @data, ( $res >> ( 8 * ( $length - 1 - $i ) ) ) & 0xFF;
+    }
+  }
+  return bless { _data => \@data }, $class;
 }
-
 1;
-
-        ## Raw value in form of list
-        self._data = []
-        isAsciiString = False
-        if value is not None:
-            # In case of list passed in the constructor
-            if type(value) is list:
-                self._data = value
-            # Boolean
-            elif type(value) is bool:
-                res = int(value)
-            # Float
-            elif type(value) is float:
-                res = int(value*10)
-            # In case a string is passed in the constructor
-            elif type(value) in [str, unicode]:
-                try:
-                    # Remove decimal point
-                    value = value.replace(".", "")
-                    # Convert to integer
-                    res = int(value)
-                except ValueError:
-                    isAsciiString = True
-            else:
-                res = value
-
-            if isAsciiString:
-                # OK, treat value as a pure ASCII string
-                strlen = len(value)
-                # Truncate string
-                if strlen > length:                    
-                    value = value[:length]
-                # Copy string
-                for ch in value:
-                    self._data.append(ord(ch))
-                # Trailing zeros
-                if length > strlen:
-                    for i in range(length - strlen):
-                        self._data.append(0)
-            # In case of integer or long
-            elif length > 0 and length <= 4:
-                for i in range(length):
-                    val = (res >> (8 * (length-1-i))) & 0xFF
-                    self._data.append(val)
-

@@ -1,6 +1,7 @@
 package Device::Panstamp::swap::protocol::SwapMote;
 use strict;
 use warnings;
+use Time::HiRes qw(time);
 use SwapPacket qw(SwapStatusPacket SwapCommandPacket SwapQueryPacket);
 use SwapDefs qw(SwapRegId SwapState);
 use SwapValue qw(SwapValue);
@@ -105,13 +106,13 @@ sub cmdRegisterWack($$) {
 #
 # @param address: New mote address
 #
-# @return True if this command is confirmed from the mote. Return False otherwise
+# @return 1 if this command is confirmed from the mote. Return 0 otherwise
 #########################################################################
 
 sub setAddress($) {
   my ( $self, $address ) = @_;
 
-  my $val = SwapValue->new( $address, 'length' => 1 ); #TODO parameter 'length'?
+  my $val = SwapValue->new( $address, 1 );
   return $self->cmdRegisterWack( SwapRegId::ID_DEVICE_ADDR, $val );
 }
 
@@ -128,7 +129,7 @@ sub setAddress($) {
 sub setNetworkId($) {
   my ( $self, $netId ) = @_;
 
-  my $val = SwapValue->new( $netId, 'length' => 2 );   #TODO parameter 'length'?
+  my $val = SwapValue->new( $netId, 2 );
   return $self->cmdRegisterWack( SwapRegId::ID_NETWORK_ID, $val );
 }
 
@@ -145,7 +146,7 @@ sub setNetworkId($) {
 sub setFreqChannel($) {
   my ( $self, $channel ) = @_;
 
-  my $val = SwapValue->( $channel, 'length' => 1 );    #TODO parameter 'length'?
+  my $val = SwapValue->( $channel, 1 );
   return $self->cmdRegisterWack( SwapRegId::ID_FREQ_CHANNEL, $val );
 }
 
@@ -162,7 +163,7 @@ sub setFreqChannel($) {
 sub setSecurity($) {
   my ( $self, $secu ) = @_;
 
-  my $val = SwapValue->( $secu, 'length' => 1 );    #TODO parameter 'length'?
+  my $val = SwapValue->( $secu, 1 );
   return $self->cmdRegisterWack( SwapRegId::ID_SECU_OPTION, $val );
 }
 
@@ -179,7 +180,7 @@ sub setSecurity($) {
 sub setTxInterval($) {
   my ( $self, $interval ) = @_;
 
-  my $val = SwapValue->( $interval, 'length' => 2 );   #TODO parameter 'length'?
+  my $val = SwapValue->( $interval, 2 );
   return $self->cmdRegisterWack( SwapRegId::ID_TX_INTERVAL, $val );
 }
 
@@ -194,7 +195,7 @@ sub setTxInterval($) {
 subf restart() {
   my $self = shift;
     my $val =
-    SwapValue->( SwapState::RESTART, 'length' => 1 );  #TODO parameter 'length'?
+    SwapValue->( SwapState::RESTART, 1);
     return $self->cmdRegisterWack( SwapRegId::ID_SYSTEM_STATE, $val );
 };
 
@@ -209,7 +210,7 @@ subf restart() {
 sub leaveSync() {
   my $self = shift;
   my $val =
-    SwapValue->new( SwapState::RXOFF, 'length' = 1 );  #TODO parameter 'length'?
+    SwapValue->new( SwapState::RXOFF, 1 );
   return $self->cmdRegisterWack( SwapRegId::ID_SYSTEM_STATE, $val );
 };
 
@@ -222,7 +223,7 @@ sub leaveSync() {
 sub updateTimeStamp() {
   my $self = shift;
 
-  $self->{timestamp} = time . time();    #TODO time
+  $self->{timestamp} = time;
 };
 
 #########################################################################

@@ -462,7 +462,7 @@ sub sendSwapCmd($) {
       }
     }
 
-    $swap_value = SwapValue( $res, $length );    #TODO check SwapValue!
+    $swap_value = SwapValue( $res, $length );
   }
 
   # Register value in list format
@@ -511,7 +511,7 @@ sub sendSwapCmd($) {
 
   # Convert to SWapValue
   my $newRegVal = SwapValue->new( \@lstRegVal )
-    ;    #TODO check whether to pass list or reference?
+    ;
 
   # Send SWAP command
   return $self->{register}->sendSwapCmd($newRegVal);

@@ -393,9 +393,8 @@ sub getRegList(;$) {
               $swRegister->add($swParam);
 
               # Create empty value for the register
-              $swRegister->{value} =
-                SwapValue->new( [0] *swRegister . getLength() )
-                ;    #TODO construct String of '0' of given length
+              $swRegister->{value} = 
+                SwapValue->new(\@{unpack ("a"x $swRegister->getLength(),"" )});
               $swRegister->update();
 
               # Add endpoint to the list
