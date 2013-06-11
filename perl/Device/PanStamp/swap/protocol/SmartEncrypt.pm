@@ -1,10 +1,16 @@
-package Device::PanStamp::swap::protocol::SmartEncrypt;
-
 #########################################################################
 # class Password
 #
 # Encryption password
 #########################################################################
+
+package Device::PanStamp::swap::protocol::SmartEncrypt;
+
+use strict;
+use warnings;
+
+use parent qw(Exporter);
+our @EXPORT_OK = qw();    # symbols to export on request
 
 #########################################################################
 # sub to_string
@@ -40,17 +46,20 @@ sub to_string() {
 sub new($) {
   my ( $class, $password ) = @_;
 
-  ## Password bytes
-  $self->{data} = [];
+  my $self = {
+    ## Password bytes
+    data => []
+  };
 
-  if ( ref($password) eq ARRAY ) {
+  if ( ref($password) eq "ARRAY" ) {
     @{ $self->{password} } = @$password;
-  }
-  else {
+  } else {
     for ( my $i = 0 ; $i < length($password) ; $i += 2 ) {
       push @{ $self->{data} }, hex( substr( $password, $i, 2 ) );
     }
   }
+
+  return bless $self, $class;
 }
 
 1;

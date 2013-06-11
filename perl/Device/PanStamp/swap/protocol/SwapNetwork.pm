@@ -1,11 +1,18 @@
-use SwapMote;
-use JSON qw(decode_json encode_json);
-
 #########################################################################
 # class SwapNetwork
 #
 # Container of SWAP network data
 #########################################################################
+
+package Device::PanStamp::swap::protocol::SwapNetwork;
+
+use strict;
+use warnings;
+
+use parent qw(Exporter);
+our @EXPORT_OK = qw();    # symbols to export on request
+use Device::PanStamp::swap::protocol::SwapMote;
+use JSON qw(decode_json encode_json);
 
 #########################################################################
 # sub read
@@ -21,15 +28,15 @@ sub read() {
 
   open NETWORK_FILE, "<", $self->{filename} or die $!;
   my @lines = <NETWORK_FILE>;
-  close <NETWORK_FILE>;
+  close NETWORK_FILE;
   my $json = decode_json( join( "", @lines ) );
   my $network_data = $json->{network};
 
   # Initialize list of motes
   foreach my $mote_data ( @{ $network_data->{motes} } ) {
     my $mote =
-      SwapMote->new( $self->{server}, $mote_data->{pcode},
-      $mote_data{address} );
+      Device::PanStamp::swap::protocol::SwapMote->new( $self->{server},
+      $mote_data->{pcode}, $mote_data->{address} );
     push @{ $self->{motes} }, $mote;
 
     # Initialize endpoints belonging to this mote
@@ -42,21 +49,24 @@ sub read() {
 
             # Find endpoint config
             foreach my $endpoint_data ( @{ $register_data->{endpoints} } ) {
-              if ( $endpoint_data->{id} eq $endpoint{id} ) {
+              if ( $endpoint_data->{id} eq $endpoint->{id} ) {
                 $endpoint->{name}     = $endpoint_data->{name};
                 $endpoint->{location} = $endpoint_data->{location};
-                $endpoint->setUnit( $endpoint_data->{unit} )
-                  if (defined $endpoint_data->{unit}
-                  and defined $endpoint->{unit} );
-                $endpoint->setValue( $endpoint_data->{value} )
-                  if ( defined $endpoint_data->{value} );
+                if (  defined $endpoint_data->{unit}
+                  and defined $endpoint->{unit} )
+                {
+                  $endpoint->setUnit( $endpoint_data->{unit} );
+                }
+                if ( defined $endpoint_data->{value} ) {
+                  $endpoint->setValue( $endpoint_data->{value} );
+                }
                 $endpoint->{direction} = $endpoint_data->{direction};
                 $endpoint->{type}      = $endpoint_data->{type};
 
                 $endpoint->{display} = 1;
                 if ( defined $endpoint_data->{display} ) {
                   my $display = lc( $endpoint_data->{display} );
-                  if ( grep { $_ eq $display },
+                  if ( grep { $_ eq $display }
                     ( "false", "no", 0, "0", "disabled" ) )
                   {
                     $endpoint->{display} = 0;
@@ -83,7 +93,8 @@ sub save() {
   my $self = shift;
 
   my $network = $self->dumps();
-  print "Saving" . $self->{filename} open NETWORK_FILE, ">", $self->{filename};
+  print "Saving" . $self->{filename};
+  open NETWORK_FILE, ">", $self->{filename};
   print NETWORK_FILE encode_json($network);
   close NETWORK_FILE;
 }
@@ -104,7 +115,8 @@ sub add_mote($) {
   my $address = $mote->{address};
 
   # Search mote in list
-  return 0 if ( grep { $address eq $_->{address} }, @{ $self->{motes} } );
+  return 0
+    if ( grep { $address eq $_->{address} } @{ $self->{motes} } );
 
   push @{ $self->{motes} }, $mote;
   return 1;
@@ -178,7 +190,7 @@ sub get_nbof_motes() {
 sub get_endpoint(;$$) {
   my ( $self, $usrlocation, $usrname ) = @_;
 
-  return undef unless ( defined $userlocation and defined $usrname );
+  return undef unless ( defined $usrlocation and defined $usrname );
 
   foreach my $mote ( @{ $self->{motes} } ) {
     foreach my $reg ( @{ $mote->{regular_registers} } ) {
@@ -237,7 +249,7 @@ sub dumps() {
 sub new($;$) {
   my ( $class, $server, $filename ) = @_;
 
-  my $filename = "swapnet.json" unless ( defined $filename );
+  $filename = "swapnet.json" unless ( defined $filename );
 
   my $self = bless {
     ## SWAP server

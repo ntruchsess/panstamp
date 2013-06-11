@@ -3,6 +3,15 @@
 #
 # Multi-format SWAP value class
 #########################################################################
+
+package Device::PanStamp::swap::protocol::SwapValue;
+
+use strict;
+use warnings;
+
+use parent qw(Exporter);
+our @EXPORT_OK = qw();    # symbols to export on request
+
 #########################################################################
 # sub getLength
 #
@@ -10,10 +19,12 @@
 #
 # @return Length in bytes of the current value
 #########################################################################
+
 sub getLength() {
   my $self = shift;
   return scalar @{ $self->{_data} };
 }
+
 #########################################################################
 # sub toInteger
 #
@@ -21,15 +32,17 @@ sub getLength() {
 #
 # @return Current value in integer format
 #########################################################################
+
 sub toInteger() {
   my $self = shift;
   my $val  = 0;
   my @data = @{ $self->{_data} };
   foreach my $i ( 0 .. $#data ) {
-    $val |= $data[$i] << ( $#data -i ) * 8;
+    $val |= $data[$i] << ( $#data -$i ) * 8;
   }
   return $val;
 }
+
 #########################################################################
 # sub clone
 #
@@ -37,11 +50,13 @@ sub toInteger() {
 #
 # @return Copy of the current value
 #########################################################################
+
 sub clone() {
   my $self = shift;
   my @data = @{ $self->{_data} };
-  return SwapValue->new(@data);
+  return Device::PanStamp::swap::protocol::SwapValue->new(\@data);
 }
+
 #########################################################################
 # sub toAscii
 #
@@ -49,10 +64,12 @@ sub clone() {
 #
 # @return Current value in ASCII format
 #########################################################################
+
 sub toAscii() {
   my $self = shift;
   return join( "", @{ $self->{_data} } );
 }
+
 #########################################################################
 # sub toAsciiStr
 #
@@ -60,24 +77,29 @@ sub toAscii() {
 #
 # @return
 #########################################################################
+
 sub toAsciiStr() {
   my $self = shift;
   return pack "A*", @{ $self->{_data} };
 }
+
 #########################################################################
 # sub toAsciiHex
 #
 # Convert SWAP value into printable ASCII hex string. Use this function for sequences of
 # integer numbers
 #########################################################################
-my $self = shift;
-my @out  = ();
-foreach my $item ( @{ $self->{_data} } ) {
-  push @out, sprintf( "%02X", $item );
-}
 
-# Return ASCII string
-return join "", @out;
+sub toAsciiHex() {
+  my $self = shift;
+  my @out  = ();
+  foreach my $item ( @{ $self->{_data} } ) {
+    push @out, sprintf( "%02X", $item );
+  }
+
+  # Return ASCII string
+  return join "", @out;
+}
 #########################################################################
 # sub toList
 #
@@ -85,10 +107,13 @@ return join "", @out;
 #
 # @return Current value as a list of bytes
 #########################################################################
+
 sub toList() {
   my $self = shift;
+
   return @{ $self->{_data} };
 }
+
 #########################################################################
 # sub isEqual
 #
@@ -99,8 +124,10 @@ sub toList() {
 # @return 1 if the value passed as argument is equal to the current one. Return 0
 # otherwise
 #########################################################################
+
 sub isEqual($) {
   my ( $self, $value ) = @_;
+
   if ( defined $value ) {
     if ( $self->getLength() eq $value->getLength() ) {
       my @data1 = @{ $self->{_data} };
@@ -113,6 +140,7 @@ sub isEqual($) {
   }
   return 0;
 }
+
 #########################################################################
 # sub new
 #
@@ -122,6 +150,7 @@ sub isEqual($) {
 # @param length: byte length of the value
 # @param template: perl 'unpack' template to read value byte data from string
 #########################################################################
+
 sub new(;$$$) {
   my ( $class, $value, $length, $template ) = @_;
 
@@ -166,4 +195,5 @@ sub new(;$$$) {
   }
   return bless { _data => \@data }, $class;
 }
+
 1;

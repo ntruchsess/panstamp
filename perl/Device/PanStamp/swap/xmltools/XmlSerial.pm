@@ -60,7 +60,7 @@ sub save() {
 
 sub new(;$) {
   my ( $class, $file_name ) = @_;
-  my $file_name = "serial.xml" unless defined $file_name;
+  $file_name = "serial.xml" unless defined $file_name;
 
   my $self = bless {
     ## Name/path of the current configuration file

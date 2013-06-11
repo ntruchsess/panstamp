@@ -1,16 +1,16 @@
-use XmlSettings;
-use protocol::SwapParam qw(SwapCfgParam,SwapEndpoint);
-use protocol::SwapRegister;
-use protocol::SwapValue;
-use protocol::SwapDefs qw(SwapType);
-
-use XML::Simple;
-
 #########################################################################
 # class DeviceEntry
 #
 # Class representing a device entry in a device directory
 #########################################################################
+
+package Device::PanStamp::swap::xmltools::DeviceEntry;
+
+use strict;
+use warnings;
+
+use parent qw(Exporter);
+our @EXPORT_OK = qw();    # symbols to export on request
 
 #########################################################################
 # sub new
@@ -41,6 +41,14 @@ sub new($$$) {
 # Class representing a device directory for a given developer
 #########################################################################
 
+package Device::PanStamp::swap::xmltools::DeveloperEntry;
+
+use strict;
+use warnings;
+
+use parent qw(Exporter);
+our @EXPORT_OK = qw();    # symbols to export on request
+
 #########################################################################
 # sub addDevice
 # Add device entry to the list for the current developer
@@ -64,13 +72,14 @@ sub addDevice($) {
 
 sub new($$) {
   my ( $class, $did, $name ) = @_;
+  use strict;
 
   return bless {
     ## Developer ID
     id => $did,
     ## Developer or manufacturer name
     name => $name,
-    ## List of device entries for the current developer
+    ## List of device entries for the currenuse strict;
     devices => []
   };
 }
@@ -81,6 +90,19 @@ sub new($$) {
 # Class implementing directory files linking device names with
 # its corresponding description files
 #########################################################################
+
+package Device::PanStamp::swap::xmltools::XmlDeviceDir;
+
+use strict;
+use warnings;
+
+use parent qw(Exporter);
+our @EXPORT_OK = qw();    # symbols to export on request
+
+use XML::Simple;
+
+use File::Spec::Functions;
+use constant xmldirfile => "devices.xml";
 
 #########################################################################
 # sub read
@@ -108,7 +130,9 @@ sub read() {
       unless defined $devel->{name};
 
     # Create developer entry
-    my $developer = DeveloperEntry->new( $devel->{id}, $devel->{name} );
+    my $developer =
+      Device::PanStamp::swap::xmltools::DeveloperEntry->new( $devel->{id},
+      $devel->{name} );
 
     # Parse devices belonging to this developer
     if ( defined $devel->{dev} ) {
@@ -128,7 +152,8 @@ sub read() {
 
         # Create device entry
         my $device =
-          DeviceEntry->new( $dev->{id}, $dev->{name}, $dev->{label} );
+          Device::PanStamp::swap::xmltools::DeviceEntry->new( $dev->{id},
+          $dev->{name}, $dev->{label} );
 
         # Add device to the developer entry
         $developer->addDevice($device);
@@ -157,8 +182,8 @@ sub getDeviceDef($) {
   foreach my $devel ( @{ $self->{developers} } ) {
     foreach my $dev ( @{ $devel->{devices} } ) {
       if ( $option->lower() eq $dev->{option} ) {
-        return XmlDevice->new( devel_id = devel . id, prod_id = dev . id )
-          ;    #TODO check parameters!
+        return Device::PanStamp::swap::xmltools::XmlDevice->new( undef,
+          $devel->{id}, $dev->{id} );
       }
     }
   }
@@ -182,14 +207,11 @@ sub getDevicePath($$) {
     if ( $devel_id eq $developer->{id} ) {
       foreach my $device ( @{ $developer->{devices} } ) {
         if ( $prod_id eq $device->{id} ) {
-          return
-              os 
-            . path
-            . join(
-            XmlSettings . device_localdir,
-            developer . name,
-            device . option + ".xml"
-            );    #TODO access global XmlSettings
+          return catfile(
+            $self->{xmlsettings}->{device_localdir},
+            $developer->{name},
+            $device->{option} . ".xml"
+          );
         }
       }
     }
@@ -203,14 +225,13 @@ sub getDevicePath($$) {
 # Class constructor
 #########################################################################
 
-sub new() {
-  my $class = shift;
+sub new($) {
+  my ( $class, $xmlsettings ) = @_;
 
   my $self = bless {
+    xmlsettings => $xmlsettings,
     ## Path to the configuration file
-    fileName => XmlSettings
-      . device_localdir + os
-      . sep +__xmldirfile__,    #TODO access global XmlSettings
+    fileName => catfile( $xmlsettings->{device_localdir}, xmldirfile ),
     ## List of devices
     developers => []
   }, $class;
@@ -224,6 +245,14 @@ sub new() {
 #
 # Endpoint units appearing in any XmlDevice object
 #########################################################################
+
+package Device::PanStamp::swap::xmltools::XmlUnit;
+
+use strict;
+use warnings;
+
+use parent qw(Exporter);
+our @EXPORT_OK = qw();    # symbols to export on request
 
 #########################################################################
 # sub new
@@ -258,10 +287,18 @@ sub new(;$$$$) {
 }
 
 #########################################################################
-# class XmlDevice(object):
+# class XmlDevice
 #
 # Device configuration settings
 #########################################################################
+
+package Device::PanStamp::swap::xmltools::XmlDevice;
+
+use strict;
+use warnings;
+
+use parent qw(Exporter);
+our @EXPORT_OK = qw();    # symbols to export on request
 
 #########################################################################
 # sub getDefinition
@@ -320,89 +357,84 @@ sub getRegList(;$) {
   # List of register elements belonging to the device
   my $regtype = $config ? "config" : "regular";
 
-  my $lstElemReg = tree->{ $regtype . "/reg" );
+  my $lstElemReg = $tree->{$regtype} . "/reg";
 
-      if ( defined $listElemReg ) {
-        foreach my $reg ( @{$lstElemReg} ) {
+  if ( defined $lstElemReg ) {
+    foreach my $reg ( @{$lstElemReg} ) {
 
-          # Get register name
-          my $regName = reg->{name} );
+      # Get register name
+      my $regName = $reg->{name};
 
-          # Create register from id and mote
-          my $swRegister =
-            SwapRegister->new( $self->{mote}, $reg->{id},
-              defined $regName ? $regName : "" );
+      # Create register from id and mote
+      my $swRegister =
+        Device::PanStamp::swap::protocol::SwapRegister->new( $self->{mote},
+        $reg->{id}, defined $regName ? $regName : "" );
 
-          # List of endpoints belonging to the register
-          my $elementName = $config ? "param" : "endpoint";
+      # List of endpoints belonging to the register
+      my $elementName = $config ? "param" : "endpoint";
 
-          my $lstElemParam = $reg->{$elementName};
+      my $lstElemParam = $reg->{$elementName};
 
-          foreach my $param ( @{$lstElemParam} ) {
+      foreach my $param ( @{$lstElemParam} ) {
 
-              # Read XML fields
-              my $paramType = defined $param->{type} ? $param->{type} : "num";
-              my $paramDir  = defined $param->{dir}  ? $param->{dir}  : "inp";
-              my $paramName = defined $param->{name} ? $param->{name} : "";
-              my $paramPos =
-                defined $param->{position} ? $param->{position} : "0";
-              my $paramSize = defined $param->{size} ? $param->{size} : "1";
-              my $defVal = defined $param->{default} ? $param->{default} : "0";
-              my $verif = $param->{verif};
+        # Read XML fields
+        my $paramType = defined $param->{type}     ? $param->{type}     : "num";
+        my $paramDir  = defined $param->{dir}      ? $param->{dir}      : "inp";
+        my $paramName = defined $param->{name}     ? $param->{name}     : "";
+        my $paramPos  = defined $param->{position} ? $param->{position} : "0";
+        my $paramSize = defined $param->{size}     ? $param->{size}     : "1";
+        my $defVal    = defined $param->{default}  ? $param->{default}  : "0";
+        my $verif     = $param->{verif};
 
-              # Get list of units
-              my $units = $param->{"units/unit"};
-              my @lstUnits;
-              if ( defined $units and scalar( @{$units} ) > 0 ) {
-                @lstUnits = ();
-                foreach my $unit ( @{$units} ) {
-                  my $name    = $unit->{name};
-                  my $factor  = defined $unit->{factor} ? $unit->{factor} : 1;
-                  my $offset  = defined $unit->{offset} ? $unit->{offset} : 0;
-                  my $calc    = $unit->{calc};
-                  my $xmlUnit = XmlUnit->new( $name, $factor, $offset, $calc );
-                  push @lstUnits, $xmlUnit;
-                }
-              }
-
-              my $swParam;
-
-              if ($config) {
-
-                # Create SWAP config parameter
-                $swParam = SwapCfgParam->new(
-                  register = swRegister, pType = paramType,
-                  name = paramName,    #TODO parameters!
-                  position = paramPos, size = paramSize, default = defVal,
-                  verif    = verif
-                );
-              }
-              else {
-
-                # Create SWAP endpoint
-                $swParam = SwapEndpoint->new(
-                  register = swRegister, pType = paramType,
-                  direction = paramDir,
-                  name      = paramName,    #TODO parameters!
-                  position = paramPos, size = paramSize, default = defVal,
-                  verif = verif, units = lstUnits
-                );
-              }
-
-              # Add current parameter to the register
-              $swRegister->add($swParam);
-
-              # Create empty value for the register
-              $swRegister->{value} = 
-                SwapValue->new(\@{unpack ("a"x $swRegister->getLength(),"" )});
-              $swRegister->update();
-
-              # Add endpoint to the list
-              push @lstRegs, $swRegister;
+        # Get list of units
+        my $units = $param->{"units/unit"};
+        my @lstUnits;
+        if ( defined $units and scalar( @{$units} ) > 0 ) {
+          @lstUnits = ();
+          foreach my $unit ( @{$units} ) {
+            my $name   = $unit->{name};
+            my $factor = defined $unit->{factor} ? $unit->{factor} : 1;
+            my $offset = defined $unit->{offset} ? $unit->{offset} : 0;
+            my $calc   = $unit->{calc};
+            my $xmlUnit =
+              Device::PanStamp::swap::xmltools::XmlUnit->new( $name, $factor,
+              $offset, $calc );
+            push @lstUnits, $xmlUnit;
           }
         }
+
+        my $swParam;
+
+        if ($config) {
+
+          # Create SWAP config parameter
+          $swParam =
+            Device::PanStamp::swap::protocol::SwapCfgParam->new(
+            tree $swRegister,
+            $paramType, $paramName, $paramPos, $paramSize, $defVal, $verif );
+        } else {
+
+          # Create SWAP endpoint
+          $swParam = Device::PanStamp::swap::protocol::SwapEndpoint->new(
+            $swRegister, $paramType, $paramDir, $paramName, $paramPos,
+            $paramSize,  $defVal,    $verif,    \@lstUnits
+          );
+        }
+
+        # Add current parameter to the registertree
+        $swRegister->add($swParam);
+
+        # Create empty value for the register
+        $swRegister->{value} = Device::PanStamp::swap::protocol::SwapValue->new(
+          \@{ unpack( "a" x $swRegister->getLength(), "" ) } );
+        $swRegister->update();
+
+        # Add endpoint to the list
+        push @lstRegs, $swRegister;
+      }
     }
-    } return scalar(@lstRegs) ? \@lstRegs : undef;
+  }
+  return scalar(@lstRegs) ? \@lstRegs : undef;
 }
 
 #########################################################################
@@ -416,39 +448,39 @@ sub getRegList(;$) {
 #########################################################################
 
 sub new(;$$$) {
-    my ( $class, $mote, $devel_id, $prod_id ) = @_;
-    ## Device (mote)
+  my ( $class, $mote, $devel_id, $prod_id ) = @_;
+  ## Device (mote)
 
-    my $self = bless { mote => $mote }, $class;
+  my $self = bless { mote => $mote }, $class;
 
-    my $device_dir = XmlDeviceDir->new();
+  my $device_dir = Device::PanStamp::swap::xmltools::XmlDeviceDir->new();
 
-    $self->{fileName};
+  $self->{fileName} = undef;
 
-    ## Name/path of the current configuration file
-    if ( defined $devel_id and defined $prod_id ) {
-      $self->{fileName} = $device_dir->getDevicePath( $devel_id, $prod_id );
-      die "Definition file not found for mote" unless defined $self->{fileName};
-    }
-    ## Name of the Manufacturer
-    $self->{manufacturer} = undef;
-    ## Name of the Product
-    $self->{product} = undef;
-    ## Power down mode (True or False). If True, the mote sleeps most of the times
-    $self->{pwrdownmode} = 0;
-    ## Interval (in sec) between periodic transmissions. 0 for disabled
-    $self->{txinterval} = 0;
+  ## Name/path of the current configuration file
+  if ( defined $devel_id and defined $prod_id ) {
+    $self->{fileName} = $device_dir->getDevicePath( $devel_id, $prod_id );
+    die "Definition file not found for mote" unless defined $self->{fileName};
+  }
+  ## Name of the Manufacturer
+  $self->{manufacturer} = undef;
+  ## Name of the Product
+  $self->{product} = undef;
+  ## Power down mode (True or False). If True, the mote sleeps most of the times
+  $self->{pwrdownmode} = 0;
+  ## Interval (in sec) between periodic transmissions. 0 for disabled
+  $self->{txinterval} = 0;
 
-    if ( defined $self->{mote} ) {
-      $self->{fileName} = $device_dir
-        . getDevicePath( $self->{mote}->{manufacturer_id},
-        $self->{mote}->{product_id} );
-      die "Definition file not found for mote" unless defined $self->{fileName};
-    }
+  if ( defined $self->{mote} ) {
+    $self->{fileName} = $device_dir
+      . getDevicePath( $self->{mote}->{manufacturer_id},
+      $self->{mote}->{product_id} );
+    die "Definition file not found for mote" unless defined $self->{fileName};
+  }
 
-    # Read definition parameters from XML file
-    $self->getDefinition();
-    return $self;
+  # Read definition parameters from XML file
+  $self->getDefinition();
+  return $self;
 }
 
 1;

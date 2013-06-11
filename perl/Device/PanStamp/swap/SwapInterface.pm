@@ -1,10 +1,16 @@
-package Device::PanStamp::swap::SwapInterface;
-
-use SwapServer qw(SwapServer);
-
 ###########################################################
 # SWAP Interface superclass. Any SWAP application should derive from this one
 ###########################################################
+
+package Device::PanStamp::swap::SwapInterface;
+
+use strict;
+use warnings;
+
+use parent qw(Exporter);
+our @EXPORT_OK = qw();    # symbols to export on request
+
+use Device::PanStamp::swap::SwapServer;
 
 ###########################################################
 # sub swapServerStarted
@@ -176,7 +182,7 @@ sub getMote(;$$) {
 
 sub setMoteRegister($$$) {
   my ( $self, $mote, $regId, $value ) = @_;
-  return $self->{server} . > setMoteRegister( $mote, $regId, $value );
+  return $self->{server}->setMoteRegister( $mote, $regId, $value );
 }
 
 ###########################################################
@@ -193,7 +199,7 @@ sub setMoteRegister($$$) {
 
 sub queryMoteRegister($$) {
   my ( $self, $mote, $regId ) = @_;
-  return self . server . queryMoteRegister( mote, regId );
+  return $self->{server}->queryMoteRegister( $mote, $regId );
 }
 
 ###########################################################
@@ -204,8 +210,7 @@ sub queryMoteRegister($$) {
 
 sub create_server() {
   my $self = shift;
-  self->{server} =
-    Device::PanStamp::swap::SwapServer->new( $self, $self->{verbose} );
+  $self->{server} = Device::PanStamp::swap::SwapServer->new( $self, $self->{verbose} );
   return $self->{server};
 }
 
@@ -249,18 +254,20 @@ sub get_endpoint(;$$$) {
     foreach my $register ( @{ $mote->{regular_registers} } ) {
       foreach my $endpoint ( @{ $register->{parameters} } ) {
         if (
-          defined $endpid and $endpid eq $endpoint->{id}
+          ( defined $endpid and $endpid eq $endpoint->{id} )
           or (  defined $name
             and defined $location
             and $name eq $endpoint->{name}
-            and $location eq $endpoint->{location} ) {
-            return $endpoint;
-            };
+            and $location eq $endpoint->{location} )
+          )
+        {
+          return $endpoint;
         }
       }
     }
-    return undef;
   }
+  return undef;
+}
 
 ###########################################################
 # sub update_definition_files
@@ -269,7 +276,7 @@ sub get_endpoint(;$$$) {
 ###########################################################
 
 sub update_definition_files() {
-  my $self = shift;        
+  my $self = shift;
   $self->{server}->update_definition_files();
 }
 
@@ -284,19 +291,21 @@ sub update_definition_files() {
 ###########################################################
 
 sub new(;$$) {
-  my ($class, $settings, $start) = @_;
+  my ( $class, $settings, $start ) = @_;
 
-  $start = 1 unless (defined $start);
+  $start = 1 unless ( defined $start );
   ## SWAP server
-  my $self = {};
-  
+  my $self = bless {}, $class;
+
   if ($start) {
     print "SWAP server starting... ";
-    $self->{server} = Device::PanStamp::swap::SwapServer->new($self, $settings, $start);
+    $self->{server} = Device::PanStamp::swap::SwapServer->new( $self, $settings, $start );
     $self->{network} = $self->{server}->{network};
-    if ($start) print "SWAP server is now running... ";
+    if ($start) {
+      print "SWAP server is now running... ";
+    }
   }
-  return bless $self,$class;
+  return $self;
 }
 
 1;

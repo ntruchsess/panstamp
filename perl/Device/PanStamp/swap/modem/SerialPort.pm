@@ -1,12 +1,18 @@
-package Device::PanStamp::swap::modem::SerialPort;
-
-use Device::Serial;
-
 #########################################################################
 # class SerialPort
 #
 # Wrapper class of the pyserial package
 #########################################################################
+
+package Device::PanStamp::swap::modem::SerialPort;
+
+use strict;
+use warnings;
+
+use parent qw(Exporter);
+our @EXPORT_OK = qw();    # symbols to export on request
+
+use Device::SerialPort qw( :PARAM :STAT 0.07 );
 
 # Minimum delay between transmissions (in seconds)
 our $txdelay = 0.05;
@@ -38,9 +44,9 @@ sub run() {
 
           # End of serial packet?
           if ( $ch eq '\r'
-            or ( ( ch eq '(' ) and ( scalar(@serbuf) > 0 ) ) )
+            or ( ( $ch eq '(' ) and ( scalar(@serbuf) > 0 ) ) )
           {
-            $strBuf = join( "", @serbuf );
+            my $strBuf = join( "", @serbuf );
             @serbuf = ();
 
             # Enable for debug only
@@ -50,14 +56,12 @@ sub run() {
             if ( defined $self->{serial_received} ) {
               &{ $self->{serial_received} }($strBuf);
             }
-          }
-          elsif ( $ch ne '\n' ) {
+          } elsif ( $ch ne '\n' ) {
 
             # Append char at the end of the buffer (list)
             push @serbuf, $ch;
           }
-        }
-        else {
+        } else {
           select( undef, undef, undef, 0.01 )
             ;    #TODO check time (was time.sleep(0.01))
         }
@@ -67,7 +71,7 @@ sub run() {
         unless ( $self->{_strtosend} . empty() ) {
           if ( time . time() - $self->{last_transmission_time} > $txdelay )
           {      #TODO time
-            $strpacket = $self->{_strtosend}->get();
+            my $strpacket = $self->{_strtosend}->get();
 
             # Send serial packet
             $self->{_serport}->write($strpacket);
@@ -81,14 +85,12 @@ sub run() {
 
         #$self->{_send_lock.release()
       }
-    }
-    else {
+    } else {
       die "Unable to read serial port "
         . $self->{portname}
         . " since it is not open";
     }
-  }
-  else {
+  } else {
     die "Unable to read serial port "
       . $self->{portname}
       . " since it is not open";
@@ -188,18 +190,18 @@ sub new(;$$$) {
     ## Name(path) of the serial port
     portname => $portname,
     ## Speed of the serial port in bps
-    portspeed => speed,
+    portspeed => $speed,
     ## Serial port object
     _serport => undef,
     ## Callback Rx function
     serial_received => undef,
 
     # Strint to be sent
-    _strtosend => Queue . Queue(),
+    # _strtosend => Queue . Queue(), #TODO Queue!
 
     #_send_lock => threading.Lock()
     # Verbose network traffic
-    _verbose => verbose,
+    _verbose => $verbose,
 
     # Time stamp of the last transmission
     last_transmission_time => 0
@@ -207,10 +209,15 @@ sub new(;$$$) {
 
   # Open serial port in blocking mode
   $self->{_serport} =
-    Device::Serial->new( $self->{portname}, $self->{portspeed}, timeout = 0 ); #TODO port python serial to perl Device::Serial!
+    Device::SerialPort->new( $self->{portname} );
+    
+  #timeout = 0)
+  #TODO port python serial to perl Device::Serial!
+  
   die "Unable to open serial port" . $self->{portname}
     unless ( defined $self->{_serport} and $self->{_serport}->isOpen() );
 
+  $self->{_serport}->baudrate($self->{portspeed});
   # Set to >0 in order to avoid blocking at Tx forever
   $self->{_serport}->{writeTimeout} = 1;
 

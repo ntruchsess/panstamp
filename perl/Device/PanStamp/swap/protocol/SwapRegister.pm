@@ -1,10 +1,18 @@
-use Device::PanStamp::swap::protocol::SwapValue;
-
 #########################################################################
 # class SwapRegister(object):
 #
 # SWAP register class
 #########################################################################
+
+package Device::PanStamp::swap::protocol::SwapRegister;
+
+use strict;
+use warnings;
+
+use parent qw(Exporter);
+our @EXPORT_OK = qw();    # symbols to export on request
+
+use Device::PanStamp::swap::protocol::SwapValue;
 
 #########################################################################
 # sub getAddress(self):
@@ -120,76 +128,69 @@ sub getLength() {
   my $maxBitPos   = 0;
 
   # Iterate along the contained parameters
-  foreach $param ( @{ $self->{parameters} } ) {
-    if (
-      $param->{bytePos} > $maxBytePos{
-        $maxBytePos    = $param->{bytePos};
-          $maxBitPos   = $param->{bitPos};
-          $maxByteSize = $param->{byteSize};
-          $maxBitSize  = $param->{bitSize};
-      }
-      elsif ( $param->{bytePos} eq $maxBytePos
-        and $param->{bitPos} >= $maxBitPos )
-      {
-        $maxBitPos   = $param->{bitPos};
-        $maxByteSize = $param->{byteSize};
-        $maxBitSize  = $param->{bitSize};
-      }
+  foreach my $param ( @{ $self->{parameters} } ) {
+    if ( $param->{bytePos} > $maxBytePos ) {
+      $maxBytePos  = $param->{bytePos};
+      $maxBitPos   = $param->{bitPos};
+      $maxByteSize = $param->{byteSize};
+      $maxBitSize  = $param->{bitSize};
+    } elsif ( $param->{bytePos} eq $maxBytePos
+      and $param->{bitPos} >= $maxBitPos )
+    {
+      $maxBitPos   = $param->{bitPos};
+      $maxByteSize = $param->{byteSize};
+      $maxBitSize  = $param->{bitSize};
     }
-
-    # Calculate register length
-    my $bitLength =
-      $maxBytePos * 8 + $maxByteSize * 8 + $maxBitPos + $maxBitSize;
-    my $byteLength = $bitLength / 8;
-    if ( ( $bitLength % 8 ) > 0 ) {
-      $byteLength += 1;
-    }
-
-    return $byteLength;
   }
 
+  # Calculate register length
+  my $bitLength = $maxBytePos * 8 + $maxByteSize * 8 + $maxBitPos + $maxBitSize;
+  my $byteLength = $bitLength / 8;
+  if ( ( $bitLength % 8 ) > 0 ) {
+    $byteLength++;
+  }
+
+  return $byteLength;
+}
+
 #########################################################################
-  # sub update
-  #
-  # Update register value according to the values of its contained parameters
+# sub update
+#
+# Update register value according to the values of its contained parameters
 #########################################################################
 
-  sub update() {
-    my $self = shift;
+sub update() {
+  my $self = shift;
 
-    # Return if value is None?
-    return unless defined $self->{value};
-    is None :
+  # Return if value is None?
+  return unless ( defined $self->{value} );
 
-      # Current register value converted to list
-      my @lstRegVal = $self->{value}->toList();
+  # Current register value converted to list
+  my @lstRegVal = $self->{value}->toList();
 
-    # For every parameter contained in this register
-    foreach my $param ( @{ $self->{parameters} } ) {
-      my $indexReg = $param->{bytePos};
-      my $shiftReg = 7 - $param->{bitPos};
+  # For every parameter contained in this register
+  foreach my $param ( @{ $self->{parameters} } ) {
+    my $indexReg = $param->{bytePos};
+    my $shiftReg = 7 - $param->{bitPos};
 
-      # Total bits to be copied from this parameter
-      my $bitsToCopy = $param->{byteSize} * 8 + $param->{bitSize};
+    # Total bits to be copied from this parameter
+    my $bitsToCopy = $param->{byteSize} * 8 + $param->{bitSize};
 
-      # Parameter value in list format
-      my @lstParamVal = $param->{value}->toList();
-      my $indexParam  = 0;
-      my $shiftParam  = $param->{bitSize} - 1;
-      if ( $shiftParam < 0 ) {
-        $shiftParam = 7;
-      }
+    # Parameter value in list format
+    my @lstParamVal = $param->{value}->toList();
+    my $indexParam  = 0;
+    my $shiftParam  = $param->{bitSize} - 1;
+    if ( $shiftParam < 0 ) {
+      $shiftParam = 7;
+    }
 
-      if (@lstParamVal) {
-        foreach my $i ( 0 .. $bitsToCopy ) {
-          if ( $lstParamVal[$indexParam] >> $shiftParam ) & 0x01 eq 0
-          )
-        {
+    if (@lstParamVal) {
+      foreach my $i ( 0 .. $bitsToCopy ) {
+        if ( ( $lstParamVal[$indexParam] >> $shiftParam ) & 0x01 eq 0 ) {
           my $mask = ~( 1 << $shiftReg );
           $lstRegVal[$indexReg] &= $mask;
-        }
-        else {
-          $mask = 1 << $shiftReg;
+        } else {
+          my $mask = 1 << $shiftReg;
           $lstRegVal[$indexReg] |= $mask;
         }
 
@@ -275,18 +276,19 @@ sub dumps(;$) {
   $include_units = 0 unless $include_units;
   return undef if $self->isConfig();
 
-  my $data = {};
-  $data->{id} = $self->{id} $data->{name} = $self->{name};
+  my %data = ();
+  $data{id}   = $self->{id};
+  $data{name} = $self->{name};
 
   my @endpoints_data = ();
 
   foreach my $item ( @{ $self->{parameters} } ) {
-    push @endpoints_data, $item->dumps($include_units) );
+    push @endpoints_data, $item->dumps($include_units);
   }
 
-  $data->{endpoints} = \@endpoints_data;
+  $data{endpoints} = \@endpoints_data;
 
-  return data;
+  return \%data;
 }
 
 #########################################################################
@@ -300,18 +302,26 @@ sub dumps(;$) {
 #########################################################################
 
 sub new(;$$$) {
-    my ( $class, $mote, $id, $description ) = @;
+  my ( $class, $mote, $id, $description ) = @_;
 
-      ## Mote owner of the current register
-      $self->{mote} = $mote;
-    ## Register ID
-    $self->{id} = $id;
-    ## SWAP value contained in the current register
-    $self->{value} = undef;
-    ## Brief name
-    $self->{name} = $description;
-    ## List of endpoints or configuration parameters belonging to the current register
-    $self->{parameters} = [];
+  return bless {
+
+    # Mote owner of the current register
+    mote => $mote,
+
+    # Register ID
+    id => $id,
+
+    # SWAP value contained in the current register
+    value => undef,
+
+    # Brief name
+    name => $description,
+
+# List of endpoints or configuration parameters belonging to the current register
+    parameters => []
+    },
+    $class;
 }
 
 1;

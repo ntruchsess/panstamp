@@ -1,8 +1,14 @@
-package Device::PanStamp::swap::modem::CcPacket;
-
 ###########################################################
 #    Standard packet structure of the CC11xx family of IC's
 ###########################################################
+
+package Device::PanStamp::swap::modem::CcPacket;
+
+use strict;
+use warnings;
+
+use parent qw(Exporter);
+our @EXPORT_OK = qw();    # symbols to export on request
 
 ###########################################################
 # sub send
@@ -35,6 +41,7 @@ sub toString() {
 #        Class constructor
 #        @param strPacket: Wireless packet in string format
 ###########################################################
+
 sub new(;$) {
   my ($class,$strPacket) = @_;
 

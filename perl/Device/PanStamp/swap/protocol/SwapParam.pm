@@ -1,17 +1,21 @@
-package Device::PanStamp::swap::protocol::SwapParam;
-
-use strict;
-use warnings;
-use Time::HiRes qw(time);
-
-use SwapType;
-use SwapValue;
-
 #########################################################################
 # class SwapParam:
 #
 # Generic SWAP parameter, integrated into a SWAP register
 #########################################################################
+
+package Device::PanStamp::swap::protocol::SwapParam;
+
+use strict;
+use warnings;
+
+use parent qw(Exporter);
+our @EXPORT_OK = qw();    # symbols to export on request
+
+use Time::HiRes qw(time);
+
+use Device::PanStamp::swap::protocol::SwapDefs;
+use Device::PanStamp::swap::protocol::SwapValue;
 
 #########################################################################
 # sub getRegAddress
@@ -79,13 +83,12 @@ sub update() {
     if ( $indexReg >= scalar(@lstRegVal) ) {
       last;
     }
-    if ( ( @lstRegVal[indexReg] >> $shiftReg ) & 0x01 == 0 ) {
+    if ( ( $lstRegVal[$indexReg] >> $shiftReg ) & 0x01 == 0 ) {
       my $mask = ~( 1 << $shiftParam );
-      @lstParamVal[$indexParam] &= $mask;
-    }
-    else {
+      $lstParamVal[$indexParam] &= $mask;
+    } else {
       my $mask = 1 << $shiftParam;
-      @lstParamVal[$indexParam] |= $mask;
+      $lstParamVal[$indexParam] |= $mask;
     }
 
     $shiftReg--;
@@ -133,8 +136,7 @@ sub setValue($) {
 
     # Update current value
     $self->{value} = $value;
-  }
-  else {
+  } else {
 
     # Convert to SwapValue
     # Byte length
@@ -146,12 +148,11 @@ sub setValue($) {
     my $res;
     if ( ref($value) eq "ARRAY" ) {
       $res = $value;
-    }
-    else {
+    } else {
 
       # if $res is a number
-      if ( $self->{type} eq SwapType::NUMBER and $res =~ /^\d+\.?\d*$/ ) {
-        $res = value;
+      if ( $self->{type} eq $SwapType::NUMBER and $res =~ /^\d+\.?\d*$/ ) {
+        $res = $value;
         if ( defined $self->{unit} ) {
           $res -= $self->{unit}->{offset};
           $res /= $self->{unit}->{factor};
@@ -159,21 +160,20 @@ sub setValue($) {
           # Take integer part only
           $res = int($res);
         }
-      }
-      elsif ( $self->{type} eq SwapType::BINARY ) {
+      } elsif ( $self->{type} eq $SwapType::BINARY ) {
         my $lower = lc($value);
         $res =
-          ( grep { $lower eq $_ }, ( "on", "open", "1", "true", "enabled" ) )
+          ( grep { $lower eq $_ } ( "on", "open", "1", "true", "enabled" ) )
           ? 1
           : 0;
-      }
-      else {    # SwapType.STRING
+      } else {    # SwapType.STRING
         $res = $value;
       }
     }
 
     # Update current value
-    $self->{value} = SwapValue->new( $res, $length );
+    $self->{value} =
+      Device::PanStamp::swap::protocol::SwapValue->new( $res, $length );
   }
 
   # Update time stamp
@@ -194,31 +194,24 @@ sub setValue($) {
 sub getValueInAscii() {
   my $self = shift;
 
-  if ( $self->{type} == SwapType . NUMBER ) {
+  if ( $self->{type} eq $SwapType::NUMBER ) {
     my $val = $self->{value}->toInteger();
 
     # Add units
     if ( defined $self->{unit} ) {
       if ( defined $self->{unit}->{calc} ) {
         my $oper = $self->{unit}->{calc} =~ s/\$\{val\}/$val/gr;
-      try:
-        val = eval( "math." + oper )    #TODO math?
-          except ValueError as ex
-          : raise SwapException(
-          "Math exception for " + oper + ". " + str(ex) );
+        $val = eval( "math." . $oper )    #TODO math?
       }
       return $val * $self->{unit}->{factor} + $self->{unit}->{offset};
-    }
-    else {
+    } else {
       return $val;
     }
-  }
-  elsif ( $self->{type} eq SwapType . BINARY ) {
+  } elsif ( $self->{type} eq $SwapType::BINARY ) {
     my $strVal = $self->{value}->toAscii();
-    return "on" if ( $strVal eq "1" );
-    return "off" id( $strVal eq "0" );
-  }
-  else {
+    return "on"  if ( $strVal eq "1" );
+    return "off" if ( $strVal eq "0" );
+  } else {
     return $self->{value}->toAsciiStr();
   }
 
@@ -271,11 +264,11 @@ sub new(;$$$$$$$$$) {
     $position, $size,     $default, $verif,     $units
   ) = @_;
 
-  $pType     = SwapType::NUMBER unless defined $pType;
-  $direction = SwapType::INPUT  unless defined $direction;
-  $name      = ""               unless defined $name;
-  $position  = "0"              unless defined $position;
-  $size      = "1"              unless defined $size;
+  $pType     = $SwapType::NUMBER unless defined $pType;
+  $direction = $SwapType::INPUT  unless defined $direction;
+  $name      = ""                unless defined $name;
+  $position  = "0"               unless defined $position;
+  $size      = "1"               unless defined $size;
 
   # Get true positions
   my $position_dot = index( $position, '.' );
@@ -284,44 +277,56 @@ sub new(;$$$$$$$$$) {
   my $size_dot = index( $size, '.' );
 
   my $self = bless {
-    ## Parameter name
+
+    # Parameter name
     name => $name,
-    ## Register where the current parameter belongs to
+
+    # Register where the current parameter belongs to
     register => $register,
 
-    ## Data type (see SwapDefs.SwapType for more details)
+    # Data type (see SwapDefs.SwapType for more details)
     type => $pType,
-    ## Direction (see SwapDefs.SwapType for more details)
+
+    # Direction (see SwapDefs.SwapType for more details)
     direction => $direction,
-    ## Position (in bytes) of the parameter within the register
+
+    # Position (in bytes) of the parameter within the register
     bytePos => 0,
-    ## Position (in bits) after bytePos
+
+    # Position (in bits) after bytePos
     bitPos => $position_dot > -1 ? int( substr( $position, $position_dot + 1 ) )
     : 0,
-    bytePos => $position_dot > -1 ? int( substr( $position, 0, $dot ) )
+    bytePos => $position_dot > -1 ? int( substr( $position, 0, $position_dot ) )
     : int($position),
-    ## Size (in bytes) of the parameter value
+
+    # Size (in bytes) of the parameter value
     byteSize => 1,
-    ## Size in bits of the parameter value after byteSize
-    bitSize => $size_dot > -1 ? int( substr( $size, $dot + 1 ) ) : 0,
-    byteSize => $size_dot > -1 ? int( substr( $size, 0, $dot ) ) : int($size);
-      ## Current value
-      value => undef,
-    ## Time stamp of the last update
+
+    # Size in bits of the parameter value after byteSize
+    bitSize => $size_dot > -1 ? int( substr( $size, $size_dot + 1 ) ) : 0,
+    byteSize => $size_dot > -1
+    ? int( substr( $size, 0, $size_dot ) )
+    : int($size),
+
+    # Current value
+    value => undef,
+
+    # Time stamp of the last update
     lastupdate => undef,
 
-    ## List of units
+    # List of units
     lstunits => $units,
-    ## Selected unit
-    $self->{unit} = ( @{ $self->{lstunits} } ) ? $self->{lstunits}->{0} : undef,
 
-    ## Flag that tells us whether this parameter changed its value during the last update or not
+    # Selected unit
+    unit => ( $units && @{$units} ) ? $units->{0} : undef,
+
+# Flag that tells us whether this parameter changed its value during the last update or not
     valueChanged => 0,
 
-    ## Verification string. This can be a macro or a regular expression
+    # Verification string. This can be a macro or a regular expression
     verif => $verif,
 
-    ## Display this parameter from master app
+    # Display this parameter from master app
     display => 1
   }, $class;
 
@@ -341,6 +346,9 @@ package Device::PanStamp::swap::protocol::SwapCfgParam;
 use strict;
 use warnings;
 
+use parent qw(Exporter Device::PanStamp::swap::protocol::SwapParam);
+our @EXPORT_OK = qw();    # symbols to export on request
+
 #########################################################################
 # sub new() {
 #
@@ -358,15 +366,15 @@ use warnings;
 #########################################################################
 
 sub new() {
-  my ( $class, $register, $pType, $name =, $position, $size, $default, $verif )
-    = @_;
+  my ( $class, $register, $pType, $name, $position, $size, $default, $verif ) =
+    @_;
 
-  $pType    = SwapType::NUMBER unless defined $pType;
-  $name     = ""               unless defined $name;
-  $position = "0"              unless defined $position;
-  $size     = "1"              unless defined $size;
+  $pType    = $SwapType::NUMBER unless defined $pType;
+  $name     = ""                unless defined $name;
+  $position = "0"               unless defined $position;
+  $size     = "1"               unless defined $size;
 
-  $self = $class::SUPER->new(
+  my $self = $class->SUPER::new(
     $register, $pType, undef, $name, $position, $size,
     $default,  $verif, undef
   );
@@ -387,6 +395,9 @@ package Device::PanStamp::swap::protocol::SwapEndpoint;
 
 use strict;
 use warnings;
+
+use parent qw(Exporter Device::PanStamp::swap::protocol::SwapParam);
+our @EXPORT_OK = qw();    # symbols to export on request
 use Time::HiRes qw(time);
 
 #########################################################################
@@ -422,26 +433,23 @@ sub sendSwapCmd($) {
 
   # Convert to SwapValue
   if ( ref($value) eq "SwapValue" ) {
-    $swap_value = value;
-  }
-  else {
+    $swap_value = $value;
+  } else {
 
     # Byte length
-    my $length = $self->{byteSize}
-      if ( $self->{bitSize} > 0 )
-    {
+    my $length = $self->{byteSize};
+    if ( $self->{bitSize} > 0 ) {
       $length++;
     }
 
     my $res;
     if ( ref($value) eq "ARRAY" ) {
       $res = $value;
-    }
-    else {
+    } else {
 
       # if $res is a number
-      if ( $self->{type} eq SwapType::NUMBER and $res =~ /^\d+\.?\d*$/ ) {
-        $res = value;
+      if ( $self->{type} eq $SwapType::NUMBER and $res =~ /^\d+\.?\d*$/ ) {
+        $res = $value;
         if ( defined $self->{unit} ) {
           $res -= $self->{unit}->{offset};
           $res /= $self->{unit}->{factor};
@@ -449,20 +457,19 @@ sub sendSwapCmd($) {
           # Take integer part only
           $res = int($res);
         }
-      }
-      elsif ( $self->{type} eq SwapType::BINARY ) {
+      } elsif ( $self->{type} eq $SwapType::BINARY ) {
         my $lower = lc($value);
         $res =
-          ( grep { $lower eq $_ }, ( "on", "open", "1", "true", "enabled" ) )
+          ( grep { $lower eq $_ } ( "on", "open", "1", "true", "enabled" ) )
           ? 1
           : 0;
-      }
-      else {    # SwapType.STRING
+      } else {    # SwapType.STRING
         $res = $value;
       }
     }
 
-    $swap_value = SwapValue( $res, $length );
+    $swap_value =
+      Device::PanStamp::swap::protocol::SwapValue->new( $res, $length );
   }
 
   # Register value in list format
@@ -480,17 +487,16 @@ sub sendSwapCmd($) {
   my $indexParam  = 0;
   my $shiftParam  = $self->{bitSize} - 1;
   if ( $shiftParam < 0 ) {
-    shiftParam = 7;
+    $shiftParam = 7;
   }
 
   foreach my $i ( 0 .. $bitsToCopy ) {
-    if ( ( @lstParamVal[$indexParam] >> $shiftParam ) & 0x01 == 0 ) {
+    if ( ( ( $lstParamVal[$indexParam] >> $shiftParam ) & 0x01 ) == 0 ) {
       my $mask = ~( 1 << $shiftReg );
-      @lstRegVal[$indexReg] &= $mask;
-    }
-    else {
+      $lstRegVal[$indexReg] &= $mask;
+    } else {
       my $mask = 1 << $shiftReg;
-      @lstRegVal[$indexReg] |= mask;
+      $lstRegVal[$indexReg] |= $mask;
     }
 
     $shiftReg--;
@@ -510,8 +516,8 @@ sub sendSwapCmd($) {
   }
 
   # Convert to SWapValue
-  my $newRegVal = SwapValue->new( \@lstRegVal )
-    ;
+  my $newRegVal =
+    Device::PanStamp::swap::protocol::SwapValue->new( \@lstRegVal );
 
   # Send SWAP command
   return $self->{register}->sendSwapCmd($newRegVal);
@@ -574,10 +580,10 @@ sub dumps(;$) {
   my $val = $self->getValueInAscii();
 
   my %data = (
-    id       => $self->{id}       =~ s/ /_/g,
+    id       => $self->{id}       =~ s/ /_/gr,
     name     => $self->{name}     =~ s/ /_/gr,
     location => $self->{location} =~ s/ /_/gr,
-    type = $self->{type},
+    type     => $self->{type},
     direction => $self->{direction}
   );
 
@@ -620,13 +626,13 @@ sub new (;$$$) {
     $position, $size,     $default, $verif,     $units
   ) = @_;
 
-  $pType     = SwapType::NUMBER unless defined $pType;
-  $direction = SwapType::INPUT  unless defined $direction;
-  $name      = ""               unless defined $name;
-  $position  = "0"              unless defined $position;
-  $size      = "1"              unless defined $size;
+  $pType     = $SwapType::NUMBER unless defined $pType;
+  $direction = $SwapType::INPUT  unless defined $direction;
+  $name      = ""                unless defined $name;
+  $position  = "0"               unless defined $position;
+  $size      = "1"               unless defined $size;
 
-  my $self = bless $class::SUPER->new(
+  my $self = bless $class->SUPER::new(
     $register, $pType,   $direction, $name, $position,
     $size,     $default, $verif,     $units
   ), $class;

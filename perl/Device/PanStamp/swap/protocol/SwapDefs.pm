@@ -5,15 +5,13 @@
 #########################################################################
 
 package Device::PanStamp::swap::protocol::SwapAddress;
+
 use strict;
 use warnings;
-our ( @ISA, @EXPORT_OK );
 
-BEGIN {
-  require Exporter;
-  @ISA       = qw(Exporter);
-  @EXPORT_OK = qw(BROADCAST_ADDR);    # symbols to export on request
-}
+use parent qw(Exporter);
+our @EXPORT_OK = qw(BROADCAST_ADDR);    # symbols to export on request
+
 ## Broadcast address
 use constant BROADCAST_ADDR => 0x00;
 
@@ -24,15 +22,12 @@ use constant BROADCAST_ADDR => 0x00;
 #########################################################################
 
 package Device::PanStamp::swap::protocol::SwapFunction;
+
 use strict;
 use warnings;
-our ( @ISA, @EXPORT_OK );
 
-BEGIN {
-  require Exporter;
-  @ISA       = qw(Exporter);
-  @EXPORT_OK = qw(STATUS QUERY COMMAND);    # symbols to export on request
-}
+use parent qw(Exporter);
+our @EXPORT_OK = qw(STATUS QUERY COMMAND);    # symbols to export on request
 
 use constant {
   ## SWAP STATUS type
@@ -50,27 +45,24 @@ use constant {
 #########################################################################
 
 package Device::PanStamp::swap::protocol::SwapRegId;
+
 use strict;
 use warnings;
-our ( @ISA, @EXPORT_OK );
 
-BEGIN {
-  require Exporter;
-  @ISA       = qw(Exporter);
-  @EXPORT_OK = qw(
-    ID_PRODUCT_CODE
-    ID_HW_VERSION
-    ID_FW_VERSION
-    ID_SYSTEM_STATE
-    ID_FREQ_CHANNEL
-    ID_SECU_OPTION
-    ID_SECU_PASSWORD
-    ID_SECU_NONCE
-    ID_NETWORK_ID
-    ID_DEVICE_ADDR
-    ID_TX_INTERVAL
-    );    # symbols to export on request
-}
+use parent qw(Exporter);
+our @EXPORT_OK = qw(
+  ID_PRODUCT_CODE
+  ID_HW_VERSION
+  ID_FW_VERSION
+  ID_SYSTEM_STATE
+  ID_FREQ_CHANNEL
+  ID_SECU_OPTION
+  ID_SECU_PASSWORD
+  ID_SECU_NONCE
+  ID_NETWORK_ID
+  ID_DEVICE_ADDR
+  ID_TX_INTERVAL
+  );    # symbols to export on request
 
 use constant {
   ID_PRODUCT_CODE  => 0,
@@ -93,21 +85,18 @@ use constant {
 #########################################################################
 
 package Device::PanStamp::swap::protocol::SwapState;
+
 use strict;
 use warnings;
-our ( @ISA, @EXPORT_OK );
 
-BEGIN {
-  require Exporter;
-  @ISA       = qw(Exporter);
-  @EXPORT_OK = qw(
-    RESTART
-    RXON
-    RXOFF
-    SYNC
-    LOWBAT
-    );    # symbols to export on request
-}
+use parent qw(Exporter);
+@EXPORT_OK = qw(
+  RESTART
+  RXON
+  RXOFF
+  SYNC
+  LOWBAT
+  );    # symbols to export on request
 
 use constant {
   RESTART => 0,
@@ -145,21 +134,18 @@ TOSTRING: {
 #########################################################################
 
 package Device::PanStamp::swap::protocol::SwapType;
+
 use strict;
 use warnings;
-our ( @ISA, @EXPORT_OK );
 
-BEGIN {
-  require Exporter;
-  @ISA       = qw(Exporter);
-  @EXPORT_OK = qw(
-    BINARY
-    NUMBER
-    STRING
-    INPUT
-    OUTPUT
-    );    # symbols to export on request
-}
+use parent qw(Exporter);
+our @EXPORT_OK = qw(
+  BINARY
+  NUMBER
+  STRING
+  INPUT
+  OUTPUT
+  );    # symbols to export on request
 
 use constant {
   BINARY => "bin",

@@ -1,17 +1,22 @@
-package Device::Panstamp::swap::protocol::SwapMote;
-use strict;
-use warnings;
-use Time::HiRes qw(time);
-use SwapPacket qw(SwapStatusPacket SwapCommandPacket SwapQueryPacket);
-use SwapDefs qw(SwapRegId SwapState);
-use SwapValue qw(SwapValue);
-use Device::PanStamp::swap::xmltools::XmlDevice qw(XmlDevice);
-
 #########################################################################
 # class SwapMote
 #
 # SWAP mote class
 #########################################################################
+
+package Device::Panstamp::swap::protocol::SwapMote;
+
+use strict;
+use warnings;
+
+use parent qw(Exporter);
+our @EXPORT_OK = qw();    # symbols to export on request
+
+use Time::HiRes qw(time);
+use Device::PanStamp::swap::protocol::SwapPacket;
+use Device::PanStamp::swap::protocol::SwapDefs;
+use Device::PanStamp::swap::protocol::SwapValue;
+use Device::PanStamp::swap::xmltools::XmlDevice;
 
 #########################################################################
 # sub cmdRegister
@@ -28,11 +33,14 @@ sub cmdRegister($$) {
   my ( $self, $regId, $value ) = @_;
 
   # Expected response from mote
-  my $infPacket = SwapStatusPacket->new( $self->{address}, $regId, $value );
+  my $infPacket =
+    Device::PanStamp::swap::protocol::SwapStatusPacket->new( $self->{address},
+    $regId, $value );
 
   # Command to be sent to the mote
-  my $cmdPacket =
-    SwapCommandPacket->( $self->{address}, $regId, $value, $self->{nonce} );
+  my $cmdPacket = Device::PanStamp::swap::protocol::SwapCommandPacket->(
+    $self->{address}, $regId, $value, $self->{nonce}
+  );
 
   # Send command
   $cmdPacket->send( $self->{server} );
@@ -53,7 +61,9 @@ sub qryRegister($) {
   my ( $self, $regId ) = @_;
 
   # Query packet to be sent
-  my $qryPacket = SwapQueryPacket->new( $self->{address}, $regId );
+  my $qryPacket =
+    Device::PanStamp::swap::protocol::SwapQueryPacket->new( $self->{address},
+    $regId );
 
   # Send query
   $qryPacket->send( $self->{server} );
@@ -76,7 +86,8 @@ sub staRegister($) {
 
   # Status packet to be sent
   my $infPacket =
-    SwapStatusPacket->new( $self->{address}, $regId, $reg->{value} );
+    Device::PanStamp::swap::protocol::SwapStatusPacket->new( $self->{address},
+    $regId, $reg->{value} );
 
   # Send SWAP status packet
   $infPacket->send( $self->{server} );
@@ -112,8 +123,8 @@ sub cmdRegisterWack($$) {
 sub setAddress($) {
   my ( $self, $address ) = @_;
 
-  my $val = SwapValue->new( $address, 1 );
-  return $self->cmdRegisterWack( SwapRegId::ID_DEVICE_ADDR, $val );
+  my $val = Device::PanStamp::swap::protocol::SwapValue->new( $address, 1 );
+  return $self->cmdRegisterWack( $SwapRegId::ID_DEVICE_ADDR, $val );
 }
 
 #########################################################################
@@ -129,8 +140,8 @@ sub setAddress($) {
 sub setNetworkId($) {
   my ( $self, $netId ) = @_;
 
-  my $val = SwapValue->new( $netId, 2 );
-  return $self->cmdRegisterWack( SwapRegId::ID_NETWORK_ID, $val );
+  my $val = Device::PanStamp::swap::protocol::SwapValue->new( $netId, 2 );
+  return $self->cmdRegisterWack( $SwapRegId::ID_NETWORK_ID, $val );
 }
 
 #########################################################################
@@ -146,8 +157,8 @@ sub setNetworkId($) {
 sub setFreqChannel($) {
   my ( $self, $channel ) = @_;
 
-  my $val = SwapValue->( $channel, 1 );
-  return $self->cmdRegisterWack( SwapRegId::ID_FREQ_CHANNEL, $val );
+  my $val = Device::PanStamp::swap::protocol::SwapValue->new( $channel, 1 );
+  return $self->cmdRegisterWack( $SwapRegId::ID_FREQ_CHANNEL, $val );
 }
 
 #########################################################################
@@ -163,8 +174,8 @@ sub setFreqChannel($) {
 sub setSecurity($) {
   my ( $self, $secu ) = @_;
 
-  my $val = SwapValue->( $secu, 1 );
-  return $self->cmdRegisterWack( SwapRegId::ID_SECU_OPTION, $val );
+  my $val = Device::PanStamp::swap::protocol::SwapValue->new( $secu, 1 );
+  return $self->cmdRegisterWack( $SwapRegId::ID_SECU_OPTION, $val );
 }
 
 #########################################################################
@@ -180,8 +191,8 @@ sub setSecurity($) {
 sub setTxInterval($) {
   my ( $self, $interval ) = @_;
 
-  my $val = SwapValue->( $interval, 2 );
-  return $self->cmdRegisterWack( SwapRegId::ID_TX_INTERVAL, $val );
+  my $val = Device::PanStamp::swap::protocol::SwapValue->new( $interval, 2 );
+  return $self->cmdRegisterWack( $SwapRegId::ID_TX_INTERVAL, $val );
 }
 
 #########################################################################
@@ -192,12 +203,12 @@ sub setTxInterval($) {
 # @return 1 if this command is confirmed from the mote. Return 0 otherwise
 #########################################################################
 
-subf restart() {
+sub restart() {
   my $self = shift;
-    my $val =
-    SwapValue->( SwapState::RESTART, 1);
-    return $self->cmdRegisterWack( SwapRegId::ID_SYSTEM_STATE, $val );
-};
+  my $val =
+    Device::PanStamp::swap::protocol::SwapValue->new( $SwapState::RESTART, 1 );
+  return $self->cmdRegisterWack( $SwapRegId::ID_SYSTEM_STATE, $val );
+}
 
 #########################################################################
 # sub leaveSync
@@ -210,9 +221,9 @@ subf restart() {
 sub leaveSync() {
   my $self = shift;
   my $val =
-    SwapValue->new( SwapState::RXOFF, 1 );
-  return $self->cmdRegisterWack( SwapRegId::ID_SYSTEM_STATE, $val );
-};
+    Device::PanStamp::swap::protocol::SwapValue->new( $SwapState::RXOFF, 1 );
+  return $self->cmdRegisterWack( $SwapRegId::ID_SYSTEM_STATE, $val );
+}
 
 #########################################################################
 # sub updateTimeStamp
@@ -224,7 +235,7 @@ sub updateTimeStamp() {
   my $self = shift;
 
   $self->{timestamp} = time;
-};
+}
 
 #########################################################################
 # sub getRegister
@@ -249,7 +260,7 @@ sub getRegister($) {
   }
 
   return undef;
-};
+}
 
 #########################################################################
 # sub getParameter
@@ -278,7 +289,7 @@ sub getParameter($) {
     }
   }
   return undef;
-};
+}
 
 #########################################################################
 #sub dumps
@@ -301,12 +312,12 @@ sub dumps(;$) {
 
   return {
     pcode        => $self->{product_code},
-    manufacturer => $self->{ definition . manufacturer },
-    name         => $self->{ definition . product },
+    manufacturer => $self->{ $self->{definition}->{manufacturer} },
+    name         => $self->{ $self->{definition}->{product} },
     address      => $self->{address},
     registers    => \@regs
   };
-};
+}
 
 #########################################################################
 # sub new
@@ -329,60 +340,70 @@ sub new(;$$$$$) {
     unless ( defined $server );
 
   my $self = bless {
-    ## Swap server object
+
+    # Swap server object
     server => $server,
-    ## Product code
+
+    # Product code
     product_code => $product_code,
-    ## Product ID
+
+    # Product ID
     product_id => 0,
-    ## Manufacturer ID
+
+    # Manufacturer ID
     manufacturer_id => 0,
-    ## Definition settings
+
+    # Definition settings
     config => undef,
 
-    # Get manufacturer and product id from product code
-
+# Get manufacturer and product id from product code
 #        if product_code is not None:
 #            for i in range(4):
 #                self.manufacturer_id = self.manufacturer_id | (product_code[i] << 8 * (3-i))
 #                self.product_id = self.product_id | (product_code[i + 4] << 8 * (3-i))
 
     manufacturer_id => hex( substr( $product_code, 0, 8 ) ),
-    product_id      => hex( substr( $product_code, 8 ) )
+    product_id      => hex( substr( $product_code, 8 ) ),
+
+    # Device address
+    address => $address,
+
+    # Security option
+    security => $security,
+
+    # Current mote's security nonce
+    nonce => undef,
+
+    # State of the mote
+    state => $SwapState::RXOFF,
+
+    # List of regular registers provided by this mote
+    regular_registers => undef,
+
+    # List of config registers provided by this mote
+    config_registers => undef,
   }, $class;
 
   # Definition file
   ## Definition settings
-  my $self->{definition} = XmlDevice->new($self);
-
-  ## Device address
-  $self->{address} = $address,
-    ## Security option
-    $self->{security} = $security,
-    ## Current mote's security nonce
-    $self->{nonce} = undef,
-    ## State of the mote
-    $self->{state} = SwapState::RXOFF,
-    ## List of regular registers provided by this mote
-    $self->{regular_registers} = undef,
-    ## List of config registers provided by this mote
-    $self->{config_registers} = undef,
-    if ( defined $self->{definition} )
-  {
+  my $definition = Device::PanStamp::swap::xmltools::XmlDevice->new($self);
+  $self->{definition} = $definition;
+  if ( defined $definition ) {
 
     # List of regular registers
-    $self->{regular_registers} = $self->{definition}->getRegList();
+    $self->{regular_registers} = $definition->getRegList();
 
     # List of config registers
-    $self->{config_registers} =
-      $self->{definition}->getRegList( config = True ); #TODO parameter 'config'
+    $self->{config_registers} = $definition->getRegList(1);
+
+    # Powerdown mode
+    $self->{pwrdownmode} = $definition->{pwrdownmode};
+
+    # Interval between periodic transmissions
+    $self->{txinterval} = $definition->{txinterval};
   }
   ## Time stamp of the last update received from mote
-  $self->{timestamp} = time . time();
-  ## Powerdown mode
-  $self->{pwrdownmode} = $self->{definition}->{pwrdownmode};
-  ## Interval between periodic transmissions
-  $self->{txinterval} = $self->{definition}->{txinterval};
+  $self->{timestamp} = time;
 
   return $self;
 }
