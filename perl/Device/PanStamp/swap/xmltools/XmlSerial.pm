@@ -1,3 +1,7 @@
+###########################################################
+# Serial configuration settings
+###########################################################
+
 package Device::PanStamp::swap::xmltools::XmlSerial;
 
 use strict;
@@ -5,10 +9,6 @@ use warnings;
 
 use File::Basename;
 use XML::Simple qw(:strict);
-
-###########################################################
-# Serial configuration settings
-###########################################################
 
 ###########################################################
 # sub read
@@ -19,8 +19,18 @@ use XML::Simple qw(:strict);
 sub read() {
   my $self = shift;
 
+  my $tree;
+
   # Parse XML file
-  my $tree = XMLin( $self->{file_name} );
+  eval { $tree = XMLin( $self->{file_name}, ForceArray => [], KeyAttr => [] ); };
+  if ($@) {
+    if ( defined $self->{file_name} ) {
+      print
+        "Unable to read serial config from $self->{file_name}. Reason is: $@\n";
+    } else {
+      print "unable to read serial config. Reason is: undefined filename.\n";
+    }
+  }
 
   return unless defined $tree;
 

@@ -6,6 +6,9 @@ package Device::PanStamp::swap::SwapServer;
 use strict;
 use warnings;
 
+use threads;
+use threads::shared;
+
 use parent qw(Exporter);
 our @EXPORT_OK = qw();    # symbols to export on request
 
@@ -48,7 +51,8 @@ sub run() {
     $self->{_xmlSettings}->{network_file} );
   $self->{devaddress} = $self->{_xmlnetwork}->{devaddress};
   $self->{security}   = $self->{_xmlnetwork}->{security};
-  $self->{password}   = Password->new( $self->{_xmlnetwork}->{password} );
+  $self->{password}   = Device::PanStamp::swap::protocol::Password->new(
+    $self->{_xmlnetwork}->{password} );
 
   # Serial configuration settings
   $self->{_xmlserial} = Device::PanStamp::swap::xmltools::XmlSerial->new(
@@ -112,6 +116,26 @@ sub run() {
 
   # Discover motes in the current SWAP network
   $self->discoverMotes();
+}
+
+###########################################################
+# sub start()
+#
+# Start SWAP server
+###########################################################
+
+sub start() {
+  my $self = shift;
+
+  unless ( $self->{is_running} ) {
+
+    # Worker thread
+    my $thr = threads->create(
+      sub {
+        $self->run();
+      }
+    )->detach();
+  }
 }
 
 ###########################################################
@@ -857,7 +881,7 @@ sub new($@) {    # self, eventHandler, settings = None, start = True ) : """
 
   $start = 1 unless ( defined $start );
 
-  #threading . Thread . __init__(self) self . _stop = threading . Event()
+  my $is_running : shared;
 
   my $self = bless {
 
@@ -890,7 +914,9 @@ sub new($@) {    # self, eventHandler, settings = None, start = True ) : """
 
     # General settings
     _xmlSettings =>
-      Device::PanStamp::swap::xmltools::XmlSettings->new($settings)
+      Device::PanStamp::swap::xmltools::XmlSettings->new($settings),
+
+    is_running => $is_running
   }, $class;
 
   # Update Device Definition Files from Internet server

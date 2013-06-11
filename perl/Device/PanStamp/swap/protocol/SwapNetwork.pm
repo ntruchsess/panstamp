@@ -26,10 +26,22 @@ sub read() {
   # Clear current list of motes:
   $self->clear();
 
-  open NETWORK_FILE, "<", $self->{filename} or die $!;
-  my @lines = <NETWORK_FILE>;
-  close NETWORK_FILE;
-  my $json = decode_json( join( "", @lines ) );
+  my $json;
+  eval {
+    open NETWORK_FILE, "<", $self->{filename} or die $!;
+    my @lines = <NETWORK_FILE>;
+    close NETWORK_FILE;
+    return unless (@lines);
+    $json = decode_json( join( "", @lines ) );
+  };
+  if ($@) {
+    if (defined $self->{filename}) {
+      print "Unable to read network data from $self->{filename}. Reason is:\n$@\n";
+    } else {
+      print "Unable to read network data. Reason is undefined filename\n";
+    }
+  }
+  return unless defined $json and defined $json->{network};
   my $network_data = $json->{network};
 
   # Initialize list of motes

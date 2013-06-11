@@ -9,6 +9,11 @@ package Device::PanStamp::swap::modem::SerialPort;
 use strict;
 use warnings;
 
+use threads;
+use threads::shared;
+use Thread::Queue;
+use Time::HiRes qw(time);
+
 use parent qw(Exporter);
 our @EXPORT_OK = qw();    # symbols to export on request
 
@@ -28,7 +33,7 @@ sub run() {
 
   $self->{_go_on} = 1;
   if ( defined $self->{_serport} ) {
-    if ( $self->{_serport}->isOpen() ) {
+    if ( 1 ) { ## $self->{_serport}->isOpen() ) {
 
       # Flush buffers
       $self->{_serport}->flushInput();
@@ -68,16 +73,16 @@ sub run() {
 
         # Anything to be sent?
         #$self->{_send_lock.acquire()
-        unless ( $self->{_strtosend} . empty() ) {
-          if ( time . time() - $self->{last_transmission_time} > $txdelay )
-          {      #TODO time
-            my $strpacket = $self->{_strtosend}->get();
+        if ( $self->{_strtosend}->pending() ) {
+          if ( time - $self->{last_transmission_time} > $txdelay )
+          {
+            my $strpacket = $self->{_strtosend}->dequeue();
 
             # Send serial packet
             $self->{_serport}->write($strpacket);
 
             # Update time stamp
-            $self->{last_transmission_time} = time . time();    #TODO time
+            $self->{last_transmission_time} = time;
                  # Enable for debug only
             print "Sent: " + $strpacket if ( $self->{_verbose} );
           }
@@ -92,9 +97,28 @@ sub run() {
     }
   } else {
     die "Unable to read serial port "
-      . $self->{portname}
-      . " since it is not open";
+      . $self->{portname} . " since it is not open";
     print "Closing serial port...";
+  }
+}
+
+#########################################################################
+# sub start() {
+#
+# Start serial port
+#########################################################################
+
+sub start() {
+  my $self = shift;
+
+  unless ( $self->{_go_on} ) {
+
+    # Worker thread
+    my $thr = threads->create(
+      sub {
+        $self->run();
+      }
+    )->detach();
   }
 }
 
@@ -128,7 +152,7 @@ sub send($) {
   my ( $self, $buf ) = @_;
 
   #$self->{_send_lock.acquire()
-  $self->{_strtosend}->put($buf);
+  $self->{_strtosend}->enqueue($buf);
 
   #$self->{_send_lock.release()
 }
@@ -157,15 +181,8 @@ sub setRxCallback($) {
 sub reset() {
   my $self = shift;
 
-  # Clear DTR/RTS lines
-  $self->{_serport}->setDTR(0);
-  $self->{_serport}->setRTS(0);
-
-  select( undef, undef, undef, 0.001 );    #TODO time (was time.sleep(0.001))
-
-  # Set DTR/R lines
-  $self->{_serport}->setDTR(1);
-  $self->{_serport}->setRTS(1);
+  #force reset of arduino by pulsing DTR:
+  $self->{_serport}->pulse_dtr_on(100);
 }
 
 #########################################################################
@@ -185,7 +202,8 @@ sub new(;$$$) {
   $speed    = 38400          unless defined $speed;
   $verbose  = 0              unless defined $verbose;
 
-  #        threading.Thread.__init__(self)
+  my $_go_on :shared;
+
   my $self = bless {
     ## Name(path) of the serial port
     portname => $portname,
@@ -197,27 +215,29 @@ sub new(;$$$) {
     serial_received => undef,
 
     # Strint to be sent
-    # _strtosend => Queue . Queue(), #TODO Queue!
+    _strtosend => Thread::Queue->new(),
 
     #_send_lock => threading.Lock()
     # Verbose network traffic
     _verbose => $verbose,
 
     # Time stamp of the last transmission
-    last_transmission_time => 0
+    last_transmission_time => 0,
+    
+    _go_on => $_go_on 
   }, $class;
 
   # Open serial port in blocking mode
-  $self->{_serport} =
-    Device::SerialPort->new( $self->{portname} );
-    
+  $self->{_serport} = Device::SerialPort->new( $self->{portname} );
+
   #timeout = 0)
   #TODO port python serial to perl Device::Serial!
-  
-  die "Unable to open serial port" . $self->{portname}
-    unless ( defined $self->{_serport} and $self->{_serport}->isOpen() );
 
-  $self->{_serport}->baudrate($self->{portspeed});
+  die "Unable to open serial port" . $self->{portname}
+    unless ( defined $self->{_serport} );
+
+  $self->{_serport}->baudrate( $self->{portspeed} );
+
   # Set to >0 in order to avoid blocking at Tx forever
   $self->{_serport}->{writeTimeout} = 1;
 

@@ -19,9 +19,21 @@ use XML::Simple qw(:strict);
 sub read() {
   my $self = shift;
 
-  # Parse XML file
-  my $tree = XMLin( $self->{file_name} );
+  my $tree;
 
+  # Parse XML file
+  eval {
+    my $tree =
+      XMLin( $self->{file_name}, ForceArray => [], KeyAttr => [] );
+  };
+  if ($@) {
+    if ( defined $self->{file_name} ) {
+      print
+"Unable to read network settings from $self->{file_name}. Reason is: $@\n";
+    } else {
+      print "unable to read network settings. Reason is: undefined filename.\n";
+    }
+  }
   return unless defined $tree;
 
   # Get frequency channel

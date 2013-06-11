@@ -7,6 +7,7 @@ package Device::PanStamp::swap::xmltools::XmlSettings;
 use strict;
 use warnings;
 
+use File::Spec::Functions;
 use File::Basename;
 use XML::Simple qw(:strict);
 
@@ -19,8 +20,20 @@ use XML::Simple qw(:strict);
 sub read() {
   my $self = shift;
 
+  my $tree;
+
   # Parse XML file
-  my $tree = XMLin( $self->{file_name},ForceArray => [],KeyAttr=>[]);
+  eval {
+    $tree =
+      XMLin( $self->{file_name}, ForceArray => [], KeyAttr => [] );
+  };
+  if ($@) {
+    if ( defined $self->{file_name} ) {
+      print "Unable to read settings from $self->{file_name}. Reason is: $@\n";
+    } else {
+      print "unable to read settings. Reason is: undefined filename.\n";
+    }
+  }
 
   return unless $tree;
 
@@ -81,11 +94,10 @@ sub save() {
 ###########################################################
 
 sub new($;\%) {
-  my ( $class, $file_name, $opt ) = @_;
+  my ( $class, $file_name ) = @_;
 
   # Name/path of the current configuration file
   $file_name = "settings.xml" unless $file_name;
-  $opt       = {}             unless $opt;
 
   my $self = bless {
     ## Name/path of the current configuration file
@@ -116,19 +128,21 @@ sub new($;\%) {
 
   # Convert to absolute paths
   $self->{device_localdir} =
-    defined( $opt->{device_localdir} )
-    ? $direc . '/' . $opt->{device_localdir}
+    defined( $self->{device_localdir} )
+    ? catfile( $direc, $self->{device_localdir} )
     : $direc;
   $self->{serial_file} =
-    defined( $opt->{serial_file} )
-    ? $direc . '/' . $opt->{serial_file}
+    defined( $self->{serial_file} )
+    ? catfile( $direc, $self->{serial_file} )
     : $direc;
   $self->{network_file} =
-    defined( $opt->{network_file} )
-    ? $direc . '/' . $opt->{network_file}
+    defined( $self->{network_file} )
+    ? catfile( $direc, $self->{network_file} )
     : $direc;
   $self->{swap_file} =
-    defined( $opt->{swap_file} ) ? $direc . '/' . $opt->{swap_file} : $direc;
+    defined( $self->{swap_file} )
+    ? catfile( $direc, $self->{swap_file} )
+    : $direc;
 
   return $self;
 }

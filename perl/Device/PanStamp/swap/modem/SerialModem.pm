@@ -321,7 +321,7 @@ sub new(@) {
   $portname = "/dev/ttyUSB0" unless ( defined $portname );
   $speed    = 38400          unless ( defined $speed );
 
-  my $self = {
+  my $self = bless {
 
     # Serial mode (command or data modes)
     _sermode => DATA,
@@ -343,7 +343,7 @@ sub new(@) {
       #hwversion => None,
       # Firmware version of the serial modem
       #fwversion => None
-  };
+  }, $class;
 
   # Open serial port
   $self->{_serport} =
@@ -351,12 +351,11 @@ sub new(@) {
     $verbose )
     || die "cant open Serial Port: $self->{portname}: $!";
 
-  #TODO perls SerialPort does not support packetReceived event, does ist?
   # Define callback function for incoming serial packets
-  #self . _serport . setRxCallback( self . _serialPacketReceived )
+  $self.>{_serport}->setRxCallback( $self->{_serialPacketReceived} )
 
   # Run serial port thread
-  #self . _serport . start()
+  $self->{_serport}->start();
 
   # This flags switches to True when the serial modem is ready
   $self->{_wait_modem_start} = 0;
