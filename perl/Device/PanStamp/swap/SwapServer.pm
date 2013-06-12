@@ -8,6 +8,7 @@ use warnings;
 
 use threads;
 use threads::shared;
+use Thread::Queue;
 
 use parent qw(Exporter);
 our @EXPORT_OK = qw();    # symbols to export on request
@@ -34,16 +35,19 @@ use constant {
   _MAX_WAITTIME_ACK => 2000,
 
   # Max tries for any SWAP command
-  _MAX_SWAP_COMMAND_TRIES => 3
+  _MAX_SWAP_COMMAND_TRIES => 3,
+  
+  # Max time to poll regular registers (seconds)
+  _MAX_POLL_VALUES_TIME => 20.0
 };
 
 ###########################################################
-# sub run
+# sub _run
 #
 # Start SWAP server thread
 ###########################################################
 
-sub run() {
+sub _run() {
   my $self = shift;
 
   # Network configuration settings
@@ -60,13 +64,19 @@ sub run() {
 
   # Create and start serial modem object
   $self->{modem} = Device::PanStamp::swap::modem::SerialModem->new(
-    $self->{_xmlserial}->{port},
-    $self->{_xmlserial}->{speed},
-    $self->{verbose}
+    $self->{_xmlserial}->{port}, $self->{_xmlserial}->{speed},
+    $self->{verbose},            $self->{_xmlserial}->{async}
   );
 
   # Declare receiving callback function
-  $self->{modem}->setRxCallback( $self->{_ccPacketReceived} );
+  if ( $self->{async} ) {
+    $self->{modem}->setRxCallback( sub { $self->_ccPacketReceived(@_); } );
+  }
+  else {
+    my $rcvqueue = Thread::Queue->new();
+    $self->{_rcvqueue} = $rcvqueue;
+    $self->{modem}->setRxCallback( sub { $rcvqueue->enqueue(shift); } );
+  }
 
   # Set modem configuration from _xmlnetwork
   my $param_changed = 0;
@@ -115,7 +125,7 @@ sub run() {
   $self->{_eventHandler}->swapServerStarted();
 
   # Discover motes in the current SWAP network
-  $self->discoverMotes();
+  $self->_discoverMotes();
 }
 
 ###########################################################
@@ -124,17 +134,25 @@ sub run() {
 # Start SWAP server
 ###########################################################
 
-sub start() {
-  my $self = shift;
+sub start(;$) {
+  my ( $self, $async ) = @_;
 
   unless ( $self->{is_running} ) {
 
-    # Worker thread
-    my $thr = threads->create(
-      sub {
-        $self->run();
-      }
-    )->detach();
+    $async = 1 unless defined $async;
+
+    if ($async) {
+
+      # Worker thread
+      my $thr = threads->create(
+        sub {
+          $self->_run();
+        }
+      )->detach();
+    }
+    else {
+      $self->_run();
+    }
   }
 }
 
@@ -157,6 +175,23 @@ sub stop() {
   # Save network data
   print "Saving network data...";
   $self->{network}->save();
+}
+
+###########################################################
+# sub poll
+#
+# Poll Modem synchronous (if not running async)
+###########################################################
+
+sub poll() {
+  my $self = shift;
+
+  $self->{modem}->poll() unless $self->{modem}->{async};
+  if ( $self->{_rcvqueue}
+    and defined( my $ccPacket = $self->{_rcvqueue}->dequeue_nb() ) )
+  {
+    $self->_ccPacketReceived($ccPacket);
+  }
 }
 
 ###########################################################
@@ -184,11 +219,15 @@ sub _ccPacketReceived($) {
 
   my ( $self, $ccPacket ) = @_;
 
-  # Convert CcPacket into SwapPacket
-  my $swPacket = Device::PanStamp::swap::protocol::SwapPacket->new($ccPacket);
+  my $swPacket;
+  eval {
 
-  # Notify event
-  $self->{_eventHandler}->swapPacketReceived($swPacket);
+    # Convert CcPacket into SwapPacket
+    $swPacket = Device::PanStamp::swap::protocol::SwapPacket->new($ccPacket);
+
+    # Notify event
+    $self->{_eventHandler}->swapPacketReceived($swPacket);
+  };
   return if ($@);
 
   # Check function code
@@ -323,10 +362,15 @@ sub _checkMote($) {
     }
   }
   if ( $self->{_poll_regular_regs} ) {
+    if ( time - $self->{_poll_regular_regs_until} > 0 ) {
 
-    # Query all individual registers owned by this mote
-    foreach my $reg ( @{ $mote->{regular_registers} } ) {
-      $reg->sendSwapQuery();
+      # Query all individual registers owned by this mote
+      foreach my $reg ( @{ $mote->{regular_registers} } ) {
+        $reg->sendSwapQuery();
+      }
+    }
+    else {
+      $self->_endPollingValues();
     }
   }
 }
@@ -583,15 +627,12 @@ sub _checkStatus($) {
 sub _discoverMotes() {
   my $self = shift;
 
-  $self->{_poll_regular_regs} = 1;
+  $self->{_poll_regular_regs}       = 1;
+  $self->{_poll_regular_regs_until} = time + _MAX_POLL_VALUES_TIME;
   my $query = Device::PanStamp::swap::protocol::SwapQueryPacket->new(
-    $SwapRegId::ID_PRODUCT_CODE);
+    $SwapRegId::ID_PRODUCT_CODE
+  );
   $query->send($self);
-  my $t = undef;
-
-  #      threading
-  #    . Timer( 20.0, self . _endPollingValues ) t
-  #    . start();    #TODO threading?
 }
 
 ###########################################################
@@ -877,9 +918,10 @@ sub update_definition_files() {
 ###########################################################
 
 sub new($@) {    # self, eventHandler, settings = None, start = True ) : """
-  my ( $class, $eventHandler, $settings, $start ) = @_;
+  my ( $class, $eventHandler, $settings, $start, $async ) = @_;
 
   $start = 1 unless ( defined $start );
+  $async = 1 unless ( defined $async );
 
   my $is_running : shared;
 
@@ -916,6 +958,8 @@ sub new($@) {    # self, eventHandler, settings = None, start = True ) : """
     _xmlSettings =>
       Device::PanStamp::swap::xmltools::XmlSettings->new($settings),
 
+    async => $async,
+
     is_running => $is_running
   }, $class;
 
@@ -940,7 +984,7 @@ sub new($@) {    # self, eventHandler, settings = None, start = True ) : """
 
   # Start server
   if ($start) {
-    $self->start();
+    $self->start($async);
   }
 
   return $self;

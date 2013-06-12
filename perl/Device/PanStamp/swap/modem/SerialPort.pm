@@ -23,83 +23,77 @@ use Device::SerialPort qw( :PARAM :STAT 0.07 );
 our $txdelay = 0.05;
 
 #########################################################################
-# sub run
+# sub _run
 #
 # Run serial port listener on its own thread
 #########################################################################
 
-sub run() {
+sub _run() {
   my $self = shift;
 
-  $self->{_go_on} = 1;
-  if ( defined $self->{_serport} ) {
-    if ( 1 ) { ## $self->{_serport}->isOpen() ) {
-
-      # Flush buffers
-      $self->{_serport}->flushInput();
-      $self->{_serport}->flushOutput();
-      my @serbuf = ();
-
-      # Listen for incoming serial data
-      while ( $self->{_go_on} ) {
-
-        # Read single byte (non blocking function)
-        my $ch = $self->{_serport}->read();
-        if ( length($ch) > 0 ) {
-
-          # End of serial packet?
-          if ( $ch eq '\r'
-            or ( ( $ch eq '(' ) and ( scalar(@serbuf) > 0 ) ) )
-          {
-            my $strBuf = join( "", @serbuf );
-            @serbuf = ();
-
-            # Enable for debug only
-            print "Rved: " + $strBuf if ( $self->{_verbose} );
-
-            # Notify reception
-            if ( defined $self->{serial_received} ) {
-              &{ $self->{serial_received} }($strBuf);
-            }
-          } elsif ( $ch ne '\n' ) {
-
-            # Append char at the end of the buffer (list)
-            push @serbuf, $ch;
-          }
-        } else {
-          select( undef, undef, undef, 0.01 )
-            ;    #TODO check time (was time.sleep(0.01))
-        }
-
-        # Anything to be sent?
-        #$self->{_send_lock.acquire()
-        if ( $self->{_strtosend}->pending() ) {
-          if ( time - $self->{last_transmission_time} > $txdelay )
-          {
-            my $strpacket = $self->{_strtosend}->dequeue();
-
-            # Send serial packet
-            $self->{_serport}->write($strpacket);
-
-            # Update time stamp
-            $self->{last_transmission_time} = time;
-                 # Enable for debug only
-            print "Sent: " + $strpacket if ( $self->{_verbose} );
-          }
-        }
-
-        #$self->{_send_lock.release()
-      }
-    } else {
-      die "Unable to read serial port "
-        . $self->{portname}
-        . " since it is not open";
+  # Listen for incoming serial data
+  while ( $self->{_go_on} ) {
+    unless ( $self->poll() ) {
+      select( undef, undef, undef, 0.01 );
     }
-  } else {
-    die "Unable to read serial port "
-      . $self->{portname} . " since it is not open";
-    print "Closing serial port...";
   }
+}
+
+#########################################################################
+# sub poll
+#
+# Poll the serial port (called either from background thread or SwapServer through SwapModem)
+#########################################################################
+
+sub poll() {
+  my $self = shift;
+
+# Read single byte (non blocking function) #TODO verify input reads a single byte only, maybe better use select and read?
+  my $ch = $self->{_serport}->input();
+
+  my $ret = length($ch) > 0;
+  if ($ret) {
+
+    my $serbuf = $self->{_serbuf};
+
+    # End of serial packet?
+    if ( $ch eq '\r'
+      or ( ( $ch eq '(' ) and ( scalar(@$serbuf) > 0 ) ) )
+    {
+      my $strBuf = join( "", @$serbuf );
+      @$serbuf = ();
+
+      # Enable for debug only
+      print "Rved: " + $strBuf if ( $self->{_verbose} );
+
+      # Notify reception
+      if ( defined $self->{serial_received} ) {
+        &{ $self->{serial_received} }($strBuf);
+      }
+    }
+    elsif ( $ch ne '\n' ) {
+
+      # Append char at the end of the buffer (list)
+      push @$serbuf, $ch;
+    }
+  }
+
+  # Anything to be sent?
+  if ( $self->{_strtosend}->pending() ) {
+    if ( time - $self->{last_transmission_time} > $txdelay ) {
+      my $strpacket = $self->{_strtosend}->dequeue();
+
+      # Send serial packet
+      $self->{_serport}->write($strpacket);
+
+      # Update time stamp
+      $self->{last_transmission_time} = time;
+
+      # Enable for debug only
+      print "Sent: " + $strpacket if ( $self->{_verbose} );
+    }
+  }
+  return $ret;
 }
 
 #########################################################################
@@ -113,12 +107,29 @@ sub start() {
 
   unless ( $self->{_go_on} ) {
 
-    # Worker thread
-    my $thr = threads->create(
-      sub {
-        $self->run();
+    $self->{_go_on} = 1;
+    if ( defined $self->{_serport} ) {
+
+      # Flush buffers
+      $self->{_serport}->purge_rx();
+      $self->{_serport}->purge_tx();
+
+      if ( $self->{async} ) {
+
+        # Worker thread
+        my $thr = threads->create(
+          sub {
+            $self->run();
+          }
+        )->detach();
       }
-    )->detach();
+    }
+    else {
+      die "Unable to read serial port "
+        . $self->{portname}
+        . " since it is not open";
+      print "Closing serial port...";
+    }
   }
 }
 
@@ -132,11 +143,10 @@ sub stop() {
   my $self = shift;
   $self->{_go_on} = 0;
   if ( defined $self->{_serport} ) {
-    if ( $self->{_serport}->isOpen() ) {
-      $self->{_serport}->flushInput();
-      $self->{_serport}->flushOutput();
-      $self->{_serport}->close();
-    }
+
+    # Flush buffers
+    $self->{_serport}->purge_rx();
+    $self->{_serport}->purge_tx();
   }
 }
 
@@ -151,10 +161,7 @@ sub stop() {
 sub send($) {
   my ( $self, $buf ) = @_;
 
-  #$self->{_send_lock.acquire()
   $self->{_strtosend}->enqueue($buf);
-
-  #$self->{_send_lock.release()
 }
 
 #########################################################################
@@ -195,14 +202,15 @@ sub reset() {
 # @param verbose: Print out SWAP traffic (True or False)
 #########################################################################
 
-sub new(;$$$) {
-  my ( $class, $portname, $speed, $verbose ) = @_;
+sub new(;$$$$) {
+  my ( $class, $portname, $speed, $verbose, $async ) = @_;
 
   $portname = "/dev/ttyUSB0" unless defined $portname;
   $speed    = 38400          unless defined $speed;
   $verbose  = 0              unless defined $verbose;
+  $async    = 1              unless defined $async;
 
-  my $_go_on :shared;
+  my $_go_on : shared;
 
   my $self = bless {
     ## Name(path) of the serial port
@@ -223,15 +231,16 @@ sub new(;$$$) {
 
     # Time stamp of the last transmission
     last_transmission_time => 0,
+
+    _go_on => $_go_on,
     
-    _go_on => $_go_on 
+    async => $async,
+
+    _serbuf = []
   }, $class;
 
   # Open serial port in blocking mode
   $self->{_serport} = Device::SerialPort->new( $self->{portname} );
-
-  #timeout = 0)
-  #TODO port python serial to perl Device::Serial!
 
   die "Unable to open serial port" . $self->{portname}
     unless ( defined $self->{_serport} );

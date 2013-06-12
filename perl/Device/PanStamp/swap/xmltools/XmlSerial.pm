@@ -27,7 +27,8 @@ sub read() {
     if ( defined $self->{file_name} ) {
       print
         "Unable to read serial config from $self->{file_name}. Reason is: $@\n";
-    } else {
+    }
+    else {
       print "unable to read serial config. Reason is: undefined filename.\n";
     }
   }
@@ -39,6 +40,9 @@ sub read() {
 
   # Get serial speed
   $self->{speed} = $tree->{speed} if ( defined $tree->{speed} );
+
+  # Run SerialPort in it's own thread
+  $self->{async} = $tree->{async} if ( defined $tree->{asnyc} );
 }
 
 ###########################################################
@@ -56,6 +60,7 @@ sub save() {
   print FILE "<serial>\n";
   print FILE "\t<port>" . $self->{port} . "</port>\n";
   print FILE "\t<speed>" . $self->{speed} . "</speed>\n";
+  print FILE "\t<async>" . $self->{asnyc} . "</async>\n";
   print FILE "</serial>\n";
   close FILE;
 }
@@ -78,7 +83,9 @@ sub new(;$) {
     ## Name/path of the serial port
     port => "/dev/ttyUSB0",
     ## Speed of the serial port in bps
-    speed => 9600
+    speed => 9600,
+    ## Run SerialPort in it's own thread
+    async => 1
   }, $class;
 
   # Read XML file

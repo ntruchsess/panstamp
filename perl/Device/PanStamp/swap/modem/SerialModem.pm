@@ -32,6 +32,17 @@ sub stop() {
 }
 
 ###########################################################
+# sub poll
+#
+# Poll Modem synchronous (if not running async)
+###########################################################
+
+sub poll() {
+  my $self = shift;
+  $self->{_serport}->poll();
+}
+
+###########################################################
 # sub _serialPacketReceived($)
 #
 # Serial packet received. This is a callback function called from
@@ -49,18 +60,20 @@ sub _serialPacketReceived($) {
     $self->{_atresponse_received} = 1;
 
     # If modem in data mode
-  } else {
+  }
+  else {
 
     # Waiting for ready signal from modem?
-    unless ( $self->{_wait_modem_start} ) {
+    if ( not $self->{_wait_modem_start} ) {
       if ( $buf eq "Modem ready!" ) {
         $self->{_wait_modem_start} = 1;
 
         # Create CcPacket from string and notify reception
-      } elsif ( defined $self->{_ccpacket_received} ) {
-        my $ccPacket = Device::PanStamp::swap::modem::CcPacket->new($buf);
-        $self->_ccpacket_received->($ccPacket);
       }
+    }
+    elsif ( defined $self->{_ccpacket_received} ) {
+      my $ccPacket = Device::PanStamp::swap::modem::CcPacket->new($buf);
+      $self->{_ccpacket_received}->($ccPacket);
     }
   }
 }
@@ -295,11 +308,13 @@ sub setDevAddress($) {
 #
 # @param millis: Amount of milliseconds to wait for a response
 ##########################################################
+
 sub _waitForResponse($) {
   my ( $self, $millis ) = @_;
 
   my $loops = $millis / 10;
   while ( !$self->{_atresponse_received} ) {
+    $self->{_serport}->poll() unless ( $self->{async} );
     select( undef, undef, undef, 0.01 );
     $loops--;
     return 0 if ( $loops eq 0 );
@@ -313,13 +328,19 @@ sub _waitForResponse($) {
 # @param portname: Name/path of the serial port
 # @param speed: Serial baudrate in bps
 # @param verbose: Print out SWAP traffic (True or False)
+# @param async: run SerialPort handling in it's own thread
 ##########################################################
 
-sub new(@) {
-  my ( $class, $portname, $speed, $verbose ) = @_;
+sub new(;$$$$) {
+  my ( $class, $portname, $speed, $verbose, $async ) = @_;
 
   $portname = "/dev/ttyUSB0" unless ( defined $portname );
   $speed    = 38400          unless ( defined $speed );
+  $async    = 1              unless ( defined $async );
+
+  my $atresponse : shared          = "";
+  my $atresponse_received : shared = 0;
+  my $wait_modem_start : shared    = 0;
 
   my $self = bless {
 
@@ -327,46 +348,56 @@ sub new(@) {
     _sermode => DATA,
 
     # Response to the last AT command sent to the serial modem
-    _atresponse => "",
+    _atresponse => $atresponse,
 
     # AT response received from modem
-    #_atresponse_received => None,
+    _atresponse_received => $atresponse_received,
+
     # "Packet received" callback function. To be defined by the parent object
-    # _ccpacket_received => None,
+    _ccpacket_received => undef,
+
     # Name(path) of the serial port
     portname => $portname,
 
     # Speed of the serial port in bps
-    portspeed => $speed
+    portspeed => $speed,
 
-      # Hardware version of the serial modem
-      #hwversion => None,
-      # Firmware version of the serial modem
-      #fwversion => None
+    # Hardware version of the serial modem
+    hwversion => undef,
+
+    # Firmware version of the serial modem
+    fwversion => undef,
+
+    async => $async,
+
+    # This flags switches to True when the serial modem is ready
+    _wait_modem_start => $wait_modem_start
+
   }, $class;
 
   # Open serial port
   $self->{_serport} =
-    Device::PanStamp::swap::modem::SerialPort->new( $portname, $speed,
-    $verbose )
+    Device::PanStamp::swap::modem::SerialPort->new( $portname, $speed, $verbose,
+    $async )
     || die "cant open Serial Port: $self->{portname}: $!";
 
   # Define callback function for incoming serial packets
-  $self.>{_serport}->setRxCallback( $self->{_serialPacketReceived} )
+  $self->{_serport}->setRxCallback( $self->{_serialPacketReceived} );
 
   # Run serial port thread
   $self->{_serport}->start();
 
-  # This flags switches to True when the serial modem is ready
   $self->{_wait_modem_start} = 0;
   my $start      = time;
   my $soft_reset = 0;
   while ( !$self->{_wait_modem_start} ) {
+    $self->{_serport}->poll() unless ($async);
     my $elapsed = time - $start;
     if ( not $soft_reset and $elapsed > 5 ) {
       $self->reset();
       $soft_reset = 1;
-    } elsif ( $soft_reset and $elapsed > 10 ) {
+    }
+    elsif ( $soft_reset and $elapsed > 10 ) {
       die "Unable to reset serial modem";
     }
 
