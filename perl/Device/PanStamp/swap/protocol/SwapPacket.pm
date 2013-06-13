@@ -77,11 +77,11 @@ sub send($) {
   my ( $self, $server ) = @_;
 
   $self->{srcAddress} = $server->{devaddress};
-  $self->{data}->{1} = $self->{srcAddress};
+  @{ $self->{data} }[1] = $self->{srcAddress};
 
   # Update security option according to server's one
   $self->{security} = $server->{security};
-  $self->{data}->{2} |= $self->{security} & 0x0F;
+  @{ $self->{data} }[2] |= $self->{security} & 0x0F;
 
   # Keep copy of the current packet before encryption
   my $packet_before_encrypt = dclone($self);
@@ -93,7 +93,7 @@ sub send($) {
     $self->smart_encryption( $server->{password} );
   }
 
-  CcPacket::send( $self, $server->{modem} );
+  $self->SUPER::send( $server->{modem} );
 
   # Notify event
   $server->{_eventHandler}->swapPacketSent($packet_before_encrypt);
@@ -142,14 +142,16 @@ sub new($$$$$$$$) {
     $function, $regAddr,  $regId,    $value
   ) = @_;
 
-  $destAddr = $SwapAddress::BROADCAST_ADDR unless defined $destAddr;
-  $hop      = 0                            unless defined $hop;
-  $nonce    = 0                            unless defined $nonce;
-  $function = $SwapFunction::STATUS        unless defined $function;
-  $regAddr  = 0                            unless defined $regAddr;
-  $regId    = 0                            unless defined $regId;
+  $destAddr = Device::PanStamp::swap::protocol::SwapAddress::BROADCAST_ADDR
+    unless defined $destAddr;
+  $hop   = 0 unless defined $hop;
+  $nonce = 0 unless defined $nonce;
+  $function = Device::PanStamp::swap::protocol::SwapFunction::STATUS
+    unless defined $function;
+  $regAddr = 0 unless defined $regAddr;
+  $regId   = 0 unless defined $regId;
 
-  my $self = Device::PanStamp::swap::modem::CcPacket->new();
+  my $self = $class->SUPER::new();
 
   ## Destination address
   $self->{destAddress} = $destAddr;
@@ -169,8 +171,6 @@ sub new($$$$$$$$) {
   $self->{regId} = $regId;
   ## SWAP value
   $self->{value} = $value;
-
-  $self = bless $self, $class;
 
   if ( defined $ccPacket ) {
     die "Packet received is too short"
@@ -284,11 +284,13 @@ use Device::PanStamp::swap::protocol::SwapDefs;
 sub new($$) {
   my ( $class, $rAddr, $rId ) = @_;
 
-  $rAddr = $SwapAddress::BROADCAST_ADDR unless defined $rAddr;
+  $rAddr = Device::PanStamp::swap::protocol::SwapAddress::BROADCAST_ADDR
+    unless defined $rAddr;
   $rId = 0 unless defined $rId;
 
   #SwapPacket->new(ccPacket,destAddr,hop,nonce,function,regAddr,regId,value);
-  return $class->SUPER::new( undef, $rAddr, undef, undef, $SwapFunction::QUERY,
+  return $class->SUPER::new( undef, $rAddr, undef, undef,
+    Device::PanStamp::swap::protocol::SwapFunction::QUERY,
     $rAddr, $rId, undef );
 }
 
@@ -323,7 +325,8 @@ sub new ($$$;$) {
 
   #SwapPacket->new(ccPacket,destAddr,hop,nonce,function,regAddr,regId,value);
   return $class->SUPER::new( undef, $rAddr, undef, $nonce,
-    $SwapFunction::COMMAND, $rAddr, $rId, $val );
+    Device::PanStamp::swap::protocol::SwapFunction::COMMAND,
+    $rAddr, $rId, $val );
 }
 
 1;

@@ -83,7 +83,7 @@ sub new(;$) {
     ## Name/path of the serial port
     port => "/dev/ttyUSB0",
     ## Speed of the serial port in bps
-    speed => 9600,
+    speed => 38400,
     ## Run SerialPort in it's own thread
     async => 1
   }, $class;

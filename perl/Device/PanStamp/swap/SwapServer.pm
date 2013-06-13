@@ -36,7 +36,7 @@ use constant {
 
   # Max tries for any SWAP command
   _MAX_SWAP_COMMAND_TRIES => 3,
-  
+
   # Max time to poll regular registers (seconds)
   _MAX_POLL_VALUES_TIME => 20.0
 };
@@ -71,8 +71,7 @@ sub _run() {
   # Declare receiving callback function
   if ( $self->{async} ) {
     $self->{modem}->setRxCallback( sub { $self->_ccPacketReceived(@_); } );
-  }
-  else {
+  } else {
     my $rcvqueue = Thread::Queue->new();
     $self->{_rcvqueue} = $rcvqueue;
     $self->{modem}->setRxCallback( sub { $rcvqueue->enqueue(shift); } );
@@ -134,14 +133,12 @@ sub _run() {
 # Start SWAP server
 ###########################################################
 
-sub start(;$) {
-  my ( $self, $async ) = @_;
+sub start() {
+  my $self = shift;
 
   unless ( $self->{is_running} ) {
 
-    $async = 1 unless defined $async;
-
-    if ($async) {
+    if ( $self->{async} ) {
 
       # Worker thread
       my $thr = threads->create(
@@ -149,8 +146,7 @@ sub start(;$) {
           $self->_run();
         }
       )->detach();
-    }
-    else {
+    } else {
       $self->_run();
     }
   }
@@ -186,7 +182,9 @@ sub stop() {
 sub poll() {
   my $self = shift;
 
-  $self->{modem}->poll() unless $self->{modem}->{async};
+  if ( $self->{modem} and not $self->{modem}->{async} ) {
+    $self->{modem}->poll();
+  }
   if ( $self->{_rcvqueue}
     and defined( my $ccPacket = $self->{_rcvqueue}->dequeue_nb() ) )
   {
@@ -232,7 +230,9 @@ sub _ccPacketReceived($) {
 
   # Check function code
   # STATUS packet received
-  if ( $swPacket->{function} eq $SwapFunction::STATUS ) {
+  if ( $swPacket->{function} eq
+    Device::PanStamp::swap::protocol::SwapFunction::STATUS )
+  {
     return unless defined $swPacket->{value};
 
     # Check status message (ecpected response, nonce, ...)?
@@ -240,7 +240,9 @@ sub _ccPacketReceived($) {
 
     # Check type of data received
     # Product code received
-    if ( $swPacket->{regId} eq $SwapRegId::ID_PRODUCT_CODE ) {
+    if ( $swPacket->{regId} eq
+      Device::PanStamp::swap::protocol::SwapRegId::ID_PRODUCT_CODE )
+    {
       my $mote = Device::PanStamp::swap::protocol::SwapMote->new(
         $self,
         $swPacket->{value}->toAsciiHex(),
@@ -252,7 +254,9 @@ sub _ccPacketReceived($) {
     }
 
     # Device address received
-    elsif ( $swPacket->{regId} eq $SwapRegId::ID_DEVICE_ADDR ) {
+    elsif ( $swPacket->{regId} eq
+      Device::PanStamp::swap::protocol::SwapRegId::ID_DEVICE_ADDR )
+    {
 
       # Check address in list of motes
       $self->updateMoteAddress( $swPacket->{srcAddress},
@@ -261,13 +265,17 @@ sub _ccPacketReceived($) {
     }
 
     # System state received
-    elsif ( $swPacket->{regId} eq $SwapRegId::ID_SYSTEM_STATE ) {
+    elsif ( $swPacket->{regId} eq
+      Device::PanStamp::swap::protocol::SwapRegId::ID_SYSTEM_STATE )
+    {
       $self->_updateMoteState($swPacket);
 
     }
 
     # Periodic Tx interval received
-    elsif ( $swPacket->{regId} eq $SwapRegId::ID_TX_INTERVAL ) {
+    elsif ( $swPacket->{regId} eq
+      Device::PanStamp::swap::protocol::SwapRegId::ID_TX_INTERVAL )
+    {
 
       # Update interval in list of motes
       $self->_updateMoteTxInterval($swPacket);
@@ -284,7 +292,9 @@ sub _ccPacketReceived($) {
   }
 
   # QUERY packet received
-  elsif ( $swPacket->{function} eq $SwapFunction::QUERY ) {
+  elsif ( $swPacket->{function} eq
+    Device::PanStamp::swap::protocol::SwapFunction::QUERY )
+  {
 
     # Query addressed to our gateway?
     if ( $swPacket->{destAddress} eq $self->{modem}->{devaddress} ) {
@@ -301,7 +311,9 @@ sub _ccPacketReceived($) {
   }
 
   # COMMAND packet received
-  elsif ( $swPacket->{function} eq $SwapFunction::COMMAND ) {
+  elsif ( $swPacket->{function} eq
+    Device::PanStamp::swap::protocol::SwapFunction::COMMAND )
+  {
 
     # Command addressed to our gateway?
     if ( $swPacket->{destAddress} eq $self->{modem}->{devaddress} ) {
@@ -368,8 +380,7 @@ sub _checkMote($) {
       foreach my $reg ( @{ $mote->{regular_registers} } ) {
         $reg->sendSwapQuery();
       }
-    }
-    else {
+    } else {
       $self->_endPollingValues();
     }
   }
@@ -563,8 +574,11 @@ sub _checkStatus($) {
   my ( $self, $status ) = @_;
 
   # Check possible command ACK
-  if (  ( defined $self->{_expectedAck} )
-    and ( $status->{function} eq $SwapFunction::STATUS ) )
+  if (
+    ( defined $self->{_expectedAck} )
+    and ( $status->{function} eq
+      Device::PanStamp::swap::protocol::SwapFunction::STATUS )
+    )
   {
     if ( $status->{regAddress} eq $self->{_expectedAck}->{regAddress} ) {
       if ( $status->{regId} eq $self->{_expectedAck}->{regId} ) {
@@ -576,8 +590,11 @@ sub _checkStatus($) {
 
   # Check possible response to a precedent query
   delete $self->{_valueReceived};
-  if (  ( defined $self->_expectedRegister )
-    and ( $status->{function} eq $SwapFunction::STATUS ) )
+  if (
+    ( defined $self->_expectedRegister )
+    and ( $status->{function} eq
+      Device::PanStamp::swap::protocol::SwapFunction::STATUS )
+    )
   {
     if ( $status->{regAddress} eq $self->{_expectedRegister}->getAddress() ) {
       if ( $status->{regId} eq $self->{_expectedRegister}->{id} ) {
@@ -629,9 +646,9 @@ sub _discoverMotes() {
 
   $self->{_poll_regular_regs}       = 1;
   $self->{_poll_regular_regs_until} = time + _MAX_POLL_VALUES_TIME;
-  my $query = Device::PanStamp::swap::protocol::SwapQueryPacket->new(
-    $SwapRegId::ID_PRODUCT_CODE
-  );
+  my $query =
+    Device::PanStamp::swap::protocol::SwapQueryPacket->new(
+    Device::PanStamp::swap::protocol::SwapRegId::ID_PRODUCT_CODE);
   $query->send($self);
 }
 
@@ -692,7 +709,7 @@ sub send_nonce() {
   # Status packet to be sent
   my $status = Device::PanStamp::swap::protocol::SwapStatusPacket->new(
     $self->{_xmlnetwork}->{devaddress},
-    $SwapRegId::ID_SECU_NONCE, $value );
+    Device::PanStamp::swap::protocol::SwapRegId::ID_SECU_NONCE, $value );
   $self->{nonce}++;
   if ( $self->{nonce} > 0xFF ) {
     $self->{nonce} = 0;
@@ -984,7 +1001,7 @@ sub new($@) {    # self, eventHandler, settings = None, start = True ) : """
 
   # Start server
   if ($start) {
-    $self->start($async);
+    $self->start();
   }
 
   return $self;

@@ -151,7 +151,9 @@ sub setValue($) {
     } else {
 
       # if $res is a number
-      if ( $self->{type} eq $SwapType::NUMBER and $res =~ /^\d+\.?\d*$/ ) {
+      if (  $self->{type} eq Device::PanStamp::swap::protocol::SwapType::NUMBER
+        and $res =~ /^\d+\.?\d*$/ )
+      {
         $res = $value;
         if ( defined $self->{unit} ) {
           $res -= $self->{unit}->{offset};
@@ -160,7 +162,9 @@ sub setValue($) {
           # Take integer part only
           $res = int($res);
         }
-      } elsif ( $self->{type} eq $SwapType::BINARY ) {
+      } elsif (
+        $self->{type} eq Device::PanStamp::swap::protocol::SwapType::BINARY )
+      {
         my $lower = lc($value);
         $res =
           ( grep { $lower eq $_ } ( "on", "open", "1", "true", "enabled" ) )
@@ -194,7 +198,7 @@ sub setValue($) {
 sub getValueInAscii() {
   my $self = shift;
 
-  if ( $self->{type} eq $SwapType::NUMBER ) {
+  if ( $self->{type} eq Device::PanStamp::swap::protocol::SwapType::NUMBER ) {
     my $val = $self->{value}->toInteger();
 
     # Add units
@@ -207,7 +211,9 @@ sub getValueInAscii() {
     } else {
       return $val;
     }
-  } elsif ( $self->{type} eq $SwapType::BINARY ) {
+  } elsif (
+    $self->{type} eq Device::PanStamp::swap::protocol::SwapType::BINARY )
+  {
     my $strVal = $self->{value}->toAscii();
     return "on"  if ( $strVal eq "1" );
     return "off" if ( $strVal eq "0" );
@@ -264,11 +270,13 @@ sub new(;$$$$$$$$$) {
     $position, $size,     $default, $verif,     $units
   ) = @_;
 
-  $pType     = $SwapType::NUMBER unless defined $pType;
-  $direction = $SwapType::INPUT  unless defined $direction;
-  $name      = ""                unless defined $name;
-  $position  = "0"               unless defined $position;
-  $size      = "1"               unless defined $size;
+  $pType = Device::PanStamp::swap::protocol::SwapType::NUMBER
+    unless defined $pType;
+  $direction = Device::PanStamp::swap::protocol::SwapType::INPUT
+    unless defined $direction;
+  $name     = ""  unless defined $name;
+  $position = "0" unless defined $position;
+  $size     = "1" unless defined $size;
 
   # Get true positions
   my $position_dot = index( $position, '.' );
@@ -369,10 +377,11 @@ sub new() {
   my ( $class, $register, $pType, $name, $position, $size, $default, $verif ) =
     @_;
 
-  $pType    = $SwapType::NUMBER unless defined $pType;
-  $name     = ""                unless defined $name;
-  $position = "0"               unless defined $position;
-  $size     = "1"               unless defined $size;
+  $pType = Device::PanStamp::swap::protocol::SwapType::NUMBER
+    unless defined $pType;
+  $name     = ""  unless defined $name;
+  $position = "0" unless defined $position;
+  $size     = "1" unless defined $size;
 
   my $self = $class->SUPER::new(
     $register, $pType, undef, $name, $position, $size,
@@ -448,7 +457,9 @@ sub sendSwapCmd($) {
     } else {
 
       # if $res is a number
-      if ( $self->{type} eq $SwapType::NUMBER and $res =~ /^\d+\.?\d*$/ ) {
+      if (  $self->{type} eq Device::PanStamp::swap::protocol::SwapType::NUMBER
+        and $res =~ /^\d+\.?\d*$/ )
+      {
         $res = $value;
         if ( defined $self->{unit} ) {
           $res -= $self->{unit}->{offset};
@@ -457,7 +468,9 @@ sub sendSwapCmd($) {
           # Take integer part only
           $res = int($res);
         }
-      } elsif ( $self->{type} eq $SwapType::BINARY ) {
+      } elsif (
+        $self->{type} eq Device::PanStamp::swap::protocol::SwapType::BINARY )
+      {
         my $lower = lc($value);
         $res =
           ( grep { $lower eq $_ } ( "on", "open", "1", "true", "enabled" ) )
@@ -626,11 +639,13 @@ sub new (;$$$) {
     $position, $size,     $default, $verif,     $units
   ) = @_;
 
-  $pType     = $SwapType::NUMBER unless defined $pType;
-  $direction = $SwapType::INPUT  unless defined $direction;
-  $name      = ""                unless defined $name;
-  $position  = "0"               unless defined $position;
-  $size      = "1"               unless defined $size;
+  $pType = Device::PanStamp::swap::protocol::SwapType::NUMBER
+    unless defined $pType;
+  $direction = Device::PanStamp::swap::protocol::SwapType::INPUT
+    unless defined $direction;
+  $name     = ""  unless defined $name;
+  $position = "0" unless defined $position;
+  $size     = "1" unless defined $size;
 
   my $self = bless $class->SUPER::new(
     $register, $pType,   $direction, $name, $position,

@@ -208,9 +208,11 @@ sub queryMoteRegister($$) {
 # Create server object
 ###########################################################
 
-sub create_server() {
-  my $self = shift;
-  $self->{server} = Device::PanStamp::swap::SwapServer->new( $self, $self->{verbose} );
+sub create_server(;$$) {
+  my ( $self, $settings, $async ) = @_;
+  $self->{server} =
+    Device::PanStamp::swap::SwapServer->new( $self, $settings, 0, $async )
+    ;
   return $self->{server};
 }
 
@@ -223,6 +225,17 @@ sub create_server() {
 sub start_server() {
   my $self = shift;
   $self->{server}->start();
+}
+
+###########################################################
+# sub poll_server
+#
+# Poll SWAP server (if not running async)
+###########################################################
+
+sub poll_server() {
+  my $self = shift;
+  $self->{server}->poll();
 }
 
 ###########################################################
@@ -291,15 +304,19 @@ sub update_definition_files() {
 ###########################################################
 
 sub new(;$$) {
-  my ( $class, $settings, $start ) = @_;
+  my ( $class, $settings, $start, $async ) = @_;
 
   $start = 1 unless ( defined $start );
+  $async = 1 unless ( defined $async );
+
   ## SWAP server
   my $self = bless {}, $class;
 
   if ($start) {
     print "SWAP server starting... ";
-    $self->{server} = Device::PanStamp::swap::SwapServer->new( $self, $settings, $start );
+    $self->{server} =
+      Device::PanStamp::swap::SwapServer->new( $self, $settings, $start,
+      $async );
     $self->{network} = $self->{server}->{network};
     if ($start) {
       print "SWAP server is now running... ";

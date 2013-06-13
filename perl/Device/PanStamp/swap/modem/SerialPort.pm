@@ -32,10 +32,17 @@ sub _run() {
   my $self = shift;
 
   # Listen for incoming serial data
-  while ( $self->{_go_on} ) {
+  while ( ${ $self->{_go_on} } ) {
     unless ( $self->poll() ) {
       select( undef, undef, undef, 0.01 );
     }
+  }
+  if ( defined $self->{_serport} ) {
+
+    # Flush buffers
+    $self->{_serport}->purge_rx();
+    $self->{_serport}->purge_tx();
+    $self->{_serport}->close();
   }
 }
 
@@ -49,32 +56,31 @@ sub poll() {
   my $self = shift;
 
 # Read single byte (non blocking function) #TODO verify input reads a single byte only, maybe better use select and read?
-  my $ch = $self->{_serport}->input();
-
-  my $ret = length($ch) > 0;
-  if ($ret) {
-
+  my $data   = $self->{_serport}->input();
+  my $length = length($data);
+  if ($length) {
+    print "$length bytes received: $data\n";
+    my @data = unpack "a" x $length, $data;
     my $serbuf = $self->{_serbuf};
+    foreach my $ch (@data) {
 
-    # End of serial packet?
-    if ( $ch eq '\r'
-      or ( ( $ch eq '(' ) and ( scalar(@$serbuf) > 0 ) ) )
-    {
-      my $strBuf = join( "", @$serbuf );
-      @$serbuf = ();
+      # End of serial packet?
+      if ( $ch =~ /[\r\(]/ and (@$serbuf) ) {
+        my $strBuf = join( "", @$serbuf );
+        @$serbuf = ();
 
-      # Enable for debug only
-      print "Rved: " + $strBuf if ( $self->{_verbose} );
+        # Enable for debug only
+        print "Rved: $strBuf\n" if ( $self->{_verbose} );
 
-      # Notify reception
-      if ( defined $self->{serial_received} ) {
-        &{ $self->{serial_received} }($strBuf);
+        # Notify reception
+        if ( defined $self->{serial_received} ) {
+          &{ $self->{serial_received} }($strBuf);
+        }
+      } elsif ( $ch =~ /[^\r\n]/ ) {
+
+        # Append char at the end of the buffer (list)
+        push @$serbuf, $ch;
       }
-    }
-    elsif ( $ch ne '\n' ) {
-
-      # Append char at the end of the buffer (list)
-      push @$serbuf, $ch;
     }
   }
 
@@ -90,10 +96,10 @@ sub poll() {
       $self->{last_transmission_time} = time;
 
       # Enable for debug only
-      print "Sent: " + $strpacket if ( $self->{_verbose} );
+      print "Sent: $strpacket\n" if ( $self->{_verbose} );
     }
   }
-  return $ret;
+  return $length;
 }
 
 #########################################################################
@@ -105,26 +111,22 @@ sub poll() {
 sub start() {
   my $self = shift;
 
-  unless ( $self->{_go_on} ) {
+  unless ( ${ $self->{_go_on} } ) {
 
-    $self->{_go_on} = 1;
+    ${ $self->{_go_on} } = 1;
     if ( defined $self->{_serport} ) {
-
-      # Flush buffers
-      $self->{_serport}->purge_rx();
-      $self->{_serport}->purge_tx();
 
       if ( $self->{async} ) {
 
         # Worker thread
         my $thr = threads->create(
           sub {
-            $self->run();
+            $self->_run();
           }
         )->detach();
+        #$self->{_serport} = undef;
       }
-    }
-    else {
+    } else {
       die "Unable to read serial port "
         . $self->{portname}
         . " since it is not open";
@@ -141,13 +143,7 @@ sub start() {
 
 sub stop() {
   my $self = shift;
-  $self->{_go_on} = 0;
-  if ( defined $self->{_serport} ) {
-
-    # Flush buffers
-    $self->{_serport}->purge_rx();
-    $self->{_serport}->purge_tx();
-  }
+  ${ $self->{_go_on} } = 0;
 }
 
 #########################################################################
@@ -188,6 +184,10 @@ sub setRxCallback($) {
 sub reset() {
   my $self = shift;
 
+  # Flush buffers
+  $self->{_serport}->purge_rx();
+  $self->{_serport}->purge_tx();
+
   #force reset of arduino by pulsing DTR:
   $self->{_serport}->pulse_dtr_on(100);
 }
@@ -210,7 +210,7 @@ sub new(;$$$$) {
   $verbose  = 0              unless defined $verbose;
   $async    = 1              unless defined $async;
 
-  my $_go_on : shared;
+  my $_go_on : shared = 0;
 
   my $self = bless {
     ## Name(path) of the serial port
@@ -225,18 +225,17 @@ sub new(;$$$$) {
     # Strint to be sent
     _strtosend => Thread::Queue->new(),
 
-    #_send_lock => threading.Lock()
     # Verbose network traffic
     _verbose => $verbose,
 
     # Time stamp of the last transmission
     last_transmission_time => 0,
 
-    _go_on => $_go_on,
-    
+    _go_on => \$_go_on,
+
     async => $async,
 
-    _serbuf = []
+    _serbuf => []
   }, $class;
 
   # Open serial port in blocking mode
@@ -246,9 +245,10 @@ sub new(;$$$$) {
     unless ( defined $self->{_serport} );
 
   $self->{_serport}->baudrate( $self->{portspeed} );
-
-  # Set to >0 in order to avoid blocking at Tx forever
-  $self->{_serport}->{writeTimeout} = 1;
+  $self->{_serport}->databits(8);
+  $self->{_serport}->parity("none");
+  $self->{_serport}->stopbits(1);
+  $self->{_serport}->write_settings;
 
   # Reset modem
   $self->reset();

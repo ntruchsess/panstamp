@@ -124,7 +124,7 @@ sub setAddress($) {
   my ( $self, $address ) = @_;
 
   my $val = Device::PanStamp::swap::protocol::SwapValue->new( $address, 1 );
-  return $self->cmdRegisterWack( $SwapRegId::ID_DEVICE_ADDR, $val );
+  return $self->cmdRegisterWack( Device::PanStamp::swap::protocol::SwapRegId::ID_DEVICE_ADDR, $val );
 }
 
 #########################################################################
@@ -141,7 +141,7 @@ sub setNetworkId($) {
   my ( $self, $netId ) = @_;
 
   my $val = Device::PanStamp::swap::protocol::SwapValue->new( $netId, 2 );
-  return $self->cmdRegisterWack( $SwapRegId::ID_NETWORK_ID, $val );
+  return $self->cmdRegisterWack( Device::PanStamp::swap::protocol::SwapRegId::ID_NETWORK_ID, $val );
 }
 
 #########################################################################
@@ -158,7 +158,7 @@ sub setFreqChannel($) {
   my ( $self, $channel ) = @_;
 
   my $val = Device::PanStamp::swap::protocol::SwapValue->new( $channel, 1 );
-  return $self->cmdRegisterWack( $SwapRegId::ID_FREQ_CHANNEL, $val );
+  return $self->cmdRegisterWack( Device::PanStamp::swap::protocol::SwapRegId::ID_FREQ_CHANNEL, $val );
 }
 
 #########################################################################
@@ -175,7 +175,7 @@ sub setSecurity($) {
   my ( $self, $secu ) = @_;
 
   my $val = Device::PanStamp::swap::protocol::SwapValue->new( $secu, 1 );
-  return $self->cmdRegisterWack( $SwapRegId::ID_SECU_OPTION, $val );
+  return $self->cmdRegisterWack( Device::PanStamp::swap::protocol::SwapRegId::ID_SECU_OPTION, $val );
 }
 
 #########################################################################
@@ -192,7 +192,7 @@ sub setTxInterval($) {
   my ( $self, $interval ) = @_;
 
   my $val = Device::PanStamp::swap::protocol::SwapValue->new( $interval, 2 );
-  return $self->cmdRegisterWack( $SwapRegId::ID_TX_INTERVAL, $val );
+  return $self->cmdRegisterWack( Device::PanStamp::swap::protocol::SwapRegId::ID_TX_INTERVAL, $val );
 }
 
 #########################################################################
@@ -207,7 +207,7 @@ sub restart() {
   my $self = shift;
   my $val =
     Device::PanStamp::swap::protocol::SwapValue->new( $SwapState::RESTART, 1 );
-  return $self->cmdRegisterWack( $SwapRegId::ID_SYSTEM_STATE, $val );
+  return $self->cmdRegisterWack( Device::PanStamp::swap::protocol::SwapRegId::ID_SYSTEM_STATE, $val );
 }
 
 #########################################################################
@@ -222,7 +222,7 @@ sub leaveSync() {
   my $self = shift;
   my $val =
     Device::PanStamp::swap::protocol::SwapValue->new( $SwapState::RXOFF, 1 );
-  return $self->cmdRegisterWack( $SwapRegId::ID_SYSTEM_STATE, $val );
+  return $self->cmdRegisterWack( Device::PanStamp::swap::protocol::SwapRegId::ID_SYSTEM_STATE, $val );
 }
 
 #########################################################################
@@ -409,4 +409,3 @@ sub new(;$$$$$) {
 }
 
 1;
-
