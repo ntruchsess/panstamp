@@ -313,13 +313,13 @@ sub new(;$$) {
   my $self = bless {}, $class;
 
   if ($start) {
-    print "SWAP server starting... ";
+    print "SWAP server starting...\n";
     $self->{server} =
       Device::PanStamp::swap::SwapServer->new( $self, $settings, $start,
       $async );
     $self->{network} = $self->{server}->{network};
     if ($start) {
-      print "SWAP server is now running... ";
+      print "SWAP server is now running...\n";
     }
   }
   return $self;

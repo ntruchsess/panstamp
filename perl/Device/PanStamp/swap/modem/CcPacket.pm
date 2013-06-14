@@ -59,10 +59,10 @@ sub new(;$) {
 
     # Check the existence of the (RSSI/LQI) pair
     die "Incorrect packet format for incoming data. Lack of (RSSI,LQI)."
-      unless $strPacket =~ /^\([0-9a-f]{4}\)/;
+      unless $strPacket =~ /^\([0-9A-F]{4}\)/;
     die "Incorrect packet format. Amount of characters should not be odd."
       if ( length $strPacket ) % 2 > 0;
-    die "Incorrect packet format" unless $strPacket =~ /^.{6}[0-9a-f]+$/;
+    die "Incorrect packet format" unless $strPacket =~ /^.{6}[0-9A-F]+$/;
     ## RSSI byte
     $self->{rssi} = hex substr( $strPacket, 1, 2 );
     ## LQI byte

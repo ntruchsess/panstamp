@@ -56,11 +56,9 @@ sub poll() {
   my $self = shift;
 
 # Read single byte (non blocking function) #TODO verify input reads a single byte only, maybe better use select and read?
-  my $data   = $self->{_serport}->input();
-  my $length = length($data);
-  if ($length) {
-    print "$length bytes received: $data\n";
-    my @data = unpack "a" x $length, $data;
+  my ( $count, $data ) = $self->{_serport}->read(255);
+  if ($count) {
+    my @data = unpack "a" x $count, $data;
     my $serbuf = $self->{_serbuf};
     foreach my $ch (@data) {
 
@@ -99,7 +97,7 @@ sub poll() {
       print "Sent: $strpacket\n" if ( $self->{_verbose} );
     }
   }
-  return $length;
+  return $count;
 }
 
 #########################################################################
@@ -124,6 +122,7 @@ sub start() {
             $self->_run();
           }
         )->detach();
+
         #$self->{_serport} = undef;
       }
     } else {

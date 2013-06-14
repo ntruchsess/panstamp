@@ -77,6 +77,8 @@ sub _run() {
     $self->{modem}->setRxCallback( sub { $rcvqueue->enqueue(shift); } );
   }
 
+  $self->{modem}->start();
+  
   # Set modem configuration from _xmlnetwork
   my $param_changed = 0;
 
@@ -160,7 +162,7 @@ sub start() {
 
 sub stop() {
   my $self = shift;
-  print "Stopping SWAP server...";
+  print "Stopping SWAP server...\n";
 
   # Stop modem
   if ( define $self->{modem} ) {
@@ -169,7 +171,7 @@ sub stop() {
   $self->{is_running} = 0;
 
   # Save network data
-  print "Saving network data...";
+  print "Saving network data...\n";
   $self->{network}->save();
 }
 

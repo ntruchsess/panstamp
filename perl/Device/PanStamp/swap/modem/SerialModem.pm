@@ -22,6 +22,78 @@ use constant {
 };
 
 ###########################################################
+# sub start()
+#
+# Start serial gateway
+###########################################################
+
+sub start() {
+
+  my $self = shift;
+
+  # Run serial port thread
+  $self->{_serport}->start();
+
+  ${ $self->{_wait_modem_start} } = 0;
+  my $start      = time;
+  my $soft_reset = 0;
+  while ( !${ $self->{_wait_modem_start} } ) {
+    $self->{_serport}->poll() unless ( $self->{async} );
+    my $elapsed = time - $start;
+    if ( not $soft_reset and $elapsed > 5 ) {
+      $self->reset();
+      $soft_reset = 1;
+    } elsif ( $soft_reset and $elapsed > 10 ) {
+      die "Unable to reset serial modem";
+    }
+  }
+
+  # Retrieve modem settings
+  # Switch to command mode
+  die("Modem is unable to enter command mode")
+    unless $self->goToCommandMode();
+
+  # Hardware version
+  my $response = $self->runAtCommand("ATHV?\r");
+  die "Unable to retrieve Hardware Version from serial modem"
+    unless defined $response;
+  $self->{hwversion} = hex($response);
+
+  # Firmware version
+  $response = $self->runAtCommand("ATFV?\r");
+  die "Unable to retrieve Firmware Version from serial modem"
+    unless defined $response;
+  $self->{fwversion} = hex($response);
+
+  # Frequency channel
+  $response = $self->runAtCommand("ATCH?\r");
+  die "Unable to retrieve Frequency Channel from serial modem"
+    unless defined $response;
+
+  # Frequency channel of the serial gateway
+  $self->{freq_channel} = hex($response);
+
+  # Synchronization word
+  $response = $self->runAtCommand("ATSW?\r");
+  die "Unable to retrieve Synchronization Word from serial modem"
+    unless defined $response;
+
+  # Synchronization word of the serial gateway
+  $self->{syncword} = hex($response);
+
+  # Device address
+  $response = $self->runAtCommand("ATDA?\r");
+  die "Unable to retrieve Device Address from serial modem"
+    unless defined $response;
+
+  # Device address of the serial gateway
+  $self->{devaddress} = hex($response);
+
+  # Switch to data mode
+  $self->goToDataMode();
+}
+
+###########################################################
 # sub stop()
 #
 # Stop serial gateway
@@ -56,26 +128,22 @@ sub _serialPacketReceived($) {
   my ( $self, $buf ) = @_;
 
   # If modem in command mode
-  if ( ${$self->{_sermode}} eq COMMAND ) {
-  print "serialReceived COMMAND: $buf\n";
-    ${$self->{_atresponse}}          = $buf;
-    ${$self->{_atresponse_received}} = 1;
+  if ( ${ $self->{_sermode} } eq COMMAND ) {
+    ${ $self->{_atresponse} }          = $buf;
+    ${ $self->{_atresponse_received} } = 1;
 
     # If modem in data mode
   } else {
-  print "serialReceived DATA: $buf\n";
+
     # Waiting for ready signal from modem?
-    if ( not ${$self->{_wait_modem_start}} ) {
+    if ( not ${ $self->{_wait_modem_start} } ) {
       if ( $buf eq "Modem ready!" ) {
-        ${$self->{_wait_modem_start}} = 1;
-        print "Modem ready detected!\n";
+        ${ $self->{_wait_modem_start} } = 1;
         # Create CcPacket from string and notify reception
       }
-    } elsif ( my $_ccpacket_received = $self->{_ccpacket_received} ) {
-      if (defined &$_ccpacket_received) {
-        my $ccPacket = Device::PanStamp::swap::modem::CcPacket->new($buf);
-        &$_ccpacket_received($ccPacket);
-      }
+    } elsif ( defined $self->{_ccpacket_received} ) {
+      my $ccPacket = Device::PanStamp::swap::modem::CcPacket->new($buf);
+      &{ $self->{_ccpacket_received} }($ccPacket);
     }
   }
 }
@@ -183,27 +251,27 @@ sub runAtCommand(;$$) {
   $cmd     = "AT\r" unless $cmd;
   $timeout = 1000   unless $timeout;
 
-  ${$self->{_atresponse_received}} = 0;
+  ${ $self->{_atresponse_received} } = 0;
 
   # Send command via serial
   die "Port " + $self->{portname} + " is not open"
     unless ( defined $self->{_serport} );
 
   # Skip wireless packets
-  ${$self->{_atresponse}} = "(";
+  ${ $self->{_atresponse} } = "(";
 
   # Send serial packet
   $self->{_serport}->send($cmd);
 
   # Wait for response from modem
-  while ( length( ${$self->{_atresponse}} ) eq 0
-    or ${$self->{_atresponse}} =~ /^\(/ )
+  while ( length( ${ $self->{_atresponse} } ) eq 0
+    or ${ $self->{_atresponse} } =~ /^\(/ )
   {
     return undef unless ( $self->_waitForResponse($timeout) );
   }
 
   # Return response received from gateway
-  return ${$self->{_atresponse}};
+  return ${ $self->{_atresponse} };
 }
 
 ##########################################################
@@ -265,7 +333,7 @@ sub setSyncWord($) {
   die "Synchronization words must be 2-byte length" if ( $value > 0xFFFF );
 
   # Switch to command mode if necessary
-  if ( ${$self->{_sermode}} eq DATA ) {
+  if ( ${ $self->{_sermode} } eq DATA ) {
     $self->goToCommandMode();
   }
 
@@ -294,7 +362,7 @@ sub setDevAddress($) {
   die "Device addresses must be 1-byte length" if ( $value > 0xFF );
 
   # Switch to command mode if necessary
-  if ( ${$self->{_sermode}} eq DATA ) {
+  if ( ${ $self->{_sermode} } eq DATA ) {
     $self->goToCommandMode();
   }
 
@@ -319,7 +387,7 @@ sub _waitForResponse($) {
   my ( $self, $millis ) = @_;
 
   my $loops = $millis / 10;
-  while ( !${$self->{_atresponse_received}} ) {
+  while ( !${ $self->{_atresponse_received} } ) {
     $self->{_serport}->poll() unless ( $self->{async} );
     select( undef, undef, undef, 0.01 );
     $loops--;
@@ -344,11 +412,10 @@ sub new(;$$$$) {
   $speed    = 38400          unless ( defined $speed );
   $async    = 1              unless ( defined $async );
 
-  my $_sermode :shared = DATA;
-  my $_atresponse :shared = "";
-  my $_atresponse_received :shared = 0;
-  my $_ccpacket_received :shared = undef;
-  my $_wait_modem_start :shared = 0;
+  my $_sermode : shared             = DATA;
+  my $_atresponse : shared          = "";
+  my $_atresponse_received : shared = 0;
+  my $_wait_modem_start : shared    = 0;
 
   my $self = bless {
 
@@ -362,7 +429,7 @@ sub new(;$$$$) {
     _atresponse_received => \$_atresponse_received,
 
     # "Packet received" callback function. To be defined by the parent object
-    _ccpacket_received => \$_ccpacket_received,
+    _ccpacket_received => undef,
 
     # Name(path) of the serial port
     portname => $portname,
@@ -392,67 +459,6 @@ sub new(;$$$$) {
   # Define callback function for incoming serial packets
   $self->{_serport}->setRxCallback( sub { $self->_serialPacketReceived(@_); } );
 
-  # Run serial port thread
-  $self->{_serport}->start();
-
-  ${$self->{_wait_modem_start}} = 0;
-  my $start      = time;
-  my $soft_reset = 0;
-  while ( !${$self->{_wait_modem_start}} ) {
-    $self->{_serport}->poll() unless ($async);
-    my $elapsed = time - $start;
-    if ( not $soft_reset and $elapsed > 5 ) {
-      $self->reset();
-      $soft_reset = 1;
-    } elsif ( $soft_reset and $elapsed > 10 ) {
-      die "Unable to reset serial modem";
-    }
-  }
-
-  # Retrieve modem settings
-  # Switch to command mode
-  die("Modem is unable to enter command mode")
-    unless $self->goToCommandMode();
-
-  # Hardware version
-  my $response = $self->runAtCommand("ATHV?\r");
-  die "Unable to retrieve Hardware Version from serial modem"
-    unless defined $response;
-  $self->{hwversion} = hex($response);
-
-  # Firmware version
-  $response = $self->runAtCommand("ATFV?\r");
-  die "Unable to retrieve Firmware Version from serial modem"
-    unless defined $response;
-  $self->{fwversion} = hex($response);
-
-  # Frequency channel
-  $response = $self->runAtCommand("ATCH?\r");
-  die "Unable to retrieve Frequency Channel from serial modem"
-    unless defined $response;
-
-  # Frequency channel of the serial gateway
-  $self->{freq_channel} = hex($response);
-
-  # Synchronization word
-  $response = $self->runAtCommand("ATSW?\r");
-  die "Unable to retrieve Synchronization Word from serial modem"
-    unless defined $response;
-
-  # Synchronization word of the serial gateway
-  $self->{syncword} = hex($response);
-
-  # Device address
-  $response = $self->runAtCommand("ATDA?\r");
-  die "Unable to retrieve Device Address from serial modem"
-    unless defined $response;
-
-  # Device address of the serial gateway
-  $self->{devaddress} = hex($response);
-
-  # Switch to data mode
-  $self->goToDataMode();
-  
   return $self;
 }
 
