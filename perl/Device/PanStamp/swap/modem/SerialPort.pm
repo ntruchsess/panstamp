@@ -33,7 +33,14 @@ sub _run() {
 
   # Listen for incoming serial data
   while ( ${ $self->{_go_on} } ) {
-    unless ( $self->poll() ) {
+    eval {
+      unless ( $self->poll() )
+      {
+        select( undef, undef, undef, 0.01 );
+      }
+    };
+    if ($@) {
+      print "Error processing data from serial port: $@\n";
       select( undef, undef, undef, 0.01 );
     }
   }

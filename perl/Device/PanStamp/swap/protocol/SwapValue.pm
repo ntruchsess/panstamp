@@ -38,7 +38,7 @@ sub toInteger() {
   my $val  = 0;
   my @data = @{ $self->{_data} };
   foreach my $i ( 0 .. $#data ) {
-    $val |= $data[$i] << ( $#data -$i ) * 8;
+    $val |= $data[$i] << ( $#data - $i ) * 8;
   }
   return $val;
 }
@@ -54,7 +54,7 @@ sub toInteger() {
 sub clone() {
   my $self = shift;
   my @data = @{ $self->{_data} };
-  return Device::PanStamp::swap::protocol::SwapValue->new(\@data);
+  return Device::PanStamp::swap::protocol::SwapValue->new( \@data );
 }
 
 #########################################################################
@@ -161,11 +161,11 @@ sub new(;$$$) {
   return bless { _data => $value }, $class if ( ref($value) eq "ARRAY" );
 
   # template supplied:
-  return bless { _data => unpack( $template, $value ) }, $class
+  return ( bless { _data => unpack( $template, $value ) }, $class )
     if ( defined $template );
 
   # default length = 0:
-  return bless { _data => [] }, $class unless defined $length;
+  return ( bless { _data => [] }, $class ) unless defined $length;
   my $res;
 
   #Boolean or int

@@ -56,7 +56,7 @@ sub update() {
 
   $self->{valueChanged} = 0;
   die "Register not specified for current endpoint"
-    if ( defined $self->{register} );
+    unless ( defined $self->{register} );
 
   # Current register value converted to list
   my @lstRegVal = $self->{register}->{value}->toList();
@@ -152,7 +152,7 @@ sub setValue($) {
 
       # if $res is a number
       if (  $self->{type} eq Device::PanStamp::swap::protocol::SwapType::NUMBER
-        and $res =~ /^\d+\.?\d*$/ )
+        and $value =~ /^\d+\.?\d*$/ )
       {
         $res = $value;
         if ( defined $self->{unit} ) {

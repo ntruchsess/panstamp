@@ -81,7 +81,7 @@ sub new($$) {
     name => $name,
     ## List of device entries for the currenuse strict;
     devices => []
-  };
+  }, $class;
 }
 
 #########################################################################
@@ -114,7 +114,22 @@ sub read() {
   my $self = shift;
 
   # Parse XML file
-  my $tree = XMLin( $self->{fileName} );
+  my $tree;
+  eval {
+    $tree = XMLin(
+      $self->{fileName},
+      ForceArray => [ 'developer', 'dev' ],
+      KeyAttr    => []
+    );
+  };
+  if ($@) {
+    if ( defined $self->{file_name} ) {
+      print
+"Unable to read device settings from $self->{file_name}. Reason is: $@\n";
+    } else {
+      print "unable to read device settings. Reason is: undefined filename.\n";
+    }
+  }
 
   return unless defined $tree and defined $tree->{developer};
 
@@ -157,11 +172,11 @@ sub read() {
 
         # Add device to the developer entry
         $developer->addDevice($device);
-
-        # Append developer to the list
-        push @{ $self->{developers} }, $developer;
       }
     }
+
+    # Append developer to the list
+    push @{ $self->{developers} }, $developer;
   }
 }
 
@@ -183,7 +198,7 @@ sub getDeviceDef($) {
     foreach my $dev ( @{ $devel->{devices} } ) {
       if ( $option->lower() eq $dev->{option} ) {
         return Device::PanStamp::swap::xmltools::XmlDevice->new( undef,
-          $devel->{id}, $dev->{id} );
+          $devel->{id}, $dev->{id}, $self->{xmlsettings} );
       }
     }
   }
@@ -207,11 +222,8 @@ sub getDevicePath($$) {
     if ( $devel_id eq $developer->{id} ) {
       foreach my $device ( @{ $developer->{devices} } ) {
         if ( $prod_id eq $device->{id} ) {
-          return catfile(
-            $self->{xmlsettings}->{device_localdir},
-            $developer->{name},
-            $device->{option} . ".xml"
-          );
+          return catfile( $self->{xmlsettings}->{device_localdir},
+            $developer->{name}, $device->{option} . ".xml" );
         }
       }
     }
@@ -238,6 +250,8 @@ sub new($) {
 
   # Parse document
   $self->read();
+
+  return $self;
 }
 
 #########################################################################
@@ -297,6 +311,10 @@ package Device::PanStamp::swap::xmltools::XmlDevice;
 use strict;
 use warnings;
 
+use Device::PanStamp::swap::protocol::SwapParam;
+
+use XML::Simple;
+
 use parent qw(Exporter);
 our @EXPORT_OK = qw();    # symbols to export on request
 
@@ -311,7 +329,16 @@ sub getDefinition() {
   return unless defined $self->{fileName};
 
   # Parse XML file
-  my $tree = XMLin( $self->{fileName} );
+  my $tree;
+  eval { $tree = XMLin( $self->{fileName}, ForceArray => [], KeyAttr => [] ); };
+  if ($@) {
+    if ( defined $self->{fileName} ) {
+      print
+        "Unable to read definitions from $self->{file_name}. Reason is: $@\n";
+    } else {
+      print "unable to read definitions. Reason is: undefined filename.\n";
+    }
+  }
 
   die $self->{fileName} . "does not exist" unless defined $tree;
 
@@ -349,7 +376,22 @@ sub getRegList(;$) {
   my @lstRegs = ();
 
   # Parse XML file
-  my $tree = XMLin( $self->{fileName} );
+  my $tree;
+  eval {
+    $tree = XMLin(
+      $self->{fileName},
+      ForceArray => [ 'reg', 'param', 'endpoint' ],
+      KeyAttr    => []
+    );
+  };
+  if ($@) {
+    if ( defined $self->{fileName} ) {
+      print "Unable to read regList from $self->{fileName}. Reason is: $@\n";
+    } else {
+      print "unable to read regList. Reason is: undefined filename.\n";
+    }
+  }
+
   return undef unless defined $tree;
 
   # Get manufacturer
@@ -357,7 +399,7 @@ sub getRegList(;$) {
   # List of register elements belonging to the device
   my $regtype = $config ? "config" : "regular";
 
-  my $lstElemReg = $tree->{$regtype} . "/reg";
+  my $lstElemReg = $tree->{$regtype}->{reg};
 
   if ( defined $lstElemReg ) {
     foreach my $reg ( @{$lstElemReg} ) {
@@ -408,10 +450,10 @@ sub getRegList(;$) {
         if ($config) {
 
           # Create SWAP config parameter
-          $swParam =
-            Device::PanStamp::swap::protocol::SwapCfgParam->new(
-            tree $swRegister,
-            $paramType, $paramName, $paramPos, $paramSize, $defVal, $verif );
+          $swParam = Device::PanStamp::swap::protocol::SwapCfgParam->new(
+            $swRegister, $paramType, $paramName, $paramPos,
+            $paramSize,  $defVal,    $verif
+          );
         } else {
 
           # Create SWAP endpoint
@@ -425,8 +467,9 @@ sub getRegList(;$) {
         $swRegister->add($swParam);
 
         # Create empty value for the register
-        $swRegister->{value} = Device::PanStamp::swap::protocol::SwapValue->new(
-          \@{ unpack( "a" x $swRegister->getLength(), "" ) } );
+        my @swRegisterList = unpack( "a" x $swRegister->getLength(), "" );
+        $swRegister->{value} =
+          Device::PanStamp::swap::protocol::SwapValue->new( \@swRegisterList );
         $swRegister->update();
 
         # Add endpoint to the list
@@ -448,35 +491,35 @@ sub getRegList(;$) {
 #########################################################################
 
 sub new(;$$$) {
-  my ( $class, $mote, $devel_id, $prod_id ) = @_;
-  ## Device (mote)
+  my ( $class, $mote, $devel_id, $prod_id, $xmlsettings ) = @_;
 
-  my $self = bless { mote => $mote }, $class;
-
-  my $device_dir = Device::PanStamp::swap::xmltools::XmlDeviceDir->new();
-
-  $self->{fileName} = undef;
-
-  ## Name/path of the current configuration file
-  if ( defined $devel_id and defined $prod_id ) {
-    $self->{fileName} = $device_dir->getDevicePath( $devel_id, $prod_id );
-    die "Definition file not found for mote" unless defined $self->{fileName};
+  # Name/path of the current configuration file
+  my $fileName;
+  if ( defined $mote ) {
+    $fileName = Device::PanStamp::swap::xmltools::XmlDeviceDir->new(
+      $mote->{server}->{_xmlSettings} )
+      ->getDevicePath( $mote->{manufacturer_id}, $mote->{product_id} );
+  } elsif ( defined $devel_id and defined $prod_id ) {
+    $fileName =
+      Device::PanStamp::swap::xmltools::XmlDeviceDir->new($xmlsettings)
+      ->getDevicePath( $devel_id, $prod_id );
   }
-  ## Name of the Manufacturer
-  $self->{manufacturer} = undef;
-  ## Name of the Product
-  $self->{product} = undef;
-  ## Power down mode (True or False). If True, the mote sleeps most of the times
-  $self->{pwrdownmode} = 0;
-  ## Interval (in sec) between periodic transmissions. 0 for disabled
-  $self->{txinterval} = 0;
+  die "Definition file not found for mote" unless defined $fileName;
 
-  if ( defined $self->{mote} ) {
-    $self->{fileName} = $device_dir
-      . getDevicePath( $self->{mote}->{manufacturer_id},
-      $self->{mote}->{product_id} );
-    die "Definition file not found for mote" unless defined $self->{fileName};
-  }
+  my $self = bless {
+    ## Device (mote)
+    mote => $mote,
+    ## Name/path of the current configuration file
+    fileName => $fileName,
+    ## Name of the Manufacturer
+    manufacturer => undef,
+    ## Name of the Product
+    product => undef,
+    ## Power down mode (True or False). If True, the mote sleeps most of the times
+    pwrdownmode => 0,
+    ## Interval (in sec) between periodic transmissions. 0 for disabled
+    txinterval => 0
+  }, $class;
 
   # Read definition parameters from XML file
   $self->getDefinition();

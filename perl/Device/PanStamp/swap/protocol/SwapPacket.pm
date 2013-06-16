@@ -209,9 +209,12 @@ sub new($$$$$$$$) {
 
     # Register ID
     $self->{regId} = $data[6];
-    $self->{value} = SwapValue->( @data[ 7 .. ( scalar(@data) - 1 ) ] )
-      if ( scalar(@data) >= 8 );
-
+    
+    if ( @data >= 8 ) {
+      my @packetdata = @data[ 7 .. ( @data - 1 ) ];
+      $self->{value} =
+        Device::PanStamp::swap::protocol::SwapValue->new( \@packetdata );
+    }
     # Encryption enabled?
     if (  ( $self->{security} & 0x02 )
       and ( defined $SwapPacket::smart_encrypt_pwd ) )

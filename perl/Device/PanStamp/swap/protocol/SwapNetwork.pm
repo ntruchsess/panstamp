@@ -276,6 +276,8 @@ sub new($;$) {
 
   # Read config file
   $self->read();
+  
+  return $self;
 }
 
 1;

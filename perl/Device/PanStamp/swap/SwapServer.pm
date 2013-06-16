@@ -69,7 +69,7 @@ sub _run() {
   );
 
   # Declare receiving callback function
-  if ( $self->{async} ) {
+  if ( 1 or $self->{async} ) {
     $self->{modem}->setRxCallback( sub { $self->_ccPacketReceived(@_); } );
   } else {
     my $rcvqueue = Thread::Queue->new();
@@ -78,7 +78,7 @@ sub _run() {
   }
 
   $self->{modem}->start();
-  
+
   # Set modem configuration from _xmlnetwork
   my $param_changed = 0;
 
@@ -228,7 +228,10 @@ sub _ccPacketReceived($) {
     # Notify event
     $self->{_eventHandler}->swapPacketReceived($swPacket);
   };
-  return if ($@);
+  if ($@) {
+    print "Error handling ccPacket. Reason $@\n";
+    return;
+  }
 
   # Check function code
   # STATUS packet received
@@ -593,7 +596,7 @@ sub _checkStatus($) {
   # Check possible response to a precedent query
   delete $self->{_valueReceived};
   if (
-    ( defined $self->_expectedRegister )
+    ( defined $self->{_expectedRegister} )
     and ( $status->{function} eq
       Device::PanStamp::swap::protocol::SwapFunction::STATUS )
     )

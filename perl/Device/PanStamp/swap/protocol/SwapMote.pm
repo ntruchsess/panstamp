@@ -4,7 +4,7 @@
 # SWAP mote class
 #########################################################################
 
-package Device::Panstamp::swap::protocol::SwapMote;
+package Device::PanStamp::swap::protocol::SwapMote;
 
 use strict;
 use warnings;
