@@ -2,7 +2,7 @@
 #    Class representing a serial panstamp modem
 ###########################################################
 
-package Device::PanStamp::swap::modem::SerialModem;
+package Device::PanStamp::modem::SerialModem;
 
 use strict;
 use warnings;
@@ -11,8 +11,8 @@ use threads::shared;
 use parent qw(Exporter);
 our @EXPORT_OK = qw();    # symbols to export on request
 
-use Device::PanStamp::swap::modem::CcPacket;
-use Device::PanStamp::swap::modem::SerialPort;
+use Device::PanStamp::modem::CcPacket;
+use Device::PanStamp::modem::SerialPort;
 
 use constant {
 
@@ -142,7 +142,7 @@ sub _serialPacketReceived($) {
         # Create CcPacket from string and notify reception
       }
     } elsif ( defined $self->{_ccpacket_received} ) {
-      my $ccPacket = Device::PanStamp::swap::modem::CcPacket->new($buf);
+      my $ccPacket = Device::PanStamp::modem::CcPacket->new($buf);
       &{ $self->{_ccpacket_received} }($ccPacket);
     }
   }
@@ -452,7 +452,7 @@ sub new(;$$$$) {
 
   # Open serial port
   $self->{_serport} =
-    Device::PanStamp::swap::modem::SerialPort->new( $portname, $speed, $verbose,
+    Device::PanStamp::modem::SerialPort->new( $portname, $speed, $verbose,
     $async )
     || die "cant open Serial Port: $self->{portname}: $!";
 

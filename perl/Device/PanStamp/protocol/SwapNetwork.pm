@@ -4,14 +4,14 @@
 # Container of SWAP network data
 #########################################################################
 
-package Device::PanStamp::swap::protocol::SwapNetwork;
+package Device::PanStamp::protocol::SwapNetwork;
 
 use strict;
 use warnings;
 
 use parent qw(Exporter);
 our @EXPORT_OK = qw();    # symbols to export on request
-use Device::PanStamp::swap::protocol::SwapMote;
+use Device::PanStamp::protocol::SwapMote;
 use JSON qw(decode_json encode_json);
 
 #########################################################################
@@ -47,7 +47,7 @@ sub read() {
   # Initialize list of motes
   foreach my $mote_data ( @{ $network_data->{motes} } ) {
     my $mote =
-      Device::PanStamp::swap::protocol::SwapMote->new( $self->{server},
+      Device::PanStamp::protocol::SwapMote->new( $self->{server},
       $mote_data->{pcode}, $mote_data->{address} );
     push @{ $self->{motes} }, $mote;
 

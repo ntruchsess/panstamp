@@ -4,7 +4,7 @@
 # Wrapper class of the pyserial package
 #########################################################################
 
-package Device::PanStamp::swap::modem::SerialPort;
+package Device::PanStamp::modem::SerialPort;
 
 use strict;
 use warnings;

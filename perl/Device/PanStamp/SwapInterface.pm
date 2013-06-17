@@ -2,7 +2,7 @@
 # SWAP Interface superclass. Any SWAP application should derive from this one
 ###########################################################
 
-package Device::PanStamp::swap::SwapInterface;
+package Device::PanStamp::SwapInterface;
 
 use strict;
 use warnings;
@@ -10,7 +10,7 @@ use warnings;
 use parent qw(Exporter);
 our @EXPORT_OK = qw();    # symbols to export on request
 
-use Device::PanStamp::swap::SwapServer;
+use Device::PanStamp::SwapServer;
 
 ###########################################################
 # sub swapServerStarted
@@ -211,7 +211,7 @@ sub queryMoteRegister($$) {
 sub create_server(;$$) {
   my ( $self, $settings, $async ) = @_;
   $self->{server} =
-    Device::PanStamp::swap::SwapServer->new( $self, $settings, 0, $async )
+    Device::PanStamp::SwapServer->new( $self, $settings, 0, $async )
     ;
   return $self->{server};
 }
@@ -315,7 +315,7 @@ sub new(;$$) {
   if ($start) {
     print "SWAP server starting...\n";
     $self->{server} =
-      Device::PanStamp::swap::SwapServer->new( $self, $settings, $start,
+      Device::PanStamp::SwapServer->new( $self, $settings, $start,
       $async );
     $self->{network} = $self->{server}->{network};
     if ($start) {

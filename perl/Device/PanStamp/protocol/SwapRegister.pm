@@ -4,7 +4,7 @@
 # SWAP register class
 #########################################################################
 
-package Device::PanStamp::swap::protocol::SwapRegister;
+package Device::PanStamp::protocol::SwapRegister;
 
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ use warnings;
 use parent qw(Exporter);
 our @EXPORT_OK = qw();    # symbols to export on request
 
-use Device::PanStamp::swap::protocol::SwapValue;
+use Device::PanStamp::protocol::SwapValue;
 
 #########################################################################
 # sub getAddress(self):
@@ -230,7 +230,7 @@ sub setValue($) {
   my ( $self, $value ) = @_;
 
   die "setValue only accepts SwapValue objects (" . ref($value) . ")"
-    unless ( ref($value) eq "Device::PanStamp::swap::protocol::SwapValue" );
+    unless ( ref($value) eq "Device::PanStamp::protocol::SwapValue" );
 
   # Set register value
   $self->{value} = $value;
@@ -257,7 +257,7 @@ sub isConfig() {
   my $self = shift;
   return 1
     if ( @{ $self->{parameters} }
-    and ref( $self->{parameters}->[0] ) eq "Device::PanStamp::swap::protocol::SwapCfgParam" );
+    and ref( $self->{parameters}->[0] ) eq "Device::PanStamp::protocol::SwapCfgParam" );
   return 0;
 }
 

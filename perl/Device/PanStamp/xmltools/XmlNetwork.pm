@@ -2,7 +2,7 @@
 # Wireless network configuration settings
 #########################################################################
 
-package Device::PanStamp::swap::xmltools::XmlNetwork;
+package Device::PanStamp::xmltools::XmlNetwork;
 
 use strict;
 use warnings;

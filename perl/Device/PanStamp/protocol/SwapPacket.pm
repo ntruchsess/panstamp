@@ -1,13 +1,13 @@
-package Device::PanStamp::swap::protocol::SwapPacket;
+package Device::PanStamp::protocol::SwapPacket;
 
 use strict;
 use warnings;
 
-use parent qw(Exporter Device::PanStamp::swap::modem::CcPacket);
+use parent qw(Exporter Device::PanStamp::modem::CcPacket);
 use Storable qw(dclone);
 
-use Device::PanStamp::swap::protocol::SwapValue;
-use Device::PanStamp::swap::protocol::SwapDefs;
+use Device::PanStamp::protocol::SwapValue;
+use Device::PanStamp::protocol::SwapDefs;
 
 our @EXPORT_OK = qw(smart_encrypt_pwd);    # symbols to export on request
 
@@ -57,7 +57,7 @@ sub smart_encryption($;$) {
       $pos = 0 if ( $pos eq 11 );
     }
     $self->{value} =
-      Device::PanStamp::swap::protocol::SwapValue->new( \@newarray );
+      Device::PanStamp::protocol::SwapValue->new( \@newarray );
   }
 
   $self->{nonce} ^= $data[9] unless ($decrypt);
@@ -142,11 +142,11 @@ sub new($$$$$$$$) {
     $function, $regAddr,  $regId,    $value
   ) = @_;
 
-  $destAddr = Device::PanStamp::swap::protocol::SwapAddress::BROADCAST_ADDR
+  $destAddr = Device::PanStamp::protocol::SwapAddress::BROADCAST_ADDR
     unless defined $destAddr;
   $hop   = 0 unless defined $hop;
   $nonce = 0 unless defined $nonce;
-  $function = Device::PanStamp::swap::protocol::SwapFunction::STATUS
+  $function = Device::PanStamp::protocol::SwapFunction::STATUS
     unless defined $function;
   $regAddr = 0 unless defined $regAddr;
   $regId   = 0 unless defined $regId;
@@ -213,7 +213,7 @@ sub new($$$$$$$$) {
     if ( @data >= 8 ) {
       my @packetdata = @data[ 7 .. ( @data - 1 ) ];
       $self->{value} =
-        Device::PanStamp::swap::protocol::SwapValue->new( \@packetdata );
+        Device::PanStamp::protocol::SwapValue->new( \@packetdata );
     }
     # Encryption enabled?
     if (  ( $self->{security} & 0x02 )
@@ -235,13 +235,13 @@ sub new($$$$$$$$) {
 # SWAP status packet class
 #########################################################################
 
-package Device::PanStamp::swap::protocol::SwapStatusPacket;
+package Device::PanStamp::protocol::SwapStatusPacket;
 
 use strict;
 use warnings;
 
-use parent qw(Exporter Device::PanStamp::swap::protocol::SwapPacket);
-use Device::PanStamp::swap::protocol::SwapDefs;
+use parent qw(Exporter Device::PanStamp::protocol::SwapPacket);
+use Device::PanStamp::protocol::SwapDefs;
 
 #########################################################################
 # sub new
@@ -267,13 +267,13 @@ sub new($$$) {
 # SWAP Query packet class
 #########################################################################
 
-package Device::PanStamp::swap::protocol::SwapQueryPacket;
+package Device::PanStamp::protocol::SwapQueryPacket;
 
 use strict;
 use warnings;
 
-use parent qw(Exporter Device::PanStamp::swap::protocol::SwapPacket);
-use Device::PanStamp::swap::protocol::SwapDefs;
+use parent qw(Exporter Device::PanStamp::protocol::SwapPacket);
+use Device::PanStamp::protocol::SwapDefs;
 
 #########################################################################
 # sub new
@@ -287,13 +287,13 @@ use Device::PanStamp::swap::protocol::SwapDefs;
 sub new($$) {
   my ( $class, $rAddr, $rId ) = @_;
 
-  $rAddr = Device::PanStamp::swap::protocol::SwapAddress::BROADCAST_ADDR
+  $rAddr = Device::PanStamp::protocol::SwapAddress::BROADCAST_ADDR
     unless defined $rAddr;
   $rId = 0 unless defined $rId;
 
   #SwapPacket->new(ccPacket,destAddr,hop,nonce,function,regAddr,regId,value);
   return $class->SUPER::new( undef, $rAddr, undef, undef,
-    Device::PanStamp::swap::protocol::SwapFunction::QUERY,
+    Device::PanStamp::protocol::SwapFunction::QUERY,
     $rAddr, $rId, undef );
 }
 
@@ -303,13 +303,13 @@ sub new($$) {
 # SWAP Command packet class
 #########################################################################
 
-package Device::PanStamp::swap::protocol::SwapCommandPacket;
+package Device::PanStamp::protocol::SwapCommandPacket;
 
 use strict;
 use warnings;
 
-use parent qw(Exporter Device::PanStamp::swap::protocol::SwapPacket);
-use Device::PanStamp::swap::protocol::SwapDefs;
+use parent qw(Exporter Device::PanStamp::protocol::SwapPacket);
+use Device::PanStamp::protocol::SwapDefs;
 
 #########################################################################
 # sub new Class constructor
@@ -328,7 +328,7 @@ sub new ($$$;$) {
 
   #SwapPacket->new(ccPacket,destAddr,hop,nonce,function,regAddr,regId,value);
   return $class->SUPER::new( undef, $rAddr, undef, $nonce,
-    Device::PanStamp::swap::protocol::SwapFunction::COMMAND,
+    Device::PanStamp::protocol::SwapFunction::COMMAND,
     $rAddr, $rId, $val );
 }
 

@@ -4,7 +4,7 @@
 # Generic SWAP parameter, integrated into a SWAP register
 #########################################################################
 
-package Device::PanStamp::swap::protocol::SwapParam;
+package Device::PanStamp::protocol::SwapParam;
 
 use strict;
 use warnings;
@@ -15,8 +15,8 @@ our @EXPORT_OK = qw();    # symbols to export on request
 use Time::HiRes qw(time);
 use Date::Format qw(strftime);
 
-use Device::PanStamp::swap::protocol::SwapDefs;
-use Device::PanStamp::swap::protocol::SwapValue;
+use Device::PanStamp::protocol::SwapDefs;
+use Device::PanStamp::protocol::SwapValue;
 
 #########################################################################
 # sub getRegAddress
@@ -130,7 +130,7 @@ sub setValue($) {
   my ( $self, $value ) = @_;
 
   # Allready a SwapValue?
-  if ( ref($value) eq "Device::PanStamp::swap::protocol::SwapValue" ) {
+  if ( ref($value) eq "Device::PanStamp::protocol::SwapValue" ) {
 
     # Incorrect length?
     return if ( $self->{value}->getLength() != $value->getLength() );
@@ -152,7 +152,7 @@ sub setValue($) {
     } else {
 
       # if $res is a number
-      if (  $self->{type} eq Device::PanStamp::swap::protocol::SwapType::NUMBER
+      if (  $self->{type} eq Device::PanStamp::protocol::SwapType::NUMBER
         and $value =~ /^\d+\.?\d*$/ )
       {
         $res = $value;
@@ -164,7 +164,7 @@ sub setValue($) {
           $res = int($res);
         }
       } elsif (
-        $self->{type} eq Device::PanStamp::swap::protocol::SwapType::BINARY )
+        $self->{type} eq Device::PanStamp::protocol::SwapType::BINARY )
       {
         my $lower = lc($value);
         $res =
@@ -178,7 +178,7 @@ sub setValue($) {
 
     # Update current value
     $self->{value} =
-      Device::PanStamp::swap::protocol::SwapValue->new( $res, $length );
+      Device::PanStamp::protocol::SwapValue->new( $res, $length );
   }
 
   # Update time stamp
@@ -199,7 +199,7 @@ sub setValue($) {
 sub getValueInAscii() {
   my $self = shift;
 
-  if ( $self->{type} eq Device::PanStamp::swap::protocol::SwapType::NUMBER ) {
+  if ( $self->{type} eq Device::PanStamp::protocol::SwapType::NUMBER ) {
     my $val = $self->{value}->toInteger();
 
     # Add units
@@ -213,7 +213,7 @@ sub getValueInAscii() {
       return $val;
     }
   } elsif (
-    $self->{type} eq Device::PanStamp::swap::protocol::SwapType::BINARY )
+    $self->{type} eq Device::PanStamp::protocol::SwapType::BINARY )
   {
     my $strVal = $self->{value}->toAscii();
     return "on"  if ( $strVal eq "1" );
@@ -271,9 +271,9 @@ sub new(;$$$$$$$$$) {
     $position, $size,     $default, $verif,     $units
   ) = @_;
 
-  $pType = Device::PanStamp::swap::protocol::SwapType::NUMBER
+  $pType = Device::PanStamp::protocol::SwapType::NUMBER
     unless defined $pType;
-  $direction = Device::PanStamp::swap::protocol::SwapType::INPUT
+  $direction = Device::PanStamp::protocol::SwapType::INPUT
     unless defined $direction;
   $name     = ""  unless defined $name;
   $position = "0" unless defined $position;
@@ -348,12 +348,12 @@ sub new(;$$$$$$$$$) {
 # Class representing a configuration parameter for a given mote
 #########################################################################
 
-package Device::PanStamp::swap::protocol::SwapCfgParam;
+package Device::PanStamp::protocol::SwapCfgParam;
 
 use strict;
 use warnings;
 
-use parent qw(Exporter Device::PanStamp::swap::protocol::SwapParam);
+use parent qw(Exporter Device::PanStamp::protocol::SwapParam);
 our @EXPORT_OK = qw();    # symbols to export on request
 
 #########################################################################
@@ -376,7 +376,7 @@ sub new() {
   my ( $class, $register, $pType, $name, $position, $size, $default, $verif ) =
     @_;
 
-  $pType = Device::PanStamp::swap::protocol::SwapType::NUMBER
+  $pType = Device::PanStamp::protocol::SwapType::NUMBER
     unless defined $pType;
   $name     = ""  unless defined $name;
   $position = "0" unless defined $position;
@@ -399,12 +399,12 @@ sub new() {
 # SWAP endpoint class
 #########################################################################
 
-package Device::PanStamp::swap::protocol::SwapEndpoint;
+package Device::PanStamp::protocol::SwapEndpoint;
 
 use strict;
 use warnings;
 
-use parent qw(Exporter Device::PanStamp::swap::protocol::SwapParam);
+use parent qw(Exporter Device::PanStamp::protocol::SwapParam);
 our @EXPORT_OK = qw();    # symbols to export on request
 use Time::HiRes qw(time);
 
@@ -440,7 +440,7 @@ sub sendSwapCmd($) {
   my $swap_value;
 
   # Convert to SwapValue
-  if ( ref($value) eq "Device::PanStamp::swap::protocol::SwapValue" ) {
+  if ( ref($value) eq "Device::PanStamp::protocol::SwapValue" ) {
     $swap_value = $value;
   } else {
 
@@ -456,7 +456,7 @@ sub sendSwapCmd($) {
     } else {
 
       # if $res is a number
-      if (  $self->{type} eq Device::PanStamp::swap::protocol::SwapType::NUMBER
+      if (  $self->{type} eq Device::PanStamp::protocol::SwapType::NUMBER
         and $res =~ /^\d+\.?\d*$/ )
       {
         $res = $value;
@@ -468,7 +468,7 @@ sub sendSwapCmd($) {
           $res = int($res);
         }
       } elsif (
-        $self->{type} eq Device::PanStamp::swap::protocol::SwapType::BINARY )
+        $self->{type} eq Device::PanStamp::protocol::SwapType::BINARY )
       {
         my $lower = lc($value);
         $res =
@@ -481,7 +481,7 @@ sub sendSwapCmd($) {
     }
 
     $swap_value =
-      Device::PanStamp::swap::protocol::SwapValue->new( $res, $length );
+      Device::PanStamp::protocol::SwapValue->new( $res, $length );
   }
 
   # Register value in list format
@@ -529,7 +529,7 @@ sub sendSwapCmd($) {
 
   # Convert to SWapValue
   my $newRegVal =
-    Device::PanStamp::swap::protocol::SwapValue->new( \@lstRegVal );
+    Device::PanStamp::protocol::SwapValue->new( \@lstRegVal );
 
   # Send SWAP command
   return $self->{register}->sendSwapCmd($newRegVal);
@@ -638,9 +638,9 @@ sub new (;$$$) {
     $position, $size,     $default, $verif,     $units
   ) = @_;
 
-  $pType = Device::PanStamp::swap::protocol::SwapType::NUMBER
+  $pType = Device::PanStamp::protocol::SwapType::NUMBER
     unless defined $pType;
-  $direction = Device::PanStamp::swap::protocol::SwapType::INPUT
+  $direction = Device::PanStamp::protocol::SwapType::INPUT
     unless defined $direction;
   $name     = ""  unless defined $name;
   $position = "0" unless defined $position;

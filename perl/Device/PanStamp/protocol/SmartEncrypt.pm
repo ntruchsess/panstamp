@@ -4,7 +4,7 @@
 # Encryption password
 #########################################################################
 
-package Device::PanStamp::swap::protocol::Password;
+package Device::PanStamp::protocol::Password;
 
 use strict;
 use warnings;

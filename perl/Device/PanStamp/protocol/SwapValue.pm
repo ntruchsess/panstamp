@@ -4,7 +4,7 @@
 # Multi-format SWAP value class
 #########################################################################
 
-package Device::PanStamp::swap::protocol::SwapValue;
+package Device::PanStamp::protocol::SwapValue;
 
 use strict;
 use warnings;
@@ -54,7 +54,7 @@ sub toInteger() {
 sub clone() {
   my $self = shift;
   my @data = @{ $self->{_data} };
-  return Device::PanStamp::swap::protocol::SwapValue->new( \@data );
+  return Device::PanStamp::protocol::SwapValue->new( \@data );
 }
 
 #########################################################################

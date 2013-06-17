@@ -2,7 +2,7 @@
 # Main configuration settings: config files and directories
 ###########################################################
 
-package Device::PanStamp::swap::xmltools::XmlSettings;
+package Device::PanStamp::xmltools::XmlSettings;
 
 use strict;
 use warnings;

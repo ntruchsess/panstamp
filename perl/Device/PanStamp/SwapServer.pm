@@ -1,7 +1,7 @@
 ###########################################################
 # SWAP server class
 ###########################################################
-package Device::PanStamp::swap::SwapServer;
+package Device::PanStamp::SwapServer;
 
 use strict;
 use warnings;
@@ -13,17 +13,17 @@ use Thread::Queue;
 use parent qw(Exporter);
 our @EXPORT_OK = qw();    # symbols to export on request
 
-use Device::PanStamp::swap::modem::SerialModem;
-use Device::PanStamp::swap::protocol::SwapRegister;
-use Device::PanStamp::swap::protocol::SwapDefs;
-use Device::PanStamp::swap::protocol::SwapPacket;
-use Device::PanStamp::swap::protocol::SwapMote;
-use Device::PanStamp::swap::protocol::SwapNetwork;
-use Device::PanStamp::swap::protocol::SwapValue;
-use Device::PanStamp::swap::protocol::SmartEncrypt;
-use Device::PanStamp::swap::xmltools::XmlSettings;
-use Device::PanStamp::swap::xmltools::XmlSerial;
-use Device::PanStamp::swap::xmltools::XmlNetwork;
+use Device::PanStamp::modem::SerialModem;
+use Device::PanStamp::protocol::SwapRegister;
+use Device::PanStamp::protocol::SwapDefs;
+use Device::PanStamp::protocol::SwapPacket;
+use Device::PanStamp::protocol::SwapMote;
+use Device::PanStamp::protocol::SwapNetwork;
+use Device::PanStamp::protocol::SwapValue;
+use Device::PanStamp::protocol::SmartEncrypt;
+use Device::PanStamp::xmltools::XmlSettings;
+use Device::PanStamp::xmltools::XmlSerial;
+use Device::PanStamp::xmltools::XmlNetwork;
 
 use Time::HiRes qw(time);
 use LWP::Simple qw(get);
@@ -51,19 +51,19 @@ sub _run() {
   my $self = shift;
 
   # Network configuration settings
-  $self->{_xmlnetwork} = Device::PanStamp::swap::xmltools::XmlNetwork->new(
+  $self->{_xmlnetwork} = Device::PanStamp::xmltools::XmlNetwork->new(
     $self->{_xmlSettings}->{network_file} );
   $self->{devaddress} = $self->{_xmlnetwork}->{devaddress};
   $self->{security}   = $self->{_xmlnetwork}->{security};
-  $self->{password}   = Device::PanStamp::swap::protocol::Password->new(
+  $self->{password}   = Device::PanStamp::protocol::Password->new(
     $self->{_xmlnetwork}->{password} );
 
   # Serial configuration settings
-  $self->{_xmlserial} = Device::PanStamp::swap::xmltools::XmlSerial->new(
+  $self->{_xmlserial} = Device::PanStamp::xmltools::XmlSerial->new(
     $self->{_xmlSettings}->{serial_file} );
 
   # Create and start serial modem object
-  $self->{modem} = Device::PanStamp::swap::modem::SerialModem->new(
+  $self->{modem} = Device::PanStamp::modem::SerialModem->new(
     $self->{_xmlserial}->{port}, $self->{_xmlserial}->{speed},
     $self->{verbose},            $self->{_xmlserial}->{async}
   );
@@ -223,7 +223,7 @@ sub _ccPacketReceived($) {
   eval {
 
     # Convert CcPacket into SwapPacket
-    $swPacket = Device::PanStamp::swap::protocol::SwapPacket->new($ccPacket);
+    $swPacket = Device::PanStamp::protocol::SwapPacket->new($ccPacket);
 
     # Notify event
     $self->{_eventHandler}->swapPacketReceived($swPacket);
@@ -236,7 +236,7 @@ sub _ccPacketReceived($) {
   # Check function code
   # STATUS packet received
   if ( $swPacket->{function} eq
-    Device::PanStamp::swap::protocol::SwapFunction::STATUS )
+    Device::PanStamp::protocol::SwapFunction::STATUS )
   {
     return unless defined $swPacket->{value};
 
@@ -246,9 +246,9 @@ sub _ccPacketReceived($) {
     # Check type of data received
     # Product code received
     if ( $swPacket->{regId} eq
-      Device::PanStamp::swap::protocol::SwapRegId::ID_PRODUCT_CODE )
+      Device::PanStamp::protocol::SwapRegId::ID_PRODUCT_CODE )
     {
-      my $mote = Device::PanStamp::swap::protocol::SwapMote->new(
+      my $mote = Device::PanStamp::protocol::SwapMote->new(
         $self,
         $swPacket->{value}->toAsciiHex(),
         $swPacket->{srcAddress},
@@ -260,7 +260,7 @@ sub _ccPacketReceived($) {
 
     # Device address received
     elsif ( $swPacket->{regId} eq
-      Device::PanStamp::swap::protocol::SwapRegId::ID_DEVICE_ADDR )
+      Device::PanStamp::protocol::SwapRegId::ID_DEVICE_ADDR )
     {
 
       # Check address in list of motes
@@ -271,7 +271,7 @@ sub _ccPacketReceived($) {
 
     # System state received
     elsif ( $swPacket->{regId} eq
-      Device::PanStamp::swap::protocol::SwapRegId::ID_SYSTEM_STATE )
+      Device::PanStamp::protocol::SwapRegId::ID_SYSTEM_STATE )
     {
       $self->_updateMoteState($swPacket);
 
@@ -279,7 +279,7 @@ sub _ccPacketReceived($) {
 
     # Periodic Tx interval received
     elsif ( $swPacket->{regId} eq
-      Device::PanStamp::swap::protocol::SwapRegId::ID_TX_INTERVAL )
+      Device::PanStamp::protocol::SwapRegId::ID_TX_INTERVAL )
     {
 
       # Update interval in list of motes
@@ -298,7 +298,7 @@ sub _ccPacketReceived($) {
 
   # QUERY packet received
   elsif ( $swPacket->{function} eq
-    Device::PanStamp::swap::protocol::SwapFunction::QUERY )
+    Device::PanStamp::protocol::SwapFunction::QUERY )
   {
 
     # Query addressed to our gateway?
@@ -317,7 +317,7 @@ sub _ccPacketReceived($) {
 
   # COMMAND packet received
   elsif ( $swPacket->{function} eq
-    Device::PanStamp::swap::protocol::SwapFunction::COMMAND )
+    Device::PanStamp::protocol::SwapFunction::COMMAND )
   {
 
     # Command addressed to our gateway?
@@ -564,7 +564,7 @@ sub _checkStatus($) {
   if (
     ( defined $self->{_expectedAck} )
     and ( $status->{function} eq
-      Device::PanStamp::swap::protocol::SwapFunction::STATUS )
+      Device::PanStamp::protocol::SwapFunction::STATUS )
     )
   {
     if ( $status->{regAddress} eq $self->{_expectedAck}->{regAddress} ) {
@@ -580,7 +580,7 @@ sub _checkStatus($) {
   if (
     ( defined $self->{_expectedRegister} )
     and ( $status->{function} eq
-      Device::PanStamp::swap::protocol::SwapFunction::STATUS )
+      Device::PanStamp::protocol::SwapFunction::STATUS )
     )
   {
     if ( $status->{regAddress} eq $self->{_expectedRegister}->getAddress() ) {
@@ -634,8 +634,8 @@ sub _discoverMotes() {
   $self->{_poll_regular_regs}       = 1;
   $self->{_poll_regular_regs_until} = time + _MAX_POLL_VALUES_TIME;
   my $query =
-    Device::PanStamp::swap::protocol::SwapQueryPacket->new(
-    Device::PanStamp::swap::protocol::SwapRegId::ID_PRODUCT_CODE);
+    Device::PanStamp::protocol::SwapQueryPacket->new(
+    Device::PanStamp::protocol::SwapRegId::ID_PRODUCT_CODE);
   $query->send($self);
 }
 
@@ -668,7 +668,7 @@ sub send_status($$) {
 
     # Status packet to be sent
     my $status =
-      Device::PanStamp::swap::protocol::SwapStatusPacket->new( $mote->{address},
+      Device::PanStamp::protocol::SwapStatusPacket->new( $mote->{address},
       $regid, $reg->{value} );
     $status->{srcAddress} = $self->{_xmlnetwork}->{devaddress};
     $self->{nonce}++;
@@ -691,12 +691,12 @@ sub send_nonce() {
 
   # Convert nonce to SWAP value
   my $value =
-    Device::PanStamp::swap::protocol::SwapValue->new( $self->{nonce} );
+    Device::PanStamp::protocol::SwapValue->new( $self->{nonce} );
 
   # Status packet to be sent
-  my $status = Device::PanStamp::swap::protocol::SwapStatusPacket->new(
+  my $status = Device::PanStamp::protocol::SwapStatusPacket->new(
     $self->{_xmlnetwork}->{devaddress},
-    Device::PanStamp::swap::protocol::SwapRegId::ID_SECU_NONCE, $value );
+    Device::PanStamp::protocol::SwapRegId::ID_SECU_NONCE, $value );
   $self->{nonce}++;
   if ( $self->{nonce} > 0xFF ) {
     $self->{nonce} = 0;
@@ -786,7 +786,7 @@ sub queryMoteRegister($$) {
 
   # Queried register
   my $register =
-    Device::PanStamp::swap::protocol::SwapRegister->new( $mote, $regId );
+    Device::PanStamp::protocol::SwapRegister->new( $mote, $regId );
 
   # Send query multiple times if necessary
   for ( my $i = 0 ; $i < _MAX_SWAP_COMMAND_TRIES ; $i++ ) {
@@ -960,7 +960,7 @@ sub new($@) {    # self, eventHandler, settings = None, start = True ) : """
 
     # General settings
     _xmlSettings =>
-      Device::PanStamp::swap::xmltools::XmlSettings->new($settings),
+      Device::PanStamp::xmltools::XmlSettings->new($settings),
 
     async => $async,
 
@@ -977,7 +977,7 @@ sub new($@) {    # self, eventHandler, settings = None, start = True ) : """
 
   ## Network data
   $self->{network} =
-    Device::PanStamp::swap::protocol::SwapNetwork->new( $self,
+    Device::PanStamp::protocol::SwapNetwork->new( $self,
     $self->{_xmlSettings}->{swap_file} );
 
   ## Tells us if the server is running

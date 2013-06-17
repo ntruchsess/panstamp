@@ -2,7 +2,7 @@
 #    Standard packet structure of the CC11xx family of IC's
 ###########################################################
 
-package Device::PanStamp::swap::modem::CcPacket;
+package Device::PanStamp::modem::CcPacket;
 
 use strict;
 use warnings;

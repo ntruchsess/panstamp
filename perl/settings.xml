@@ -1,0 +1,6 @@
+  <settings>
+  <debug>1</debug>
+  <devices>
+  <local>../devices</local>
+  </devices>
+  </settings>

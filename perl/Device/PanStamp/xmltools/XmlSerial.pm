@@ -2,7 +2,7 @@
 # Serial configuration settings
 ###########################################################
 
-package Device::PanStamp::swap::xmltools::XmlSerial;
+package Device::PanStamp::xmltools::XmlSerial;
 
 use strict;
 use warnings;

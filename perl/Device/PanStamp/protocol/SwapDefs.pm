@@ -4,7 +4,7 @@
 # SWAP reserved addresses
 #########################################################################
 
-package Device::PanStamp::swap::protocol::SwapAddress;
+package Device::PanStamp::protocol::SwapAddress;
 
 use strict;
 use warnings;
@@ -21,7 +21,7 @@ use constant BROADCAST_ADDR => 0x00;
 # SWAP function codes
 #########################################################################
 
-package Device::PanStamp::swap::protocol::SwapFunction;
+package Device::PanStamp::protocol::SwapFunction;
 
 use strict;
 use warnings;
@@ -44,7 +44,7 @@ use constant {
 # Standard register ID's
 #########################################################################
 
-package Device::PanStamp::swap::protocol::SwapRegId;
+package Device::PanStamp::protocol::SwapRegId;
 
 use strict;
 use warnings;
@@ -84,7 +84,7 @@ use constant {
 # System states
 #########################################################################
 
-package Device::PanStamp::swap::protocol::SwapState;
+package Device::PanStamp::protocol::SwapState;
 
 use strict;
 use warnings;
@@ -133,7 +133,7 @@ TOSTRING: {
 # Data types
 #########################################################################
 
-package Device::PanStamp::swap::protocol::SwapType;
+package Device::PanStamp::protocol::SwapType;
 
 use strict;
 use warnings;

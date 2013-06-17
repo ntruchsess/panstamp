@@ -4,7 +4,7 @@
 # SWAP mote class
 #########################################################################
 
-package Device::PanStamp::swap::protocol::SwapMote;
+package Device::PanStamp::protocol::SwapMote;
 
 use strict;
 use warnings;
@@ -13,10 +13,10 @@ use parent qw(Exporter);
 our @EXPORT_OK = qw();    # symbols to export on request
 
 use Time::HiRes qw(time);
-use Device::PanStamp::swap::protocol::SwapPacket;
-use Device::PanStamp::swap::protocol::SwapDefs;
-use Device::PanStamp::swap::protocol::SwapValue;
-use Device::PanStamp::swap::xmltools::XmlDevice;
+use Device::PanStamp::protocol::SwapPacket;
+use Device::PanStamp::protocol::SwapDefs;
+use Device::PanStamp::protocol::SwapValue;
+use Device::PanStamp::xmltools::XmlDevice;
 
 #########################################################################
 # sub cmdRegister
@@ -34,11 +34,11 @@ sub cmdRegister($$) {
 
   # Expected response from mote
   my $infPacket =
-    Device::PanStamp::swap::protocol::SwapStatusPacket->new( $self->{address},
+    Device::PanStamp::protocol::SwapStatusPacket->new( $self->{address},
     $regId, $value );
 
   # Command to be sent to the mote
-  my $cmdPacket = Device::PanStamp::swap::protocol::SwapCommandPacket->(
+  my $cmdPacket = Device::PanStamp::protocol::SwapCommandPacket->(
     $self->{address}, $regId, $value, $self->{nonce}
   );
 
@@ -62,7 +62,7 @@ sub qryRegister($) {
 
   # Query packet to be sent
   my $qryPacket =
-    Device::PanStamp::swap::protocol::SwapQueryPacket->new( $self->{address},
+    Device::PanStamp::protocol::SwapQueryPacket->new( $self->{address},
     $regId );
 
   # Send query
@@ -86,7 +86,7 @@ sub staRegister($) {
 
   # Status packet to be sent
   my $infPacket =
-    Device::PanStamp::swap::protocol::SwapStatusPacket->new( $self->{address},
+    Device::PanStamp::protocol::SwapStatusPacket->new( $self->{address},
     $regId, $reg->{value} );
 
   # Send SWAP status packet
@@ -123,8 +123,8 @@ sub cmdRegisterWack($$) {
 sub setAddress($) {
   my ( $self, $address ) = @_;
 
-  my $val = Device::PanStamp::swap::protocol::SwapValue->new( $address, 1 );
-  return $self->cmdRegisterWack( Device::PanStamp::swap::protocol::SwapRegId::ID_DEVICE_ADDR, $val );
+  my $val = Device::PanStamp::protocol::SwapValue->new( $address, 1 );
+  return $self->cmdRegisterWack( Device::PanStamp::protocol::SwapRegId::ID_DEVICE_ADDR, $val );
 }
 
 #########################################################################
@@ -140,8 +140,8 @@ sub setAddress($) {
 sub setNetworkId($) {
   my ( $self, $netId ) = @_;
 
-  my $val = Device::PanStamp::swap::protocol::SwapValue->new( $netId, 2 );
-  return $self->cmdRegisterWack( Device::PanStamp::swap::protocol::SwapRegId::ID_NETWORK_ID, $val );
+  my $val = Device::PanStamp::protocol::SwapValue->new( $netId, 2 );
+  return $self->cmdRegisterWack( Device::PanStamp::protocol::SwapRegId::ID_NETWORK_ID, $val );
 }
 
 #########################################################################
@@ -157,8 +157,8 @@ sub setNetworkId($) {
 sub setFreqChannel($) {
   my ( $self, $channel ) = @_;
 
-  my $val = Device::PanStamp::swap::protocol::SwapValue->new( $channel, 1 );
-  return $self->cmdRegisterWack( Device::PanStamp::swap::protocol::SwapRegId::ID_FREQ_CHANNEL, $val );
+  my $val = Device::PanStamp::protocol::SwapValue->new( $channel, 1 );
+  return $self->cmdRegisterWack( Device::PanStamp::protocol::SwapRegId::ID_FREQ_CHANNEL, $val );
 }
 
 #########################################################################
@@ -174,8 +174,8 @@ sub setFreqChannel($) {
 sub setSecurity($) {
   my ( $self, $secu ) = @_;
 
-  my $val = Device::PanStamp::swap::protocol::SwapValue->new( $secu, 1 );
-  return $self->cmdRegisterWack( Device::PanStamp::swap::protocol::SwapRegId::ID_SECU_OPTION, $val );
+  my $val = Device::PanStamp::protocol::SwapValue->new( $secu, 1 );
+  return $self->cmdRegisterWack( Device::PanStamp::protocol::SwapRegId::ID_SECU_OPTION, $val );
 }
 
 #########################################################################
@@ -191,8 +191,8 @@ sub setSecurity($) {
 sub setTxInterval($) {
   my ( $self, $interval ) = @_;
 
-  my $val = Device::PanStamp::swap::protocol::SwapValue->new( $interval, 2 );
-  return $self->cmdRegisterWack( Device::PanStamp::swap::protocol::SwapRegId::ID_TX_INTERVAL, $val );
+  my $val = Device::PanStamp::protocol::SwapValue->new( $interval, 2 );
+  return $self->cmdRegisterWack( Device::PanStamp::protocol::SwapRegId::ID_TX_INTERVAL, $val );
 }
 
 #########################################################################
@@ -206,8 +206,8 @@ sub setTxInterval($) {
 sub restart() {
   my $self = shift;
   my $val =
-    Device::PanStamp::swap::protocol::SwapValue->new( $SwapState::RESTART, 1 );
-  return $self->cmdRegisterWack( Device::PanStamp::swap::protocol::SwapRegId::ID_SYSTEM_STATE, $val );
+    Device::PanStamp::protocol::SwapValue->new( $SwapState::RESTART, 1 );
+  return $self->cmdRegisterWack( Device::PanStamp::protocol::SwapRegId::ID_SYSTEM_STATE, $val );
 }
 
 #########################################################################
@@ -221,8 +221,8 @@ sub restart() {
 sub leaveSync() {
   my $self = shift;
   my $val =
-    Device::PanStamp::swap::protocol::SwapValue->new( $SwapState::RXOFF, 1 );
-  return $self->cmdRegisterWack( Device::PanStamp::swap::protocol::SwapRegId::ID_SYSTEM_STATE, $val );
+    Device::PanStamp::protocol::SwapValue->new( $SwapState::RXOFF, 1 );
+  return $self->cmdRegisterWack( Device::PanStamp::protocol::SwapRegId::ID_SYSTEM_STATE, $val );
 }
 
 #########################################################################
@@ -386,7 +386,7 @@ sub new(;$$$$$) {
 
   # Definition file
   ## Definition settings
-  my $definition = Device::PanStamp::swap::xmltools::XmlDevice->new($self);
+  my $definition = Device::PanStamp::xmltools::XmlDevice->new($self);
   $self->{definition} = $definition;
   if ( defined $definition ) {
 

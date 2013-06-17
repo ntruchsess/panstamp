@@ -1,1 +1,0 @@
-package Device::PanStamp::Register;
