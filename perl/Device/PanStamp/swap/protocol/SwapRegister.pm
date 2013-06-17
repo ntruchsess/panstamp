@@ -186,10 +186,6 @@ sub update() {
 
     if (@lstParamVal) {
       foreach my $i ( 0 .. $bitsToCopy ) {
-
-#TODO: check whether $lstRegVal[$indexReg] being undef or '' is valid here!
-        $lstRegVal[$indexReg] = 0
-          unless defined $lstRegVal[$indexReg] and $lstRegVal[$indexReg] ne '';
         if ( ( $lstParamVal[$indexParam] >> $shiftParam ) & 0x01 eq 0 ) {
           my $mask = ~( 1 << $shiftReg );
           $lstRegVal[$indexReg] &= $mask;
@@ -261,7 +257,7 @@ sub isConfig() {
   my $self = shift;
   return 1
     if ( @{ $self->{parameters} }
-    and ref( $self->{parameters}->[0] ) eq "SwapCfgParam" );
+    and ref( $self->{parameters}->[0] ) eq "Device::PanStamp::swap::protocol::SwapCfgParam" );
   return 0;
 }
 

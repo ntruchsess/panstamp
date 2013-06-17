@@ -13,6 +13,7 @@ use parent qw(Exporter);
 our @EXPORT_OK = qw();    # symbols to export on request
 
 use Time::HiRes qw(time);
+use Posix qw(strftime);
 
 use Device::PanStamp::swap::protocol::SwapDefs;
 use Device::PanStamp::swap::protocol::SwapValue;
@@ -129,7 +130,7 @@ sub setValue($) {
   my ( $self, $value ) = @_;
 
   # Allready a SwapValue?
-  if ( ref($value) eq "SwapValue" ) {
+  if ( ref($value) eq "Device::PanStamp::swap::protocol::SwapValue" ) {
 
     # Incorrect length?
     return if ( $self->{value}->getLength() != $value->getLength() );
@@ -298,20 +299,18 @@ sub new(;$$$$$$$$$) {
     # Direction (see SwapDefs.SwapType for more details)
     direction => $direction,
 
-    # Position (in bytes) of the parameter within the register
-    bytePos => 0,
-
     # Position (in bits) after bytePos
     bitPos => $position_dot > -1 ? int( substr( $position, $position_dot + 1 ) )
     : 0,
+
+    # Position (in bytes) of the parameter within the register
     bytePos => $position_dot > -1 ? int( substr( $position, 0, $position_dot ) )
     : int($position),
 
-    # Size (in bytes) of the parameter value
-    byteSize => 1,
-
     # Size in bits of the parameter value after byteSize
     bitSize => $size_dot > -1 ? int( substr( $size, $size_dot + 1 ) ) : 0,
+
+    # Size (in bytes) of the parameter value
     byteSize => $size_dot > -1
     ? int( substr( $size, 0, $size_dot ) )
     : int($size),
@@ -441,7 +440,7 @@ sub sendSwapCmd($) {
   my $swap_value;
 
   # Convert to SwapValue
-  if ( ref($value) eq "SwapValue" ) {
+  if ( ref($value) eq "Device::PanStamp::swap::protocol::SwapValue" ) {
     $swap_value = $value;
   } else {
 
@@ -601,8 +600,8 @@ sub dumps(;$) {
   );
 
   if ( defined $self->{lastupdate} ) {
-    $data{"timestamp"} = time->strftime( "%d %b %Y %H:%M:%S",
-      time->localtime( $self->{lastupdate} ) )    #TODO time,strftime
+    $data{"timestamp"} =
+      strftime( "%d %b %Y %H:%M:%S", localtime( $self->{lastupdate} ) );
   }
 
   $data{"value"} = $val;

@@ -62,7 +62,7 @@ sub _run() {
 sub poll() {
   my $self = shift;
 
-# Read single byte (non blocking function) #TODO verify input reads a single byte only, maybe better use select and read?
+  # Read up to 255 bytes (non blocking function)
   my ( $count, $data ) = $self->{_serport}->read(255);
   if ($count) {
     my @data = unpack "a" x $count, $data;

@@ -340,7 +340,7 @@ sub getDefinition() {
     }
   }
 
-  die $self->{fileName} . "does not exist" unless defined $tree;
+  die $self->{fileName} . " does not exist" unless defined $tree;
 
   # Get manufacturer
   $self->{manufacturer} = $tree->{developer};
@@ -402,6 +402,10 @@ sub getRegList(;$) {
   my $lstElemReg = $tree->{$regtype}->{reg};
 
   if ( defined $lstElemReg ) {
+
+    # List of endpoints belonging to the register
+    my $elementName = $config ? "param" : "endpoint";
+
     foreach my $reg ( @{$lstElemReg} ) {
 
       # Get register name
@@ -411,9 +415,6 @@ sub getRegList(;$) {
       my $swRegister =
         Device::PanStamp::swap::protocol::SwapRegister->new( $self->{mote},
         $reg->{id}, defined $regName ? $regName : "" );
-
-      # List of endpoints belonging to the register
-      my $elementName = $config ? "param" : "endpoint";
 
       my $lstElemParam = $reg->{$elementName};
 
@@ -429,19 +430,20 @@ sub getRegList(;$) {
         my $verif     = $param->{verif};
 
         # Get list of units
-        my $units = $param->{"units/unit"};
-        my @lstUnits;
-        if ( defined $units and scalar( @{$units} ) > 0 ) {
-          @lstUnits = ();
-          foreach my $unit ( @{$units} ) {
-            my $name   = $unit->{name};
-            my $factor = defined $unit->{factor} ? $unit->{factor} : 1;
-            my $offset = defined $unit->{offset} ? $unit->{offset} : 0;
-            my $calc   = $unit->{calc};
-            my $xmlUnit =
-              Device::PanStamp::swap::xmltools::XmlUnit->new( $name, $factor,
-              $offset, $calc );
-            push @lstUnits, $xmlUnit;
+        if (defined $param->{units} and defined my $units = $param->{units}->{unit} ) {
+          my @lstUnits;
+          if ( @{$units} ) {
+            @lstUnits = ();
+            foreach my $unit ( @{$units} ) {
+              my $name   = $unit->{name};
+              my $factor = defined $unit->{factor} ? $unit->{factor} : 1;
+              my $offset = defined $unit->{offset} ? $unit->{offset} : 0;
+              my $calc   = $unit->{calc};
+              my $xmlUnit =
+                Device::PanStamp::swap::xmltools::XmlUnit->new( $name, $factor,
+                $offset, $calc );
+              push @lstUnits, $xmlUnit;
+            }
           }
         }
 
@@ -465,16 +467,16 @@ sub getRegList(;$) {
 
         # Add current parameter to the registertree
         $swRegister->add($swParam);
-
-        # Create empty value for the register
-        my @swRegisterList = unpack( "a" x $swRegister->getLength(), "" );
-        $swRegister->{value} =
-          Device::PanStamp::swap::protocol::SwapValue->new( \@swRegisterList );
-        $swRegister->update();
-
-        # Add endpoint to the list
-        push @lstRegs, $swRegister;
       }
+
+      # Create empty value for the register
+      my @swRegisterList = (0) x $swRegister->getLength();
+      $swRegister->{value} =
+        Device::PanStamp::swap::protocol::SwapValue->new( \@swRegisterList );
+      $swRegister->update();
+
+      # Add endpoint to the list
+      push @lstRegs, $swRegister;
     }
   }
   return scalar(@lstRegs) ? \@lstRegs : undef;
