@@ -365,16 +365,12 @@ sub _checkMote($) {
     $self->{network}->save();
 
     # Notify event handler about the discovery of a new mote
-    if ( defined $self->{_eventHandler}->{newMoteDetected} ) {
-      $self->{_eventHandler}->newMoteDetected($mote);
-    }
+    $self->{_eventHandler}->newMoteDetected($mote);
 
     # Notify the event handler about the discovery of new endpoints
     foreach my $reg ( @{ $mote->{regular_registers} } ) {
       foreach my $endp ( @{ $reg->{parameters} } ) {
-        if ( defined $self->{_eventHandler}->{newEndpointDetected} ) {
-          $self->{_eventHandler}->newEndpointDetected($endp);
-        }
+        $self->{_eventHandler}->newEndpointDetected($endp);
       }
     }
   }
@@ -412,9 +408,7 @@ sub _updateMoteAddress($$) {
     $mote->{address} = $newAddr;
 
     # Notify address change to event handler
-    if ( defined $self->{_eventHandler}->{moteAddressChanged} ) {
-      $self->{_eventHandler}->moteAddressChanged($mote);
-    }
+    $self->{_eventHandler}->moteAddressChanged($mote);
   }
 }
 
@@ -438,15 +432,13 @@ sub _updateMoteState($) {
 
     # Has the state really changed?
     return
-      if ( $mote->{state} eq $state );
+      if ( defined $mote->{state} and $mote->{state} eq $state );
 
     # Update system state in the list
     $mote->{state} = $state;
 
     # Notify state change to event handler
-    if ( defined $self->{_eventHandler}->{moteStateChanged} ) {
-      $self->{_eventHandler}->moteStateChanged($mote);
-    }
+    $self->{_eventHandler}->moteStateChanged($mote);
   }
 }
 
@@ -510,18 +502,13 @@ sub _updateRegisterValue($) {
           $reg->setValue( $packet->{value} );
 
           # Notify register'svalue change to event handler
-          if ( defined $self->{_eventHandler}->{registerValueChanged} ) {
-            $self->{_eventHandler}->registerValueChanged($reg);
-          }
+          $self->{_eventHandler}->registerValueChanged($reg);
 
           # Notify endpoint's value change to event handler
-          if ( defined $self->{_eventHandler}->{endpointValueChanged} ) {
-
-            # Has any of the endpoints changed?
-            foreach my $endp ( @{ $reg->{parameters} } ) {
-              if ( $endp->{valueChanged} ) {
-                $self->{_eventHandler}->endpointValueChanged($endp);
-              }
+          # Has any of the endpoints changed?
+          foreach my $endp ( @{ $reg->{parameters} } ) {
+            if ( $endp->{valueChanged} ) {
+              $self->{_eventHandler}->endpointValueChanged($endp);
             }
           }
           return;
@@ -543,18 +530,13 @@ sub _updateRegisterValue($) {
             $reg->setValue( $packet->{value} );
 
             # Notify register'svalue change to event handler
-            if ( defined $self->{_eventHandler}->{registerValueChanged} ) {
-              $self->{_eventHandler}->registerValueChanged($reg);
-            }
+            $self->{_eventHandler}->registerValueChanged($reg);
 
             # Notify parameter's value change to event handler
-            if ( defined $self->{_eventHandler}->{parameterValueChanged} ) {
-
-              # Has any of the endpoints changed?
-              foreach my $param ( @{ $reg->{parameters} } ) {
-                if ( $param->{valueChanged} ) {
-                  $self->{_eventHandler}->parameterValueChanged($param);
-                }
+            # Has any of the endpoints changed?
+            foreach my $param ( @{ $reg->{parameters} } ) {
+              if ( $param->{valueChanged} ) {
+                $self->{_eventHandler}->parameterValueChanged($param);
               }
             }
             return;

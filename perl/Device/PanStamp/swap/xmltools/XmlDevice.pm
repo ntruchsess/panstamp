@@ -380,7 +380,7 @@ sub getRegList(;$) {
   eval {
     $tree = XMLin(
       $self->{fileName},
-      ForceArray => [ 'reg', 'param', 'endpoint' ],
+      ForceArray => [ 'reg', 'param', 'endpoint', 'unit' ],
       KeyAttr    => []
     );
   };
@@ -430,10 +430,11 @@ sub getRegList(;$) {
         my $verif     = $param->{verif};
 
         # Get list of units
-        if (defined $param->{units} and defined my $units = $param->{units}->{unit} ) {
-          my @lstUnits;
+        my @lstUnits = ();
+        if (  defined $param->{units}
+          and defined( my $units = $param->{units}->{unit} ) )
+        {
           if ( @{$units} ) {
-            @lstUnits = ();
             foreach my $unit ( @{$units} ) {
               my $name   = $unit->{name};
               my $factor = defined $unit->{factor} ? $unit->{factor} : 1;
@@ -446,7 +447,6 @@ sub getRegList(;$) {
             }
           }
         }
-
         my $swParam;
 
         if ($config) {

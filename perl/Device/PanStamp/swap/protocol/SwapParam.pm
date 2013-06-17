@@ -13,7 +13,7 @@ use parent qw(Exporter);
 our @EXPORT_OK = qw();    # symbols to export on request
 
 use Time::HiRes qw(time);
-use Posix qw(strftime);
+use Date::Format qw(strftime);
 
 use Device::PanStamp::swap::protocol::SwapDefs;
 use Device::PanStamp::swap::protocol::SwapValue;
@@ -325,7 +325,7 @@ sub new(;$$$$$$$$$) {
     lstunits => $units,
 
     # Selected unit
-    unit => ( $units && @{$units} ) ? $units->{0} : undef,
+    unit => ( $units && @{$units} ) ? $units->[0] : undef,
 
 # Flag that tells us whether this parameter changed its value during the last update or not
     valueChanged => 0,
