@@ -69,7 +69,7 @@ sub _run() {
   );
 
   # Declare receiving callback function
-  if ( 1 or $self->{async} ) {
+  if ( $self->{async} ) {
     $self->{modem}->setRxCallback( sub { $self->_ccPacketReceived(@_); } );
   } else {
     my $rcvqueue = Thread::Queue->new();
