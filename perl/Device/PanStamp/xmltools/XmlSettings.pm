@@ -88,61 +88,68 @@ sub save() {
 #
 # Class constructor
 #
-# @param filename: Path to the configuration file
-# @param opt: hash-reference containing (optional) properties:
-#             device_localdir, serial_file, network_file, swap_file
+# @param settings: either Path to the configuration file or Hash-reference containing the settings.
+# valid settings are: file_name, debug, serial_file, network_file, swap_file, device_localdir, device_remote, updatedef, error_file
 ###########################################################
 
-sub new($;\%) {
-  my ( $class, $file_name ) = @_;
+sub new(;$) {
+  my ( $class, $settings ) = @_;
 
-  # Name/path of the current configuration file
-  $file_name = "settings.xml" unless $file_name;
+  my $self;
 
-  my $self = bless {
-    ## Name/path of the current configuration file
-    file_name => $file_name,
-    ## Debug level (0: no debug, 1: print SWAP packets, 2: print SWAP packets and network events)
-    debug => 0,
-    ## Name/path of the serial configuration file
-    serial_file => "serial.xml",
-    ## Name/path of the wireless network configuration file
-    network_file => "network.xml",
-    ## Name/path of the SWAP net status/config file
-    swap_file => "swapnet.json",
-    ## Directory where all device config files are stored
-    device_localdir => undef,
-    ## Remote Devide Definition folder for updates
-    device_remote => "http://panstamp.googlecode.com/files/devices.tar",
-    ## Automatic udate of local Device Definition folder from internet server
-    ## on start-up
-    updatedef => 0,
-    ## Name/path of the error log file
-    error_file => "swap.err"
-  }, $class;
+  if (defined $settings and ref($settings) eq "HASH" ) {
+    $self = bless $settings, $class;
+  } else {
+    $self = bless {
+      ## Name/path of the current configuration file
+      file_name => defined $settings ? $settings : "settings.xml"
+    }, $class;
+  }
 
-  # Read XML file
-  $self->read();
+  ## Debug level (0: no debug, 1: print SWAP packets, 2: print SWAP packets and network events)
+  $self->{debug} = 0 unless defined $self->{debug};
+  ## Name/path of the serial configuration file
+  $self->{serial_file} = "serial.xml" unless defined $self->{serial_file};
+  ## Name/path of the wireless network configuration file
+  $self->{network_file} = "network.xml" unless defined $self->{network_file};
+  ## Name/path of the SWAP net status/config file
+  $self->{swap_file} = "swapnet.json" unless defined $self->{swap_file};
+  ## Directory where all device config files are stored
+  $self->{device_localdir} = undef unless defined $self->{device_localdir};
+  ## Remote Devide Definition folder for updates
+  $self->{device_remote} = "http://panstamp.googlecode.com/files/devices.tar"
+    unless defined $self->{device_remote};
+  ## Automatic udate of local Device Definition folder from internet server
+  ## on start-up
+  $self->{updatedef} = 0 unless defined $self->{updatedef};
+  ## Name/path of the error log file
+  $self->{error_file} = "swap.err" unless defined $self->{error_file};
 
-  my $direc = dirname($file_name);
+  if ( defined $self->{file_name} ) {
 
-  # Convert to absolute paths
-  $self->{device_localdir} =
-    defined( $self->{device_localdir} )
-    ? catfile( $direc, $self->{device_localdir} )
-    : $direc;
-  $self->{serial_file} =
-    defined( $self->{serial_file} )
-    ? catfile( $direc, $self->{serial_file} )
-    : $direc;
-  $self->{network_file} =
-    defined( $self->{network_file} )
-    ? catfile( $direc, $self->{network_file} )
-    : $direc;
-  $self->{swap_file} =
-    defined( $self->{swap_file} )
-    ? catfile( $direc, $self->{swap_file} )
-    : $direc;
+    # Read XML file
+    $self->read();
+
+    my $direc = dirname($self->{file_name});
+
+    # Convert to absolute paths
+    $self->{device_localdir} =
+      defined( $self->{device_localdir} )
+      ? catfile( $direc, $self->{device_localdir} )
+      : $direc;
+    $self->{serial_file} =
+      defined( $self->{serial_file} )
+      ? catfile( $direc, $self->{serial_file} )
+      : $direc;
+    $self->{network_file} =
+      defined( $self->{network_file} )
+      ? catfile( $direc, $self->{network_file} )
+      : $direc;
+    $self->{swap_file} =
+      defined( $self->{swap_file} )
+      ? catfile( $direc, $self->{swap_file} )
+      : $direc;
+  }
 
   return $self;
 }

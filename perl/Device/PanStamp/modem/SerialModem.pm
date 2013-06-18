@@ -24,14 +24,16 @@ use constant {
 # sub start()
 #
 # Start serial gateway
+#
+# @param async: if 1 run a separate thread to handle incomming data. Defaults to 0.
 ###########################################################
 
-sub start() {
+sub start(;$) {
+  my ($self, $async) = @_;
 
-  my $self = shift;
-
+  $self->{_async} = $async;
   # Run serial port thread
-  $self->{_serport}->start();
+  $self->{_serport}->start($async);
 
   $self->{_wait_modem_start} = 0;
   my $start      = time;
@@ -100,7 +102,7 @@ sub start() {
 
 sub stop() {
   my $self = shift;
-  $self->{serport}->stop() if $self->{serport};
+  $self->{_serport}->stop() if $self->{_serport};
 }
 
 ###########################################################
@@ -111,7 +113,7 @@ sub stop() {
 
 sub poll() {
   my $self = shift;
-  if ( $self->{async} ) {
+  if ( $self->{_async} ) {
     $self->{_serport}->receive();
   } else {
     $self->{_serport}->poll();
@@ -403,18 +405,20 @@ sub _waitForResponse($) {
 ##########################################################
 # Class Constructor
 #
-# @param portname: Name/path of the serial port
+# @param port: Name/path of the serial port or reference to existing Device::SerialPort object
 # @param speed: Serial baudrate in bps
 # @param verbose: Print out SWAP traffic (True or False)
-# @param async: run SerialPort handling in it's own thread
 ##########################################################
 
-sub new(;$$$$) {
-  my ( $class, $portname, $speed, $verbose, $async ) = @_;
+sub new(;$$$) {
+  my ( $class, $port, $speed, $verbose ) = @_;
 
-  $portname = "/dev/ttyUSB0" unless ( defined $portname );
-  $speed    = 38400          unless ( defined $speed );
-  $async    = 1              unless ( defined $async );
+  if ( defined $port and ref($port) =~ /::SerialPort$/ ) {
+    $portname = "Device::Serial object provided by application";
+  } else {
+    $portname = "/dev/ttyUSB0" unless ( defined $port );
+    $speed    = 38400          unless ( defined $speed );
+  }
 
   my $self = bless {
 
@@ -442,18 +446,22 @@ sub new(;$$$$) {
     # Firmware version of the serial modem
     fwversion => undef,
 
-    async => $async,
-
     # This flags switches to True when the serial modem is ready
     _wait_modem_start => 0
 
   }, $class;
 
-  # Open serial port
-  $self->{_serport} =
-    Device::PanStamp::modem::SerialPort->new( $portname, $speed, $verbose,
-    $async )
-    || die "cant open Serial Port: $self->{portname}: $!";
+  # use existing Device::SerialPort object
+  if ( defined $port and ref($port) =~ /::SerialPort$/ ) {
+    $self->{_serport} =
+      Device::PanStamp::modem::SerialPort->new( $port, undef, $verbose )
+      || die "cant attach to SerialPort: $!";
+  # or open serial port
+  } else {
+    $self->{_serport} =
+      Device::PanStamp::modem::SerialPort->new( $portname, $speed, $verbose )
+      || die "cant open Serial Port: $self->{portname}: $!";
+  }
 
   # Define callback function for incoming serial packets
   $self->{_serport}->setRxCallback( sub { $self->_serialPacketReceived(@_); } );

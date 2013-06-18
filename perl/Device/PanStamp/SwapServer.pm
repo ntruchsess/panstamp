@@ -58,20 +58,30 @@ sub _init() {
   $self->{password}   = Device::PanStamp::protocol::Password->new(
     $self->{_xmlnetwork}->{password} );
 
-  # Serial configuration settings
-  $self->{_xmlserial} = Device::PanStamp::xmltools::XmlSerial->new(
-    $self->{_xmlSettings}->{serial_file} );
-
   # Create and start serial modem object
-  $self->{modem} = Device::PanStamp::modem::SerialModem->new(
-    $self->{_xmlserial}->{port}, $self->{_xmlserial}->{speed},
-    $self->{verbose},            $self->{_xmlserial}->{async}
-  );
+  if ( defined $self->{_serport} ) {
+    $self->{modem} =
+      Device::PanStamp::modem::SerialModem->new( $self->{_serport}, undef,
+      $self->{verbose} );
+  } else {
+
+    # Serial configuration settings
+    $self->{_xmlserial} = Device::PanStamp::xmltools::XmlSerial->new(
+      $self->{_xmlSettings}->{serial_file} );
+
+    $self->{modem} = Device::PanStamp::modem::SerialModem->new(
+      $self->{_xmlserial}->{port},
+      $self->{_xmlserial}->{speed},
+      $self->{verbose}
+    );
+
+    $self->{_asyncport} = $self->{_xmlSettings}->{async};
+  }
 
   # Declare receiving callback function
   $self->{modem}->setRxCallback( sub { $self->_ccPacketReceived(@_); } );
 
-  $self->{modem}->start();
+  $self->{modem}->start( $self->{_asyncport} );
 
   # Set modem configuration from _xmlnetwork
   my $param_changed = 0;
@@ -115,7 +125,6 @@ sub _init() {
   }
 
   ${ $self->{is_running} } = 1;
-
   # Notify parent about the start of the server
   $self->{_eventHandler}->swapServerStarted();
 
@@ -128,14 +137,18 @@ sub _init() {
 # sub start()
 #
 # Start SWAP server
+#
+# @param async: if 1 run a separate thread to receive messages from SerialModem. Defaults to 0.
 ###########################################################
 
-sub start() {
-  my $self = shift;
+sub start(;$) {
+  my ( $self, $async ) = @_;
 
   unless ( ${ $self->{is_running} } ) {
 
-    if ( $self->{async} ) {
+    my $async = 1 unless defined $async;
+
+    if ($async) {
 
       # Worker thread
       my $thr = threads->create(
@@ -151,6 +164,22 @@ sub start() {
       $self->_init();
     }
   }
+}
+
+###########################################################
+# sub attach()
+#
+# Attach SWAP server to SerialPort-object and start.
+#
+# @param serport: reference to existing Device::SerialPort or Win32::SerialPort object
+# @param async: if 1 run a separate thread to handle serial port. Defaults to 0.
+###########################################################
+
+sub attach($;$) {
+  my ( $self, $serport, $async ) = @_;
+
+  $self->{_serport}   = $serport;
+  $self->{_asyncport} = $async;
 }
 
 ###########################################################
@@ -230,7 +259,7 @@ sub _ccPacketReceived($) {
   # Check function code
   # STATUS packet received
   if ( $swPacket->{function} eq
-    Device::PanStamp::protocol::SwapFunction::STATUS )
+      Device::PanStamp::protocol::SwapFunction::STATUS )
   {
     return unless defined $swPacket->{value};
 
@@ -291,7 +320,7 @@ sub _ccPacketReceived($) {
 
   # QUERY packet received
   elsif ( $swPacket->{function} eq
-    Device::PanStamp::protocol::SwapFunction::QUERY )
+      Device::PanStamp::protocol::SwapFunction::QUERY )
   {
 
     # Query addressed to our gateway?
@@ -310,7 +339,7 @@ sub _ccPacketReceived($) {
 
   # COMMAND packet received
   elsif ( $swPacket->{function} eq
-    Device::PanStamp::protocol::SwapFunction::COMMAND )
+      Device::PanStamp::protocol::SwapFunction::COMMAND )
   {
 
     # Command addressed to our gateway?
@@ -554,7 +583,7 @@ sub _checkStatus($) {
   my ( $self, $status ) = @_;
 
   # Check possible command ACK
-  if (
+  if (  
     ( defined $self->{_expectedAck} )
     and ( $status->{function} eq
       Device::PanStamp::protocol::SwapFunction::STATUS )
@@ -915,10 +944,7 @@ sub update_definition_files() {
 ###########################################################
 
 sub new($@) {    # self, eventHandler, settings = None, start = True ) : """
-  my ( $class, $eventHandler, $settings, $start, $async ) = @_;
-
-  $start = 1 unless ( defined $start );
-  $async = 1 unless ( defined $async );
+  my ( $class, $eventHandler, $settings ) = @_;
 
   my $is_running : shared;
 
@@ -955,8 +981,6 @@ sub new($@) {    # self, eventHandler, settings = None, start = True ) : """
     _xmlSettings =>
       Device::PanStamp::xmltools::XmlSettings->new($settings),
 
-    async => $async,
-
     is_running => \$is_running
   }, $class;
 
@@ -978,11 +1002,6 @@ sub new($@) {    # self, eventHandler, settings = None, start = True ) : """
 
   ## Poll regular registers whenever a product code packet is received
   $self->{_poll_regular_regs} = 0;
-
-  # Start server
-  if ($start) {
-    $self->start();
-  }
 
   return $self;
 }

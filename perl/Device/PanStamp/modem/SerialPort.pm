@@ -44,12 +44,15 @@ sub _run() {
       select( undef, undef, undef, 0.01 );
     }
   }
+  
   if ( defined $self->{_serport} ) {
 
-    # Flush buffers
-    $self->{_serport}->purge_rx();
-    $self->{_serport}->purge_tx();
-    $self->{_serport}->close();
+    eval {  
+      # Flush buffers
+      $self->{_serport}->purge_rx();
+      $self->{_serport}->purge_tx();
+      $self->{_serport}->close() unless $self->{_attached};
+    };
   }
 }
 
@@ -113,26 +116,27 @@ sub poll() {
 # sub start() {
 #
 # Start serial port
-#########################################################################
+#
+# @param async: if 1 run a separate thread to handle incomming data. Defaults to 0.
+###########################################################
 
-sub start() {
-  my $self = shift;
+sub start(;$) {
+  my ($self, $async) = @_;
 
   unless ( ${ $self->{_go_on} } ) {
 
     ${ $self->{_go_on} } = 1;
     if ( defined $self->{_serport} ) {
 
-      if ( $self->{async} ) {
-
+      if ( $async ) {
+        # queue to pass Strings received to method 'receive' 
+        $self->{_strreceived} = Thread::Queue->new() unless defined $self->{_strreceived}; 
         # Worker thread
         my $thr = threads->create(
           sub {
             $self->_run();
           }
         )->detach();
-
-        #$self->{_serport} = undef;
       }
     } else {
       die "Unable to read serial port "
@@ -222,18 +226,23 @@ sub reset() {
 #
 # Class constructor
 #
-# @param portname: Name/path of the serial port
+# @param port: Name/path of the serial port or reference to existing Device::SerialPort object
 # @param speed: Serial baudrate in bps
 # @param verbose: Print out SWAP traffic (True or False)
 #########################################################################
 
-sub new(;$$$$) {
-  my ( $class, $portname, $speed, $verbose, $async ) = @_;
+sub new(;$$$) {
+  my ( $class, $port, $speed, $verbose ) = @_;
 
-  $portname = "/dev/ttyUSB0" unless defined $portname;
-  $speed    = 38400          unless defined $speed;
+  my $attached = defined $port and ref($port) =~ /::SerialPort$/; 
+  if ( $attached ) {
+    $portname = "Device::Serial object provided by application";
+  } else {
+    $portname = "/dev/ttyUSB0" unless defined $portname;
+    $speed    = 38400          unless defined $speed;
+  }
+
   $verbose  = 0              unless defined $verbose;
-  $async    = 1              unless defined $async;
 
   my $_go_on : shared = 0;
 
@@ -250,9 +259,6 @@ sub new(;$$$$) {
     # String to be sent
     _strtosend => Thread::Queue->new(),
 
-    # String received
-    _strreceived => $async ? Thread::Queue->new() : undef,
-
     # Verbose network traffic
     _verbose => $verbose,
 
@@ -260,23 +266,27 @@ sub new(;$$$$) {
     last_transmission_time => 0,
 
     _go_on => \$_go_on,
-
-    async => $async,
+    
+    _attached => $attached,
 
     _serbuf => []
   }, $class;
 
-  # Open serial port in blocking mode
-  $self->{_serport} = Device::SerialPort->new( $self->{portname} );
-
-  die "Unable to open serial port" . $self->{portname}
-    unless ( defined $self->{_serport} );
-
-  $self->{_serport}->baudrate( $self->{portspeed} );
-  $self->{_serport}->databits(8);
-  $self->{_serport}->parity("none");
-  $self->{_serport}->stopbits(1);
-  $self->{_serport}->write_settings;
+  if ( $attached ) {
+    $self->{_serport} = $port;
+  } else {
+    # Open serial port in blocking mode
+    $self->{_serport} = Device::SerialPort->new( $self->{portname} );
+  
+    die "Unable to open serial port" . $self->{portname}
+      unless ( defined $self->{_serport} );
+  
+    $self->{_serport}->baudrate( $self->{portspeed} );
+    $self->{_serport}->databits(8);
+    $self->{_serport}->parity("none");
+    $self->{_serport}->stopbits(1);
+    $self->{_serport}->write_settings;
+  }
 
   # Reset modem
   $self->reset();
