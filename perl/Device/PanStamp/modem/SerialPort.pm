@@ -78,7 +78,9 @@ sub poll() {
         print "Rved: $strBuf\n" if ( $self->{_verbose} );
 
         # Notify reception
-        if ( defined $self->{serial_received} ) {
+        if ( defined $self->{_strreceived} ) {
+          $self->{_strreceived}->enqueue($strBuf);
+        } elsif ( defined $self->{serial_received} ) {
           &{ $self->{serial_received} }($strBuf);
         }
       } elsif ( $ch =~ /[^\r\n]/ ) {
@@ -167,6 +169,23 @@ sub send($) {
 }
 
 #########################################################################
+# sub receive()
+#
+# dequeue raw message from receive_queue and call serial_received callback (if any)
+#########################################################################
+
+sub receive() {
+  my $self = shift;
+
+  if (  defined $self->{serial_received}
+    and defined $self->{_strreceived}
+    and defined( my $strBuf = $self->{_strreceived}->dequeue_nb() ) )
+  {
+    &{ $self->{serial_received} }($strBuf);
+  }
+}
+
+#########################################################################
 # sub setRxCallback($) {
 #
 # Set callback reception function. This function is called whenever a new serial packet
@@ -228,8 +247,11 @@ sub new(;$$$$) {
     ## Callback Rx function
     serial_received => undef,
 
-    # Strint to be sent
+    # String to be sent
     _strtosend => Thread::Queue->new(),
+
+    # String received
+    _strreceived = $async ? Thread::Queue->new() : undef,
 
     # Verbose network traffic
     _verbose => $verbose,

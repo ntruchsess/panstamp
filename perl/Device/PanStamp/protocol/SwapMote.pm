@@ -372,7 +372,7 @@ sub new(;$$$$$) {
     security => $security,
 
     # Current mote's security nonce
-    nonce => undef,
+    nonce => $nonce,
 
     # State of the mote
     state => $SwapState::RXOFF,

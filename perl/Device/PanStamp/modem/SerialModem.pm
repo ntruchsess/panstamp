@@ -6,7 +6,6 @@ package Device::PanStamp::modem::SerialModem;
 
 use strict;
 use warnings;
-use threads::shared;
 
 use parent qw(Exporter);
 our @EXPORT_OK = qw();    # symbols to export on request
@@ -34,11 +33,11 @@ sub start() {
   # Run serial port thread
   $self->{_serport}->start();
 
-  ${ $self->{_wait_modem_start} } = 0;
+  $self->{_wait_modem_start} = 0;
   my $start      = time;
   my $soft_reset = 0;
-  while ( !${ $self->{_wait_modem_start} } ) {
-    $self->{_serport}->poll() unless ( $self->{async} );
+  while ( !$self->{_wait_modem_start} ) {
+    $self->poll();
     my $elapsed = time - $start;
     if ( not $soft_reset and $elapsed > 5 ) {
       $self->reset();
@@ -112,7 +111,11 @@ sub stop() {
 
 sub poll() {
   my $self = shift;
-  $self->{_serport}->poll();
+  if ( $self->{async} ) {
+    $self->{_serport}->receive();
+  } else {
+    $self->{_serport}->poll();
+  }
 }
 
 ###########################################################
@@ -128,17 +131,18 @@ sub _serialPacketReceived($) {
   my ( $self, $buf ) = @_;
 
   # If modem in command mode
-  if ( ${ $self->{_sermode} } eq COMMAND ) {
-    ${ $self->{_atresponse} }          = $buf;
-    ${ $self->{_atresponse_received} } = 1;
+  if ( $self->{_sermode} eq COMMAND ) {
+    $self->{_atresponse}          = $buf;
+    $self->{_atresponse_received} = 1;
 
     # If modem in data mode
   } else {
 
     # Waiting for ready signal from modem?
-    if ( not ${ $self->{_wait_modem_start} } ) {
+    if ( not $self->{_wait_modem_start} ) {
       if ( $buf eq "Modem ready!" ) {
-        ${ $self->{_wait_modem_start} } = 1;
+        $self->{_wait_modem_start} = 1;
+
         # Create CcPacket from string and notify reception
       }
     } elsif ( defined $self->{_ccpacket_received} ) {
@@ -251,27 +255,27 @@ sub runAtCommand(;$$) {
   $cmd     = "AT\r" unless $cmd;
   $timeout = 1000   unless $timeout;
 
-  ${ $self->{_atresponse_received} } = 0;
+  $self->{_atresponse_received} = 0;
 
   # Send command via serial
   die "Port " + $self->{portname} + " is not open"
     unless ( defined $self->{_serport} );
 
   # Skip wireless packets
-  ${ $self->{_atresponse} } = "(";
+  $self->{_atresponse} = "(";
 
   # Send serial packet
   $self->{_serport}->send($cmd);
 
   # Wait for response from modem
-  while ( length( ${ $self->{_atresponse} } ) eq 0
-    or ${ $self->{_atresponse} } =~ /^\(/ )
+  while ( length( $self->{_atresponse} ) eq 0
+    or $self->{_atresponse} =~ /^\(/ )
   {
     return undef unless ( $self->_waitForResponse($timeout) );
   }
 
   # Return response received from gateway
-  return ${ $self->{_atresponse} };
+  return $self->{_atresponse};
 }
 
 ##########################################################
@@ -333,7 +337,7 @@ sub setSyncWord($) {
   die "Synchronization words must be 2-byte length" if ( $value > 0xFFFF );
 
   # Switch to command mode if necessary
-  if ( ${ $self->{_sermode} } eq DATA ) {
+  if ( $self->{_sermode} eq DATA ) {
     $self->goToCommandMode();
   }
 
@@ -362,7 +366,7 @@ sub setDevAddress($) {
   die "Device addresses must be 1-byte length" if ( $value > 0xFF );
 
   # Switch to command mode if necessary
-  if ( ${ $self->{_sermode} } eq DATA ) {
+  if ( $self->{_sermode} eq DATA ) {
     $self->goToCommandMode();
   }
 
@@ -387,8 +391,8 @@ sub _waitForResponse($) {
   my ( $self, $millis ) = @_;
 
   my $loops = $millis / 10;
-  while ( !${ $self->{_atresponse_received} } ) {
-    $self->{_serport}->poll() unless ( $self->{async} );
+  while ( !$self->{_atresponse_received} ) {
+    $self->poll();
     select( undef, undef, undef, 0.01 );
     $loops--;
     return 0 if ( $loops eq 0 );
@@ -412,21 +416,16 @@ sub new(;$$$$) {
   $speed    = 38400          unless ( defined $speed );
   $async    = 1              unless ( defined $async );
 
-  my $_sermode : shared             = DATA;
-  my $_atresponse : shared          = "";
-  my $_atresponse_received : shared = 0;
-  my $_wait_modem_start : shared    = 0;
-
   my $self = bless {
 
     # Serial mode (command or data modes)
-    _sermode => \$_sermode,
+    _sermode => DATA,
 
     # Response to the last AT command sent to the serial modem
-    _atresponse => \$_atresponse,
+    _atresponse => "",
 
     # AT response received from modem
-    _atresponse_received => \$_atresponse_received,
+    _atresponse_received => 0,
 
     # "Packet received" callback function. To be defined by the parent object
     _ccpacket_received => undef,
@@ -446,7 +445,7 @@ sub new(;$$$$) {
     async => $async,
 
     # This flags switches to True when the serial modem is ready
-    _wait_modem_start => \$_wait_modem_start
+    _wait_modem_start => 0
 
   }, $class;
 

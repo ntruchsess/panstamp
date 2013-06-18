@@ -42,12 +42,12 @@ use constant {
 };
 
 ###########################################################
-# sub _run
+# sub _init
 #
-# Start SWAP server thread
+# Start up and initialize SWAP server
 ###########################################################
 
-sub _run() {
+sub _init() {
   my $self = shift;
 
   # Network configuration settings
@@ -69,13 +69,7 @@ sub _run() {
   );
 
   # Declare receiving callback function
-  if ( $self->{async} ) {
-    $self->{modem}->setRxCallback( sub { $self->_ccPacketReceived(@_); } );
-  } else {
-    my $rcvqueue = Thread::Queue->new();
-    $self->{_rcvqueue} = $rcvqueue;
-    $self->{modem}->setRxCallback( sub { $rcvqueue->enqueue(shift); } );
-  }
+  $self->{modem}->setRxCallback( sub { $self->_ccPacketReceived(@_); } );
 
   $self->{modem}->start();
 
@@ -120,13 +114,14 @@ sub _run() {
     $self->{modem}->goToDataMode();
   }
 
-  $self->{is_running} = 1;
+  ${ $self->{is_running} } = 1;
 
   # Notify parent about the start of the server
   $self->{_eventHandler}->swapServerStarted();
 
   # Discover motes in the current SWAP network
   $self->_discoverMotes();
+
 }
 
 ###########################################################
@@ -138,18 +133,22 @@ sub _run() {
 sub start() {
   my $self = shift;
 
-  unless ( $self->{is_running} ) {
+  unless ( ${ $self->{is_running} } ) {
 
     if ( $self->{async} ) {
 
       # Worker thread
       my $thr = threads->create(
         sub {
-          $self->_run();
+          $self->_init();
+          while ( ${ $self->{is_running} } ) {
+            $self->poll();
+            select( undef, undef, undef, 0.01 );
+          }
         }
       )->detach();
     } else {
-      $self->_run();
+      $self->_init();
     }
   }
 }
@@ -168,7 +167,7 @@ sub stop() {
   if ( define $self->{modem} ) {
     $self->{modem}->stop();
   }
-  $self->{is_running} = 0;
+  ${ $self->{is_running} } = 0;
 
   # Save network data
   print "Saving network data...\n";
@@ -184,13 +183,8 @@ sub stop() {
 sub poll() {
   my $self = shift;
 
-  if ( $self->{modem} and not $self->{modem}->{async} ) {
+  if ( $self->{modem} ) {
     $self->{modem}->poll();
-  }
-  if ( $self->{_rcvqueue}
-    and defined( my $ccPacket = $self->{_rcvqueue}->dequeue_nb() ) )
-  {
-    $self->_ccPacketReceived($ccPacket);
   }
 }
 
@@ -254,7 +248,6 @@ sub _ccPacketReceived($) {
         $swPacket->{srcAddress},
         $swPacket->{security}, $swPacket->{nonce}
       );
-      $mote->{nonce} = $swPacket->{nonce};
       $self->_checkMote($mote);
     }
 
@@ -964,7 +957,7 @@ sub new($@) {    # self, eventHandler, settings = None, start = True ) : """
 
     async => $async,
 
-    is_running => $is_running
+    is_running => \$is_running
   }, $class;
 
   # Update Device Definition Files from Internet server
@@ -981,7 +974,7 @@ sub new($@) {    # self, eventHandler, settings = None, start = True ) : """
     $self->{_xmlSettings}->{swap_file} );
 
   ## Tells us if the server is running
-  $self->{is_running} = 0;
+  ${ $self->{is_running} } = 0;
 
   ## Poll regular registers whenever a product code packet is received
   $self->{_poll_regular_regs} = 0;
