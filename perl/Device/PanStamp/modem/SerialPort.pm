@@ -251,7 +251,7 @@ sub new(;$$$$) {
     _strtosend => Thread::Queue->new(),
 
     # String received
-    _strreceived = $async ? Thread::Queue->new() : undef,
+    _strreceived => $async ? Thread::Queue->new() : undef,
 
     # Verbose network traffic
     _verbose => $verbose,
