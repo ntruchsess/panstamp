@@ -179,15 +179,14 @@ sub setRxCallback($) {
 sub goToCommandMode() {
   my $self = shift;
 
-  my $sermode = $self->{_sermode};
-  return 1 if ( $$sermode eq COMMAND );
+  return 1 if ( $self->{_sermode} eq COMMAND );
 
-  $$sermode = COMMAND;
+  $self->{_sermode} = COMMAND;
   my $response = $self->runAtCommand( "+++", 5000 );
 
   return 1 if ( defined $response and $response =~ /^OK/ );
 
-  $$sermode = DATA;
+  $self->{_sermode} = DATA;
   return 0;
 }
 
@@ -201,13 +200,12 @@ sub goToCommandMode() {
 sub goToDataMode() {
   my $self = shift;
 
-  my $sermode = $self->{_sermode};
-  return 1 if ( $$sermode eq DATA );
+  return 1 if ( $self->{_sermode} eq DATA );
 
   my $response = $self->runAtCommand("ATO\r");
 
   if ( defined $response and $response =~ /^OK/ ) {
-    $$sermode = DATA;
+    $self->{_sermode} = DATA;
     return 1;
   }
   return 0;
@@ -225,15 +223,14 @@ sub reset() {
   my $self = shift;
 
   # Switch to command mode if necessary
-  my $sermode = $self->{_sermode};
-  if ( $$sermode eq DATA ) {
+  if ( $self->{_sermode} eq DATA ) {
     $self->goToCommandMode();
   }
 
   # Run AT command
   my $response = $self->runAtCommand("ATZ\r");
   if ( defined $response and $response =~ /^OK/ ) {
-    $$sermode = DATA;
+    $self->{_sermode} = DATA;
     return 1;
   }
 
@@ -310,8 +307,7 @@ sub setFreqChannel($) {
   die "Frequency channels must be 1-byte length" if ( $value > 0xFF );
 
   # Switch to command mode if necessary
-  my $sermode = $self->{_sermode};
-  if ( $$sermode eq DATA ) {
+  if ( $self->{_sermode} eq DATA ) {
     $self->goToCommandMode();
   }
 
