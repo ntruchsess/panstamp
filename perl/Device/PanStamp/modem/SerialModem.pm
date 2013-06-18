@@ -413,6 +413,7 @@ sub _waitForResponse($) {
 sub new(;$$$) {
   my ( $class, $port, $speed, $verbose ) = @_;
 
+  my $portname;
   if ( defined $port and ref($port) =~ /::SerialPort$/ ) {
     $portname = "Device::Serial object provided by application";
   } else {

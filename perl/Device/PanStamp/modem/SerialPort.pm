@@ -235,6 +235,8 @@ sub new(;$$$) {
   my ( $class, $port, $speed, $verbose ) = @_;
 
   my $attached = defined $port and ref($port) =~ /::SerialPort$/; 
+  
+  my $portname;
   if ( $attached ) {
     $portname = "Device::Serial object provided by application";
   } else {

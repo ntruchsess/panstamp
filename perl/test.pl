@@ -3,6 +3,8 @@ use Device::PanStamp::SwapInterface;
 
 my $interface = Handler->new(undef,1,0);
 
+$interface->{server}->start(0);
+
 while (1) {
   select(undef,undef,undef,0.01);
   $interface->{server}->poll();
