@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<device>
+  <developer>ntruchsess</developer>
+  <product>PanStreamFirmata</product>
+  <pwrdownmode>false</pwrdownmode>
+  <config>
+	<reg name="StreamConfig" id="11">
+      <!-- Configuration parameter -->
+      <!-- Type of parameter: "bin": Binary, "num": Number, "str": String -->
+      <param name="Parameter name" type="bin|num|str">
+        <!-- position: byte.bit (format: B.b or B) position of the parameter within the register -->
+        <position>B.b</position>
+        <!-- size: size in bytes.bits (format: B.b or B) of the parameter within the register -->
+        <size>B.b</size>
+        <!-- default: default value -->
+        <default>default value</default>
+      </param>
+	</reg>
+    <reg name="StreamData" id="12">
+    </reg>
+  </config>
+</device>
