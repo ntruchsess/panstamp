@@ -208,11 +208,10 @@ sub queryMoteRegister($$) {
 # Create server object
 ###########################################################
 
-sub create_server(;$$) {
-  my ( $self, $settings, $async ) = @_;
+sub create_server(;$) {
+  my ( $self, $settings ) = @_;
   $self->{server} =
-    Device::PanStamp::SwapServer->new( $self, $settings, 0, $async )
-    ;
+    Device::PanStamp::SwapServer->new( $self, $settings );
   return $self->{server};
 }
 
@@ -220,11 +219,13 @@ sub create_server(;$$) {
 # sub start_server
 #
 # Start SWAP server
+#
+# @param async: if 1 run a separate thread to receive messages from SerialModem. Defaults to 0.
 ###########################################################
 
-sub start_server() {
-  my $self = shift;
-  $self->{server}->start();
+sub start_server(;$) {
+  my ( $self, $async ) = @_;
+  $self->{server}->start($async);
 }
 
 ###########################################################
@@ -247,6 +248,21 @@ sub poll_server() {
 sub stop() {
   my $self = shift;
   $self->{server}->stop();
+}
+
+###########################################################
+# sub attach_port()
+#
+# Attach SWAP server to SerialPort-object and start.
+#
+# @param serport: reference to existing Device::SerialPort or Win32::SerialPort object
+# @param async: if 1 run a separate thread to handle serial port. Defaults to 0.
+###########################################################
+
+sub attach_port($;$) {
+  my ( $self, $serport, $async ) = @_;
+
+  $self->{server}->attach($serport,$async);
 }
 
 ###########################################################
@@ -306,17 +322,13 @@ sub update_definition_files() {
 sub new(;$$) {
   my ( $class, $settings, $start, $async ) = @_;
 
-  $start = 1 unless ( defined $start );
-  $async = 1 unless ( defined $async );
-
   ## SWAP server
   my $self = bless {}, $class;
 
   if ($start) {
     print "SWAP server starting...\n";
     $self->{server} =
-      Device::PanStamp::SwapServer->new( $self, $settings, $start,
-      $async );
+      Device::PanStamp::SwapServer->new( $self, $settings, $start, $async );
     $self->{network} = $self->{server}->{network};
     if ($start) {
       print "SWAP server is now running...\n";

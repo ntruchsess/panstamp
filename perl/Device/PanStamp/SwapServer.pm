@@ -146,8 +146,6 @@ sub start(;$) {
 
   unless ( ${ $self->{is_running} } ) {
 
-    my $async = 1 unless defined $async;
-
     if ($async) {
 
       # Worker thread
@@ -193,7 +191,7 @@ sub stop() {
   print "Stopping SWAP server...\n";
 
   # Stop modem
-  if ( define $self->{modem} ) {
+  if ( defined $self->{modem} ) {
     $self->{modem}->stop();
   }
   ${ $self->{is_running} } = 0;
@@ -943,7 +941,7 @@ sub update_definition_files() {
 # @param start: Start server upon creation if this flag is True
 ###########################################################
 
-sub new($@) {    # self, eventHandler, settings = None, start = True ) : """
+sub new($;$) {    # self, eventHandler, settings = None, start = True ) : """
   my ( $class, $eventHandler, $settings ) = @_;
 
   my $is_running : shared;

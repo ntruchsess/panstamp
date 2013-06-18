@@ -1,14 +1,32 @@
 use Device::PanStamp::SwapServer;
 use Device::PanStamp::SwapInterface;
 
-my $interface = Handler->new(undef,1,0);
+use constant portname => "/dev/ttyUSB0";
 
-$interface->{server}->start(0);
+my $server = Handler->new()->create_server();
 
-while (1) {
+my $port = Device::SerialPort->new( portname );
+  
+die "Unable to open serial port" . portname
+      unless ( defined $port );
+  
+$port->baudrate(38400);
+$port->databits(8);
+$port->parity("none");
+$port->stopbits(1);
+$port->write_settings;
+
+$server->attach($port,0); #1 to handle port in separate detached thread, 0 run port synchronous on 'poll'
+
+$server->start(1); #1 to handle server in separate detached thread (also polls port), 0 run server synchronous on 'poll'
+
+my $until = time+30;
+while (time-$until) {
   select(undef,undef,undef,0.01);
-  $interface->{server}->poll();
+  #$server->poll();
 }
+
+$server->stop();
 
 package Handler;
 

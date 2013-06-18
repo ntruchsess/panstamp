@@ -13,7 +13,6 @@ use parent qw(Exporter);
 our @EXPORT_OK = qw();    # symbols to export on request
 
 use Time::HiRes qw(time);
-use Date::Format qw(strftime);
 
 use Device::PanStamp::protocol::SwapDefs;
 use Device::PanStamp::protocol::SwapValue;
@@ -407,6 +406,7 @@ use warnings;
 use parent qw(Exporter Device::PanStamp::protocol::SwapParam);
 our @EXPORT_OK = qw();    # symbols to export on request
 use Time::HiRes qw(time);
+use Date::Format qw(strftime);
 
 #########################################################################
 # sub cmdWack
@@ -600,8 +600,9 @@ sub dumps(;$) {
   );
 
   if ( defined $self->{lastupdate} ) {
+    my @lastupdate = localtime( $self->{lastupdate} );
     $data{"timestamp"} =
-      strftime( "%d %b %Y %H:%M:%S", localtime( $self->{lastupdate} ) );
+      strftime( "%d %b %Y %H:%M:%S",  @lastupdate );
   }
 
   $data{"value"} = $val;
