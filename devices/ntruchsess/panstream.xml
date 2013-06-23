@@ -1,19 +1,27 @@
 <?xml version="1.0"?>
 <device>
   <developer>ntruchsess</developer>
-  <product>PanStreamFirmata</product>
+  <product>PanStreamTest</product>
   <pwrdownmode>false</pwrdownmode>
   <config>
 	<reg name="StreamConfig" id="11">
       <!-- Configuration parameter -->
       <!-- Type of parameter: "bin": Binary, "num": Number, "str": String -->
-      <param name="Parameter name" type="bin|num|str">
+      <param name="autoflush time ms" type="num">
         <!-- position: byte.bit (format: B.b or B) position of the parameter within the register -->
-        <position>B.b</position>
+        <position>0</position>
         <!-- size: size in bytes.bits (format: B.b or B) of the parameter within the register -->
-        <size>B.b</size>
+        <size>4</size>
         <!-- default: default value -->
-        <default>default value</default>
+        <default>0</default>
+      </param>
+      <param name="destination address" type="num">
+        <!-- position: byte.bit (format: B.b or B) position of the parameter within the register -->
+        <position>5</position>
+        <!-- size: size in bytes.bits (format: B.b or B) of the parameter within the register -->
+        <size>1</size>
+        <!-- default: default value -->
+        <default>0</default>
       </param>
 	</reg>
     <reg name="StreamData" id="12">

@@ -312,8 +312,8 @@ sub dumps(;$) {
 
   return {
     pcode        => $self->{product_code},
-    manufacturer => $self->{ $self->{definition}->{manufacturer} },
-    name         => $self->{ $self->{definition}->{product} },
+    manufacturer => $self->{definition}->{manufacturer},
+    name         => $self->{definition}->{product},
     address      => $self->{address},
     registers    => \@regs
   };

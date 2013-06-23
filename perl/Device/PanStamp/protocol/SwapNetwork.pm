@@ -105,7 +105,7 @@ sub save() {
   my $self = shift;
 
   my $network = $self->dumps();
-  print "Saving" . $self->{filename};
+  print "Saving" . $self->{filename}."\n";
   open NETWORK_FILE, ">", $self->{filename};
   print NETWORK_FILE encode_json($network);
   close NETWORK_FILE;

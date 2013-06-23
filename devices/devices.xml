@@ -37,6 +37,6 @@
     <dev id="1" name="panmillenium1" label="Crouzet Millenium 3 wireless interface by panSTamp"/>
   </developer>
   <developer id="34" name="ntruchsess">
-  	<dev id="1" name="panstream" label="PanStreamFirmata"/>
+  	<dev id="4294967295" name="panstream" label="PanStreamFirmata"/>
   </developer>  
 </devices>
