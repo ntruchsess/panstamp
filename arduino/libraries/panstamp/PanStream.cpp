@@ -27,6 +27,29 @@
 
 void onStatusReceived(SWPACKET *status_pkt);
 
+/**
+ * SWSTATUS
+ *
+ * Class constructor
+ *
+ * 'rId'        Register id
+ * 'dest'       Destination address
+ * '*val'       New value
+ * 'len'        Buffer length
+ */
+SWSTREAM::SWSTREAM(byte rId, byte dest, byte *val, byte len) {
+  destAddr = dest;
+  srcAddr = panstamp.cc1101.devAddress;
+  hop = 0;
+  security = panstamp.security & 0x0F;
+  nonce = ++panstamp.nonce;
+  function = SWAPFUNCT_STA;
+  regAddr = panstamp.cc1101.devAddress;
+  regId = rId;
+  value.length = len;
+  value.data = val;
+}
+
 PanStreamClass::PanStreamClass(byte reg) : reg(reg) {
   send_len = 0;
   receive_pos = 0;
@@ -47,7 +70,7 @@ size_t PanStreamClass::write(uint8_t c) {
   noInterrupts();
   send_message.send_buffer[send_len++] = c;
   interrupts();
-  if (send_len >= PANSTREAM_MAXDATASIZE || (status.autoflush_time_ms>0 && next_transmit-millis()<0)) {
+  if (send_len >= PANSTREAM_MAXDATASIZE || (config.autoflush_time_ms>0 && next_transmit-millis()<0)) {
     flush();
   }
   return 1;
@@ -90,6 +113,7 @@ void PanStreamClass::flush() {
 };
 
 void PanStreamClass::receiveMessage(PanStreamReceivedMessage* received) {
+  noInterrupts();
   bool send = false;
   if (received->received_id==send_message.send_id) { //previous packet acknowledged by master -> prepare new packet send data
     // discard data of previous packet
@@ -132,11 +156,12 @@ void PanStreamClass::receiveMessage(PanStreamReceivedMessage* received) {
   if (send) {
     sendSwapStatus();
   }
+  interrupts();
 };
 
 void PanStreamClass::sendSwapStatus() {
-  SWSTATUS packet = SWSTATUS(reg, (byte*)&send_message, send_message.num_bytes+3);
-  next_transmit = status.autoflush_time_ms+millis();
+  SWSTREAM packet = SWSTREAM(reg, config.destAddr, (byte*)&send_message, send_message.num_bytes+3);
+  next_transmit = config.autoflush_time_ms+millis();
   packet.send();
 };
 

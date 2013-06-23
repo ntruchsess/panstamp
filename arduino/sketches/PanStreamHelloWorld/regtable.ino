@@ -40,7 +40,8 @@ DEFINE_COMMON_REGISTERS()
 /*
  * Definition of custom registers
  */
-REGISTER panStream((byte*)&PanStream.status,sizeof(PanStream.status), NULL, NULL);
+REGISTER panStreamConfig((byte*)&PanStream.config,sizeof(PanStream.config), NULL, NULL);
+REGISTER panStream((byte*)&PanStream.config,0,NULL,NULL);
 
 /**
  * 
@@ -48,6 +49,7 @@ REGISTER panStream((byte*)&PanStream.status,sizeof(PanStream.status), NULL, NULL
  * 
  */
 DECLARE_REGISTERS_START()
+&panStreamConfig,
 &panStream
 DECLARE_REGISTERS_END()
 

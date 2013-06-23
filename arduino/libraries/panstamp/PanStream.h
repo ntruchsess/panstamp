@@ -34,6 +34,21 @@
 #define PANSTREAM_MAXDATASIZE SWAP_REG_VAL_LEN-4
 //#define PANSTREAM_MAXDATASIZE 16-4
 
+class SWSTREAM : public SWPACKET
+{
+  public:
+    /**
+     * SWSTATUS
+     *
+     * Class constructor
+     *
+     * 'rId'    Register id
+     * '*val'   New value
+     * 'len'    Buffer length
+     */
+    SWSTREAM(byte rId, byte dest, byte *val, byte len);
+};
+
 struct PanStreamReceivedMessage {
   uint8_t received_bytes;
   uint8_t received_id;
@@ -52,6 +67,7 @@ struct PanStreamStatusMessage {
 
 struct PanStreamRegister {
   volatile unsigned long autoflush_time_ms;
+  byte destAddr;
 };
 
 class PanStreamClass : public Stream
@@ -68,7 +84,7 @@ public:
   void flush();
   void init();
 
-  PanStreamRegister status;
+  PanStreamRegister config;
   PanStreamStatusMessage send_message;
   void receiveMessage(PanStreamReceivedMessage *v);
   byte reg;
