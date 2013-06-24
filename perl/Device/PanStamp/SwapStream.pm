@@ -10,38 +10,29 @@ use Device::PanStamp::protocol::SwapPacket;
 use constant PANSTREAM_MAXDATASIZE => 55 - 4;
 use constant PANSTREAM_REGISTER_ID => 12;
 
-sub swapPacketReceived($) {
-  my ( $self, $packet ) = @_;
+sub registerValueChanged($) {
+  my ( $self, $register ) = @_;
 
-  #ignore packets not for this device
-  #  return
-  #    unless (
-  #    $packet->{destAddress} eq $self->{interface}->{server}->{devaddress} );
+  my $received = Device::PanStamp::SwapStream::Value->new( $register->{value} );
 
-  #ignore packets not for the stream register
-  return unless ( $packet->{regId} eq $self->{regId} );
-
-  my $received = Device::PanStamp::SwapStream::SwapStreamPacket->new($packet);
-
-  print "received packet. ".
-    "bytes: $received->{stream_received_bytes}, ".
-    "received_id: $received->{stream_received_id}, " . 
-    "send_id: $received->{stream_send_id}, ".
-    "data: $received->{stream_data}\n";
+  print "received packet. "
+    . "bytes: $received->{received_bytes}, "
+    . "received_id: $received->{received_id}, "
+    . "send_id: $received->{send_id}, "
+    . "data: $received->{data}\n";
 
   #check whether this package is acknowledges the previous sent packet
-  if (  $self->{send_packet}
-    and $self->{send_packet}->{stream_send_id} eq
-    $received->{stream_received_id} )
+  if (  $self->{send_value}
+    and $self->{send_value}->{send_id} eq $received->{received_id} )
   {
-
     # discard data of previous packet
-    delete $self->{send_packet};
-    # if previous packet had send_id 0, it was acknowledge-only, transmitting no data 
-    if ( $received->{stream_received_id} ) {
+    delete $self->{send_value};
+
+# if previous packet had send_id 0, it was acknowledge-only, transmitting no data
+    if ( $received->{received_id} ) {
       $self->{send_buffer} =
-        substr( $self->{send_buffer}, $received->{stream_received_bytes} );
-  
+        substr( $self->{send_buffer}, $received->{received_bytes} );
+
       $self->{id}++;
       if ( $self->{id} > 255 ) {
         $self->{id} = 1;
@@ -50,48 +41,37 @@ sub swapPacketReceived($) {
   }
 
   #check whether received packet contains data (send_id > 0)
-  if ( $received->{stream_send_id} ) {
-
+  if ( $received->{send_id} ) {
+    
     # new packet received (not a retransmit of a previously retrieved packet)
-    if ( ( not defined $self->{received_packet} )
-      or $self->{received_packet}->{stream_send_id} ne
-      $received->{stream_send_id} )
+    if ( ( not defined $self->{received_value} )
+      or $self->{received_value}->{send_id} ne $received->{send_id} )
     {
-      $self->{received_packet} = $received;
-      $self->{receive_buffer} .= $received->{stream_data};
+      $self->{received_value} = $received;
+      $self->{receive_buffer} .= $received->{data};
     }
 
-    #acknowledge package
-    #if previous packet sent is not yet acknowledged by mote, resend outgoing data acknowledging the last received packet
-    if ( defined $self->{send_packet} ) {
-      $self->{send_packet} =
-        Device::PanStamp::SwapStream::SwapStreamPacket->new(
-        undef,
-        $self->{destAddress},
-        $self->{regId},
-        length( $self->{received_packet}->{stream_data} ),
-        $self->{received_packet}->{stream_send_id},
-        $self->{send_packet}->{stream_send_id},
-        $self->{send_packet}->{stream_data}
-        );
-    #previous packet was acknowledged by mote, craft a new packet transmitting data from sendbuffer (if any)          
+#acknowledge package
+#if previous packet sent is not yet acknowledged by mote, resend outgoing data acknowledging the last received packet
+    if ( defined $self->{send_value} ) {
+      $self->{send_value}->{received_bytes} =
+        length( $self->{received_value}->{data} );
+      $self->{send_value}->{received_id} = $self->{received_value}->{send_id};
+
+#previous packet was acknowledged by mote, craft a new packet transmitting data from sendbuffer (if any)
     } else {
-      $self->{send_packet} =
-        Device::PanStamp::SwapStream::SwapStreamPacket->new(
+      $self->{send_value} = Device::PanStamp::SwapStream::Value->new(
         undef,
-        $self->{destAddress},
-        $self->{regId},
-        length( $received->{stream_data} ),
-        $received->{stream_send_id},
+        length( $self->{received_value}->{data} ),
+        $self->{received_value}->{send_id},
         $self->{send_buffer} eq "" ? 0 : $self->{id},
         substr( $self->{send_buffer}, 0, PANSTREAM_MAXDATASIZE )
-        );
+      );
       $self->{retransmit_factor} = 1;
-    # $swapPacket, $regAddress, $regId, $received_bytes, $received_id, $send_id, $data
     }
   }
 
-  if ( defined $self->{send_packet} ) {
+  if ( defined $self->{send_value} ) {
     $self->transmit();
   }
 }
@@ -119,6 +99,7 @@ sub read(;$) {
 }
 
 sub write($) {
+
   # print "write\n";
   my ( $self, $data ) = @_;
   $self->{send_buffer} .= $data;
@@ -128,37 +109,45 @@ sub write($) {
 }
 
 sub flush() {
+
   # print "flush\n";
   my $self = shift;
-  return if ( defined $self->{send_packet} or $self->{send_buffer} eq "" );
-  $self->{send_packet} = Device::PanStamp::SwapStream::SwapStreamPacket->new(
-    undef,
-    $self->{destAddress},
-    $self->{regId},
-    0,
-    0,
-    $self->{id},
-    substr( $self->{send_buffer}, 0, PANSTREAM_MAXDATASIZE )
-  );
-  $self->{send_packet}->send( $self->{interface}->{server} );
+  return if ( defined $self->{send_value} or $self->{send_buffer} eq "" );
+  
+  $self->{send_value} =
+    Device::PanStamp::SwapStream::Value->new( undef, 0, 0, $self->{id},
+    substr( $self->{send_buffer}, 0, PANSTREAM_MAXDATASIZE ) );
+
+  Device::PanStamp::SwapStream::Packet->new( $self->{destAddress},
+    $self->{regId}, $self->{send_value} )->send( $self->{interface}->{server} )
+    ;
+
   my @last_transmit = gettimeofday();
-  $self->{last_transmit} = \@last_transmit;
+  $self->{last_transmit}     = \@last_transmit;
   $self->{retransmit_factor} = 1;
 }
 
 sub transmit() {
+
   # print "transmit\n";
   my $self = shift;
-  if ( tv_interval( $self->{last_transmit} ) > $self->{interval} * $self->{retransmit_factor}) {
-    if ( defined $self->{send_packet} ) {
-      $self->{send_packet}->send( $self->{interface}->{server} );
-      if ( $self->{send_packet}->{stream_send_id} ) {
+  
+  if ( tv_interval( $self->{last_transmit} ) >
+    $self->{interval} * $self->{retransmit_factor} )
+  {
+    if ( defined $self->{send_value} ) {
+
+      Device::PanStamp::SwapStream::Packet->new( $self->{destAddress},
+        $self->{regId}, $self->{send_value} )
+        ->send( $self->{interface}->{server} );
+
+      if ( $self->{send_value}->{send_id} ) {
         my @last_transmit = gettimeofday();
         $self->{last_transmit} = \@last_transmit;
         $self->{retransmit_factor} *= 2;
       } else {
-        delete $self->{send_packet};
-        $self->{last_transmit} = [0,0];
+        delete $self->{send_value};
+        $self->{last_transmit} = [ 0, 0 ];
         $self->{retransmit_factor} = 1;
       }
     } else {
@@ -172,17 +161,18 @@ sub new($;$) {
 
   $regId = PANSTREAM_REGISTER_ID unless defined $regId;
   return bless {
-    send_buffer    => "",
-    receive_buffer => "",
-    interface      => $interface,
-    regId          => $regId,
-    id             => 1,
-    interval       => 1.0,
-    last_transmit  => [0,0],
+    send_buffer       => "",
+    receive_buffer    => "",
+    interface         => $interface,
+    regId             => $regId,
+    id                => 1,
+    interval          => 1.0,
+    last_transmit     => [ 0, 0 ],
     retransmit_factor => 1
   }, $class;
 }
-package Device::PanStamp::SwapStream::SwapStreamPacket;
+
+package Device::PanStamp::SwapStream::Packet;
 
 use strict;
 use warnings;
@@ -190,43 +180,63 @@ use warnings;
 use parent qw(Device::PanStamp::protocol::SwapPacket);
 
 sub send($) {
-  my ($self,$server) = @_;
-  
-  print "send packet. ".
-    "bytes: $self->{stream_received_bytes}, ".
-    "received_id: $self->{stream_received_id}, " . 
-    "send_id: $self->{stream_send_id}, ".
-    "data: $self->{stream_data}\n";
-  
+  my ( $self, $server ) = @_;
+
+  print "send packet. "
+    . "bytes: $self->{stream_value}->{received_bytes}, "
+    . "received_id: $self->{stream_value}->{received_id}, "
+    . "send_id: $self->{stream_value}->{send_id}, "
+    . "data: $self->{stream_value}->{data}\n";
+
   $self->SUPER::send($server);
 }
 
-sub new($;$$$$$) {
-  my ( $class, $swapPacket, $regAddress, $regId, $received_bytes, $received_id,
-    $send_id, $data )
-    = @_;
+sub new($$$) {
+  my ( $class, $regAddress, $regId, $swap_stream_value ) = @_;
 
-  if ( defined $swapPacket ) {
+  my $self =
+    $class->SUPER::new( undef, $regAddress, undef, undef, undef, undef, $regId,
+    $swap_stream_value->toSwapValue() );
+  $self->{stream_value} = $swap_stream_value;
+  return $self;
+}
 
-    my @value = $swapPacket->{value}->toList();
-    $swapPacket->{stream_received_bytes} = $value[0];
-    $swapPacket->{stream_received_id}    = $value[1];
-    $swapPacket->{stream_send_id}        = $value[2];
-    $swapPacket->{stream_data} = pack( "C*", @value[ 3 .. @value - 1 ] );
+package Device::PanStamp::SwapStream::Value;
 
-    return bless $swapPacket, $class;
+use strict;
+use warnings;
+
+use Device::PanStamp::protocol::SwapValue;
+
+sub toSwapValue() {
+  my $self = shift;
+  return Device::PanStamp::protocol::SwapValue->new(
+    [
+      $self->{received_bytes}, $self->{received_id},
+      $self->{send_id}, unpack( "C*", $self->{data} )
+    ]
+  );
+}
+
+sub new($;$$$$) {
+  my ( $class, $swap_value, $received_bytes, $received_id, $send_id, $data ) =
+    @_;
+
+  if ( defined $swap_value ) {
+    my @value = $swap_value->toList();
+    return bless {
+      received_bytes => $value[0],
+      received_id    => $value[1],
+      send_id        => $value[2],
+      data           => pack( "C*", @value[ 3 .. @value - 1 ] )
+    }, $class;
   } else {
-    my $self =
-      $class->SUPER::new( undef, $regAddress, undef, undef, undef, undef,
-      $regId,
-      [ $received_bytes, $received_id, $send_id, unpack( "C*", $data ) ] );
-    $self->{stream_received_bytes} = $received_bytes;
-    $self->{stream_received_id}    = $received_id;
-    $self->{stream_send_id}        = $send_id;
-    $self->{stream_data}           = $data;
-
-    # $ccPacket, $destAddr, $hop, $nonce, $function, $regAddr, $regId, $value
-    return bless $self, $class;
+    return bless {
+      received_bytes => $received_bytes,
+      received_id    => $received_id,
+      send_id        => $send_id,
+      data           => $data
+    }, $class;
   }
 }
 

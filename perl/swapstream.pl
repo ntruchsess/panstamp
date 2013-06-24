@@ -30,7 +30,7 @@ $stream->{destAddress} = 1;
 my $i = 0;
 while (1) {
   my @now = gettimeofday();
-  while (tv_interval(\@now) < 0.1) {
+  while (tv_interval(\@now) < 2) {
     select(undef,undef,undef,0.01);
     eval {
       $server->poll();
@@ -77,7 +77,7 @@ sub swapPacketReceived($) {
 #  print "swapPacketReceived\n";
   my ($self,$packet) = @_;
 #  print Dumper($packet);
-  $self->{swapstream}->swapPacketReceived($packet);
+#  $self->{swapstream}->swapPacketReceived($packet);
 }
 
 ###########################################################
@@ -173,8 +173,8 @@ sub moteAddressChanged($) {
 
 sub registerValueChanged($) {
   print "registerValueChanged\n";
-  my ($self,$value) = @_;
-#  print Dumper($value);
+  my ($self,$register) = @_;
+  $self->{swapstream}->registerValueChanged($register);
 }
 
 ###########################################################

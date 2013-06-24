@@ -116,7 +116,7 @@ sub _update_ccdata() {
   push @data, $self->{function};
   push @data, $self->{regAddress};
   push @data, $self->{regId};
-  push @data, @{ $self->{value} } if ( defined $self->{value} );
+  push @data, $self->{value}->toList() if ( defined $self->{value} );
   $self->{data} = \@data;
 }
 
