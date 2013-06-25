@@ -41,7 +41,8 @@ while (1) {
     }
   }
   if ($stream->available()) {
-    print "read ".length ($stream->read(1024))." bytes\n";
+  	my ($len,$data) = $stream->read(1024);
+    print "read $len bytes\n";
   }
   $stream->write("Hallo $i\n");
   $i++;
