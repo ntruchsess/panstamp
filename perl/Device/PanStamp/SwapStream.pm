@@ -90,11 +90,11 @@ sub read(;$) {
       $len >= length( $self->{receive_buffer} )
       ? ""
       : substr( $self->{receive_buffer}, $len );
-    return $ret;
+    return (length($ret),$ret);
   } else {
     my $ret = $self->{receive_buffer};
     $self->{receive_buffer} = "";
-    return $ret;
+    return (length($ret),$ret);
   }
 }
 
