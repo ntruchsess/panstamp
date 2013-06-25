@@ -7,7 +7,7 @@ use Time::HiRes qw(tv_interval gettimeofday);
 
 use Device::PanStamp::protocol::SwapPacket;
 
-use constant PANSTREAM_MAXDATASIZE => 55 - 4;
+use constant PANSTREAM_MAXDATASIZE => 36; #55 - 4;
 use constant PANSTREAM_REGISTER_ID => 12;
 
 sub registerValueChanged($) {

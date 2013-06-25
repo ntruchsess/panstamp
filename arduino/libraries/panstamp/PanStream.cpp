@@ -115,30 +115,29 @@ void PanStreamClass::flush() {
 void PanStreamClass::receiveMessage(PanStreamReceivedMessage* received) {
   noInterrupts();
   bool send = false;
-  if (received->received_id==send_message.send_id) { //previous packet acknowledged by master -> prepare new packet send data
+  // check whether this packet acknowledges the previous packet sent
+  if (received->received_id==send_message.send_id) {
     // discard data of previous packet
-    uint8_t remaining_bytes = send_len-received->received_bytes;
-    for (uint8_t i = 0; i < remaining_bytes; i++) {
-      send_message.send_buffer[i] = send_message.send_buffer[received->received_bytes+i];
-    }
-    send_len = remaining_bytes;
-    send_message.num_bytes = remaining_bytes > PANSTREAM_MAXDATASIZE ? PANSTREAM_MAXDATASIZE : remaining_bytes;
-    if (remaining_bytes > 0) {
+    // if previous packet had send_id 0, it was acknowledge-only, transmitting no data
+    if (received->received_id != 0) {
+      uint8_t remaining_bytes = send_len-received->received_bytes;
+      for (uint8_t i = 0; i < remaining_bytes; i++) {
+        send_message.send_buffer[i] = send_message.send_buffer[received->received_bytes+i];
+      }
+      send_len = remaining_bytes;
       id++;
       if (id==0) {
         id++;
       }
-      send_message.send_id = id;
-      send = true;
-    } else {
-      send_message.send_id = 0;
     }
   } else {
     //last packet not acknowledged -> send last packet data unaltered.
     send = true;
   }
+  // check whether received packet contains data (send_id > 0)
   if (received->send_id!=0) {
-    if (received->send_id!=master_id) { //new packet received (not a retransmit of a previously retrieved packet)
+    //new packet received (not a retransmit of a previously retrieved packet)
+    if (received->send_id!=master_id) {
       master_id = received->send_id;
       uint8_t receive_bytes = //acknowledge number of bytes transfered to receive_buffer
           (received->num_bytes + receive_len > PANSTREAM_BUFFERSIZE) ?
@@ -154,6 +153,8 @@ void PanStreamClass::receiveMessage(PanStreamReceivedMessage* received) {
     send = true;
   }
   if (send) {
+    send_message.num_bytes = send_len > PANSTREAM_MAXDATASIZE ? PANSTREAM_MAXDATASIZE : send_len;
+    send_message.send_id = send_len > 0 ? id : 0;
     sendSwapStatus();
   }
   interrupts();

@@ -30,7 +30,7 @@ $stream->{destAddress} = 1;
 my $i = 0;
 while (1) {
   my @now = gettimeofday();
-  while (tv_interval(\@now) < 2) {
+  while (tv_interval(\@now) < 0.1) {
     select(undef,undef,undef,0.01);
     eval {
       $server->poll();
