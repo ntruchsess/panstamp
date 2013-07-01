@@ -178,7 +178,8 @@ sub new(;$$$) {
 
     #just Numbers and dots, remove dots
   } elsif ( $value =~ /^\d[\d.]*$/ ) {
-    $res = ( $value =~ s/\.//gr );
+    $res = $value;
+    $res =~ s/\.//g;
 
     #ascii string
   } else {

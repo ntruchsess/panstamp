@@ -204,7 +204,8 @@ sub getValueInAscii() {
     # Add units
     if ( defined $self->{unit} ) {
       if ( defined $self->{unit}->{calc} ) {
-        my $oper = $self->{unit}->{calc} =~ s/\$\{val\}/$val/gr;
+        my $oper = $self->{unit}->{calc};
+        $oper =~ s/\$\{val\}/$val/g;
         $val = eval( "math." . $oper )    #TODO math?
       }
       return $val * $self->{unit}->{factor} + $self->{unit}->{offset};
@@ -591,10 +592,16 @@ sub dumps(;$) {
 
   my $val = $self->getValueInAscii();
 
+  my $id       = $self->{id};
+  my $name     = $self->{name};
+  my $location = $self->{location};
+  $id       =~ s/ /_/g;
+  $name     =~ s/ /_/g;
+  $location =~ s/ /_/g;
   my %data = (
-    id       => $self->{id}       =~ s/ /_/gr,
-    name     => $self->{name}     =~ s/ /_/gr,
-    location => $self->{location} =~ s/ /_/gr,
+    id       => $id,
+    name     => $name,
+    location => $location,
     type     => $self->{type},
     direction => $self->{direction}
   );
