@@ -111,7 +111,7 @@ class LagartoEndpoint:
                 try:
                     res = float(strval)
                 except ValueError:
-                    raise LagartoException(value + " is not a valid numeric value for " + self.strval)
+                    raise LagartoException(strval + " is not a valid numeric value")
         elif vtype == "bin":
             if strval.lower() in ["on", "open", "1", "true", "enabled"]:
                 res = True
@@ -129,7 +129,6 @@ class LagartoEndpoint:
         
         @return actual endpoint value, returned by the associated lagarto server
         """
-        self.value = value
         status = LagartoEndpoint.lagarto_client.request_status(self.procname, [self.dumps()])
         if status is not None:
             if len(status) > 0:
