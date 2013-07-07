@@ -353,7 +353,7 @@ class EvnManager(LagartoBroker):
         # Lagarto broker constructor
         LagartoBroker.__init__(self, MaxDefinitions.working_dir)
 
-        NetworkAPI.lagarto_client = self
+        NetworkAPI(lagarto_client=self)
 
         # Read configuration
         config_file = os.path.join(MaxDefinitions.working_dir, "config", "settings.xml")
