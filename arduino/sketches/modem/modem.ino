@@ -192,8 +192,7 @@ void handleSerialCmd(char* command)
         }
         else
         {
-          Serial.print(cc1101.syncWord[0], HEX);
-          Serial.println(cc1101.syncWord[1], HEX);
+          Serial.println((unsigned int)cc1101.syncWord[0] << 8 | cc1101.syncWord[1], HEX);
         }
       }
       // Device address
