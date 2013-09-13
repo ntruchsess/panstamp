@@ -5,6 +5,8 @@ Sep 13 2013
   passed as argument
 - New REGISTER constructor now takes EEPROM address as a parameter
 - New REGISTER constructor now takes type of register (see datatypes.h) as a parameter
+- RTC timing functions now on a separate class (avrrtc)
+- RTC counter added
 
 May 26 2013
 ---------------
