@@ -23,6 +23,8 @@
  */
 
 #include "calibration.h"
+#include "nvolat.h"
+#include "Arduino.h"
 
 /**
  * rcOscCalibrate

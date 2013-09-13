@@ -34,10 +34,10 @@
  * 'rAddr'	Register address
  * 'rId'	  Register id
  */
-SWQUERY::SWQUERY(byte dAddr, byte rAddr, byte rId)
+SWQUERY::SWQUERY(SWADDR dAddr, SWADDR rAddr, byte rId)
 {
   destAddr = dAddr;
-  srcAddr = panstamp.cc1101.devAddress;
+  srcAddr = panstamp.swapAddress;
   hop = 0;
   security = panstamp.security & 0x0F;
   nonce = 0;

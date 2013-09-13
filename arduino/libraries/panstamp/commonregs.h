@@ -70,15 +70,15 @@ REGISTER regFreqChannel(&panstamp.cc1101.channel, sizeof(panstamp.cc1101.channel
 REGISTER regSecuOption(&panstamp.security, sizeof(panstamp.security), NULL, NULL);                                           \
 /* Security password (not implemented yet) */                                                                                \
 static byte dtPassword[1];                                                                                                   \
-REGISTER regPassword(dtPassword, sizeof(dtPassword), NULL, NULL);                                          \
+REGISTER regPassword(dtPassword, sizeof(dtPassword), NULL, NULL);                                                            \
 /* Security nonce */                                                                                                         \
 REGISTER regSecuNonce(&panstamp.nonce, sizeof(panstamp.nonce), NULL, NULL);                                                  \
 /* Network Id */                                                                                                             \
 REGISTER regNetworkId(panstamp.cc1101.syncWord, sizeof(panstamp.cc1101.syncWord), NULL, &setNetworkId);                      \
 /* Device address */                                                                                                         \
-REGISTER regDevAddress(&panstamp.cc1101.devAddress, sizeof(panstamp.cc1101.devAddress), NULL, &setDevAddress);               \
+REGISTER regDevAddress((unsigned char*)&panstamp.swapAddress, sizeof(panstamp.swapAddress), NULL, &setDevAddress, SWDTYPE_INTEGER, EEPROM_DEVICE_ADDRESS);  \
 /* Periodic Tx interval */                                                                                                   \
-REGISTER regTxInterval(panstamp.txInterval, sizeof(panstamp.txInterval), NULL, &setTxInterval);
+REGISTER regTxInterval((unsigned char*)&panstamp.txInterval, sizeof(panstamp.txInterval), NULL, &setTxInterval, SWDTYPE_INTEGER, EEPROM_TX_INTERVAL);
 
 /**
  * Macros for the declaration of global table of registers
@@ -172,14 +172,13 @@ const void setFreqChannel(byte id, byte *channel)           \
  */                                                         \
 const void setDevAddress(byte id, byte *addr)               \
 {                                                           \
-  if ((addr[0] > 0) && (addr[0] != regDevAddress.value[0])) \
-  {                                                         \
-    /* Send status before setting the new address */        \
-    SWSTATUS packet = SWSTATUS(regDevAddress.id, addr, regDevAddress.length); \
-    packet.send();                                          \
-    /* Update register value */                             \
-    panstamp.cc1101.setDevAddress(addr[0], true);           \
-  }                                                         \
+  /* Send status before setting the new address */          \
+  SWSTATUS packet = SWSTATUS(regDevAddress.id, addr, regDevAddress.length); \
+  packet.send();                                            \
+  /* Set new SWAP address. BE to LE conversion */           \
+  regDevAddress.setValueFromBeBuffer(addr);                 \
+  /* Update register value */                               \
+  panstamp.cc1101.setDevAddress(addr[1], false);            \
 }                                                           \
                                                             \
 /**                                                         \
@@ -212,11 +211,8 @@ const void setNetworkId(byte rId, byte *nId)                \
  */                                                         \
 const void setTxInterval(byte id, byte *interval)           \
 {                                                           \
-  if ((interval[0] != regTxInterval.value[0]) ||            \
-      (interval[1] != regTxInterval.value[1]))              \
-  {                                                         \
-    panstamp.setTxInterval(interval, true);                 \
-  }                                                         \
+  /* Set new Tx interval. BE to LE conversion */            \
+  regTxInterval.setValueFromBeBuffer(interval);             \
 }
 #endif
 

@@ -26,6 +26,7 @@
 #define _REGISTER_H
 
 #include "Arduino.h"
+#include "datatypes.h"
 
 extern byte regIndex;
 
@@ -70,6 +71,16 @@ class REGISTER
     const byte length;
 
     /**
+     * Data type
+     */
+    const SWDTYPE type;
+
+    /**
+     * Adddress in EEPROM. Set to -1 if no storage in EEPROM has to be done
+     */
+    const int eepromAddress;
+
+    /**
      * REGISTER
      * 
      * Constructor
@@ -78,8 +89,18 @@ class REGISTER
      * 'len'	      Length of the register value
      * 'getValH'    Pointer to the getter function
      * 'setValH'    Pointer to the setter function
+     * 'typ'        Type of SWAP data (SWDTYPE)
+     * 'eepromAddr' address in EEPROM. Set to -1 if the register value has not to
+     * be saved in EEPROM
      */
-    REGISTER(byte *val, const byte len, const void (*updateValH)(byte rId), const void (*setValH)(byte rId, byte *v)):id(regIndex++), value(val), length(len), updateValue(updateValH), setValue(setValH) {};
+    REGISTER(byte *val, const byte len, const void (*updateValH)(byte rId), const void (*setValH)(byte rId, byte *v), const SWDTYPE typ=SWDTYPE_OTHER, const int eepromAddr=-1):id(regIndex++), value(val), length(len), updateValue(updateValH), setValue(setValH), type(typ), eepromAddress(eepromAddr) {};
+
+    /**
+     * init
+     *
+     * Initialize register
+     */
+    void init(void);
 
     /**
      * getData
@@ -106,18 +127,31 @@ class REGISTER
     void sendSwapStatus(void);
 
     /**
+     * setValueFromBeBuffer
+     *
+     * Set curent value from a Big Endian buffer passed as argument
+     *
+     * @param beBuffer Big Endian buffer
+     */
+    void setValueFromBeBuffer(unsigned char* beBuffer);
+
+    /**
      * setRegValue
      *
      * Set register value from different data formats
      * Use this method to simplify LE to BE conversion
      *
-     * 'val'   New register value
+     * @param val New register value
+     * @param size length of the value
+     * @param offset starting point for the new partial value
      */
-    template<class T> void setRegValue(T val)
+    template<class T> void setRegValue(T val, unsigned char size=0 , unsigned char offset=0)
     {
-      uint8_t i;
+      int i, len;
 
-      for(i=0 ; i<length ; ++i)
+      size > 0 ? len = size : len = length;
+
+      for(i=len+offset-1 ; i<=offset ; i--)
       {
         value[i] = val & 0xFF;
         val >>= 8;

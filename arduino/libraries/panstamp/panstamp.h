@@ -26,6 +26,7 @@
 #define _PANSTAMP_H
 
 #include "Arduino.h"
+#include "datatypes.h"
 #include "EEPROM.h"
 #include "cc1101.h"
 #include "nvolat.h"
@@ -33,11 +34,13 @@
 #include "swpacket.h"
 #include "config.h"
 #include "repeater.h"
+#include "avrrtc.h"
+/*
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 #include <avr/power.h>
-
+*/
 /**
  * RTC definitions
  */
@@ -65,6 +68,13 @@
 
 #define enableAntiPlayback()    security |= 0x01
 
+#define disableRfRx()       enableRfRx(false)
+
+#ifndef SWAP_EXTENDED_ADDRESS
+#define swapAddress         cc1101.devAddress
+#endif
+
+
 /**
  * System states
  */
@@ -86,28 +96,12 @@ enum SYSTATE
  */
 class PANSTAMP
 {
-  private:
-    /**
-     * setup_watchdog
-     * 
-     * 'time'	Watchdog timer value
-     */
-    void setup_watchdog(byte time);
-
-    /**
-     * setup_rtc
-     *
-     * Setup software (Timer 2) RTC
-     *
-     * 'time'   Timer2 prescaler
-     *
-     *          RTC_1S = 128 for 1 sec
-     *          RTC_2S = 256 for 2 sec
-     *          RTC_8S = 1024 for 8 sec
-     */
-    void setup_rtc(byte time);
-
   public:
+    /**
+     * RTC timer object (supports WDT and Timer2)
+     */
+    AVRRTC rtc;
+
     /**
      * repeater
      *
@@ -125,6 +119,13 @@ class PANSTAMP
      */
     CC1101 cc1101;
     
+    #ifdef SWAP_EXTENDED_ADDRESS
+    /**
+     * Device address
+     */
+    SWADDR swapAddress;
+    #endif
+
     /**
      * Security options
      */
@@ -143,7 +144,7 @@ class PANSTAMP
     /**
      * Interval between periodic transmissions. 0 for asynchronous transmissions
      */
-    byte txInterval[2];
+    unsigned int txInterval;
 
     /**
      * Smart encryption password
@@ -267,16 +268,6 @@ class PANSTAMP
     long getInternalTemp(void);
 
     /**
-     * setTxInterval
-     * 
-     * Set interval for periodic transmissions
-     * 
-     * 'interval'	New periodic interval. 0 for asynchronous devices
-     * 'save'     If TRUE, save parameter in EEPROM
-     */
-    void setTxInterval(byte* interval, bool save);
-
-    /**
      * setSmartPassword
      * 
      * Set Smart Encryption password
@@ -284,6 +275,15 @@ class PANSTAMP
      * 'password'	Encryption password
      */
     void setSmartPassword(byte* password);
+
+    /**
+     * enableRfRx
+     * 
+     * Enable or disable RF reception
+     *
+     * @param ena Enable if true. Disable otherwise
+     */
+    void enableRfRx(bool ena = true);
 };
 
 /**

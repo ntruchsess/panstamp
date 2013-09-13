@@ -61,7 +61,7 @@ void REPEATER::packetHandler(SWPACKET *packet)
   if (enabled)
   {
     // Don't repeat packets addressed to our device
-    if (packet->destAddr != panstamp.cc1101.devAddress)
+    if (packet->destAddr != panstamp.swapAddress)
     {
       // Don't repeat beyond the maximum hop count
       if (packet->hop < maxHopCount)
@@ -92,7 +92,7 @@ void REPEATER::packetHandler(SWPACKET *packet)
         // Repeat packet?
         if (repeatPacket)
         {
-          packet->srcAddr = panstamp.cc1101.devAddress;   // Modify source address
+          packet->srcAddr = panstamp.swapAddress;          // Modify source address
           packet->hop++;                                  // Increment hop counter
           delay(SWAP_TX_DELAY);                           // Delay before sending
           if (packet->send())                             // Repeat packet

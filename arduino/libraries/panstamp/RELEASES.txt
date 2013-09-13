@@ -1,3 +1,11 @@
+Sep 13 2013
+---------------
+- Added support for extended (2-byte) addresses. SWAP_EXTENDED_ADDRESS definition in config.h
+- New function REGISTER::setValueFromBeBuffer sets register value from a Big Endian buffer
+  passed as argument
+- New REGISTER constructor now takes EEPROM address as a parameter
+- New REGISTER constructor now takes type of register (see datatypes.h) as a parameter
+
 May 26 2013
 ---------------
 - Fixed bug in panstamp.cpp so that repeaters no longer respond to queries and commands not

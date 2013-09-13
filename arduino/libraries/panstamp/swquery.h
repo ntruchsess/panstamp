@@ -40,6 +40,6 @@ class SWQUERY : public SWPACKET
      * 'rAddr'	  Register address
      * 'rId'	    Register id
      */
-    SWQUERY(byte destAddr, byte rAddr, byte rId);
+    SWQUERY(SWADDR destAddr, SWADDR rAddr, byte rId);
 };
 #endif

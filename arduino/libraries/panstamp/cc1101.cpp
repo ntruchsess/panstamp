@@ -330,7 +330,7 @@ void CC1101::setDevAddress(byte addr, bool save)
     devAddress = addr;
     // Save in EEPROM
     if (save)
-      EEPROM.write(EEPROM_DEVICE_ADDR, addr);  
+      EEPROM.write(EEPROM_DEVICE_ADDR+1, addr);  
   }
 }
 
@@ -407,7 +407,7 @@ void CC1101::setRegsFromEeprom(void)
   if (((arrV[0] != 0x00) && (arrV[0] != 0xFF)) || ((arrV[1] != 0x00) && (arrV[1] != 0xFF)))
     setSyncWord(arrV[0], arrV[1], false);
   // Read device address from EEPROM
-  bVal = EEPROM.read(EEPROM_DEVICE_ADDR);
+  bVal = EEPROM.read(EEPROM_DEVICE_ADDR+1);
   // Set device address
   if (bVal > 0)
     setDevAddress(bVal, false);

@@ -24,8 +24,27 @@
 
 #include "register.h"
 #include "swstatus.h"
+#include <EEPROM.h>
 
 byte regIndex = 0;
+
+/**
+ * init
+ *
+ * Initialize register
+ */
+void REGISTER::init(void)
+{
+  // Does the value need to be read from EEPROM?
+  if (eepromAddress >= 0)
+  {
+    unsigned char i;
+    
+    // Read from EEPROM
+    for(i=0 ; i<length ; i++)
+      value[i] = EEPROM.read(eepromAddress+i);
+  }
+}
 
 /**
  * getData
@@ -57,6 +76,16 @@ void REGISTER::setData(byte *data)
 
   // Send SWAP status message
   sendSwapStatus();
+
+  // Does the value need to be saved in EEPROM?
+  if (eepromAddress >= 0)
+  {
+    unsigned char i;
+
+    // Write EEPROM
+    for(i=0 ; i<length ; i++)
+      EEPROM.write((unsigned int)eepromAddress+i, value[i]);
+  }
 }
 
 /**
@@ -66,7 +95,22 @@ void REGISTER::setData(byte *data)
  */
 void REGISTER::sendSwapStatus(void) 
 {
-  SWSTATUS packet = SWSTATUS(id, value, length);
+  SWSTATUS packet = SWSTATUS(id, value, length, type);
   packet.send();
+}
+
+/**
+ * setValueFromBeBuffer
+ *
+ * Set curent value from a Big Endian buffer passed as argument
+ *
+ * @param beBuffer Big Endian buffer
+ */
+void REGISTER::setValueFromBeBuffer(unsigned char* beBuffer)
+{
+  unsigned char i;
+
+  for(i=0 ; i<length ; i++)
+    value[i] = beBuffer[length-1-i];
 }
 

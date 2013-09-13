@@ -27,16 +27,22 @@
 
 #include "Arduino.h"
 #include "ccpacket.h"
+#include "config.h"
+#include "datatypes.h"
 
 /**
  * SWAP definitions
  */
+#ifdef SWAP_EXTENDED_ADDRESS
+#define SWAP_DATA_HEAD_LEN     9
+#else
 #define SWAP_DATA_HEAD_LEN     6
-#define SWAP_REG_VAL_LEN       CC1101_DATA_LEN - SWAP_DATA_HEAD_LEN   // SWAP data payload - max length
-#define SWAP_BCAST_ADDR        0x00                                   // SWAP broadcast address
-#define SWAP_NB_TX_TRIES       3                                      // Number of transmission retries
-#define SWAP_TX_DELAY          panstamp.cc1101.devAddress * 2         // Delay before sending
-
+#endif
+#define SWAP_REG_VAL_LEN       CC1101_DATA_LEN - SWAP_DATA_HEAD_LEN     // SWAP data payload - max length
+#define SWAP_BCAST_ADDR        0x00                                     // SWAP broadcast address
+#define SWAP_NB_TX_TRIES       3                                        // Number of transmission retries
+#define SWAP_TX_DELAY          (panstamp.cc1101.devAddress & 0xFF) * 2  // Delay before sending
+#define SWAP_EXTENDED_ADDRESS_BIT  0x80
 /**
  * SWAP message functions
  */
@@ -48,9 +54,20 @@ enum SWAPFUNCT
 };
 
 /**
+ * Adressing schema
+ */
+enum SWAPADDR_SCHEMA
+{
+  SWAPADDR_SIMPLE = 0,
+  SWAPADDR_EXTENDED
+};
+
+/**
  * Macros
  */
+#ifndef SWAP_EXTENDED_ADDRESS
 #define smartDecrypt()         smartEncrypt(true)
+#endif
 
 /**
  * Structure: SWDATA
@@ -69,6 +86,11 @@ struct SWDATA
      * Data length
      */
     byte length;
+
+    /**
+     * Data type
+     */
+    SWDTYPE type;
 };
 
 class SWPACKET : public CCPACKET
@@ -81,18 +103,20 @@ class SWPACKET : public CCPACKET
      *
      * 'decrypt': if true, Decrypt packet. Encrypt otherwise
      */
+    #ifndef SWAP_EXTENDED_ADDRESS
     void smartEncrypt(bool decrypt=false);
+    #endif
 
   public:
     /**
      * Destination address
      */
-    byte destAddr;
+    SWADDR destAddr;
 
     /**
      * Source address
      */
-    byte srcAddr;
+    SWADDR srcAddr;
 
     /**
      * Hop counter. Incremented each time the message is repeated
@@ -115,9 +139,14 @@ class SWPACKET : public CCPACKET
     byte function;
 
     /**
+     * Type of addressing schema
+     */
+    byte addrType;
+
+    /**
      * Register address
      */
-    byte regAddr;
+    SWADDR regAddr;
 
     /**
      * Register id

@@ -37,10 +37,10 @@
  * '*val'	    New value
  * 'len'	    Buffer length
  */
-SWCOMMAND::SWCOMMAND(byte dAddr, byte secNonce, byte rAddr, byte rId, byte *val, byte len)
+SWCOMMAND::SWCOMMAND(SWADDR dAddr, byte secNonce, SWADDR rAddr, byte rId, byte *val, byte len)
 {
   destAddr = dAddr;
-  srcAddr = panstamp.cc1101.devAddress;
+  srcAddr = panstamp.swapAddress;
   hop = 0;
   security = panstamp.security & 0x0F;
   nonce = secNonce;

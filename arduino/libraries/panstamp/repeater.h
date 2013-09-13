@@ -27,7 +27,7 @@
 
 #include "Arduino.h"
 #include "swpacket.h"
-#include "config.h"
+#include "datatypes.h"
 
 /**
  * Macros
@@ -42,9 +42,9 @@ typedef struct
 {
   unsigned long timeStamp;  // Transmission time stamp (ms)
   byte function;            // SWAP function
-  byte srcAddr;             // Source address
+  SWADDR srcAddr;           // Source address
   byte nonce;               // Cyclic nonce
-  byte regAddr;             // Register address
+  SWADDR regAddr;           // Register address
 } Transaction;
 
 

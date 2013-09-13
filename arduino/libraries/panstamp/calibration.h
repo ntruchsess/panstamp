@@ -25,9 +25,6 @@
 #ifndef _CALIBRATION_H
 #define _CALIBRATION_H
 
-#include "EEPROM.h"
-#include "nvolat.h"
-
 /**
  * Calibration thresholds
  */

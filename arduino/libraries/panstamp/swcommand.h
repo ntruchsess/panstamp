@@ -44,6 +44,6 @@ class SWCOMMAND : public SWPACKET
      * '*val'	    New value
      * 'len'	    Buffer length
      */
-    SWCOMMAND(byte destAddr, byte secNonce, byte rAddr, byte rId, byte *val, byte len);
+    SWCOMMAND(SWADDR dAddr, byte secNonce, SWADDR rAddr, byte rId, byte *val, byte len);
 };
 #endif

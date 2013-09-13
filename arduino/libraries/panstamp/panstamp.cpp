@@ -25,6 +25,7 @@
 #include "panstamp.h"
 #include "commonregs.h"
 #include "calibration.h"
+#include <avr/wdt.h>
 
 #define enableIRQ_GDO0()          attachInterrupt(0, isrGDO0event, FALLING);
 #define disableIRQ_GDO0()         detachInterrupt(0);
@@ -46,7 +47,7 @@ extern byte regTableSize;
 PANSTAMP::PANSTAMP(void)
 {
   statusReceived = NULL;
-  repeater = NULL;
+  repeater = NULL;  
 }
 
 /**
@@ -107,17 +108,26 @@ void isrGDO0event(void)
       {
         swPacket = SWPACKET(ccPacket);
 
-        // Repeater enabled?
-        if (panstamp.repeater != NULL)
-          panstamp.repeater->packetHandler(&swPacket);
-
-        // Smart encryption locally enabled?
-        if (panstamp.security & 0x02)
+        #ifdef SWAP_EXTENDED_ADDRESS
+        if (swPacket.addrType == SWAPADDR_EXTENDED)
+        #else
+        if (swPacket.addrType == SWAPADDR_SIMPLE)
+        #endif
         {
-          // OK, then incoming packets must be encrypted too
-          if (!(swPacket.security & 0x02))
-            eval = false;
+          // Repeater enabled?
+          if (panstamp.repeater != NULL)
+            panstamp.repeater->packetHandler(&swPacket);
+
+          // Smart encryption locally enabled?
+          if (panstamp.security & 0x02)
+          {
+            // OK, then incoming packets must be encrypted too
+            if (!(swPacket.security & 0x02))
+              eval = false;
+          }
         }
+        else
+          eval = false;
 
         if (eval)
         {
@@ -126,7 +136,7 @@ void isrGDO0event(void)
           {
             case SWAPFUNCT_CMD:
               // Command not addressed to us?
-              if (swPacket.destAddr != panstamp.cc1101.devAddress)
+              if (swPacket.destAddr != panstamp.swapAddress)
                 break;
               // Current version does not support data recording mode
               // so destination address and register address must be the same
@@ -135,6 +145,7 @@ void isrGDO0event(void)
               // Valid register?
               if ((reg = getRegister(swPacket.regId)) == NULL)
                 break;
+
               // Anti-playback security enabled?
               if (panstamp.security & 0x01)
               {
@@ -161,7 +172,7 @@ void isrGDO0event(void)
                   break;
               }
               // Query not addressed to us?
-              else if (swPacket.destAddr != panstamp.cc1101.devAddress)
+              else if (swPacket.destAddr != panstamp.swapAddress)
                 break;
               // Current version does not support data recording mode
               // so destination address and register address must be the same
@@ -189,79 +200,20 @@ void isrGDO0event(void)
 }
 
 /**
- * ISR(WDT_vect)
- *
- * Watchdog ISR. Called whenever a watchdog interrupt occurs
- */
-ISR(WDT_vect)
-{
-}
-
-/**
- * setup_watchdog
- * 
- * 'time'	Watchdog timer value
- */
-void PANSTAMP::setup_watchdog(byte time) 
-{
-  byte bb;
-
-  bb = time & 7;
-  if (time > 7)
-    bb|= (1<<5);
-
-  bb|= (1<<WDCE);
-
-  MCUSR &= ~(1<<WDRF);
-  // start timed sequence
-  WDTCSR |= (1<<WDCE) | (1<<WDE);
-  // set new watchdog timeout value
-  WDTCSR = bb;
-  WDTCSR |= _BV(WDIE);    // Enable Watchdog interrupt
-}
-
-/**
- * Timer 2 (RTC) ISR routine
- */
-ISR(TIMER2_OVF_vect)
-{
-}
-
-/**
- * setup_rtc
- *
- * Setup software (Timer 2) RTC
- *
- * 'time'   Timer2 prescaler
- *
- *          RTC_1S = 128 for 1 sec
- *          RTC_2S = 256 for 2 sec
- *          RTC_8S = 1024 for 8 sec
- */
-void PANSTAMP::setup_rtc(byte time)
-{
-  // Set timer 2 to asyncronous mode (32.768KHz crystal)
-  ASSR = (1 << AS2);
-
-  TCCR2A = 0x00;  // Normal port operation
-  // (256 cycles) * (prescaler) / (32.768KHz clock speed) = N sec
-  TCCR2B = time;  // Timer 2 prescaler
-
-  while (ASSR & (_BV(TCN2UB) | _BV(TCR2AUB) | _BV(TCR2BUB))) {}    // Wait for the registers to be updated    
-  TIFR2 = _BV(OCF2B) | _BV(OCF2A) | _BV(TOV2);                     // Clear the interrupt flags
-
-  TIMSK2 = 0x01;  // Enable timer2A overflow interrupt
-}
-
-/**
  * init
  * 
  * Initialize panStamp board
  */
 void PANSTAMP::init() 
 {
+  int i;
+
   // Calibrate internal RC oscillator
   rtcCrystal = rcOscCalibrate();
+
+  // Intialize registers
+  for(i=0 ; i<regTableSize ; i++)
+    regTable[i]->init();
 
   // Setup CC1101
   cc1101.init();
@@ -269,9 +221,20 @@ void PANSTAMP::init()
   // Security disabled by default
   security = 0;
 
+  #ifdef SWAP_EXTENDED_ADDRESS
+/*
+  // Read extended device address from EEPROM
+  swapAddress = EEPROM.read(EEPROM_DEVICE_ADDR);
+  swapAddress <<= 8;
+  swapAddress = EEPROM.read(EEPROM_DEVICE_ADDR + 1);
+*/
+  #endif
+
+/*
   // Read periodic Tx interval from EEPROM
   txInterval[0] = EEPROM.read(EEPROM_TX_INTERVAL);
   txInterval[1] = EEPROM.read(EEPROM_TX_INTERVAL + 1);
+*/
 
   delayMicroseconds(50);  
 
@@ -304,125 +267,15 @@ void PANSTAMP::reset()
 }
 
 /**
- * sleepWd
- * 
- * Put panStamp into Power-down state during "time".
- * This function uses the internal watchdog timer in order to exit (interrupt)
- * from the power-down state
- * 
- * 'time'	Sleeping time:
- *  WDTO_15MS  = 15 ms
- *  WDTO_30MS  = 30 ms
- *  WDTO_60MS  = 60 ms
- *  WDTO_120MS  = 120 ms
- *  WDTO_250MS  = 250 ms
- *  WDTO_500MS  = 500 ms
- *  WDTO_1S = 1 s
- *  WDTO_2S = 2 s
- *  WDTO_4S = 4 s
- *  WDTO_8S = 8 s
- */
-void PANSTAMP::sleepWd(byte time) 
-{
-  // Power-down CC1101
-  cc1101.setPowerDownState();
-  // Power-down panStamp
-  set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-  sleep_enable();
-  setup_watchdog(time);
-  delayMicroseconds(10);
-  // Disable ADC
-  ADCSRA &= ~(1 << ADEN);
-  // Unpower functions
-  PRR = 0xFF;
-  //power_all_disable();
-  //clock_prescale_set(clock_div_8);
-  // Enter sleep mode
-  sleep_mode();
-
-  // ZZZZZZZZ...
-
-  // Wake-up!!
-  wakeUp(false);
-}
-
-/**
- * sleepRtc
- * 
- * Put panStamp into Power-down state during "time".
- * This function uses Timer 2 connected to an external 32.768KHz crystal
- * in order to exit (interrupt) from the power-down state
- * 
- * 'time'	Sleeping time:
- *  RTC_250MS  = 250 ms
- *  RTC_500MS  = 500 ms
- *  RTC_1S = 1 s
- *  RTC_2S = 2 s
- *  RTC_8S = 8 s
- */
-void PANSTAMP::sleepRtc(byte time) 
-{
-  // Power-down CC1101
-  cc1101.setPowerDownState();
-  // Power-down panStamp
-  set_sleep_mode(SLEEP_MODE_PWR_SAVE);
-  sleep_enable();
-  setup_rtc(time);
-  delayMicroseconds(10);
-  // Disable ADC
-  ADCSRA &= ~(1 << ADEN);
-  // Unpower functions
-  PRR = 0xFF;
-  // Enter sleep mode
-  sleep_mode();
-
-  // ZZZZZZZZ...
-
-  // Wake-up!!
-  wakeUp(false);
-}
-
-/**
- * wakeUp
- *
- * Wake from sleep mode
- *
- * 'rxOn' Enter RX_ON state after waking up
- */
-void PANSTAMP::wakeUp(bool rxOn) 
-{
-  // Exit from sleep
-  sleep_disable();
-  //wdt_disable();
-  // Re-enable functions
-  //clock_prescale_set(clock_div_1);
-  power_all_enable();
-  // Enable ADC
-  ADCSRA |= (1 << ADEN);
-  
-  // If 32.768 KHz crystal enabled
-  if (rtcCrystal)
-  {
-    // Disable timer2A overflow interrupt
-    TIMSK2 = 0x00;
-  }
-
-  // Reset CC1101 IC
-  cc1101.wakeUp();
-
-  if (rxOn)
-    systemState = SYSTATE_RXON;
-}
-
-/**
  * goToSleep
  *
- * Sleep whilst in power-down mode. This function currently uses sleepWd in a loop
+ * Sleep whilst in power-down mode. This function currently uses sleepWd or
+ * sleepRtc in a loop
  */
 void PANSTAMP::goToSleep(void)
 {
   // Get the amount of seconds to sleep from the internal register
-  int intInterval = txInterval[0] * 0x100 + txInterval[1];
+  int intInterval = txInterval;
   int i, loops;
   byte minTime;
   
@@ -473,6 +326,9 @@ void PANSTAMP::goToSleep(void)
 
   systemState = SYSTATE_RXOFF;
 
+  // Power-down CC1101
+  cc1101.setPowerDownState();
+
   // Sleep
   for (i=0 ; i<loops ; i++)
   {
@@ -481,10 +337,15 @@ void PANSTAMP::goToSleep(void)
       break;
 
     if (rtcCrystal)
-      sleepRtc(minTime);
+      rtc.sleepRtc(minTime);
     else
-      sleepWd(minTime);
+      rtc.sleepWd(minTime);
   }
+
+  // Reset CC1101 IC
+  cc1101.wakeUp();
+
+  // set system state to RF Rx ON
   systemState = SYSTATE_RXON;
 }
 
@@ -543,26 +404,6 @@ long PANSTAMP::getInternalTemp(void)
 }
 
 /**
- * setTxInterval
- * 
- * Set interval for periodic transmissions
- * 
- * 'interval'	New periodic interval. 0 for asynchronous devices
- * 'save'     If TRUE, save parameter in EEPROM
- */
-void PANSTAMP::setTxInterval(byte* interval, bool save)
-{
-  memcpy(txInterval, interval, sizeof(txInterval));
-
-  // Save in EEPROM
-  if (save)
-  {
-    EEPROM.write(EEPROM_TX_INTERVAL, interval[0]);
-    EEPROM.write(EEPROM_TX_INTERVAL + 1, interval[1]);
-  }
-}
-
-/**
  * setSmartPassword
  * 
  * Set Smart Encryption password
@@ -575,6 +416,21 @@ void PANSTAMP::setSmartPassword(byte* password)
   memcpy(encryptPwd, password, sizeof(encryptPwd));
   // Enable Smart Encryption
   security |= 0x02;
+}
+
+/**
+ * enableRfRx
+ * 
+ * Enable or disable RF reception
+ *
+ * @param ena Enable if true. Disable otherwise
+ */
+void PANSTAMP::enableRfRx(bool ena)
+{
+  if (ena)
+    enableIRQ_GDO0()
+  else
+    disableIRQ_GDO0();
 }
 
 /**

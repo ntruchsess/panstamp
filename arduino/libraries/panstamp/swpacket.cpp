@@ -34,20 +34,49 @@
  */
 SWPACKET::SWPACKET(CCPACKET packet) 
 {
-  destAddr = packet.data[0];
-  srcAddr = packet.data[1];
   hop = (packet.data[2] >> 4) & 0x0F;
   security = packet.data[2] & 0x0F;
   nonce = packet.data[3];
-  function = packet.data[4];
-  regAddr = packet.data[5];
-  regId = packet.data[6];
-  value.data = packet.data + 7;
+  function = packet.data[4] & ~SWAP_EXTENDED_ADDRESS_BIT;
+
+  if (packet.data[4] || SWAP_EXTENDED_ADDRESS_BIT)
+  {
+    addrType = SWAPADDR_EXTENDED;
+    destAddr = packet.data[0];
+    destAddr <<= 8;
+    destAddr |= packet.data[1];
+    srcAddr = packet.data[5];
+    srcAddr <<= 8;
+    srcAddr |= packet.data[6];
+    regAddr = packet.data[7];
+    regAddr <<= 8;
+    regAddr |= packet.data[8];
+    regId = packet.data[9];
+  }
+  else
+  {
+    addrType = SWAPADDR_SIMPLE;
+    destAddr = packet.data[0];
+    srcAddr = packet.data[1];
+    hop = (packet.data[2] >> 4) & 0x0F;
+    security = packet.data[2] & 0x0F;
+    nonce = packet.data[3];
+    regAddr = packet.data[5];
+    regId = packet.data[6];
+  }
+
+  value.data = packet.data + SWAP_DATA_HEAD_LEN + 1;
   value.length = packet.length - SWAP_DATA_HEAD_LEN - 1;
 
-  // Need to decrypt packet?
-  if (security & 0x02)
-    smartDecrypt();
+  // Smart encryption only available for simple (1-byte) addressing schema
+  #ifndef SWAP_EXTENDED_ADDRESS
+  if (addrType == SWAPADDR_SIMPLE)
+  {
+    // Need to decrypt packet?
+    if (security & 0x02)
+      smartDecrypt();
+  }
+  #endif
 }
 
 /**
@@ -74,22 +103,48 @@ boolean SWPACKET::send(void)
   byte i;
   boolean res;
 
-  // Need to encrypt packet?
-  if (security & 0x02)
-    smartEncrypt();
+  // Smart encryption only available for simple (1-byte) addressing schema
+  #ifndef SWAP_EXTENDED_ADDRESS
+    // Need to encrypt packet?
+    if (security & 0x02)
+      smartEncrypt();
+  #endif
 
   packet.length = value.length + SWAP_DATA_HEAD_LEN + 1;
-  packet.data[0] = destAddr;
-  packet.data[1] = srcAddr;
+
   packet.data[2] = (hop << 4) & 0xF0;
   packet.data[2] |= security & 0x0F;
   packet.data[3] = nonce;
-  packet.data[4] = function;
-  packet.data[5] = regAddr;
-  packet.data[6] = regId;
 
-  for(i=0 ; i<value.length ; i++)
-    packet.data[i+7] = value.data[i];
+  #ifdef SWAP_EXTENDED_ADDRESS
+    addrType = SWAPADDR_EXTENDED;
+    packet.data[0] = (destAddr >> 8) & 0xFF;
+    packet.data[1] = destAddr & 0xFF;
+    packet.data[4] = function | SWAP_EXTENDED_ADDRESS_BIT;
+    packet.data[5] = (srcAddr >> 8) & 0xFF;
+    packet.data[6] = srcAddr & 0xFF;
+    packet.data[7] = (regAddr >> 8) & 0xFF;
+    packet.data[8] = regAddr & 0xFF;
+    packet.data[9] = regId;
+  #else
+    addrType = SWAPADDR_SIMPLE;
+    packet.data[0] = destAddr;
+    packet.data[1] = srcAddr;
+    packet.data[4] = function;
+    packet.data[5] = regAddr;
+    packet.data[6] = regId;
+  #endif
+
+  if (value.type == SWDTYPE_INTEGER)
+  {
+    for(i=0 ; i<value.length ; i++)
+      packet.data[i+SWAP_DATA_HEAD_LEN + 1] = value.data[value.length-1-i];
+  }
+  else
+  {
+    for(i=0 ; i<value.length ; i++)
+      packet.data[i+SWAP_DATA_HEAD_LEN + 1] = value.data[i];
+  }
 
   i = SWAP_NB_TX_TRIES;
   while(!(res = panstamp.cc1101.sendData(packet)) && i>1)
@@ -108,6 +163,7 @@ boolean SWPACKET::send(void)
  *
  * 'decrypt': if true, Decrypt packet. Encrypt otherwise
  */
+#ifndef SWAP_EXTENDED_ADDRESS
 void SWPACKET::smartEncrypt(bool decrypt) 
 {
   byte i, j = 0;
@@ -134,4 +190,5 @@ void SWPACKET::smartEncrypt(bool decrypt)
   if (!decrypt)
     nonce ^= panstamp.encryptPwd[9];
 }
+#endif
 
