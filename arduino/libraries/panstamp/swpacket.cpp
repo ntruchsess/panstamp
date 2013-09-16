@@ -39,7 +39,7 @@ SWPACKET::SWPACKET(CCPACKET packet)
   nonce = packet.data[3];
   function = packet.data[4] & ~SWAP_EXTENDED_ADDRESS_BIT;
 
-  if (packet.data[4] || SWAP_EXTENDED_ADDRESS_BIT)
+  if (packet.data[4] & SWAP_EXTENDED_ADDRESS_BIT)
   {
     addrType = SWAPADDR_EXTENDED;
     destAddr = packet.data[0];

@@ -178,7 +178,7 @@ const void setDevAddress(byte id, byte *addr)               \
   /* Set new SWAP address. BE to LE conversion */           \
   regDevAddress.setValueFromBeBuffer(addr);                 \
   /* Update register value */                               \
-  panstamp.cc1101.setDevAddress(addr[1], false);            \
+  panstamp.cc1101.setDevAddress(addr[regDevAddress.length-1], false);            \
 }                                                           \
                                                             \
 /**                                                         \
